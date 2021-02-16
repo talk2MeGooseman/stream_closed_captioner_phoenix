@@ -9,5 +9,8 @@ module.exports = {
       whitelist: []
     }
   },
-  plugins: [require("kutty")]
+  plugins: [
+    require('@tailwindcss/aspect-ratio'),
+    require("kutty")
+  ]
 }

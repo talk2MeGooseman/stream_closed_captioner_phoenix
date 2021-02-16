@@ -79,8 +79,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       security: ["sobelow"],
-      lint: ["credo"]
-
+      lint: ["credo"],
+      start: ["phx.server"],
+      "start.debug": ["iex -S mix phx.server"]
     ]
   end
 end

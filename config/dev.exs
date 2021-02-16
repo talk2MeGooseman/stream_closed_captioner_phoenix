@@ -3,8 +3,8 @@ use Mix.Config
 # Configure your database
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   username: "postgres",
-  password: "postgres",
-  database: "stream_closed_captioner_phoenix_dev",
+  password: "",
+  database: "stream-cc-development",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
