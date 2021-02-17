@@ -35,6 +35,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+
+    get "/privacy", PrivacyController, :index
+    get "/terms", TermsController, :index
+    get "/showcase", ShowcaseController, :index
+    get "/supporters", SupportersController, :index
   end
 
   # Other scopes may use custom stacks.
