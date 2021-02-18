@@ -7,11 +7,21 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
-    field :hashed_password, :string
-    field :confirmed_at, :naive_datetime
-    field :avatar, StreamClosedCaptionerPhoenix.AvatarUploader.Type
+    field :encrypted_password, :string
+    field :reset_password_token, :string
+    field :reset_password_sent_at, :naive_datetime
+    field :remember_created_at, :naive_datetime
+    field :sign_in_count, :integer
+    field :last_sign_in_at, :naive_datetime
+    field :provider, :string
+    field :uid, :string
+    field :username, :string
+    field :profile_image_url, :string
+    field :login, :string
+    field :description, :string
+    field :offline_image_url, :string
 
-    timestamps()
+    timestamps(inserted_at: :created_at)
   end
 
   @doc """
@@ -24,7 +34,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
 
   ## Options
 
-    * `:hash_password` - Hashes the password so it can be stored securely
+    * `:encrypted_password` - Hashes the password so it can be stored securely
       in the database and ensures the password field is cleared to prevent
       leaks in the logs. If password hashing is not needed and clearing the
       password field is not desired (like when using this changeset for
@@ -50,7 +60,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   defp validate_password(changeset, opts) do
     changeset
     |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 80)
+    |> validate_length(:password, min: 6, max: 80)
     # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
@@ -58,12 +68,12 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   end
 
   defp maybe_hash_password(changeset, opts) do
-    hash_password? = Keyword.get(opts, :hash_password, true)
+    encrypted_password? = Keyword.get(opts, :encrypted_password, true)
     password = get_change(changeset, :password)
 
-    if hash_password? && password && changeset.valid? do
+    if encrypted_password? && password && changeset.valid? do
       changeset
-      |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
+      |> put_change(:encrypted_password, Bcrypt.hash_pwd_salt(password))
       |> delete_change(:password)
     else
       changeset
@@ -90,7 +100,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
 
   ## Options
 
-    * `:hash_password` - Hashes the password so it can be stored securely
+    * `:encrypted_password` - Hashes the password so it can be stored securely
       in the database and ensures the password field is cleared to prevent
       leaks in the logs. If password hashing is not needed and clearing the
       password field is not desired (like when using this changeset for
@@ -118,9 +128,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%StreamClosedCaptionerPhoenix.Accounts.User{hashed_password: hashed_password}, password)
-      when is_binary(hashed_password) and byte_size(password) > 0 do
-    Bcrypt.verify_pass(password, hashed_password)
+  def valid_password?(%StreamClosedCaptionerPhoenix.Accounts.User{encrypted_password: encrypted_password}, password)
+      when is_binary(encrypted_password) and byte_size(password) > 0 do
+    Bcrypt.verify_pass(password, encrypted_password)
   end
 
   def valid_password?(_, _) do
