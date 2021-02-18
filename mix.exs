@@ -42,6 +42,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:waffle, "~> 1.1.1"},
       {:waffle_ecto, "~> 0.0.9"},
       # If using Waffle with S3:
+      {:ecto_psql_extras, "~> 0.2"},
       {:ex_aws, "~> 2.1.2"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
@@ -81,7 +82,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       security: ["sobelow"],
       lint: ["credo"],
       start: ["phx.server"],
-      "start.debug": ["iex -S mix phx.server"]
+      "start.debug": ["iex -S mix phx.server"],
+      routes: ["phx.routes"]
     ]
   end
 end

@@ -501,4 +501,128 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "transcripts" do
+    alias StreamClosedCaptionerPhoenix.Accounts.Transcript
+
+    @valid_attrs %{name: "some name", session: "some session", user_id: 42}
+    @update_attrs %{name: "some updated name", session: "some updated session", user_id: 43}
+    @invalid_attrs %{name: nil, session: nil, user_id: nil}
+
+    def transcript_fixture(attrs \\ %{}) do
+      {:ok, transcript} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Accounts.create_transcript()
+
+      transcript
+    end
+
+    test "list_transcripts/0 returns all transcripts" do
+      transcript = transcript_fixture()
+      assert Accounts.list_transcripts() == [transcript]
+    end
+
+    test "get_transcript!/1 returns the transcript with given id" do
+      transcript = transcript_fixture()
+      assert Accounts.get_transcript!(transcript.id) == transcript
+    end
+
+    test "create_transcript/1 with valid data creates a transcript" do
+      assert {:ok, %Transcript{} = transcript} = Accounts.create_transcript(@valid_attrs)
+      assert transcript.name == "some name"
+      assert transcript.session == "some session"
+      assert transcript.user_id == 42
+    end
+
+    test "create_transcript/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_transcript(@invalid_attrs)
+    end
+
+    test "update_transcript/2 with valid data updates the transcript" do
+      transcript = transcript_fixture()
+      assert {:ok, %Transcript{} = transcript} = Accounts.update_transcript(transcript, @update_attrs)
+      assert transcript.name == "some updated name"
+      assert transcript.session == "some updated session"
+      assert transcript.user_id == 43
+    end
+
+    test "update_transcript/2 with invalid data returns error changeset" do
+      transcript = transcript_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_transcript(transcript, @invalid_attrs)
+      assert transcript == Accounts.get_transcript!(transcript.id)
+    end
+
+    test "delete_transcript/1 deletes the transcript" do
+      transcript = transcript_fixture()
+      assert {:ok, %Transcript{}} = Accounts.delete_transcript(transcript)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_transcript!(transcript.id) end
+    end
+
+    test "change_transcript/1 returns a transcript changeset" do
+      transcript = transcript_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_transcript(transcript)
+    end
+  end
+
+  describe "messages" do
+    alias StreamClosedCaptionerPhoenix.Accounts.Message
+
+    @valid_attrs %{text: "some text", transcript_id: 42}
+    @update_attrs %{text: "some updated text", transcript_id: 43}
+    @invalid_attrs %{text: nil, transcript_id: nil}
+
+    def message_fixture(attrs \\ %{}) do
+      {:ok, message} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Accounts.create_message()
+
+      message
+    end
+
+    test "list_messages/0 returns all messages" do
+      message = message_fixture()
+      assert Accounts.list_messages() == [message]
+    end
+
+    test "get_message!/1 returns the message with given id" do
+      message = message_fixture()
+      assert Accounts.get_message!(message.id) == message
+    end
+
+    test "create_message/1 with valid data creates a message" do
+      assert {:ok, %Message{} = message} = Accounts.create_message(@valid_attrs)
+      assert message.text == "some text"
+      assert message.transcript_id == 42
+    end
+
+    test "create_message/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_message(@invalid_attrs)
+    end
+
+    test "update_message/2 with valid data updates the message" do
+      message = message_fixture()
+      assert {:ok, %Message{} = message} = Accounts.update_message(message, @update_attrs)
+      assert message.text == "some updated text"
+      assert message.transcript_id == 43
+    end
+
+    test "update_message/2 with invalid data returns error changeset" do
+      message = message_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_message(message, @invalid_attrs)
+      assert message == Accounts.get_message!(message.id)
+    end
+
+    test "delete_message/1 deletes the message" do
+      message = message_fixture()
+      assert {:ok, %Message{}} = Accounts.delete_message(message)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_message!(message.id) end
+    end
+
+    test "change_message/1 returns a message changeset" do
+      message = message_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_message(message)
+    end
+  end
 end

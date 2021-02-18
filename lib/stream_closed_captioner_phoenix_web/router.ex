@@ -36,6 +36,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     live "/", PageLive, :index
 
+    resources "/transcripts", TranscriptController do
+      resources "/messages", MessageController, except: [:new]
+    end
+    get "/dashboard", DashboardController, :index
     get "/privacy", PrivacyController, :index
     get "/terms", TermsController, :index
     get "/showcase", ShowcaseController, :index
@@ -59,7 +63,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     scope "/" do
       pipe_through :browser
-      live_dashboard "/dashboard", metrics: StreamClosedCaptionerPhoenixWeb.Telemetry
+      live_dashboard "/live-dashboard", metrics: StreamClosedCaptionerPhoenixWeb.Telemetry, ecto_repos: [ StreamClosedCaptionerPhoenix.Repo]
     end
   end
 

@@ -1,0 +1,23 @@
+<h1>Show Transcript</h1>
+
+<ul>
+
+  <li>
+    <strong>User:</strong>
+    <%= @transcript.user_id %>
+  </li>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @transcript.name %>
+  </li>
+
+  <li>
+    <strong>Session:</strong>
+    <%= @transcript.session %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.transcript_path(@conn, :edit, @transcript) %></span>
+<span><%= link "Back", to: Routes.transcript_path(@conn, :index) %></span>

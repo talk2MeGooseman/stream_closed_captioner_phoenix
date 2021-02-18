@@ -1,0 +1,30 @@
+<h1>Listing Transcripts</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Name</th>
+      <th>Session</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for transcript <- @transcripts do %>
+    <tr>
+      <td><%= transcript.user_id %></td>
+      <td><%= transcript.name %></td>
+      <td><%= transcript.session %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.transcript_path(@conn, :show, transcript) %></span>
+        <span><%= link "Edit", to: Routes.transcript_path(@conn, :edit, transcript) %></span>
+        <span><%= link "Delete", to: Routes.transcript_path(@conn, :delete, transcript), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Transcript", to: Routes.transcript_path(@conn, :new) %></span>

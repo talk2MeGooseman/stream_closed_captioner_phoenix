@@ -1,0 +1,18 @@
+<h1>Show Message</h1>
+
+<ul>
+
+  <li>
+    <strong>Transcript:</strong>
+    <%= @message.transcript_id %>
+  </li>
+
+  <li>
+    <strong>Text:</strong>
+    <%= @message.text %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.message_path(@conn, :edit, @message) %></span>
+<span><%= link "Back", to: Routes.message_path(@conn, :index) %></span>
