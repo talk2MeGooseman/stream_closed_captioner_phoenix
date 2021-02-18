@@ -1,0 +1,28 @@
+<h1>Listing Bits balance debits</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Amount</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for bits_balance_debit <- @bits_balance_debits do %>
+    <tr>
+      <td><%= bits_balance_debit.user_id %></td>
+      <td><%= bits_balance_debit.amount %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.bits_balance_debit_path(@conn, :show, bits_balance_debit) %></span>
+        <span><%= link "Edit", to: Routes.bits_balance_debit_path(@conn, :edit, bits_balance_debit) %></span>
+        <span><%= link "Delete", to: Routes.bits_balance_debit_path(@conn, :delete, bits_balance_debit), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Bits balance debit", to: Routes.bits_balance_debit_path(@conn, :new) %></span>

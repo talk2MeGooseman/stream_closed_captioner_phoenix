@@ -4,7 +4,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.Message do
 
   schema "messages" do
     field :text, :string
-    field :transcript_id, :integer
+    belongs_to :transcript, StreamClosedCaptionerPhoenix.Accounts.Transcript
 
     timestamps(inserted_at: :created_at)
   end

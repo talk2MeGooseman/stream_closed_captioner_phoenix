@@ -39,6 +39,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     resources "/transcripts", TranscriptController do
       resources "/messages", MessageController, except: [:new]
     end
+    resources "/bits_balance_debits", BitsBalanceDebitController
+
     get "/dashboard", DashboardController, :index
     get "/privacy", PrivacyController, :index
     get "/terms", TermsController, :index

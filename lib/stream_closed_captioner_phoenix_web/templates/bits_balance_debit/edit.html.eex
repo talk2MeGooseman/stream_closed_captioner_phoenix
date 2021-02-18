@@ -1,0 +1,5 @@
+<h1>Edit Bits balance debit</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.bits_balance_debit_path(@conn, :update, @bits_balance_debit)) %>
+
+<span><%= link "Back", to: Routes.bits_balance_debit_path(@conn, :index) %></span>
