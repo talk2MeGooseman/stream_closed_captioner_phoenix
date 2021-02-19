@@ -22,6 +22,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     field :offline_image_url, :string
 
     has_many :bits_balance_debits, StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+    has_many :transcripts, StreamClosedCaptionerPhoenix.Accounts.Transcript
 
     timestamps(inserted_at: :created_at)
   end
