@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.MessageController do
 
   alias StreamClosedCaptionerPhoenix
   alias StreamClosedCaptionerPhoenix.Accounts
-  alias StreamClosedCaptionerPhoenix.Accounts.Message
+  alias StreamClosedCaptionerPhoenix.Transcripts.Message
 
   def index(conn, %{ "transcript_id" => transcript_id }) do
     transcript = Accounts.get_transcript!(transcript_id)

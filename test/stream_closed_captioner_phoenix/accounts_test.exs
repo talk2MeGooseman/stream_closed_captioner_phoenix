@@ -503,7 +503,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "transcripts" do
-    alias StreamClosedCaptionerPhoenix.Accounts.Transcript
+    alias StreamClosedCaptionerPhoenix.Transcripts.Transcript
 
     @update_attrs %{name: "some updated name", session: "some updated session", user_id: 43}
     @invalid_attrs %{name: nil, session: nil, user_id: nil}
@@ -563,7 +563,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "messages" do
-    alias StreamClosedCaptionerPhoenix.Accounts.Message
+    alias StreamClosedCaptionerPhoenix.Transcripts.Message
 
     @update_attrs %{text: "some updated text", transcript_id: 42}
     @invalid_attrs %{text: nil, transcript_id: nil}

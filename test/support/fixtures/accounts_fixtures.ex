@@ -19,33 +19,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsFixtures do
     user
   end
 
-  def transcript_fixture(attrs \\ %{}) do
-    {:ok, transcript} =
-      attrs
-      |> Enum.into(%{
-        name: "some name",
-        session: "some session",
-        user_id: user_fixture().id
-      })
-      |> StreamClosedCaptionerPhoenix.Accounts.create_transcript()
-
-    transcript
-  end
-
-  def message_fixture(attrs \\ %{}) do
-    {:ok, message} =
-      attrs
-      |> Enum.into(
-        %{
-          text: "some text",
-          transcript_id: transcript_fixture().id
-        }
-      )
-      |> StreamClosedCaptionerPhoenix.Accounts.create_message()
-
-    message
-  end
-
   def extract_user_token(fun) do
     {:ok, captured} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token, _] = String.split(captured.body, "[TOKEN]")

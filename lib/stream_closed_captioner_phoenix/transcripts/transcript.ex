@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.Accounts.Transcript do
+defmodule StreamClosedCaptionerPhoenix.Transcripts.Transcript do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.Transcript do
     field :session, :string
 
     belongs_to :user, StreamClosedCaptionerPhoenix.Accounts.User
-    has_many :messages, StreamClosedCaptionerPhoenix.Accounts.Message
+    has_many :messages, StreamClosedCaptionerPhoenix.Transcripts.Message
 
     timestamps(inserted_at: :created_at)
   end

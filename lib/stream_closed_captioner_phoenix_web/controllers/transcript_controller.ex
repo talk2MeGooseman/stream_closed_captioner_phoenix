@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   alias StreamClosedCaptionerPhoenix.Accounts
-  alias StreamClosedCaptionerPhoenix.Accounts.Transcript
+  alias StreamClosedCaptionerPhoenix.Transcripts.Transcript
 
   def index(conn, _params) do
     transcripts = Accounts.list_transcripts()

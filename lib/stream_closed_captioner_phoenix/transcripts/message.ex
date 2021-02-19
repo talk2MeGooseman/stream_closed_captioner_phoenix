@@ -1,10 +1,10 @@
-defmodule StreamClosedCaptionerPhoenix.Accounts.Message do
+defmodule StreamClosedCaptionerPhoenix.Transcripts.Message do
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "messages" do
     field :text, :string
-    belongs_to :transcript, StreamClosedCaptionerPhoenix.Accounts.Transcript
+    belongs_to :transcript, StreamClosedCaptionerPhoenix.Transcripts.Transcript
 
     timestamps(inserted_at: :created_at)
   end
