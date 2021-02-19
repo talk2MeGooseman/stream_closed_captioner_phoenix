@@ -441,7 +441,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def update_transcript(%Transcript{} = transcript, attrs) do
     transcript
-    |> Transcript.changeset(attrs)
+    |> Transcript.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -537,7 +537,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def update_message(%Message{} = message, attrs) do
     message
-    |> Message.changeset(attrs)
+    |> Message.update_changeset(attrs)
     |> Repo.update()
   end
 

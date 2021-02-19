@@ -505,18 +505,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   describe "transcripts" do
     alias StreamClosedCaptionerPhoenix.Accounts.Transcript
 
-    @valid_attrs %{name: "some name", session: "some session", user_id: 42}
     @update_attrs %{name: "some updated name", session: "some updated session", user_id: 43}
     @invalid_attrs %{name: nil, session: nil, user_id: nil}
-
-    def transcript_fixture(attrs \\ %{}) do
-      {:ok, transcript} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_transcript()
-
-      transcript
-    end
 
     test "list_transcripts/0 returns all transcripts" do
       transcript = transcript_fixture()
@@ -529,10 +519,17 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "create_transcript/1 with valid data creates a transcript" do
-      assert {:ok, %Transcript{} = transcript} = Accounts.create_transcript(@valid_attrs)
+      user = user_fixture()
+      attrs = %{
+        name: "some name",
+        session: "some session",
+        user_id: user.id
+      }
+
+      assert {:ok, %Transcript{} = transcript} = Accounts.create_transcript(attrs)
       assert transcript.name == "some name"
       assert transcript.session == "some session"
-      assert transcript.user_id == 42
+      assert transcript.user_id == user.id
     end
 
     test "create_transcript/1 with invalid data returns error changeset" do
@@ -543,8 +540,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       transcript = transcript_fixture()
       assert {:ok, %Transcript{} = transcript} = Accounts.update_transcript(transcript, @update_attrs)
       assert transcript.name == "some updated name"
-      assert transcript.session == "some updated session"
-      assert transcript.user_id == 43
+      assert transcript.session == transcript.session
+      assert transcript.user_id == transcript.user_id
     end
 
     test "update_transcript/2 with invalid data returns error changeset" do
@@ -568,18 +565,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   describe "messages" do
     alias StreamClosedCaptionerPhoenix.Accounts.Message
 
-    @valid_attrs %{text: "some text", transcript_id: 42}
-    @update_attrs %{text: "some updated text", transcript_id: 43}
+    @update_attrs %{text: "some updated text", transcript_id: 42}
     @invalid_attrs %{text: nil, transcript_id: nil}
-
-    def message_fixture(attrs \\ %{}) do
-      {:ok, message} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_message()
-
-      message
-    end
 
     test "list_messages/0 returns all messages" do
       message = message_fixture()
@@ -592,9 +579,12 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "create_message/1 with valid data creates a message" do
-      assert {:ok, %Message{} = message} = Accounts.create_message(@valid_attrs)
-      assert message.text == "some text"
-      assert message.transcript_id == 42
+      transcript = transcript_fixture()
+      valid_params = %{ text: "other text", transcript_id: transcript.id }
+
+      assert {:ok, %Message{} = message} = Accounts.create_message(valid_params)
+      assert message.text == "other text"
+      assert message.transcript_id == transcript.id
     end
 
     test "create_message/1 with invalid data returns error changeset" do
@@ -605,7 +595,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       message = message_fixture()
       assert {:ok, %Message{} = message} = Accounts.update_message(message, @update_attrs)
       assert message.text == "some updated text"
-      assert message.transcript_id == 43
+      assert message.transcript_id == message.transcript_id
     end
 
     test "update_message/2 with invalid data returns error changeset" do
