@@ -20,5 +20,6 @@
       "database": "stream-cc-development",
       "username": "postgres"
     }
-  ]
+  ],
+  "elixirLinter.useStrict": true
 }

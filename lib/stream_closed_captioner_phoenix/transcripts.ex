@@ -129,7 +129,7 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_message!(id), do: Repo.get!(Message, id)
+  def get_message!(id), do: Message |> Repo.get!(id) |> Repo.preload(:transcript)
 
   @doc """
   Creates a message.

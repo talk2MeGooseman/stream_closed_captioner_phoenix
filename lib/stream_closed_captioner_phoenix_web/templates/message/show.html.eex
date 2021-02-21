@@ -14,5 +14,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: Routes.message_path(@conn, :edit, @message) %></span>
-<span><%= link "Back", to: Routes.message_path(@conn, :index) %></span>
+<span><%= link "Edit", to: Routes.transcript_message_path(@conn, :edit, @message.transcript_id, @message) %></span>
+<span><%= link "Back", to: Routes.transcript_path(@conn, :show, @message.transcript_id) %></span>

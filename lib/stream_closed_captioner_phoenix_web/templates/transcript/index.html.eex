@@ -26,5 +26,3 @@
 <% end %>
   </tbody>
 </table>
-
-<span><%= link "New Transcript", to: Routes.transcript_path(@conn, :new) %></span>

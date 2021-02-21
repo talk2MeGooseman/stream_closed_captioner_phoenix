@@ -2,44 +2,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
   alias StreamClosedCaptionerPhoenix.Accounts
+  import StreamClosedCaptionerPhoenix.TranscriptsFixtures
 
-  @create_attrs %{name: "some name", session: "some session", user_id: 42}
-  @update_attrs %{name: "some updated name", session: "some updated session", user_id: 43}
+  @create_attrs %{name: "some name", session: "some session" }
+  @update_attrs %{name: "some updated name", session: "some updated session" }
   @invalid_attrs %{name: nil, session: nil, user_id: nil}
 
   def fixture(:transcript) do
-    {:ok, transcript} = Accounts.create_transcript(@create_attrs)
-    transcript
+    transcript_fixture(@create_attrs)
   end
 
   describe "index" do
     test "lists all transcripts", %{conn: conn} do
       conn = get(conn, Routes.transcript_path(conn, :index))
       assert html_response(conn, 200) =~ "Listing Transcripts"
-    end
-  end
-
-  describe "new transcript" do
-    test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.transcript_path(conn, :new))
-      assert html_response(conn, 200) =~ "New Transcript"
-    end
-  end
-
-  describe "create transcript" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.transcript_path(conn, :create), transcript: @create_attrs)
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.transcript_path(conn, :show, id)
-
-      conn = get(conn, Routes.transcript_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show Transcript"
-    end
-
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.transcript_path(conn, :create), transcript: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Transcript"
     end
   end
 

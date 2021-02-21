@@ -21,7 +21,6 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts.Message do
   def update_changeset(message, attrs) do
     message
     |> cast(attrs, [:text])
-    |> foreign_key_constraint(:transcript_id, [name: "fk_rails_832df11d70"])
     |> validate_required([:text])
   end
 end
