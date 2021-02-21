@@ -14,5 +14,4 @@
 
 </ul>
 
-<span><%= link "Edit", to: Routes.bits_balance_debit_path(@conn, :edit, @bits_balance_debit) %></span>
 <span><%= link "Back", to: Routes.bits_balance_debit_path(@conn, :index) %></span>

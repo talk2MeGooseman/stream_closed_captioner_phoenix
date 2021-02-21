@@ -20,9 +20,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
   end
 
   describe "show bits_balance_debit" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      bb = create_bits_balance_debit()
-      conn = get(conn, Routes.bits_balance_debit_path(conn, :show, bb.id))
+    setup [:create_bits_balance_debit]
+
+    test "redirects to show when data is valid", %{conn: conn, bits_balance_debit: bits_balance_debit} do
+      conn = get(conn, Routes.bits_balance_debit_path(conn, :show, bits_balance_debit.id))
       assert html_response(conn, 200) =~ "Show Bits balance debit"
     end
   end

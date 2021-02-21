@@ -24,5 +24,3 @@
 <% end %>
   </tbody>
 </table>
-
-<span><%= link "New Bits balance debit", to: Routes.bits_balance_debit_path(@conn, :new) %></span>
