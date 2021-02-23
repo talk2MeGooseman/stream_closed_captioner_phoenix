@@ -118,4 +118,100 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def change_stream_settings(%StreamSettings{} = stream_settings, attrs \\ %{}) do
     StreamSettings.changeset(stream_settings, attrs)
   end
+
+  alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguages
+
+  @doc """
+  Returns the list of translate_languages.
+
+  ## Examples
+
+      iex> list_translate_languages()
+      [%TranslateLanguages{}, ...]
+
+  """
+  def list_translate_languages do
+    Repo.all(TranslateLanguages)
+  end
+
+  @doc """
+  Gets a single translate_languages.
+
+  Raises `Ecto.NoResultsError` if the Translate languages does not exist.
+
+  ## Examples
+
+      iex> get_translate_languages!(123)
+      %TranslateLanguages{}
+
+      iex> get_translate_languages!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_translate_languages!(id), do: Repo.get!(TranslateLanguages, id)
+
+  @doc """
+  Creates a translate_languages.
+
+  ## Examples
+
+      iex> create_translate_languages(%{field: value})
+      {:ok, %TranslateLanguages{}}
+
+      iex> create_translate_languages(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_translate_languages(attrs \\ %{}) do
+    %TranslateLanguages{}
+    |> TranslateLanguages.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a translate_languages.
+
+  ## Examples
+
+      iex> update_translate_languages(translate_languages, %{field: new_value})
+      {:ok, %TranslateLanguages{}}
+
+      iex> update_translate_languages(translate_languages, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_translate_languages(%TranslateLanguages{} = translate_languages, attrs) do
+    translate_languages
+    |> TranslateLanguages.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a translate_languages.
+
+  ## Examples
+
+      iex> delete_translate_languages(translate_languages)
+      {:ok, %TranslateLanguages{}}
+
+      iex> delete_translate_languages(translate_languages)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_translate_languages(%TranslateLanguages{} = translate_languages) do
+    Repo.delete(translate_languages)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking translate_languages changes.
+
+  ## Examples
+
+      iex> change_translate_languages(translate_languages)
+      %Ecto.Changeset{data: %TranslateLanguages{}}
+
+  """
+  def change_translate_languages(%TranslateLanguages{} = translate_languages, attrs \\ %{}) do
+    TranslateLanguages.changeset(translate_languages, attrs)
+  end
 end
