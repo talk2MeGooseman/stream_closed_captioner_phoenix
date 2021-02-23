@@ -91,6 +91,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
     put "/users/settings/update_avatar", UserSettingsController, :update_avatar
+
+    scope "/user/" do
+      get "/stream_settings", StreamSettingsController, :edit
+      put "/stream_settings", StreamSettingsController, :update
+    end
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
