@@ -42,6 +42,20 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     test "create_bits_balance_debit/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance_debit(@invalid_attrs)
     end
+
+    test "get_user_active_debit/1 return a record a debit has occurred in the past 24 hours" do
+      bits_balance_debit = bits_balance_debit_fixture()
+
+      assert [%BitsBalanceDebit{} = bits_balance_debit] =
+               Bits.get_user_active_debit!(bits_balance_debit.user_id)
+
+      assert bits_balance_debit.amount == bits_balance_debit.amount
+      assert bits_balance_debit.user_id == bits_balance_debit.user_id
+    end
+
+    test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
+      assert [] = Bits.get_user_active_debit!(2)
+    end
   end
 
   describe "bits_balances" do
