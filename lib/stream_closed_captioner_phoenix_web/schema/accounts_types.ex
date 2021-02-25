@@ -13,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
     @desc "Get a users"
     field :user, :user do
       arg :id, non_null(:id)
+
       resolve &Resolvers.Accounts.get_user/3
     end
   end
