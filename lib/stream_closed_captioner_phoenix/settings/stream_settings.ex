@@ -37,15 +37,9 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     |> validate_required([
       :language,
       :user_id,
-      :hide_text_on_load,
-      :text_uppercase,
-      :filter_profanity,
-      :cc_box_size,
-      :switch_settings_position,
-      :showcase,
-      :pirate_mode,
       :caption_delay
     ])
+    |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
   end
 
   @doc false
@@ -63,15 +57,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :caption_delay
     ])
     |> validate_required([
-      :language,
-      :hide_text_on_load,
-      :text_uppercase,
-      :filter_profanity,
-      :cc_box_size,
-      :switch_settings_position,
-      :showcase,
-      :pirate_mode,
-      :caption_delay
+      :language
     ])
+    |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
   end
 end

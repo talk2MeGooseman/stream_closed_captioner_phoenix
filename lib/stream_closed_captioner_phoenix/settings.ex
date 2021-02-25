@@ -182,7 +182,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   """
   def update_translate_languages(%TranslateLanguages{} = translate_languages, attrs) do
     translate_languages
-    |> TranslateLanguages.changeset(attrs)
+    |> TranslateLanguages.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -213,5 +213,100 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   """
   def change_translate_languages(%TranslateLanguages{} = translate_languages, attrs \\ %{}) do
     TranslateLanguages.changeset(translate_languages, attrs)
+  end
+
+  @spec valid_language_codes :: list
+  @doc """
+  Returns an `List` of all the valid languages codes
+
+  ## Examples
+
+      iex> valid_language_codes()
+      ["ja", "el", "hu", "fil", "zh-Hans", "cy", "da", "sv", "pt-br", "otq", "kn",
+  "et", "sr-Cyrl", "ta", "nl", "ml", "vi", "nb", "lv", "id", "gu", "lt", "pt-pt",
+  "sr-Latn", "mi", "cs", "ms", "kk", "tlh-Piqd", "te", "fa", "bg", "es", "en",
+  "af", "mt", "ca", "ro", "hr", "pa", "ht", "yua", "he", "fj", "ga", "hi", "ko",
+  "ur", "zh-Hant", "sk", ...]
+  """
+  def valid_language_codes do
+    valid_languages()
+    |> Map.keys()
+  end
+
+  def valid_languages do
+    %{
+      "af" => "Afrikaans",
+      "ar" => "Arabic",
+      "bn" => "Bangla",
+      "bs" => "Bosnian (Latin)",
+      "bg" => "Bulgarian",
+      "ca" => "Catalan",
+      "zh-Hans" => "Chinese Simplified",
+      "zh-Hant" => "Chinese Traditional",
+      "hr" => "Croatian",
+      "cs" => "Czech",
+      "da" => "Danish",
+      "nl" => "Dutch",
+      "en" => "English",
+      "et" => "Estonian",
+      "fj" => "Fijian",
+      "fil" => "Filipino",
+      "fi" => "Finnish",
+      "fr" => "French",
+      "de" => "German",
+      "el" => "Greek",
+      "gu" => "Gujarati",
+      "ht" => "Haitian Creole",
+      "he" => "Hebrew",
+      "hi" => "Hindi",
+      "mww" => "Hmong Daw",
+      "hu" => "Hungarian",
+      "is" => "Icelandic",
+      "id" => "Indonesian",
+      "ga" => "Irish",
+      "it" => "Italian",
+      "ja" => "Japanese",
+      "kn" => "Kannada",
+      "kk" => "Kazakh",
+      "sw" => "Kiswahili",
+      "tlh-Latn" => "Klingon",
+      "tlh-Piqd" => "Klingon (plqaD)",
+      "ko" => "Korean",
+      "lv" => "Latvian",
+      "lt" => "Lithuanian",
+      "mg" => "Malagasy",
+      "ms" => "Malay",
+      "ml" => "Malayalam",
+      "mt" => "Maltese",
+      "mi" => "Maori",
+      "mr" => "Marathi",
+      "nb" => "Norwegian",
+      "fa" => "Persian",
+      "pl" => "Polish",
+      "pt-br" => "Portuguese (Brazil)",
+      "pt-pt" => "Portuguese (Portugal)",
+      "pa" => "Punjabi",
+      "otq" => "Queretaro Otomi",
+      "ro" => "Romanian",
+      "ru" => "Russian",
+      "sm" => "Samoan",
+      "sr-Cyrl" => "Serbian (Cyrillic)",
+      "sr-Latn" => "Serbian (Latin)",
+      "sk" => "Slovak",
+      "sl" => "Slovenian",
+      "es" => "Spanish",
+      "sv" => "Swedish",
+      "ty" => "Tahitian",
+      "ta" => "Tamil",
+      "te" => "Telugu",
+      "th" => "Thai",
+      "to" => "Tongan",
+      "tr" => "Turkish",
+      "uk" => "Ukrainian",
+      "ur" => "Urdu",
+      "vi" => "Vietnamese",
+      "cy" => "Welsh",
+      "yua" => "Yucatec Maya"
+    }
   end
 end
