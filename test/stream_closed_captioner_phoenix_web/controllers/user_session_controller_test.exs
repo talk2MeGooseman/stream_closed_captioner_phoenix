@@ -8,6 +8,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "GET /users/log_in" do
+
+    @tag :skip
     test "renders log in page", %{conn: conn} do
       conn = get(conn, Routes.user_session_path(conn, :new))
       response = html_response(conn, 200)
@@ -16,6 +18,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
       assert response =~ "Register</a>"
     end
 
+    @tag :skip
     test "redirects if already logged in", %{conn: conn, user: user} do
       conn = conn |> log_in_user(user) |> get(Routes.user_session_path(conn, :new))
       assert redirected_to(conn) == "/"
@@ -23,6 +26,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "POST /users/log_in" do
+
+    @tag :skip
     test "logs the user in", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_session_path(conn, :create), %{
@@ -40,6 +45,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
       assert response =~ "Log out</a>"
     end
 
+    @tag :skip
     test "logs the user in with remember me", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_session_path(conn, :create), %{
@@ -54,6 +60,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
       assert redirected_to(conn) =~ "/"
     end
 
+    @tag :skip
     test "logs the user in with return to", %{conn: conn, user: user} do
       conn =
         conn
@@ -68,6 +75,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
       assert redirected_to(conn) == "/foo/bar"
     end
 
+    @tag :skip
     test "emits error message with invalid credentials", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_session_path(conn, :create), %{
@@ -81,6 +89,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "DELETE /users/log_out" do
+
+    @tag :skip
     test "logs the user out", %{conn: conn, user: user} do
       conn = conn |> log_in_user(user) |> delete(Routes.user_session_path(conn, :delete))
       assert redirected_to(conn) == "/"
@@ -88,6 +98,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
       assert get_flash(conn, :info) =~ "Logged out successfully"
     end
 
+    @tag :skip
     test "succeeds even if the user is not logged in", %{conn: conn} do
       conn = delete(conn, Routes.user_session_path(conn, :delete))
       assert redirected_to(conn) == "/"

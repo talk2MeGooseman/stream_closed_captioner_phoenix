@@ -19,7 +19,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
   end
 
   describe "POST /users/register" do
-    @tag :capture_log
+    # @tag :capture_log
+
+    @tag :skip
     test "creates account and logs the user in", %{conn: conn} do
       email = unique_user_email()
 
@@ -39,6 +41,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
       assert response =~ "Log out</a>"
     end
 
+    @tag :skip
     test "render errors for invalid data", %{conn: conn} do
       conn =
         post(conn, Routes.user_registration_path(conn, :create), %{

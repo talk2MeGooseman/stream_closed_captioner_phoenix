@@ -18,7 +18,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
   end
 
   describe "POST /users/confirm" do
-    @tag :capture_log
+    # @tag :capture_log
+
+    @tag :skip
     test "sends a new confirmation token", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_confirmation_path(conn, :create), %{
@@ -30,6 +32,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "confirm"
     end
 
+    @tag :skip
     test "does not send confirmation token if account is confirmed", %{conn: conn, user: user} do
       Repo.update!(Accounts.User.confirm_changeset(user))
 
@@ -56,6 +59,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
   end
 
   describe "GET /users/confirm/:token" do
+
+    @tag :skip
     test "confirms the given token once", %{conn: conn, user: user} do
       token =
         extract_user_token(fn url ->
@@ -84,6 +89,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
       refute get_flash(conn, :error)
     end
 
+    @tag :skip
     test "does not confirm email with invalid token", %{conn: conn, user: user} do
       conn = get(conn, Routes.user_confirmation_path(conn, :confirm, "oops"))
       assert redirected_to(conn) == "/"
