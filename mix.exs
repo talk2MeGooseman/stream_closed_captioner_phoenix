@@ -46,6 +46,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ex_aws, "~> 2.1.2"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
+      {:kaffy, "~> 0.9.0"},
       {:sweet_xml, "~> 0.6"},
       {:guardian, "~> 2.0"},
       {:bcrypt_elixir, "~> 2.0"},
