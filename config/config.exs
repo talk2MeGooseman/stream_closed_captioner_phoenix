@@ -81,3 +81,16 @@ config :thesis, :dynamic_pages,
   not_found_view: StreamClosedCaptionerPhoenixWeb.ErrorView,
   not_found_template: "404.html"
 
+# FunWithFlags configuration
+config :fun_with_flags, :cache,
+  enabled: true,
+  ttl: 900 # in seconds
+
+config :fun_with_flags, :persistence,
+  adapter: FunWithFlags.Store.Persistent.Ecto,
+  repo: StreamClosedCaptionerPhoenix.Repo
+
+config :fun_with_flags, :cache_bust_notifications,
+  enabled: true,
+  adapter: FunWithFlags.Notifications.PhoenixPubSub,
+  client: MyApp.PubSub
