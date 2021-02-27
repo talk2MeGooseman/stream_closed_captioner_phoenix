@@ -10,6 +10,7 @@
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body class="flex flex-col h-full pt-32 bg-gray-100">
+    <%= thesis_editor(@conn) %>
     <header class="fixed top-0 left-0 right-0 z-30 px-2 py-4 bg-white shadow sm:px-4">
       <div class="container flex items-center justify-between mx-auto">
         <a href="/" title="StreamClosedCaptionerPhoenix Home Page" class="flex items-center text-xl text-gray-900">
@@ -71,7 +72,6 @@
         </div>
       </div>
     </header>
-
     <%= @inner_content %>
 
     <footer class="py-6 mt-auto text-gray-600 bg-gray-800 footer">

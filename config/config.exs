@@ -58,3 +58,26 @@ config :kaffy,
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
+# Thesis Main Config
+config :thesis,
+  store: Thesis.EctoStore,
+  authorization: StreamClosedCaptionerPhoenix.ThesisAuth,
+  uploader: Thesis.RepoUploader
+
+# Thesis Store Config
+config :thesis, Thesis.EctoStore, repo: StreamClosedCaptionerPhoenix.Repo
+
+# Thesis Notifications Config
+# config :thesis, :notifications,
+#   add_page: [],
+#   page_settings: [],
+#   import_export_restore: []
+
+# Thesis Dynamic Pages Config
+config :thesis, :dynamic_pages,
+  view: StreamClosedCaptionerPhoenixWeb.PageView,
+  templates: ["index.html", "otherview.html"],
+  not_found_view: StreamClosedCaptionerPhoenixWeb.ErrorView,
+  not_found_template: "404.html"
+

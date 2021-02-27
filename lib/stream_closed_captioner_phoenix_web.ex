@@ -24,6 +24,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import Plug.Conn
       import StreamClosedCaptionerPhoenixWeb.Gettext
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
+
+      use Thesis.Controller
     end
   end
 
@@ -39,6 +41,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
 
       # Include shared imports and aliases for views
       unquote(view_helpers())
+
+      use Thesis.View
     end
   end
 
@@ -66,6 +70,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+
+      use Thesis.Router
     end
   end
 

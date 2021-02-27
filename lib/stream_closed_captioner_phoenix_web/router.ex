@@ -45,16 +45,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     live "/", PageLive, :index
 
-    resources "/transcripts", TranscriptController, except: [:create, :new] do
-      resources "/messages", MessageController, except: [:new, :create, :index]
-    end
     resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
 
-    get "/dashboard", DashboardController, :index
     get "/privacy", PrivacyController, :index
     get "/terms", TermsController, :index
     get "/showcase", ShowcaseController, :index
     get "/supporters", SupportersController, :index
+
+    get "/*path", PageController, :dynamic
   end
 
   # Other scopes may use custom stacks.
@@ -74,7 +72,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     scope "/" do
       pipe_through :browser
-      live_dashboard "/live-dashboard", metrics: StreamClosedCaptionerPhoenixWeb.Telemetry, ecto_repos: [ StreamClosedCaptionerPhoenix.Repo]
+
+      live_dashboard "/live-dashboard",
+        metrics: StreamClosedCaptionerPhoenixWeb.Telemetry,
+        ecto_repos: [StreamClosedCaptionerPhoenix.Repo]
     end
   end
 
@@ -105,6 +106,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       get "/stream_settings", StreamSettingsController, :edit
       put "/stream_settings", StreamSettingsController, :update
     end
+
+    resources "/transcripts", TranscriptController, except: [:create, :new] do
+      resources "/messages", MessageController, except: [:new, :create, :index]
+    end
+
+    get "/dashboard", DashboardController, :index
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
@@ -116,11 +123,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get "/users/confirm/:token", UserConfirmationController, :confirm
   end
 
-  if Mix.env == :dev do
+  if Mix.env() == :dev do
     forward "/sent_emails", Bamboo.SentEmailViewerPlug
   end
 
-  if Mix.env == :dev do
+  if Mix.env() == :dev do
     forward "/graphiql", Absinthe.Plug.GraphiQL, schema: StreamClosedCaptionerPhoenixWeb.Schema
   end
+
 end
