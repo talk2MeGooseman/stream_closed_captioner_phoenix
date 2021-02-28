@@ -22,6 +22,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :mounted_apps do
+    plug :accepts, ["html"]
+    plug :put_secure_browser_headers
+  end
+
+  scope path: "/feature-flags" do
+    pipe_through :mounted_apps
+    forward "/", FunWithFlags.UI.Router, namespace: "feature-flags"
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -52,13 +62,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get "/showcase", ShowcaseController, :index
     get "/supporters", SupportersController, :index
 
+    delete "/users/log_out", UserSessionController, :delete
+    get "/users/confirm", UserConfirmationController, :new
+    post "/users/confirm", UserConfirmationController, :create
+    get "/users/confirm/:token", UserConfirmationController, :confir
+
     get "/*path", PageController, :dynamic
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", StreamClosedCaptionerPhoenixWeb do
-  #   pipe_through :api
-  # end
 
   # Enables LiveDashboard only for development
   #
@@ -114,20 +124,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get "/dashboard", DashboardController, :index
   end
 
-  scope "/", StreamClosedCaptionerPhoenixWeb do
-    pipe_through [:browser]
-
-    delete "/users/log_out", UserSessionController, :delete
-    get "/users/confirm", UserConfirmationController, :new
-    post "/users/confirm", UserConfirmationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confirm
-  end
-
   if Mix.env() == :dev do
     forward "/sent_emails", Bamboo.SentEmailViewerPlug
-  end
-
-  if Mix.env() == :dev do
     forward "/graphiql", Absinthe.Plug.GraphiQL, schema: StreamClosedCaptionerPhoenixWeb.Schema
   end
 

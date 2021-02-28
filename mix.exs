@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.MixProject do
   use Mix.Project
+
   def project do
     [
       app: :stream_closed_captioner_phoenix,
@@ -12,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       deps: deps()
     ]
   end
+
   # Configuration for the OTP application.
   #
   # Type `mix help compile.app` for more information.
@@ -21,6 +23,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       extra_applications: [:logger, :runtime_tools]
     ]
   end
+
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
@@ -46,6 +49,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:ecto_psql_extras, "~> 0.2"},
       {:fun_with_flags, "~> 1.6.0"},
+      {:fun_with_flags_ui, "~> 0.7.2"},
       {:hackney, "~> 1.9"},
       {:kaffy, "~> 0.9.0"},
       {:sweet_xml, "~> 0.6"},
@@ -70,6 +74,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:plug_cowboy, "~> 2.0"}
     ]
   end
+
   # Aliases are shortcuts or tasks specific to the current project.
   # For example, to install project dependencies and perform other setup tasks, run:
   #

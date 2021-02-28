@@ -82,15 +82,9 @@ config :thesis, :dynamic_pages,
   not_found_template: "404.html"
 
 # FunWithFlags configuration
-config :fun_with_flags, :cache,
-  enabled: true,
-  ttl: 900 # in seconds
-
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,
-  repo: StreamClosedCaptionerPhoenix.Repo
+  repo: StreamClosedCaptionerPhoenix.Repo,
+  ecto_table_name: "fun_with_flags_toggles"
 
-config :fun_with_flags, :cache_bust_notifications,
-  enabled: true,
-  adapter: FunWithFlags.Notifications.PhoenixPubSub,
-  client: MyApp.PubSub
+config :fun_with_flags, :cache_bust_notifications, [enabled: false]
