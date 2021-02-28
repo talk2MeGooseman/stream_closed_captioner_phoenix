@@ -59,6 +59,22 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  @doc """
+  Gets a user by their channel id aka uid
+
+  Return nil fo user doesnt exist
+
+  ## Examples
+
+      iex> get_user_by_channel_id(123)
+      %User{}
+
+      iex> get_user_by_channel_id(457)
+      nil
+
+  """
+  def get_user_by_channel_id(id), do: Repo.get_by(User, uid: id)
+
   ## User registration
 
   @doc """
