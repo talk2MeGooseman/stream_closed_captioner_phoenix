@@ -1,0 +1,4 @@
+defmodule StreamClosedCaptionerPhoenix.CaptionsProcessingTest do
+  use StreamClosedCaptionerPhoenix.DataCase
+  doctest StreamClosedCaptionerPhoenix.CaptionsProcessing
+end

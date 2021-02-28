@@ -11,6 +11,6 @@ defmodule StreamClosedCaptionerPhoenix.Guardian do
   def resource_from_claims(claims) do
     id = claims["sub"]
     resource = Accounts.get_user!(id)
-    {:ok,  resource}
+    {:ok, resource}
   end
 end
