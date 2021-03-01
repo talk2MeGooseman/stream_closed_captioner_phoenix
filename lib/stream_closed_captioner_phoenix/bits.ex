@@ -39,14 +39,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_balance_debit!(id), do: Repo.get!(BitsBalanceDebit, id)
 
-  @spec create_bits_balance_debit(
-          :invalid
-          | %{optional(:__struct__) => none, optional(atom | binary) => any}
-        ) :: any
   @doc """
   Gets a get_user_active_debit for the user_id that has occurred in the past 24 hours.
-
-  Raises `Ecto.NoResultsError` if the Bits balance debit does not exist.
 
   ## Examples
 
@@ -54,16 +48,16 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       %BitsBalanceDebit{}
 
       iex> get_bits_balance_debit!(456)
-      ** (Ecto.NoResultsError)
+      nil
 
   """
-  def get_user_active_debit!(user_id) do
+  def get_user_active_debit(user_id) do
     one_day_ago = NaiveDateTime.utc_now() |> NaiveDateTime.add(@seconds_in_hours * -24)
 
     BitsBalanceDebit
     |> where(user_id: ^user_id)
     |> where([u], u.created_at >= ^one_day_ago)
-    |> Repo.all()
+    |> Repo.one()
   end
 
   @doc """

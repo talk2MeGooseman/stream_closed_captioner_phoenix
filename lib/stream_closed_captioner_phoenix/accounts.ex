@@ -73,7 +73,16 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       nil
 
   """
-  def get_user_by_channel_id(id), do: Repo.get_by(User, uid: id)
+  def get_user_by_channel_id(%{ id: id } = attrs) do
+    User
+    |> where(uid: ^id)
+    |> Repo.one
+    |> maybe_preload(attrs[:preload])
+  end
+
+  defp maybe_preload(query, nil), do: query
+  defp maybe_preload(query, preload), do: Repo.preload(query, preload)
+
 
   ## User registration
 

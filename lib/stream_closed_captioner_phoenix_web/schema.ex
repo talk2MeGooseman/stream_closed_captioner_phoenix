@@ -2,17 +2,35 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.Schema
+  alias StreamClosedCaptionerPhoenix.{Accounts, Bits}
+
   import_types(Schema.AccountsTypes)
+  import_types(Schema.Types.Custom.JSON)
+  import_types(Schema.Types.Custom.DateTime)
 
   # Add import type here. Example
   # import_types(Schema.ProductTypes)
 
-  @desc "Status of a channel"
-  object :channel_status do
-    field :languages, list_of(:string)
-    field :balance, :integer
+  @desc "Information of a channel"
+  object :channel_info do
+    field :uid, :string
+    field :bits_balance, :bits_balance
+
+    field :translations, :translations do
+      resolve(&get_translations/3)
+    end
+  end
+
+  @desc "Users bits balance"
+  object :bits_balance do
+    field :total, :integer
+  end
+
+  @desc "Translations information"
+  object :translations do
+    field :languages, :json
     field :activated, :boolean
-    field :created_at, :string, description: "iso8601 datetime string"
+    field :created_at, :datetime
   end
 
   query do
@@ -20,10 +38,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     import_fields(:accounts_queries)
 
     @desc "Fetch the current status of a channel"
-    field :channel_status, :channel_status do
-      arg :id, non_null(:id)
+    field :channel_info, :channel_info do
+      arg(:id, non_null(:id))
 
-      resolve &get_channel_status/3
+      resolve(&get_channel_info/3)
     end
   end
 
@@ -32,17 +50,42 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   # import_fields(:create_product)
   #  end
 
-  def get_channel_status(_parent, %{id: id}, _resolution) do
-    case StreamClosedCaptionerPhoenix.Accounts.get_user_by_channel_id(id) do
+  def get_channel_info(_, %{id: id}, _resolution) do
+    case StreamClosedCaptionerPhoenix.Accounts.get_user_by_channel_id(%{
+           id: id,
+           preload: [:bits_balance, :translate_languages]
+         }) do
       nil ->
         {:error, "Channel #{id} not found"}
-      _user ->
-        {:ok, %{
-          languages: ["a", "b"],
-          balance: 600,
-          activated: false,
-          created_at: "r3d124e2"
-         }}
+
+      user ->
+        {:ok, user}
     end
+  end
+
+  def get_translations(%Accounts.User{} = user, _, _resolution) do
+    debit = active_debit(user)
+
+    {:ok,
+     %{
+       languages: %{},
+       activated: !is_nil(debit),
+       created_at: Map.get(debit || %{}, :created_at)
+     }}
+  end
+
+  defp active_debit(%{id: id}) do
+    StreamClosedCaptionerPhoenix.Bits.get_user_active_debit(id)
+  end
+
+  def get_languages(user) do
+    user.translate_languages
+    |> Enum.map_reduce(%{}, fn code, acc ->
+      Map.put(
+        acc,
+        code,
+        Map.get(StreamClosedaptionerPhoenix.Settings.valid_languages(), code)
+      )
+    end)
   end
 end
