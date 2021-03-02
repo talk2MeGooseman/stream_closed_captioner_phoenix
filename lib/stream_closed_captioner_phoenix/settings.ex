@@ -6,6 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
 
+  alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
   @doc """
@@ -151,6 +152,46 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def get_translate_languages!(id), do: Repo.get!(TranslateLanguages, id)
 
   @doc """
+  Gets a list of TranslateLanuages by user_id
+
+  Raises `Ecto.NoResultsError` if the Translate languages does not exist.
+
+  ## Examples
+
+      iex> get_translate_languages_by_user!(123)
+      [%TranslateLanguages{}]
+
+      iex> get_translate_languages_by_user!(456)
+      ** (Ecto.NoResultsError)
+  """
+  def get_translate_languages_by_user!(user_id), do: Repo.get_by!(TranslateLanguages, user_id: user_id)
+
+  @doc """
+  Gets a list of TranslateLanuages by user_id
+
+  ## Examples
+
+      iex> get_translate_languages_by_user(456)
+      [%TranslateLanguages{}]
+  """
+  def get_translate_languages_by_user(user_id), do: TranslateLanguages |> where(user_id: ^user_id) |> Repo.all
+
+  @spec get_formatted_translate_languages_by_user(any) :: map
+  def get_formatted_translate_languages_by_user(%User{} = user) do
+    user.translate_languages
+    |> Enum.map(fn tl -> tl.language end)
+    |> filter_languages
+  end
+
+  def get_formatted_translate_languages_by_user(user_id) do
+    get_translate_languages_by_user(user_id)
+    |> Enum.map(fn tl -> tl.language end)
+    |> filter_languages
+  end
+
+  defp filter_languages(codes), do: Map.take(valid_languages(), codes)
+
+  @doc """
   Creates a translate_languages.
 
   ## Examples
@@ -215,7 +256,6 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     TranslateLanguages.changeset(translate_languages, attrs)
   end
 
-  @spec valid_language_codes :: list
   @doc """
   Returns an `List` of all the valid languages codes
 

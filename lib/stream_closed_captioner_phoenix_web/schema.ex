@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.Schema
-  alias StreamClosedCaptionerPhoenix.{Accounts, Bits}
+  alias StreamClosedCaptionerPhoenix.{Accounts, Bits, Settings}
 
   import_types(Schema.AccountsTypes)
   import_types(Schema.Types.Custom.JSON)
@@ -15,7 +15,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   object :channel_info do
     field :uid, :string
     field :bits_balance, :bits_balance
-
     field :translations, :translations do
       resolve(&get_translations/3)
     end
@@ -68,7 +67,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
     {:ok,
      %{
-       languages: %{},
+       languages: Settings.get_formatted_translate_languages_by_user(user),
        activated: !is_nil(debit),
        created_at: Map.get(debit || %{}, :created_at)
      }}
@@ -78,14 +77,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     StreamClosedCaptionerPhoenix.Bits.get_user_active_debit(id)
   end
 
-  def get_languages(user) do
-    user.translate_languages
-    |> Enum.map_reduce(%{}, fn code, acc ->
-      Map.put(
-        acc,
-        code,
-        Map.get(StreamClosedaptionerPhoenix.Settings.valid_languages(), code)
-      )
-    end)
-  end
 end

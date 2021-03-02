@@ -164,6 +164,32 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert Settings.get_translate_languages!(translate_languages.id) == translate_languages
     end
 
+    test "get_formatted_translate_languages_by_user/1 returns a map of user languages codes and names" do
+      translate_languages = translate_languages_fixture()
+      translate_languages_fixture(%{language: "es", user_id: translate_languages.user_id})
+
+      user =
+        StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_languages.user_id)
+        |> Repo.preload([:translate_languages])
+
+      assert Settings.get_formatted_translate_languages_by_user(user) == %{
+               "en" => "English",
+               "es" => "Spanish"
+             }
+    end
+
+    test "get_formatted_translate_languages_by_user/1 with id returns a map of user languages codes and names" do
+      translate_languages = translate_languages_fixture()
+      translate_languages_fixture(%{language: "es", user_id: translate_languages.user_id})
+
+      %{id: id} = StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_languages.user_id)
+
+      assert Settings.get_formatted_translate_languages_by_user(id) == %{
+               "en" => "English",
+               "es" => "Spanish"
+             }
+    end
+
     test "create_translate_languages/1 with valid data creates a translate_languages" do
       attrs = %{language: "en", user_id: user_fixture().id}
 
