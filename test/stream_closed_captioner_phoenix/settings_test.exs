@@ -190,6 +190,15 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
              }
     end
 
+    test "get_formatted_translate_languages_by_user/1 return default languages if the user doesnt have custom ones" do
+      assert Settings.get_formatted_translate_languages_by_user(1) == %{
+               "en" => "English",
+               "es" => "Spanish",
+               "de" => "German",
+               "fr" => "French"
+             }
+    end
+
     test "create_translate_languages/1 with valid data creates a translate_languages" do
       attrs = %{language: "en", user_id: user_fixture().id}
 
