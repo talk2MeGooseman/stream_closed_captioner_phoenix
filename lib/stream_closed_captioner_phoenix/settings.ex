@@ -351,4 +351,20 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     @translatable_languages
     |> Map.keys()
   end
+
+  @doc """
+  Returns an `List` of tuple pairs containing the name of the language and
+  the language code.
+
+  ## Examples
+
+      iex> translateable_language_list()
+      [{"English, "en"}, {"Spanish", "es"}, ...]
+  """
+  @spec translateable_language_list :: [{String, String}]
+  def translateable_language_list,
+    do:
+      @translatable_languages
+      |> Enum.sort()
+      |> Enum.map(fn {v1, v2} -> {v2, v1} end)
 end
