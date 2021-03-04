@@ -47,7 +47,7 @@ config :ex_aws,
   region: System.get_env("AWS_REGION")
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
-  adapter: Bamboo.MandrillAdapter,
+  adapter: Bamboo.GmailAdapter,
   api_key: "my_api_key"
 
 config :kaffy,

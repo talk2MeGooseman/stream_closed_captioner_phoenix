@@ -33,3 +33,5 @@ npm-debug.log
 # this depending on your deployment strategy.
 /priv/static/
 TwitchStreamCaptioner_production*
+.env*
+/config/dev.secret.exs

@@ -76,4 +76,8 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
-  adapter: Bamboo.LocalAdapter
+  adapter: Bamboo.GmailAdapter,
+  sub: "erik.guzman@guzman.codes",
+  sandbox: false
+
+import_config "dev.secret.exs"
