@@ -37,8 +37,13 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe_plug, "~> 1.5.0"},
 
       # Bamboo for Emailing
+<<<<<<< HEAD
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0"},
+=======
+      {:bamboo, "~> 2.0.0"},
+      {:bamboo_phoenix, "~> 1.0"},
+>>>>>>> 50b7bf029caac77e3faf15f71008289052c75377
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.0.0"},
 
