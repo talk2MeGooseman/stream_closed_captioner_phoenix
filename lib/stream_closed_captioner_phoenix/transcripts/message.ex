@@ -13,7 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts.Message do
   def changeset(message, attrs) do
     message
     |> cast(attrs, [:transcript_id, :text])
-    |> foreign_key_constraint(:transcript_id, [name: "fk_rails_832df11d70"])
+    |> foreign_key_constraint(:transcript_id, name: "fk_rails_832df11d70")
     |> validate_required([:transcript_id, :text])
   end
 

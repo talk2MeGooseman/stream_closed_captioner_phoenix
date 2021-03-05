@@ -64,7 +64,8 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_users_transcript!(%{ id: user_id}, id), do: Transcript |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
+  def get_users_transcript!(%{id: user_id}, id),
+    do: Transcript |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
 
   @doc """
   Creates a transcript.
@@ -160,11 +161,25 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
   """
   def get_message!(id), do: Message |> Repo.get!(id)
 
-  def get_user_message!(user_id, id) do
+  @doc """
+  Gets a single message for a transcript.
+
+  Raises `Ecto.NoResultsError` if the Message does not exist.
+
+  ## Examples
+
+      iex> get_users_message!(123)
+      %Message{}
+
+      iex> get_users_message!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_transcripts_message!(%{id: transcript_id}, id) do
     Message
-    |> where([p], p.user_id == ^user_id and p.id == ^id)
+    |> where(transcript_id: ^transcript_id)
+    |> where(id: ^id)
     |> Repo.one!()
-    |> Repo.preload(:transcript)
   end
 
   @doc """

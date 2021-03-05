@@ -24,7 +24,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
     test "get_users_transcript!/2 returns the transcript with given id" do
       transcript = transcript_fixture()
 
-      assert Transcripts.get_users_transcript!(%{user_id: transcript.user_id}, transcript.id) ==
+      assert Transcripts.get_users_transcript!(%{id: transcript.user_id}, transcript.id) ==
                transcript
     end
 
@@ -93,6 +93,12 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
     test "get_message!/1 returns the message with given id" do
       message = message_fixture()
       assert Transcripts.get_message!(message.id) == message
+    end
+
+    test "get_transcripts_message!/2 returns the message with given id" do
+      message = message_fixture()
+
+      assert Transcripts.get_transcripts_message!(%{ id: message.transcript_id }, message.id) == message
     end
 
     test "create_message/1 with valid data creates a message" do
