@@ -9,6 +9,19 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
   alias StreamClosedCaptionerPhoenix.Transcripts.{Transcript, Message}
 
   @doc """
+  Returns the list of transcripts by user_id.
+
+  ## Examples
+
+      iex> list_user_transcripts(%{ id: 1 })
+      [%Transcript{}, ...]
+
+  """
+  def list_user_transcripts(%{id: id}) do
+    Transcript |> where([p], p.user_id == ^id) |> Repo.all()
+  end
+
+  @doc """
   Returns the list of transcripts.
 
   ## Examples
@@ -36,6 +49,22 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
 
   """
   def get_transcript!(id), do: Repo.get!(Transcript, id)
+
+  @doc """
+  Gets a single transcript scope to the user.
+
+  Raises `Ecto.NoResultsError` if the Transcript does not exist.
+
+  ## Examples
+
+      iex> get_users_transcript!(%{ user_id: 1 })
+      %Transcript{}
+
+      iex> get_users_transcript!(%{ user_id: 3 })
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_users_transcript!(%{ id: user_id}, id), do: Transcript |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
 
   @doc """
   Creates a transcript.
@@ -129,7 +158,14 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_message!(id), do: Message |> Repo.get!(id) |> Repo.preload(:transcript)
+  def get_message!(id), do: Message |> Repo.get!(id)
+
+  def get_user_message!(user_id, id) do
+    Message
+    |> where([p], p.user_id == ^user_id and p.id == ^id)
+    |> Repo.one!()
+    |> Repo.preload(:transcript)
+  end
 
   @doc """
   Creates a message.

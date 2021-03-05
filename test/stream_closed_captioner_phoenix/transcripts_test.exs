@@ -21,8 +21,16 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
       assert Transcripts.get_transcript!(transcript.id) == transcript
     end
 
+    test "get_users_transcript!/2 returns the transcript with given id" do
+      transcript = transcript_fixture()
+
+      assert Transcripts.get_users_transcript!(%{user_id: transcript.user_id}, transcript.id) ==
+               transcript
+    end
+
     test "create_transcript/1 with valid data creates a transcript" do
       user = user_fixture()
+
       attrs = %{
         name: "some name",
         session: "some session",
@@ -41,7 +49,10 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
 
     test "update_transcript/2 with valid data updates the transcript" do
       transcript = transcript_fixture()
-      assert {:ok, %Transcript{} = transcript} = Transcripts.update_transcript(transcript, @update_attrs)
+
+      assert {:ok, %Transcript{} = transcript} =
+               Transcripts.update_transcript(transcript, @update_attrs)
+
       assert transcript.name == "some updated name"
       assert transcript.session == transcript.session
       assert transcript.user_id == transcript.user_id
@@ -49,7 +60,10 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
 
     test "update_transcript/2 with invalid data returns error changeset" do
       transcript = transcript_fixture()
-      assert {:error, %Ecto.Changeset{}} = Transcripts.update_transcript(transcript, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Transcripts.update_transcript(transcript, @invalid_attrs)
+
       assert transcript == Transcripts.get_transcript!(transcript.id)
     end
 
@@ -83,7 +97,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
 
     test "create_message/1 with valid data creates a message" do
       transcript = transcript_fixture()
-      valid_params = %{ text: "other text", transcript_id: transcript.id }
+      valid_params = %{text: "other text", transcript_id: transcript.id}
 
       assert {:ok, %Message{} = message} = Transcripts.create_message(valid_params)
       assert message.text == "other text"

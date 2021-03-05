@@ -2,27 +2,32 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   alias StreamClosedCaptionerPhoenix.Transcripts
-  alias StreamClosedCaptionerPhoenix.Transcripts.Transcript
 
   def index(conn, _params) do
-    transcripts = Transcripts.list_transcripts()
+    user = conn.assigns.current_user
+    transcripts = Transcripts.list_user_transcripts(user)
     render(conn, "index.html", transcripts: transcripts)
   end
 
-
   def show(conn, %{"id" => id}) do
-    transcript = Transcripts.get_transcript!(id)
+    user = conn.assigns.current_user
+
+    transcript = Transcripts.get_users_transcript!(user, id)
     render(conn, "show.html", transcript: transcript)
   end
 
   def edit(conn, %{"id" => id}) do
-    transcript = Transcripts.get_transcript!(id)
+    user = conn.assigns.current_user
+
+    transcript = Transcripts.get_users_transcript!(user, id)
     changeset = Transcripts.change_transcript(transcript)
     render(conn, "edit.html", transcript: transcript, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "transcript" => transcript_params}) do
-    transcript = Transcripts.get_transcript!(id)
+    user = conn.assigns.current_user
+
+    transcript = Transcripts.get_users_transcript!(user, id)
 
     case Transcripts.update_transcript(transcript, transcript_params) do
       {:ok, transcript} ->
@@ -36,7 +41,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptController do
   end
 
   def delete(conn, %{"id" => id}) do
-    transcript = Transcripts.get_transcript!(id)
+    user = conn.assigns.current_user
+
+    transcript = Transcripts.get_users_transcript!(user, id)
     {:ok, _transcript} = Transcripts.delete_transcript(transcript)
 
     conn

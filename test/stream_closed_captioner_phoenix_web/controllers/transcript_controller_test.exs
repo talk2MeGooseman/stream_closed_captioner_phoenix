@@ -1,15 +1,16 @@
 defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
+  setup :register_and_log_in_user
+
   alias StreamClosedCaptionerPhoenix.Accounts
   import StreamClosedCaptionerPhoenix.TranscriptsFixtures
 
-  @create_attrs %{name: "some name", session: "some session" }
   @update_attrs %{name: "some updated name", session: "some updated session" }
   @invalid_attrs %{name: nil, session: nil, user_id: nil}
 
-  def fixture(:transcript) do
-    transcript_fixture(@create_attrs)
+  def fixture(:transcript, user) do
+    transcript_fixture(%{user_id: user.id})
   end
 
   describe "index" do
@@ -43,12 +44,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
       conn = put(conn, Routes.transcript_path(conn, :update, transcript), transcript: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit Transcript"
     end
+
+    test "renders errors when try to update a transcript that doesnt belong to the user", %{conn: conn, transcript: transcript} do
+      new_transcript = transcript_fixture()
+
+      assert_raise Ecto.NoResultsError, fn ->
+        conn = put(conn, Routes.transcript_path(conn, :update, new_transcript), transcript: @invalid_attrs)
+      end
+    end
   end
 
   describe "delete transcript" do
     setup [:create_transcript]
 
-    test "deletes chosen transcript", %{conn: conn, transcript: transcript} do
+    test "deletes chosen transcript", %{conn: conn, user: user, transcript: transcript} do
       conn = delete(conn, Routes.transcript_path(conn, :delete, transcript))
       assert redirected_to(conn) == Routes.transcript_path(conn, :index)
       assert_error_sent 404, fn ->
@@ -57,8 +66,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
     end
   end
 
-  defp create_transcript(_) do
-    transcript = fixture(:transcript)
+  defp create_transcript(%{conn: _conn, user: user}) do
+    transcript = fixture(:transcript, user)
     %{transcript: transcript}
   end
 end
