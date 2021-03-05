@@ -91,7 +91,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :confir
 
-    get "/*path", PageController, :dynamic
+    # get "/*path", PageController, :dynamic
   end
 
   ## Authentication routes

@@ -52,4 +52,10 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
+
+config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
+  adapter: Bamboo.GmailAdapter,
+  sub: "erik.guzman@guzman.codes",
+  sandbox: false
+
 import_config "prod.secret.exs"

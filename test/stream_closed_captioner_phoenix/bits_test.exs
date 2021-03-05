@@ -47,23 +47,23 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_balance_debit = bits_balance_debit_fixture()
 
       assert [%BitsBalanceDebit{} = bits_balance_debit] =
-               Bits.get_user_active_debit!(bits_balance_debit.user_id)
+               Bits.get_user_active_debit(bits_balance_debit.user_id)
 
       assert bits_balance_debit.amount == bits_balance_debit.amount
       assert bits_balance_debit.user_id == bits_balance_debit.user_id
     end
 
     test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
-      assert [] = Bits.get_user_active_debit!(2)
+      assert nil = Bits.get_user_active_debit(2)
     end
   end
 
   describe "bits_balances" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalance
 
-    @valid_attrs %{balance: 42}
-    @update_attrs %{balance: 43}
-    @invalid_attrs %{balance: nil, user_id: 100}
+    @valid_attrs %{total: 42}
+    @update_attrs %{total: 43}
+    @invalid_attrs %{total: nil, user_id: 100}
 
     test "list_bits_balances/0 returns all bits_balances" do
       bits_balance = bits_balance_fixture()
@@ -76,14 +76,14 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "create_bits_balance/1 with valid data creates a bits_balance" do
-      attrs = %{balance: 42, user_id: user_fixture().id}
+      attrs = %{total: 42, user_id: user_fixture().id}
       assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(attrs)
-      assert bits_balance.balance == 42
+      assert bits_balance.total == 42
       assert bits_balance.user_id == attrs.user_id
     end
 
     test "create_bits_balance/1 doesnt create a new record if a user already as one" do
-      attrs = %{balance: 42, user_id: user_fixture().id}
+      attrs = %{total: 42, user_id: user_fixture().id}
       assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(attrs)
       assert {:error, %Ecto.Changeset{} = bits_balance} = Bits.create_bits_balance(attrs)
     end
@@ -98,7 +98,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert {:ok, %BitsBalance{} = bits_balance} =
                Bits.update_bits_balance(bits_balance, @update_attrs)
 
-      assert bits_balance.balance == 43
+      assert bits_balance.total == 43
     end
 
     test "update_bits_balance/2 with invalid data returns error changeset" do

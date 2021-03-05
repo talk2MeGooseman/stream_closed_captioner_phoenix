@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Emails do
   import Bamboo.Email
   use Bamboo.Phoenix, view: StreamClosedCaptionerPhoenixWeb.EmailView
 
-  @from "no-reply@guzman.codes"
+  @from "test@example.com"
 
   def welcome_email(%{email: email}) do
     base_email()
