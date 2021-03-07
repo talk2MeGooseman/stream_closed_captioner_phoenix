@@ -64,27 +64,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     end
   end
 
-  def update_avatar(conn, %{"user" => user_params}) do
-    user = conn.assigns.current_user
-
-    case Accounts.update_user_avatar(user, user_params) do
-      {:ok, _user} ->
-        conn
-        |> put_flash(:info, "Avatar updated successfully.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
-
-      {:error, changeset} ->
-        render(conn, "edit.html", avatar_changeset: changeset)
-    end
-  end
-
   defp assign_email_and_password_changesets(conn, _opts) do
     user = conn.assigns.current_user
 
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
-    |> assign(:avatar_changeset, Accounts.change_user_avatar(user))
     |> assign(:user, user)
   end
 end

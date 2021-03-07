@@ -8,14 +8,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
   describe "GET /users/settings" do
 
-    @tag :skip
     test "renders settings page", %{conn: conn} do
       conn = get(conn, Routes.user_settings_path(conn, :edit))
       response = html_response(conn, 200)
       assert response =~ "Settings</h5>"
     end
 
-    @tag :skip
     test "redirects if user is not logged in" do
       conn = build_conn()
       conn = get(conn, Routes.user_settings_path(conn, :edit))
@@ -25,7 +23,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
   describe "PUT /users/settings (change password form)" do
 
-    @tag :skip
     test "updates the user password and resets tokens", %{conn: conn, user: user} do
       new_password_conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
@@ -43,21 +40,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
     end
 
-    @tag :skip
     test "does not update password on invalid data", %{conn: conn} do
       old_password_conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
           "action" => "update_password",
           "current_password" => "invalid",
           "user" => %{
-            "password" => "too short",
+            "password" => "has 6",
             "password_confirmation" => "does not match"
           }
         })
 
       response = html_response(old_password_conn, 200)
       assert response =~ "Settings</h5>"
-      assert response =~ "should be at least 12 character(s)"
+      assert response =~ "should be at least 6 character(s)"
       assert response =~ "does not match password"
       assert response =~ "is not valid"
 
@@ -68,7 +64,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
   describe "PUT /users/settings (change email form)" do
     # @tag :capture_log
 
-    @tag :skip
     test "updates the user email", %{conn: conn, user: user} do
       conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
@@ -82,7 +77,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert Accounts.get_user_by_email(user.email)
     end
 
-    @tag :skip
     test "does not update email on invalid data", %{conn: conn} do
       conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
@@ -110,7 +104,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       %{token: token, email: email}
     end
 
-    @tag :skip
     test "updates the user email once", %{conn: conn, user: user, token: token, email: email} do
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
@@ -123,7 +116,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert get_flash(conn, :error) =~ "Email change link is invalid or it has expired"
     end
 
-    @tag :skip
     test "does not update email with invalid token", %{conn: conn, user: user} do
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, "oops"))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
@@ -131,7 +123,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert Accounts.get_user_by_email(user.email)
     end
 
-    @tag :skip
     test "redirects if user is not logged in", %{token: token} do
       conn = build_conn()
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
