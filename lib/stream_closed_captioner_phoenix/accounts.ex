@@ -22,7 +22,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
-    Repo.get_by(User, email: email)
+    Repo.get_by(User, email: String.downcase(email))
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
-    user = Repo.get_by(User, email: email)
+    user = Repo.get_by(User, email: String.downcase(email))
     if User.valid_password?(user, password), do: user
   end
 
@@ -171,7 +171,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   defp user_email_multi(user, email, context) do
-    changeset = user |> User.email_changeset(%{email: email}) |> User.confirm_changeset()
+    changeset = user |> User.email_changeset(%{email: email})
 
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, changeset)
@@ -279,13 +279,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def deliver_user_confirmation_instructions(%User{} = user, confirmation_url_fun)
       when is_function(confirmation_url_fun, 1) do
-    if user.confirmed_at do
-      {:error, :already_confirmed}
-    else
-      {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
-      Repo.insert!(user_token)
-      UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
-    end
+
+    {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
+    Repo.insert!(user_token)
+    UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
   end
 
   @doc """
@@ -297,7 +294,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def confirm_user(token) do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
          %User{} = user <- Repo.one(query),
-         {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
+         {:ok, _} <- Repo.transaction(confirm_user_multi(user)) do
       {:ok, user}
     else
       _ -> :error
@@ -306,7 +303,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   defp confirm_user_multi(user) do
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.confirm_changeset(user))
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, ["confirm"]))
   end
 

@@ -62,7 +62,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
     |> unsafe_validate_unique(:email, StreamClosedCaptionerPhoenix.Repo)
-    |> unique_constraint(:email)
+    |> update_change(:email, &String.downcase/1)
+    |> unique_constraint(:email, name: "index_users_on_email")
   end
 
   defp validate_password(changeset, opts) do
@@ -120,14 +121,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password(opts)
-  end
-
-  @doc """
-  Confirms the account by setting `confirmed_at`.
-  """
-  def confirm_changeset(user) do
-    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    change(user, confirmed_at: now)
   end
 
   @doc """
