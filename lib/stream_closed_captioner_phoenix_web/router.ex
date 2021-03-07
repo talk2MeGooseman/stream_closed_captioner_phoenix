@@ -79,8 +79,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     live "/", PageLive, :index
 
-    resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
-
     get "/privacy", PrivacyController, :index
     get "/terms", TermsController, :index
     get "/showcase", ShowcaseController, :index
@@ -125,6 +123,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     resources "/transcripts", TranscriptController, except: [:create, :new] do
       resources "/messages", MessageController, except: [:new, :create, :index]
     end
+
+    resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
 
     get "/dashboard", DashboardController, :index
   end

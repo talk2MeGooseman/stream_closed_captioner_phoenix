@@ -24,6 +24,19 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   end
 
   @doc """
+  Returns the list of bits_balance_debits by user.
+
+  ## Examples
+
+      iex> list_users_bits_balance_debits()
+      [%BitsBalanceDebit{}, ...]
+
+  """
+  def list_users_bits_balance_debits(%{ id: id }) do
+    BitsBalanceDebit |> where(user_id: ^id) |> Repo.all()
+  end
+
+  @doc """
   Gets a single bits_balance_debit.
 
   Raises `Ecto.NoResultsError` if the Bits balance debit does not exist.
@@ -38,6 +51,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def get_bits_balance_debit!(id), do: Repo.get!(BitsBalanceDebit, id)
+
+  def get_users_bits_balance_debit!(%{ id: user_id }, id), do: BitsBalanceDebit |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
 
   @doc """
   Gets a get_user_active_debit for the user_id that has occurred in the past 24 hours.
