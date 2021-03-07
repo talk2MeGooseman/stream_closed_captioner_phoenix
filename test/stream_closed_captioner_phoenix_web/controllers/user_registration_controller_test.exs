@@ -21,7 +21,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
   describe "POST /users/register" do
     # @tag :capture_log
 
-    @tag :skip
     test "creates account and logs the user in", %{conn: conn} do
       email = unique_user_email()
 
@@ -41,17 +40,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
       assert response =~ "Log out</a>"
     end
 
-    @tag :skip
     test "render errors for invalid data", %{conn: conn} do
       conn =
         post(conn, Routes.user_registration_path(conn, :create), %{
-          "user" => %{"email" => "with spaces", "password" => "too short"}
+          "user" => %{"email" => "with spaces", "password" => "6 plz"}
         })
 
       response = html_response(conn, 200)
       assert response =~ "Register</h5>"
       assert response =~ "must have the @ sign and no spaces"
-      assert response =~ "should be at least 12 character"
+      assert response =~ "should be at least 6 character"
     end
   end
 end

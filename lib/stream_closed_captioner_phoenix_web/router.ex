@@ -87,7 +87,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     delete "/users/log_out", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new
     post "/users/confirm", UserConfirmationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confir
+    get "/users/confirm/:token", UserConfirmationController, :confirm
 
     # get "/*path", PageController, :dynamic
   end
