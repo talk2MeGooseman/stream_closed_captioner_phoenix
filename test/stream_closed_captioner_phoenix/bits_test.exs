@@ -51,7 +51,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
-      assert nil = Bits.get_user_active_debit(2)
+      refute Bits.get_user_active_debit(2)
     end
   end
 
