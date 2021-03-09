@@ -5,8 +5,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
 
   alias StreamClosedCaptionerPhoenix.Bits
 
-  @update_attrs %{amount: 43, user_id: 43}
-  @invalid_attrs %{amount: nil, user_id: nil}
+  # @update_attrs %{amount: 43, user_id: 43}
+  # @invalid_attrs %{amount: nil, user_id: nil}
 
   def fixture(:bits_balance_debit, user) do
     attrs = %{amount: 42, user_id: user.id}

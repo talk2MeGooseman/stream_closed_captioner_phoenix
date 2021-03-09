@@ -3,9 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.MessageControllerTest do
 
   setup :register_and_log_in_user
 
-  alias StreamClosedCaptionerPhoenix.Transcripts
   import StreamClosedCaptionerPhoenix.TranscriptsFixtures
-  import StreamClosedCaptionerPhoenix.AccountsFixtures
 
   @update_attrs %{text: "some updated text"}
   @invalid_attrs %{text: nil}

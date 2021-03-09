@@ -3,7 +3,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
 
   setup :register_and_log_in_user
 
-  alias StreamClosedCaptionerPhoenix.Accounts
   import StreamClosedCaptionerPhoenix.TranscriptsFixtures
 
   @update_attrs %{name: "some updated name", session: "some updated session" }
@@ -45,11 +44,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
       assert html_response(conn, 200) =~ "Edit Transcript"
     end
 
-    test "renders errors when try to update a transcript that doesnt belong to the user", %{conn: conn, transcript: transcript} do
+    test "renders errors when try to update a transcript that doesnt belong to the user", %{conn: conn} do
       new_transcript = transcript_fixture()
 
       assert_raise Ecto.NoResultsError, fn ->
-        conn = put(conn, Routes.transcript_path(conn, :update, new_transcript), transcript: @invalid_attrs)
+        put(conn, Routes.transcript_path(conn, :update, new_transcript), transcript: @invalid_attrs)
       end
     end
   end
@@ -57,7 +56,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
   describe "delete transcript" do
     setup [:create_transcript]
 
-    test "deletes chosen transcript", %{conn: conn, user: user, transcript: transcript} do
+    test "deletes chosen transcript", %{conn: conn, user: _user, transcript: transcript} do
       conn = delete(conn, Routes.transcript_path(conn, :delete, transcript))
       assert redirected_to(conn) == Routes.transcript_path(conn, :index)
       assert_error_sent 404, fn ->

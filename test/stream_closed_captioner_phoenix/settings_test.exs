@@ -86,9 +86,9 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
         user_id: user_fixture().id
       }
 
-      assert {:ok, %StreamSettings{} = stream_settings} = Settings.create_stream_settings(attrs)
+      assert {:ok, %StreamSettings{}} = Settings.create_stream_settings(attrs)
 
-      assert {:error, %Ecto.Changeset{} = stream_settings} =
+      assert {:error, %Ecto.Changeset{}} =
                Settings.create_stream_settings(attrs)
     end
 

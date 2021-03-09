@@ -68,7 +68,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
   describe "update stream_settings" do
     setup [:create_stream_settings]
 
-    test "redirects when data is valid", %{conn: conn, stream_settings: stream_settings} do
+    test "redirects when data is valid", %{conn: conn } do
       conn =
         put(conn, Routes.stream_settings_path(conn, :update),
           stream_settings: @update_attrs
@@ -80,7 +80,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
       assert html_response(conn, 200) =~ "some updated language"
     end
 
-    test "renders errors when data is invalid", %{conn: conn, stream_settings: stream_settings} do
+    test "renders errors when data is invalid", %{conn: conn } do
       conn =
         put(conn, Routes.stream_settings_path(conn, :update),
           stream_settings: @invalid_attrs
@@ -89,7 +89,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
       assert html_response(conn, 200) =~ "Edit Stream settings"
     end
 
-    test "redirects if user is not logged in", %{stream_settings: stream_settings} do
+    test "redirects if user is not logged in" do
       conn = build_conn()
 
       conn =
