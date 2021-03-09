@@ -1,4 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsTest do
+  import StreamClosedCaptionerPhoenix.Factory
+
   use StreamClosedCaptionerPhoenix.DataCase
 
   alias StreamClosedCaptionerPhoenix.Accounts
@@ -12,12 +14,12 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "returns the user if the email exists" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
       assert %User{id: ^id} = Accounts.get_user_by_email(user.email)
     end
 
     test "returns the user if the email exists doing case insensitive search" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
       assert %User{id: ^id} = Accounts.get_user_by_email(String.upcase(user.email))
     end
   end
@@ -29,7 +31,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "does not return the user if the password is not valid" do
-      user = user_fixture()
+      user = insert(:user)
       refute Accounts.get_user_by_email_and_password(user.email, "invalid")
     end
 
@@ -50,7 +52,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "returns the user with the given id" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
       assert %User{id: ^id} = Accounts.get_user!(user.id)
     end
   end
@@ -156,7 +158,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "validates email uniqueness", %{user: user} do
-      %{email: email} = user_fixture()
+      %{email: email} = insert(:user)
 
       {:error, changeset} =
         Accounts.apply_user_email(user, valid_user_password(), %{email: email})
@@ -181,7 +183,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "deliver_update_email_instructions/3" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -200,7 +202,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "update_user_email/2" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
       email = unique_user_email()
 
       token =
@@ -259,6 +261,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "update_user_password/3" do
     setup do
+      # must use the user_fixture to apply password_changeset for for hashing and validating
       %{user: user_fixture()}
     end
 
@@ -315,7 +318,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "generate_user_session_token/1" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "generates a token", %{user: user} do
@@ -327,7 +330,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       assert_raise Ecto.ConstraintError, fn ->
         Repo.insert!(%UserToken{
           token: user_token.token,
-          user_id: user_fixture().id,
+          user_id: insert(:user).id,
           context: "session"
         })
       end
@@ -336,7 +339,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "get_user_by_session_token/1" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
       token = Accounts.generate_user_session_token(user)
       %{user: user, token: token}
     end
@@ -359,7 +362,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   describe "delete_session_token/1" do
 
     test "deletes the token" do
-      user = user_fixture()
+      user = insert(:user)
       token = Accounts.generate_user_session_token(user)
       assert Accounts.delete_session_token(token) == :ok
       refute Accounts.get_user_by_session_token(token)
@@ -368,7 +371,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "deliver_user_confirmation_instructions/2" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -387,7 +390,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "confirm_user/2" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
 
       token =
         extract_user_token(fn url ->
@@ -416,7 +419,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "deliver_user_reset_password_instructions/2" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -435,7 +438,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "get_user_by_reset_password_token/1" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
 
       token =
         extract_user_token(fn url ->
@@ -464,6 +467,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "reset_user_password/2" do
     setup do
+      # Must use the user fixture to validate password logic
       %{user: user_fixture()}
     end
 

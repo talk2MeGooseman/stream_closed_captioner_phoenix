@@ -1,4 +1,5 @@
 defmodule StreamClosedCaptionerPhoenix.BitsTest do
+  import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase
 
   alias StreamClosedCaptionerPhoenix.Bits

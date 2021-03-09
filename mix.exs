@@ -51,6 +51,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Other stuff
       {:ecto_psql_extras, "~> 0.2"},
       {:expletive, "~> 0.1.4"},
+      {:ex_machina, "~> 2.7.0"},
       {:fun_with_flags, "~> 1.6.0"},
       {:fun_with_flags_ui, "~> 0.7.2"},
       {:hackney, "~> 1.9"},
