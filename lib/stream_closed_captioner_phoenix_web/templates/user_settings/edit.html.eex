@@ -26,6 +26,7 @@
             <%= error_tag f, :current_password %>
           </div>
 
+          <%= hidden_input(f, :action, value: "update_email", name: "action" ) %>
           <div class="mt-8 mb-2">
             <%= submit "Change e-mail", class: "btn btn-primary btn-sm" %>
           </div>
@@ -59,6 +60,7 @@
           </div>
 
           <div class="mt-8 mb-2">
+            <%= hidden_input(f, :action, value: "update_password", name: "action" ) %>
             <%= submit "Change password", class: "btn btn-primary btn-sm" %>
           </div>
         <% end %>
