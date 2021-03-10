@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsProcessing do
   file = Path.join([__DIR__, "..", "..", "config", "profanity", "english.txt"])
-  strip_quotes = fn (word) -> String.replace(word, ~r/^"\s*|\s*"$/, "") end
+  strip_quotes = fn word -> String.replace(word, ~r/^"\s*|\s*"$/, "") end
 
   words =
     File.read!(file)

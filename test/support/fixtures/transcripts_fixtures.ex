@@ -22,15 +22,12 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsFixtures do
   def message_fixture(attrs \\ %{}) do
     {:ok, message} =
       attrs
-      |> Enum.into(
-        %{
-          text: "some text",
-          transcript_id: transcript_fixture().id
-        }
-      )
+      |> Enum.into(%{
+        text: "some text",
+        transcript_id: transcript_fixture().id
+      })
       |> StreamClosedCaptionerPhoenix.Transcripts.create_message()
 
     message
   end
-
 end

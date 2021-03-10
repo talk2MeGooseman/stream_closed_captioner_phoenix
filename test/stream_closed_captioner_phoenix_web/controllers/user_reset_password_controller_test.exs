@@ -10,7 +10,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
   end
 
   describe "GET /users/reset_password" do
-
     test "renders the reset password page", %{conn: conn} do
       conn = get(conn, Routes.user_reset_password_path(conn, :new))
       response = html_response(conn, 200)

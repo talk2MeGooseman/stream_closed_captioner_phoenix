@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
   use Absinthe.Schema.Notation
 
- alias StreamClosedCaptionerPhoenixWeb.Resolvers
+  alias StreamClosedCaptionerPhoenixWeb.Resolvers
 
   @desc "A user"
   object :user do
@@ -12,9 +12,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
   object :accounts_queries do
     @desc "Get a users"
     field :user, :user do
-      arg :id, non_null(:id)
+      arg(:id, non_null(:id))
 
-      resolve &Resolvers.Accounts.get_user/3
+      resolve(&Resolvers.Accounts.get_user/3)
     end
   end
 end

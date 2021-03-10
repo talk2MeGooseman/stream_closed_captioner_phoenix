@@ -44,7 +44,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
   end
 
   describe "GET /users/confirm/:token" do
-
     test "confirms the given token once", %{conn: conn, user: user} do
       token =
         extract_user_token(fn url ->

@@ -8,7 +8,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "GET /users/log_in" do
-
     test "renders log in page", %{conn: conn} do
       conn = get(conn, Routes.user_session_path(conn, :new))
       response = html_response(conn, 200)
@@ -24,7 +23,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "POST /users/log_in" do
-
     test "logs the user in", %{conn: conn, user: user} do
       conn =
         post(conn, Routes.user_session_path(conn, :create), %{
@@ -83,7 +81,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   end
 
   describe "DELETE /users/log_out" do
-
     test "logs the user out", %{conn: conn, user: user} do
       conn = conn |> log_in_user(user) |> delete(Routes.user_session_path(conn, :delete))
       assert redirected_to(conn) == "/"

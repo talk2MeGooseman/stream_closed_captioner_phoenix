@@ -14,7 +14,11 @@ config :stream_closed_captioner_phoenix,
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "paFgnDds8p/UdoZgGKLX7GV8aP4Yx2yZqUDAGqkicvUoO8yYQZ7gM0oXS0jM7Yg/",
-  render_errors: [view: StreamClosedCaptionerPhoenixWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    view: StreamClosedCaptionerPhoenixWeb.ErrorView,
+    accepts: ~w(html json),
+    layout: false
+  ],
   pubsub_server: StreamClosedCaptionerPhoenix.PubSub,
   live_view: [signing_salt: "gPcQFYTg"]
 
@@ -36,8 +40,10 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.AuthAcc
   error_handler: StreamClosedCaptionerPhoenixWeb.AuthErrorHandler
 
 config :waffle,
-  storage: Waffle.Storage.S3, # or Waffle.Storage.Local
-  bucket: System.get_env("AWS_BUCKET_NAME") # if using S3
+  # or Waffle.Storage.Local
+  storage: Waffle.Storage.S3,
+  # if using S3
+  bucket: System.get_env("AWS_BUCKET_NAME")
 
 # If using S3:
 config :ex_aws,
@@ -83,4 +89,4 @@ config :fun_with_flags, :persistence,
   repo: StreamClosedCaptionerPhoenix.Repo,
   ecto_table_name: "fun_with_flags_toggles"
 
-config :fun_with_flags, :cache_bust_notifications, [enabled: false]
+config :fun_with_flags, :cache_bust_notifications, enabled: false

@@ -196,7 +196,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     StreamSettings.changeset(stream_settings, attrs)
   end
 
-  alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguages
+  alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
 
   @doc """
   Returns the list of translate_languages.
@@ -204,28 +204,28 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   ## Examples
 
       iex> list_translate_languages()
-      [%TranslateLanguages{}, ...]
+      [%TranslateLanguage{}, ...]
 
   """
   def list_translate_languages do
-    Repo.all(TranslateLanguages)
+    Repo.all(TranslateLanguage)
   end
 
   @doc """
-  Gets a single translate_languages.
+  Gets a single translate_language.
 
   Raises `Ecto.NoResultsError` if the Translate languages does not exist.
 
   ## Examples
 
-      iex> get_translate_languages!(123)
-      %TranslateLanguages{}
+      iex> get_translate_language!(123)
+      %TranslateLanguage{}
 
-      iex> get_translate_languages!(456)
+      iex> get_translate_language!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_translate_languages!(id), do: Repo.get!(TranslateLanguages, id)
+  def get_translate_language!(id), do: Repo.get!(TranslateLanguage, id)
 
   @doc """
   Gets a list of TranslateLanuages by user_id
@@ -235,13 +235,13 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   ## Examples
 
       iex> get_translate_languages_by_user!(123)
-      [%TranslateLanguages{}]
+      [%TranslateLanguage{}]
 
       iex> get_translate_languages_by_user!(456)
       ** (Ecto.NoResultsError)
   """
   def get_translate_languages_by_user!(user_id),
-    do: Repo.get_by!(TranslateLanguages, user_id: user_id)
+    do: Repo.get_by!(TranslateLanguage, user_id: user_id)
 
   @doc """
   Gets a list of TranslateLanuages by user_id
@@ -249,10 +249,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   ## Examples
 
       iex> get_translate_languages_by_user(456)
-      [%TranslateLanguages{}]
+      [%TranslateLanguage{}]
   """
   def get_translate_languages_by_user(user_id),
-    do: TranslateLanguages |> where(user_id: ^user_id) |> Repo.all()
+    do: TranslateLanguage |> where(user_id: ^user_id) |> Repo.all()
 
   @spec get_formatted_translate_languages_by_user(any) :: map
   def get_formatted_translate_languages_by_user(%User{} = user) do
@@ -271,68 +271,68 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp filter_languages(codes), do: Map.take(@translatable_languages, codes)
 
   @doc """
-  Creates a translate_languages.
+  Creates a translate_language.
 
   ## Examples
 
-      iex> create_translate_languages(%{field: value})
-      {:ok, %TranslateLanguages{}}
+      iex> create_translate_language(%{field: value})
+      {:ok, %TranslateLanguage{}}
 
-      iex> create_translate_languages(%{field: bad_value})
+      iex> create_translate_language(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_translate_languages(attrs \\ %{}) do
-    %TranslateLanguages{}
-    |> TranslateLanguages.changeset(attrs)
+  def create_translate_language(attrs \\ %{}) do
+    %TranslateLanguage{}
+    |> TranslateLanguage.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a translate_languages.
+  Updates a translate_language.
 
   ## Examples
 
-      iex> update_translate_languages(translate_languages, %{field: new_value})
-      {:ok, %TranslateLanguages{}}
+      iex> update_translate_language(translate_language, %{field: new_value})
+      {:ok, %TranslateLanguage{}}
 
-      iex> update_translate_languages(translate_languages, %{field: bad_value})
+      iex> update_translate_language(translate_language, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_translate_languages(%TranslateLanguages{} = translate_languages, attrs) do
-    translate_languages
-    |> TranslateLanguages.update_changeset(attrs)
+  def update_translate_language(%TranslateLanguage{} = translate_language, attrs) do
+    translate_language
+    |> TranslateLanguage.update_changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a translate_languages.
+  Deletes a translate_language.
 
   ## Examples
 
-      iex> delete_translate_languages(translate_languages)
-      {:ok, %TranslateLanguages{}}
+      iex> delete_translate_language(translate_language)
+      {:ok, %TranslateLanguage{}}
 
-      iex> delete_translate_languages(translate_languages)
+      iex> delete_translate_language(translate_language)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_translate_languages(%TranslateLanguages{} = translate_languages) do
-    Repo.delete(translate_languages)
+  def delete_translate_language(%TranslateLanguage{} = translate_language) do
+    Repo.delete(translate_language)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking translate_languages changes.
+  Returns an `%Ecto.Changeset{}` for tracking translate_language changes.
 
   ## Examples
 
-      iex> change_translate_languages(translate_languages)
-      %Ecto.Changeset{data: %TranslateLanguages{}}
+      iex> change_translate_language(translate_language)
+      %Ecto.Changeset{data: %TranslateLanguage{}}
 
   """
-  def change_translate_languages(%TranslateLanguages{} = translate_languages, attrs \\ %{}) do
-    TranslateLanguages.changeset(translate_languages, attrs)
+  def change_translate_language(%TranslateLanguage{} = translate_language, attrs \\ %{}) do
+    TranslateLanguage.changeset(translate_language, attrs)
   end
 
   @doc """

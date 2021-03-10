@@ -16,11 +16,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
-plug Plug.Static,
-  at: "/kaffy",
-  from: :kaffy,
-  gzip: false,
-  only: ~w(assets)
+  plug Plug.Static,
+    at: "/kaffy",
+    from: :kaffy,
+    gzip: false,
+    only: ~w(assets)
 
   # Serve at "/" the static files from "priv/static" directory.
   #

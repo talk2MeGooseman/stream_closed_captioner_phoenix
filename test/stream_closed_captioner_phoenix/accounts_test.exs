@@ -8,7 +8,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   alias StreamClosedCaptionerPhoenix.Accounts.{User, UserToken}
 
   describe "get_user_by_email/1" do
-
     test "does not return the user if the email does not exist" do
       refute Accounts.get_user_by_email("unknown@example.com")
     end
@@ -25,7 +24,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "get_user_by_email_and_password/2" do
-
     test "does not return the user if the email does not exist" do
       refute Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
     end
@@ -44,7 +42,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "get_user!/1" do
-
     test "raises if id is invalid" do
       assert_raise Ecto.NoResultsError, fn ->
         Accounts.get_user!(-1)
@@ -58,7 +55,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "register_user/1" do
-
     test "requires email and password to be set" do
       {:error, changeset} = Accounts.register_user(%{})
 
@@ -90,7 +86,9 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased email too, to check that email case is ignored.
-      {:error, changeset} = Accounts.register_user(%{email: String.upcase(email), password: "nice password"})
+      {:error, changeset} =
+        Accounts.register_user(%{email: String.upcase(email), password: "nice password"})
+
       assert "has already been taken" in errors_on(changeset).email
     end
 
@@ -104,7 +102,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "change_user_registration/2" do
-
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_registration(%User{})
       assert changeset.required == [:password, :email]
@@ -124,7 +121,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "change_user_email/2" do
-
     test "returns a user changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_email(%User{})
       assert changeset.required == [:email]
@@ -242,7 +238,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "change_user_password/2" do
-
     test "returns a user changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_password(%User{})
       assert changeset.required == [:password]
@@ -360,7 +355,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "delete_session_token/1" do
-
     test "deletes the token" do
       user = insert(:user)
       token = Accounts.generate_user_session_token(user)
@@ -504,7 +498,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   end
 
   describe "inspect/2" do
-
     test "does not include password" do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end

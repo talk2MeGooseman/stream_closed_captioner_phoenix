@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguages do
+defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguage do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,8 +10,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguages do
   end
 
   @doc false
-  def changeset(translate_languages, attrs) do
-    translate_languages
+  def changeset(translate_language, attrs) do
+    translate_language
     |> cast(attrs, [:user_id, :language])
     |> foreign_key_constraint(:user_id, name: "fk_rails_e519515539")
     |> validate_required([:user_id, :language])
@@ -19,8 +19,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguages do
   end
 
   @doc false
-  def update_changeset(translate_languages, attrs) do
-    translate_languages
+  def update_changeset(translate_language, attrs) do
+    translate_language
     |> cast(attrs, [:language])
     |> validate_required([:language])
   end

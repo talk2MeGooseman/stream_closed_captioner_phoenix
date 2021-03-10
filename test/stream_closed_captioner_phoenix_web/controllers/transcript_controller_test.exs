@@ -5,7 +5,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
 
   import StreamClosedCaptionerPhoenix.TranscriptsFixtures
 
-  @update_attrs %{name: "some updated name", session: "some updated session" }
+  @update_attrs %{name: "some updated name", session: "some updated session"}
   @invalid_attrs %{name: nil, session: nil, user_id: nil}
 
   def fixture(:transcript, user) do
@@ -32,7 +32,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
     setup [:create_transcript]
 
     test "redirects when data is valid", %{conn: conn, transcript: transcript} do
-      conn = put(conn, Routes.transcript_path(conn, :update, transcript), transcript: @update_attrs)
+      conn =
+        put(conn, Routes.transcript_path(conn, :update, transcript), transcript: @update_attrs)
+
       assert redirected_to(conn) == Routes.transcript_path(conn, :show, transcript)
 
       conn = get(conn, Routes.transcript_path(conn, :show, transcript))
@@ -40,15 +42,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, transcript: transcript} do
-      conn = put(conn, Routes.transcript_path(conn, :update, transcript), transcript: @invalid_attrs)
+      conn =
+        put(conn, Routes.transcript_path(conn, :update, transcript), transcript: @invalid_attrs)
+
       assert html_response(conn, 200) =~ "Edit Transcript"
     end
 
-    test "renders errors when try to update a transcript that doesnt belong to the user", %{conn: conn} do
+    test "renders errors when try to update a transcript that doesnt belong to the user", %{
+      conn: conn
+    } do
       new_transcript = transcript_fixture()
 
       assert_raise Ecto.NoResultsError, fn ->
-        put(conn, Routes.transcript_path(conn, :update, new_transcript), transcript: @invalid_attrs)
+        put(conn, Routes.transcript_path(conn, :update, new_transcript),
+          transcript: @invalid_attrs
+        )
       end
     end
   end
@@ -59,6 +67,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
     test "deletes chosen transcript", %{conn: conn, user: _user, transcript: transcript} do
       conn = delete(conn, Routes.transcript_path(conn, :delete, transcript))
       assert redirected_to(conn) == Routes.transcript_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.transcript_path(conn, :show, transcript))
       end

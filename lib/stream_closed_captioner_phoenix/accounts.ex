@@ -73,16 +73,15 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       nil
 
   """
-  def get_user_by_channel_id(%{ id: id } = attrs) do
+  def get_user_by_channel_id(%{id: id} = attrs) do
     User
     |> where(uid: ^id)
-    |> Repo.one
+    |> Repo.one()
     |> maybe_preload(attrs[:preload])
   end
 
   defp maybe_preload(query, nil), do: query
   defp maybe_preload(query, preload), do: Repo.preload(query, preload)
-
 
   ## User registration
 
@@ -279,7 +278,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def deliver_user_confirmation_instructions(%User{} = user, confirmation_url_fun)
       when is_function(confirmation_url_fun, 1) do
-
     {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
     Repo.insert!(user_token)
     UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
@@ -386,7 +384,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Repo.update()
   end
 
- @doc """
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
   ## Examples

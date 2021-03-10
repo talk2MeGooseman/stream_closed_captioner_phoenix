@@ -4,8 +4,8 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.AddIndexToTables do
 
   def up do
     alter table(:thesis_pages) do
-      modify :title,        :string, size: 512
-      modify :description,  :string, size: 1024
+      modify :title, :string, size: 512
+      modify :description, :string, size: 1024
     end
 
     # Index page slugs, since we're searching on those
@@ -19,8 +19,8 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.AddIndexToTables do
 
   def down do
     alter table(:thesis_pages) do
-      modify :title,        :string
-      modify :description,  :string
+      modify :title, :string
+      modify :description, :string
     end
 
     remove index(:thesis_pages, [:slug])

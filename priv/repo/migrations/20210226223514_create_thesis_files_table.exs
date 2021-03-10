@@ -11,6 +11,7 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.CreateThesisFilesTable do
 
       timestamps()
     end
+
     create unique_index(:thesis_files, [:slug])
   end
 end

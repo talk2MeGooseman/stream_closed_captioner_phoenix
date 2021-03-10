@@ -18,8 +18,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsFixtures do
     bits_balance
   end
 
-  def bits_transactions_fixture(attrs \\ %{}) do
-    {:ok, bits_transactions} =
+  def bits_transaction_fixture(attrs \\ %{}) do
+    {:ok, bits_transaction} =
       attrs
       |> Enum.into(%{
         amount: 42,
@@ -30,8 +30,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsFixtures do
         transaction_id: "some transaction_id",
         user_id: user_fixture().id
       })
-      |> StreamClosedCaptionerPhoenix.Bits.create_bits_transactions()
+      |> StreamClosedCaptionerPhoenix.Bits.create_bits_transaction()
 
-    bits_transactions
+    bits_transaction
   end
 end

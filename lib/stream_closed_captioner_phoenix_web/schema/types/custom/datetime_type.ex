@@ -1,5 +1,4 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema.Types.Custom.DateTime do
-
   use Absinthe.Schema.Notation
 
   scalar :datetime, name: "DateTime" do

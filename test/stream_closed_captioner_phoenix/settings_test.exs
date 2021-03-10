@@ -88,8 +88,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
       assert {:ok, %StreamSettings{}} = Settings.create_stream_settings(attrs)
 
-      assert {:error, %Ecto.Changeset{}} =
-               Settings.create_stream_settings(attrs)
+      assert {:error, %Ecto.Changeset{}} = Settings.create_stream_settings(attrs)
     end
 
     test "create_stream_settings/1 with invalid data returns error changeset" do
@@ -149,27 +148,27 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
   end
 
   describe "translate_languages" do
-    alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguages
+    alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
 
     @update_attrs %{language: "es"}
     @invalid_attrs %{language: nil, user_id: nil}
 
     test "list_translate_languages/0 returns all translate_languages" do
-      translate_languages = translate_languages_fixture()
-      assert Settings.list_translate_languages() == [translate_languages]
+      translate_language = translate_language_fixture()
+      assert Settings.list_translate_languages() == [translate_language]
     end
 
-    test "get_translate_languages!/1 returns the translate_languages with given id" do
-      translate_languages = translate_languages_fixture()
-      assert Settings.get_translate_languages!(translate_languages.id) == translate_languages
+    test "get_translate_language!/1 returns the translate_language with given id" do
+      translate_language = translate_language_fixture()
+      assert Settings.get_translate_language!(translate_language.id) == translate_language
     end
 
     test "get_formatted_translate_languages_by_user/1 returns a map of user languages codes and names" do
-      translate_languages = translate_languages_fixture()
-      translate_languages_fixture(%{language: "es", user_id: translate_languages.user_id})
+      translate_language = translate_language_fixture()
+      translate_language_fixture(%{language: "es", user_id: translate_language.user_id})
 
       user =
-        StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_languages.user_id)
+        StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_language.user_id)
         |> Repo.preload([:translate_languages])
 
       assert Settings.get_formatted_translate_languages_by_user(user) == %{
@@ -179,10 +178,10 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "get_formatted_translate_languages_by_user/1 with id returns a map of user languages codes and names" do
-      translate_languages = translate_languages_fixture()
-      translate_languages_fixture(%{language: "es", user_id: translate_languages.user_id})
+      translate_language = translate_language_fixture()
+      translate_language_fixture(%{language: "es", user_id: translate_language.user_id})
 
-      %{id: id} = StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_languages.user_id)
+      %{id: id} = StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_language.user_id)
 
       assert Settings.get_formatted_translate_languages_by_user(id) == %{
                "en" => "English",
@@ -199,63 +198,63 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
              }
     end
 
-    test "create_translate_languages/1 with valid data creates a translate_languages" do
+    test "create_translate_language/1 with valid data creates a translate_language" do
       attrs = %{language: "en", user_id: user_fixture().id}
 
-      assert {:ok, %TranslateLanguages{} = translate_languages} =
-               Settings.create_translate_languages(attrs)
+      assert {:ok, %TranslateLanguage{} = translate_language} =
+               Settings.create_translate_language(attrs)
 
-      assert translate_languages.language == "en"
-      assert translate_languages.user_id == attrs.user_id
+      assert translate_language.language == "en"
+      assert translate_language.user_id == attrs.user_id
     end
 
-    # test "create_translate_languages/1 doesnt allow duplicate languages saved" do
+    # test "create_translate_language/1 doesnt allow duplicate languages saved" do
     #   attrs = %{language: "en-US", user_id: user_fixture().id}
 
-    #   assert {:ok, %TranslateLanguages{} = translate_languages} =
-    #            Settings.create_translate_languages(attrs)
+    #   assert {:ok, %TranslateLanguage{} = translate_language} =
+    #            Settings.create_translate_language(attrs)
 
-    #   assert {:error, %Ecto.Changeset{} = translate_languages} =
-    #            Settings.create_translate_languages(attrs)
+    #   assert {:error, %Ecto.Changeset{} = translate_language} =
+    #            Settings.create_translate_language(attrs)
     # end
 
-    test "create_translate_languages/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Settings.create_translate_languages(@invalid_attrs)
+    test "create_translate_language/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Settings.create_translate_language(@invalid_attrs)
     end
 
-    test "update_translate_languages/2 with valid data updates the translate_languages" do
-      translate_languages = translate_languages_fixture()
+    test "update_translate_language/2 with valid data updates the translate_language" do
+      translate_language = translate_language_fixture()
 
-      assert {:ok, %TranslateLanguages{} = translate_languages} =
-               Settings.update_translate_languages(translate_languages, @update_attrs)
+      assert {:ok, %TranslateLanguage{} = translate_language} =
+               Settings.update_translate_language(translate_language, @update_attrs)
 
-      assert translate_languages.language == "es"
-      assert translate_languages.user_id == translate_languages.user_id
+      assert translate_language.language == "es"
+      assert translate_language.user_id == translate_language.user_id
     end
 
-    test "update_translate_languages/2 with invalid data returns error changeset" do
-      translate_languages = translate_languages_fixture()
+    test "update_translate_language/2 with invalid data returns error changeset" do
+      translate_language = translate_language_fixture()
 
       assert {:error, %Ecto.Changeset{}} =
-               Settings.update_translate_languages(translate_languages, @invalid_attrs)
+               Settings.update_translate_language(translate_language, @invalid_attrs)
 
-      assert translate_languages == Settings.get_translate_languages!(translate_languages.id)
+      assert translate_language == Settings.get_translate_language!(translate_language.id)
     end
 
-    test "delete_translate_languages/1 deletes the translate_languages" do
-      translate_languages = translate_languages_fixture()
+    test "delete_translate_language/1 deletes the translate_language" do
+      translate_language = translate_language_fixture()
 
-      assert {:ok, %TranslateLanguages{}} =
-               Settings.delete_translate_languages(translate_languages)
+      assert {:ok, %TranslateLanguage{}} =
+               Settings.delete_translate_language(translate_language)
 
       assert_raise Ecto.NoResultsError, fn ->
-        Settings.get_translate_languages!(translate_languages.id)
+        Settings.get_translate_language!(translate_language.id)
       end
     end
 
-    test "change_translate_languages/1 returns a translate_languages changeset" do
-      translate_languages = translate_languages_fixture()
-      assert %Ecto.Changeset{} = Settings.change_translate_languages(translate_languages)
+    test "change_translate_language/1 returns a translate_language changeset" do
+      translate_language = translate_language_fixture()
+      assert %Ecto.Changeset{} = Settings.change_translate_language(translate_language)
     end
   end
 end

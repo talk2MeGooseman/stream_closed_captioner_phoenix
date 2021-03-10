@@ -14,9 +14,10 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.ChangeAndConvertPageDataT
   end
 
   def convert_and_map_page_data() do
-    backups = Enum.map(backups(), fn(b) ->
-      %{b | page_data: decompress_page_data(b.page_data)}
-    end)
+    backups =
+      Enum.map(backups(), fn b ->
+        %{b | page_data: decompress_page_data(b.page_data)}
+      end)
 
     {:ok, backups}
   end
@@ -45,8 +46,8 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.ChangeAndConvertPageDataT
 
   def save_converted_page_data(backups) do
     backups
-    |> Enum.map(fn(b) -> conversion_changeset(b, :page_data, b.page_data) end)
-    |> Enum.map(fn(b) -> Thesis.Config.repo().update!(b) end)
+    |> Enum.map(fn b -> conversion_changeset(b, :page_data, b.page_data) end)
+    |> Enum.map(fn b -> Thesis.Config.repo().update!(b) end)
   end
 
   def conversion_changeset(backup, key, value) do
@@ -54,5 +55,4 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.ChangeAndConvertPageDataT
     |> change
     |> force_change(key, value)
   end
-
 end

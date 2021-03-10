@@ -15,6 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   object :channel_info do
     field :uid, :string
     field :bits_balance, :bits_balance
+
     field :translations, :translations do
       resolve(&get_translations/3)
     end
@@ -76,5 +77,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   defp active_debit(%{id: id}) do
     StreamClosedCaptionerPhoenix.Bits.get_user_active_debit(id)
   end
-
 end

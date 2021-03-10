@@ -26,12 +26,12 @@ defmodule StreamClosedCaptionerPhoenix.SettingsFixtures do
     settings
   end
 
-  def translate_languages_fixture(attrs \\ %{}) do
-    {:ok, translate_languages} =
+  def translate_language_fixture(attrs \\ %{}) do
+    {:ok, translate_language} =
       attrs
       |> Enum.into(%{language: "en", user_id: user_fixture().id})
-      |> StreamClosedCaptionerPhoenix.Settings.create_translate_languages()
+      |> StreamClosedCaptionerPhoenix.Settings.create_translate_language()
 
-    translate_languages
+    translate_language
   end
 end

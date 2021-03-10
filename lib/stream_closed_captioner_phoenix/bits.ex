@@ -32,7 +32,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       [%BitsBalanceDebit{}, ...]
 
   """
-  def list_users_bits_balance_debits(%{ id: id }) do
+  def list_users_bits_balance_debits(%{id: id}) do
     BitsBalanceDebit |> where(user_id: ^id) |> Repo.all()
   end
 
@@ -52,7 +52,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_balance_debit!(id), do: Repo.get!(BitsBalanceDebit, id)
 
-  def get_users_bits_balance_debit!(%{ id: user_id }, id), do: BitsBalanceDebit |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
+  def get_users_bits_balance_debit!(%{id: user_id}, id),
+    do: BitsBalanceDebit |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
 
   @doc """
   Gets a get_user_active_debit for the user_id that has occurred in the past 24 hours.
@@ -189,7 +190,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     BitsBalance.changeset(bits_balance, attrs)
   end
 
-  alias StreamClosedCaptionerPhoenix.Bits.BitsTransactions
+  alias StreamClosedCaptionerPhoenix.Bits.BitsTransaction
 
   @doc """
   Returns the list of bits_transactions.
@@ -197,73 +198,73 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   ## Examples
 
       iex> list_bits_transactions()
-      [%BitsTransactions{}, ...]
+      [%BitsTransaction{}, ...]
 
   """
   def list_bits_transactions do
-    Repo.all(BitsTransactions)
+    Repo.all(BitsTransaction)
   end
 
   @doc """
-  Gets a single bits_transactions.
+  Gets a single bits_transaction.
 
   Raises `Ecto.NoResultsError` if the Bits transactions does not exist.
 
   ## Examples
 
-      iex> get_bits_transactions!(123)
-      %BitsTransactions{}
+      iex> get_bits_transaction!(123)
+      %BitsTransaction{}
 
-      iex> get_bits_transactions!(456)
+      iex> get_bits_transaction!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_bits_transactions!(id), do: Repo.get!(BitsTransactions, id)
+  def get_bits_transaction!(id), do: Repo.get!(BitsTransaction, id)
 
   @doc """
-  Creates a bits_transactions.
+  Creates a bits_transaction.
 
   ## Examples
 
-      iex> create_bits_transactions(%{field: value})
-      {:ok, %BitsTransactions{}}
+      iex> create_bits_transaction(%{field: value})
+      {:ok, %BitsTransaction{}}
 
-      iex> create_bits_transactions(%{field: bad_value})
+      iex> create_bits_transaction(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_bits_transactions(attrs \\ %{}) do
-    %BitsTransactions{}
-    |> BitsTransactions.changeset(attrs)
+  def create_bits_transaction(attrs \\ %{}) do
+    %BitsTransaction{}
+    |> BitsTransaction.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Deletes a bits_transactions.
+  Deletes a bits_transaction.
 
   ## Examples
 
-      iex> delete_bits_transactions(bits_transactions)
-      {:ok, %BitsTransactions{}}
+      iex> delete_bits_transaction(bits_transaction)
+      {:ok, %BitsTransaction{}}
 
-      iex> delete_bits_transactions(bits_transactions)
+      iex> delete_bits_transaction(bits_transaction)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_bits_transactions(%BitsTransactions{} = bits_transactions) do
-    Repo.delete(bits_transactions)
+  def delete_bits_transaction(%BitsTransaction{} = bits_transaction) do
+    Repo.delete(bits_transaction)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking bits_transactions changes.
+  Returns an `%Ecto.Changeset{}` for tracking bits_transaction changes.
 
   ## Examples
 
-      iex> change_bits_transactions(bits_transactions)
-      %Ecto.Changeset{data: %BitsTransactions{}}
+      iex> change_bits_transaction(bits_transaction)
+      %Ecto.Changeset{data: %BitsTransaction{}}
 
   """
-  def change_bits_transactions(%BitsTransactions{} = bits_transactions, attrs \\ %{}) do
-    BitsTransactions.changeset(bits_transactions, attrs)
+  def change_bits_transaction(%BitsTransaction{} = bits_transaction, attrs \\ %{}) do
+    BitsTransaction.changeset(bits_transaction, attrs)
   end
 end

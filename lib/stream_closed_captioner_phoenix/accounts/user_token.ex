@@ -28,7 +28,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserToken do
   """
   def build_session_token(user) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %StreamClosedCaptionerPhoenix.Accounts.UserToken{token: token, context: "session", user_id: user.id}}
+
+    {token,
+     %StreamClosedCaptionerPhoenix.Accounts.UserToken{
+       token: token,
+       context: "session",
+       user_id: user.id
+     }}
   end
 
   @doc """
@@ -123,7 +129,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserToken do
   Returns the given token with the given context.
   """
   def token_and_context_query(token, context) do
-    from StreamClosedCaptionerPhoenix.Accounts.UserToken, where: [token: ^token, context: ^context]
+    from StreamClosedCaptionerPhoenix.Accounts.UserToken,
+      where: [token: ^token, context: ^context]
   end
 
   @doc """
@@ -134,6 +141,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserToken do
   end
 
   def user_and_contexts_query(user, [_ | _] = contexts) do
-    from t in StreamClosedCaptionerPhoenix.Accounts.UserToken, where: t.user_id == ^user.id and t.context in ^contexts
+    from t in StreamClosedCaptionerPhoenix.Accounts.UserToken,
+      where: t.user_id == ^user.id and t.context in ^contexts
   end
 end

@@ -117,7 +117,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   end
 
   describe "bits_transactions" do
-    alias StreamClosedCaptionerPhoenix.Bits.BitsTransactions
+    alias StreamClosedCaptionerPhoenix.Bits.BitsTransaction
 
     @valid_attrs %{
       amount: 42,
@@ -128,6 +128,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       transaction_id: "some transaction_id",
       user_id: 42
     }
+
     # @update_attrs %{
     #   amount: 43,
     #   display_name: "some updated display_name",
@@ -148,52 +149,50 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     # }
 
     test "list_bits_transactions/0 returns all bits_transactions" do
-      bits_transactions = bits_transactions_fixture()
-      assert Bits.list_bits_transactions() == [bits_transactions]
+      bits_transaction = bits_transaction_fixture()
+      assert Bits.list_bits_transactions() == [bits_transaction]
     end
 
-    test "get_bits_transactions!/1 returns the bits_transactions with given id" do
-      bits_transactions = bits_transactions_fixture()
-      assert Bits.get_bits_transactions!(bits_transactions.id) == bits_transactions
+    test "get_bits_transaction!/1 returns the bits_transaction with given id" do
+      bits_transaction = bits_transaction_fixture()
+      assert Bits.get_bits_transaction!(bits_transaction.id) == bits_transaction
     end
 
-    test "create_bits_transactions/1 with valid data creates a bits_transactions" do
-      assert {:ok, %BitsTransactions{} = bits_transactions} =
-               Bits.create_bits_transactions(@valid_attrs)
+    test "create_bits_transaction/1 with valid data creates a bits_transaction" do
+      assert {:ok, %BitsTransaction{} = bits_transaction} =
+               Bits.create_bits_transaction(@valid_attrs)
 
-      assert bits_transactions.amount == 42
-      assert bits_transactions.display_name == "some display_name"
-      assert bits_transactions.purchaser_uid == "some purchaser_uid"
-      assert bits_transactions.sku == "some sku"
-      assert bits_transactions.time == ~N[2010-04-17 14:00:00]
-      assert bits_transactions.transaction_id == "some transaction_id"
-      assert bits_transactions.user_id == 42
+      assert bits_transaction.amount == 42
+      assert bits_transaction.display_name == "some display_name"
+      assert bits_transaction.purchaser_uid == "some purchaser_uid"
+      assert bits_transaction.sku == "some sku"
+      assert bits_transaction.time == ~N[2010-04-17 14:00:00]
+      assert bits_transaction.transaction_id == "some transaction_id"
+      assert bits_transaction.user_id == 42
     end
 
-    test "create_bits_transactions/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transactions(@invalid_attrs)
+    test "create_bits_transaction/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(@invalid_attrs)
     end
 
-    test "create_bits_transactions/1 with doesnt allow the same transction to be saved more than once" do
-      assert {:ok, %BitsTransactions{}} =
-               Bits.create_bits_transactions(@valid_attrs)
+    test "create_bits_transaction/1 with doesnt allow the same transction to be saved more than once" do
+      assert {:ok, %BitsTransaction{}} = Bits.create_bits_transaction(@valid_attrs)
 
-      assert {:error, %Ecto.Changeset{}} =
-               Bits.create_bits_transactions(@valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(@valid_attrs)
     end
 
-    test "delete_bits_transactions/1 deletes the bits_transactions" do
-      bits_transactions = bits_transactions_fixture()
-      assert {:ok, %BitsTransactions{}} = Bits.delete_bits_transactions(bits_transactions)
+    test "delete_bits_transaction/1 deletes the bits_transaction" do
+      bits_transaction = bits_transaction_fixture()
+      assert {:ok, %BitsTransaction{}} = Bits.delete_bits_transaction(bits_transaction)
 
       assert_raise Ecto.NoResultsError, fn ->
-        Bits.get_bits_transactions!(bits_transactions.id)
+        Bits.get_bits_transaction!(bits_transaction.id)
       end
     end
 
-    test "change_bits_transactions/1 returns a bits_transactions changeset" do
-      bits_transactions = bits_transactions_fixture()
-      assert %Ecto.Changeset{} = Bits.change_bits_transactions(bits_transactions)
+    test "change_bits_transaction1 returns a bits_transaction changeset" do
+      bits_transaction = bits_transaction_fixture()
+      assert %Ecto.Changeset{} = Bits.change_bits_transaction(bits_transaction)
     end
   end
 end

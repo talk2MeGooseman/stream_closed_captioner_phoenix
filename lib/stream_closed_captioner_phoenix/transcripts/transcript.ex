@@ -16,7 +16,7 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts.Transcript do
   def changeset(transcript, attrs) do
     transcript
     |> cast(attrs, [:user_id, :name, :session])
-    |> foreign_key_constraint(:user_id, [name: "fk_rails_d177bec369"])
+    |> foreign_key_constraint(:user_id, name: "fk_rails_d177bec369")
     |> validate_required([:user_id, :name, :session])
   end
 

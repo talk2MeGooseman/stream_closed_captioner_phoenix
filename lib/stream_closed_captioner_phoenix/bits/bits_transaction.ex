@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransactions do
+defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransaction do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,8 +13,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransactions do
   end
 
   @doc false
-  def changeset(bits_transactions, attrs) do
-    bits_transactions
+  def changeset(bits_transaction, attrs) do
+    bits_transaction
     |> cast(attrs, [
       :transaction_id,
       :user_id,

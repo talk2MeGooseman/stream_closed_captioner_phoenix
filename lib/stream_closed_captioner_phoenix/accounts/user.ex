@@ -23,11 +23,11 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
 
     has_one :bits_balance, StreamClosedCaptionerPhoenix.Bits.BitsBalance
     has_many :bits_balance_debits, StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
-    has_many :bits_transactions, StreamClosedCaptionerPhoenix.Bits.BitsTransactions
+    has_many :bits_transactions, StreamClosedCaptionerPhoenix.Bits.BitsTransaction
     has_one :stream_setting, StreamClosedCaptionerPhoenix.Settings.StreamSettings
     has_many :transcripts, StreamClosedCaptionerPhoenix.Transcripts.Transcript
     has_many :transcript_messages, through: [:transcripts, :messages]
-    has_many :translate_languages, StreamClosedCaptionerPhoenix.Settings.TranslateLanguages
+    has_many :translate_languages, StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
 
     timestamps(inserted_at: :created_at)
   end
@@ -129,7 +129,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%StreamClosedCaptionerPhoenix.Accounts.User{encrypted_password: encrypted_password}, password)
+  def valid_password?(
+        %StreamClosedCaptionerPhoenix.Accounts.User{encrypted_password: encrypted_password},
+        password
+      )
       when is_binary(encrypted_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, encrypted_password)
   end

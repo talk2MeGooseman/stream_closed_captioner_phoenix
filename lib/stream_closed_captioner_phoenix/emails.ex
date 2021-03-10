@@ -8,15 +8,20 @@ defmodule StreamClosedCaptionerPhoenix.Emails do
     base_email()
     |> subject("Welcome!")
     |> to(email)
-    |> render("welcome.html", title: "Thank you for signing up", preheader: "Thank you for signing up to the app.")
+    |> render("welcome.html",
+      title: "Thank you for signing up",
+      preheader: "Thank you for signing up to the app."
+    )
     |> premail()
   end
 
   defp base_email do
     new_email()
     |> from(@from)
-    |> put_html_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.html"}) # Set default layout
-    |> put_text_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.text"}) # Set default text layout
+    # Set default layout
+    |> put_html_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.html"})
+    # Set default text layout
+    |> put_text_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.text"})
   end
 
   defp premail(email) do

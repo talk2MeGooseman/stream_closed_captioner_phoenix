@@ -14,7 +14,7 @@ defmodule StreamClosedCaptionerPhoenix.Repo.Migrations.CreateThesisTables do
     create table(:thesis_page_contents) do
       add :page_id, :integer
       add :name, :string, nil: false
-      add :content, :text,  default: "Edit this content area"
+      add :content, :text, default: "Edit this content area"
       add :content_type, :string, default: "html"
 
       timestamps

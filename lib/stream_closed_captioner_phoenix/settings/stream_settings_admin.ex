@@ -9,15 +9,15 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
     [asc: :id]
   end
 
-  def get_user(%{ user_id: id }) do
+  def get_user(%{user_id: id}) do
     id
-    |> Accounts.get_user!
+    |> Accounts.get_user!()
     |> Map.get(:username)
   end
 
   def index(_) do
     [
-      user_id: %{ name: "User", value: fn p -> get_user(p) end },
+      user_id: %{name: "User", value: fn p -> get_user(p) end},
       caption_delay: nil,
       cc_box_size: nil,
       filter_profanity: nil,
@@ -26,7 +26,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
       pirate_mode: nil,
       showcase: nil,
       switch_settings_position: nil,
-      text_uppercase: nil,
+      text_uppercase: nil
     ]
   end
 
@@ -41,7 +41,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
       pirate_mode: nil,
       showcase: nil,
       switch_settings_position: nil,
-      text_uppercase: nil,
+      text_uppercase: nil
     ]
   end
 end
