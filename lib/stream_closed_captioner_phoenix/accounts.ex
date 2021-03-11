@@ -73,11 +73,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       nil
 
   """
-  def get_user_by_channel_id(%{id: id} = attrs) do
+  def get_user_by_channel_id(%{id: id}) do
     User
     |> where(uid: ^id)
     |> Repo.one()
-    |> maybe_preload(attrs[:preload])
   end
 
   defp maybe_preload(query, nil), do: query
@@ -101,6 +100,25 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+  end
+
+  def find_or_register_user(attrs) do
+    # require IEx; IEx.pry
+    case get_user_by_channel_id(%{ id: attrs["id"]}) do
+      %User{} = user ->
+        User.oauth_update_changeset(user, %{
+          email: attrs["email"],
+          username: attrs["display_name"],
+          profile_image_url: attrs["profile_image_url"],
+          login: attrs["login"],
+          description: attrs["description"],
+          offline_image_url: attrs["offline_image_url"]
+        })
+        |> Repo.update()
+
+      # Create user
+      _ -> nil
+    end
   end
 
   @doc """

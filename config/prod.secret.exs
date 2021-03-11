@@ -30,6 +30,11 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
   ],
   secret_key_base: secret_key_base
 
+config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
+  client_id: System.get_env("TWITCH_CLIENT_ID"),
+  client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
+  redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

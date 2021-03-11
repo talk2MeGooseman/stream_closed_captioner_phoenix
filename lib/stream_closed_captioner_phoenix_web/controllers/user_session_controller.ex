@@ -1,5 +1,8 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
   use StreamClosedCaptionerPhoenixWeb, :controller
+  plug Ueberauth
+
+  alias Ueberauth.Strategy.Helpers
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenixWeb.UserAuth
@@ -22,5 +25,26 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
     conn
     |> put_flash(:info, "Logged out successfully.")
     |> UserAuth.log_out_user()
+  end
+
+  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
+    conn
+    |> put_flash(:error, "Failed to authenticate.")
+    |> redirect(to: "/")
+  end
+
+  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
+    %{extra: %{ raw_info: %{ user: user }}} = auth
+    [user_info] = user["data"]
+    case Accounts.find_or_register_user(user_info) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "Successfully authenticated.")
+        |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, reason)
+        |> redirect(to: "/")
+    end
   end
 end

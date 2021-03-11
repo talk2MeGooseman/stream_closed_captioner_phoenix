@@ -90,3 +90,13 @@ config :fun_with_flags, :persistence,
   ecto_table_name: "fun_with_flags_toggles"
 
 config :fun_with_flags, :cache_bust_notifications, enabled: false
+
+config :ueberauth, Ueberauth,
+  providers: [
+    identity:
+      {Ueberauth.Strategy.Identity,
+       [
+         callback_methods: ["POST"]
+       ]},
+    twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
+  ]

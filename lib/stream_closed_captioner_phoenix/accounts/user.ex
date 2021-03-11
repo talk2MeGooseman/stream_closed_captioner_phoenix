@@ -56,6 +56,20 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> validate_password(opts)
   end
 
+  def oauth_update_changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :email,
+      :username,
+      :profile_image_url,
+      :login,
+      :description,
+      :offline_image_url
+    ])
+    |> validate_email()
+    |> validate_required([:username, :login])
+  end
+
   defp validate_email(changeset) do
     changeset
     |> validate_required([:email])

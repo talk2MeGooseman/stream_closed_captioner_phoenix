@@ -1,6 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Router do
   use StreamClosedCaptionerPhoenixWeb, :router
   use Kaffy.Routes, scope: "/admin", pipe_through: [:kaffy_browser]
+  require Ueberauth
 
   import StreamClosedCaptionerPhoenixWeb.UserAuth
 
@@ -105,6 +106,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     post "/users/reset_password", UserResetPasswordController, :create
     get "/users/reset_password/:token", UserResetPasswordController, :edit
     put "/users/reset_password/:token", UserResetPasswordController, :update
+  end
+
+  scope "/auth", StreamClosedCaptionerPhoenixWeb do
+    pipe_through [:browser, :put_session_layout]
+
+    get "/:provider", UserSessionController, :request
+    get "/:provider/callback", UserSessionController, :callback
+    post "/:provider/callback", UserSessionController, :callback
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
