@@ -56,6 +56,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:fun_with_flags_ui, "~> 0.7.2"},
       {:hackney, "~> 1.9"},
       {:kaffy, "~> 0.9.0"},
+      {:secure_random, "~> 0.5.1"},
       {:sweet_xml, "~> 0.6"},
       {:guardian, "~> 2.0"},
       {:bcrypt_elixir, "~> 2.0"},

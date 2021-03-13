@@ -51,7 +51,16 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [
+      :email,
+      :password,
+      :username,
+      :profile_image_url,
+      :login,
+      :description,
+      :offline_image_url,
+      :uid
+    ])
     |> validate_email()
     |> validate_password(opts)
   end

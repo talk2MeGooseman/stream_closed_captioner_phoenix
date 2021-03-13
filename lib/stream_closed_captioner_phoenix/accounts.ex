@@ -103,8 +103,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   def find_or_register_user(attrs) do
-    # require IEx; IEx.pry
-    case get_user_by_channel_id(%{ id: attrs["id"]}) do
+    case get_user_by_channel_id(%{id: attrs["id"]}) do
       %User{} = user ->
         User.oauth_update_changeset(user, %{
           email: attrs["email"],
@@ -116,8 +115,17 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
         })
         |> Repo.update()
 
-      # Create user
-      _ -> nil
+      _ ->
+        register_user(%{
+          email: attrs["email"],
+          password: generate_secure_password(),
+          uid: attrs["id"],
+          username: attrs["display_name"],
+          profile_image_url: attrs["profile_image_url"],
+          login: attrs["login"],
+          description: attrs["description"],
+          offline_image_url: attrs["offline_image_url"]
+        })
     end
   end
 
@@ -413,5 +421,18 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def change_user_avatar(%User{} = user) do
     User.avatar_changeset(user, %{})
+  end
+
+  @doc """
+  Returns a randomly generated password.
+
+  ## Examples
+
+      iex> generate_secure_password()
+      %Ecto.Changeset{source: %User{}}
+
+  """
+  def generate_secure_password do
+    SecureRandom.base64
   end
 end
