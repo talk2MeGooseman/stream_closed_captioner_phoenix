@@ -5,8 +5,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.MessageControllerTest do
 
   setup :register_and_log_in_user
 
-  import StreamClosedCaptionerPhoenix.TranscriptsFixtures
-
   @update_attrs %{text: "some updated text"}
   @invalid_attrs %{text: nil}
 

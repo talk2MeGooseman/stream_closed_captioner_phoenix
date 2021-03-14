@@ -4,8 +4,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
 
   setup :register_and_log_in_user
 
-  alias StreamClosedCaptionerPhoenix.Bits
-
   describe "index" do
     test "lists all bits_balance_debits", %{conn: conn} do
       conn = get(conn, Routes.bits_balance_debit_path(conn, :index))

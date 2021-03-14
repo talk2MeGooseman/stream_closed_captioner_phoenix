@@ -4,8 +4,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
 
   setup :register_and_log_in_user
 
-  import StreamClosedCaptionerPhoenix.TranscriptsFixtures
-
   @update_attrs %{name: "some updated name", session: "some updated session"}
   @invalid_attrs %{name: nil, session: nil, user_id: nil}
 

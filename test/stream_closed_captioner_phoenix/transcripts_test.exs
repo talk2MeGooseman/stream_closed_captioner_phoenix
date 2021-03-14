@@ -3,8 +3,6 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
   use StreamClosedCaptionerPhoenix.DataCase
 
   alias StreamClosedCaptionerPhoenix.{Transcripts, Repo}
-  import StreamClosedCaptionerPhoenix.AccountsFixtures
-  import StreamClosedCaptionerPhoenix.TranscriptsFixtures
 
   describe "transcripts" do
     alias StreamClosedCaptionerPhoenix.Transcripts.Transcript

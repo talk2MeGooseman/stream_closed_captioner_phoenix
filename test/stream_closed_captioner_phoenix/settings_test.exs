@@ -5,9 +5,6 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
   alias StreamClosedCaptionerPhoenix.{Repo, Settings}
 
-  import StreamClosedCaptionerPhoenix.SettingsFixtures
-  import StreamClosedCaptionerPhoenix.AccountsFixtures, only: [user_fixture: 0]
-
   describe "stream_settings" do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
@@ -213,10 +210,10 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       user = insert(:user)
       attrs = params_for(:translate_language)
 
-      assert {:ok, %TranslateLanguage{} = translate_language} =
+      assert {:ok, %TranslateLanguage{}} =
                Settings.create_translate_language(user, attrs)
 
-      assert {:error, %Ecto.Changeset{} = translate_language} =
+      assert {:error, %Ecto.Changeset{}} =
                Settings.create_translate_language(user, attrs)
     end
 
