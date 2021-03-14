@@ -13,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit do
   def changeset(bits_balance_debit, attrs) do
     bits_balance_debit
     |> cast(attrs, [:user_id, :amount])
+    |> foreign_key_constraint(:user_id, name: "fk_rails_51a42188b3")
     |> validate_required([:user_id, :amount])
   end
 end

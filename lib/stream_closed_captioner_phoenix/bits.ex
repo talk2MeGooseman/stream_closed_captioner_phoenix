@@ -81,15 +81,16 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   ## Examples
 
-      iex> create_bits_balance_debit(%{field: value})
+      iex> create_bits_balance_debit(user, %{field: value})
       {:ok, %BitsBalanceDebit{}}
 
-      iex> create_bits_balance_debit(%{field: bad_value})
+      iex> create_bits_balance_debit(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_bits_balance_debit(attrs \\ %{}) do
-    %BitsBalanceDebit{}
+  def create_bits_balance_debit(user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:bits_balance_debits)
     |> BitsBalanceDebit.changeset(attrs)
     |> Repo.insert()
   end
@@ -226,15 +227,16 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   ## Examples
 
-      iex> create_bits_transaction(%{field: value})
+      iex> create_bits_transaction(user, %{field: value})
       {:ok, %BitsTransaction{}}
 
-      iex> create_bits_transaction(%{field: bad_value})
+      iex> create_bits_transaction(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_bits_transaction(attrs \\ %{}) do
-    %BitsTransaction{}
+  def create_bits_transaction(user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:bits_transactions)
     |> BitsTransaction.changeset(attrs)
     |> Repo.insert()
   end

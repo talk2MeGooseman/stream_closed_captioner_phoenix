@@ -9,6 +9,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransaction do
     field :sku, :string
     field :time, :naive_datetime
     field :transaction_id, :string
+
     belongs_to :user, StreamClosedCaptionerPhoenix.Accounts.User
   end
 

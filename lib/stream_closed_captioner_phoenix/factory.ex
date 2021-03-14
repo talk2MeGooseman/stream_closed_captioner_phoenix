@@ -32,6 +32,7 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
       purchaser_uid: "12345",
       sku: "sku500",
       transaction_id: "12d22",
+      time: ~N[2010-04-17 14:00:00],
       user: build(:user)
     }
   end
@@ -47,7 +48,7 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
   def translate_language_factory do
     %StreamClosedCaptionerPhoenix.Settings.TranslateLanguage{
       language: "en",
-      user: build(:user)
+      user: build(:user),
     }
   end
 

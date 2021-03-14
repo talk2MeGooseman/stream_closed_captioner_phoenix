@@ -2,16 +2,16 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase
 
-  alias StreamClosedCaptionerPhoenix.Bits
+  alias StreamClosedCaptionerPhoenix.{Bits, Repo}
   import StreamClosedCaptionerPhoenix.BitsFixtures
   import StreamClosedCaptionerPhoenix.AccountsFixtures
 
   describe "bits_balance_debits" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
 
-    @valid_attrs %{amount: 42, user_id: 42}
-    @update_attrs %{amount: 43, user_id: 43}
-    @invalid_attrs %{amount: nil, user_id: nil}
+    @valid_attrs %{amount: 42}
+    @update_attrs %{amount: 43}
+    @invalid_attrs %{amount: nil}
 
     def bits_balance_debit_fixture(attrs \\ %{}) do
       {:ok, bits_balance_debit} =
@@ -23,35 +23,38 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "list_bits_balance_debits/0 returns all bits_balance_debits" do
-      bits_balance_debit = bits_balance_debit_fixture()
-      assert Bits.list_bits_balance_debits() == [bits_balance_debit]
+      bits_balance_debit = insert(:bits_balance_debit)
+      assert Bits.list_bits_balance_debits() |> Repo.preload(:user) == [bits_balance_debit]
     end
 
     test "get_bits_balance_debit!/1 returns the bits_balance_debit with given id" do
-      bits_balance_debit = bits_balance_debit_fixture()
-      assert Bits.get_bits_balance_debit!(bits_balance_debit.id) == bits_balance_debit
+      bits_balance_debit = insert(:bits_balance_debit)
+      assert Bits.get_bits_balance_debit!(bits_balance_debit.id) |> Repo.preload(:user) == bits_balance_debit
     end
 
     test "create_bits_balance_debit/1 with valid data creates a bits_balance_debit" do
+      user = insert(:user)
       assert {:ok, %BitsBalanceDebit{} = bits_balance_debit} =
-               Bits.create_bits_balance_debit(@valid_attrs)
+               Bits.create_bits_balance_debit(user, @valid_attrs)
 
-      assert bits_balance_debit.amount == 42
-      assert bits_balance_debit.user_id == 42
+      assert bits_balance_debit.amount == @valid_attrs.amount
+      assert bits_balance_debit.user_id == user.id
     end
 
     test "create_bits_balance_debit/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance_debit(@invalid_attrs)
+      user = insert(:user)
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance_debit(user, @invalid_attrs)
     end
 
     test "get_user_active_debit/1 return a record a debit has occurred in the past 24 hours" do
-      bits_balance_debit = bits_balance_debit_fixture()
-
+      bits_balance_debit = insert(:bits_balance_debit)
       assert Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
 
     test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
-      refute Bits.get_user_active_debit(2)
+      created_at = Timex.today |> Timex.shift(days: -3) |> Timex.to_naive_datetime()
+      bits_balance_debit = insert(:bits_balance_debit, created_at: created_at)
+      refute Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
   end
 
@@ -126,41 +129,22 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       sku: "some sku",
       time: ~N[2010-04-17 14:00:00],
       transaction_id: "some transaction_id",
-      user_id: 42
     }
 
-    # @update_attrs %{
-    #   amount: 43,
-    #   display_name: "some updated display_name",
-    #   purchaser_uid: "some updated purchaser_uid",
-    #   sku: "some updated sku",
-    #   time: ~N[2011-05-18 15:01:01],
-    #   transaction_id: "some updated transaction_id",
-    #   user_id: 43
-    # }
-    # @invalid_attrs %{
-    #   amount: nil,
-    #   display_name: nil,
-    #   purchaser_uid: nil,
-    #   sku: nil,
-    #   time: nil,
-    #   transaction_id: nil,
-    #   user_id: nil
-    # }
-
     test "list_bits_transactions/0 returns all bits_transactions" do
-      bits_transaction = bits_transaction_fixture()
-      assert Bits.list_bits_transactions() == [bits_transaction]
+      bits_transaction = insert(:bits_transaction)
+      assert Bits.list_bits_transactions() |> Repo.preload(:user) == [bits_transaction]
     end
 
     test "get_bits_transaction!/1 returns the bits_transaction with given id" do
-      bits_transaction = bits_transaction_fixture()
-      assert Bits.get_bits_transaction!(bits_transaction.id) == bits_transaction
+      bits_transaction = insert(:bits_transaction)
+      assert Bits.get_bits_transaction!(bits_transaction.id) |> Repo.preload(:user) == bits_transaction
     end
 
     test "create_bits_transaction/1 with valid data creates a bits_transaction" do
+      user = insert(:user)
       assert {:ok, %BitsTransaction{} = bits_transaction} =
-               Bits.create_bits_transaction(@valid_attrs)
+               Bits.create_bits_transaction(user, @valid_attrs)
 
       assert bits_transaction.amount == 42
       assert bits_transaction.display_name == "some display_name"
@@ -168,21 +152,22 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert bits_transaction.sku == "some sku"
       assert bits_transaction.time == ~N[2010-04-17 14:00:00]
       assert bits_transaction.transaction_id == "some transaction_id"
-      assert bits_transaction.user_id == 42
+      assert bits_transaction.user_id == user.id
     end
 
     test "create_bits_transaction/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(@invalid_attrs)
+      user = insert(:user)
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(user, @invalid_attrs)
     end
 
-    test "create_bits_transaction/1 with doesnt allow the same transction to be saved more than once" do
-      assert {:ok, %BitsTransaction{}} = Bits.create_bits_transaction(@valid_attrs)
-
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(@valid_attrs)
+    test "create_bits_transaction/1 doesnt allow the same transction to be saved more than once" do
+      user = insert(:user)
+      assert {:ok, %BitsTransaction{}} = Bits.create_bits_transaction(user, @valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_transaction(user, @valid_attrs)
     end
 
     test "delete_bits_transaction/1 deletes the bits_transaction" do
-      bits_transaction = bits_transaction_fixture()
+      bits_transaction = insert(:bits_transaction)
       assert {:ok, %BitsTransaction{}} = Bits.delete_bits_transaction(bits_transaction)
 
       assert_raise Ecto.NoResultsError, fn ->
@@ -191,7 +176,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "change_bits_transaction1 returns a bits_transaction changeset" do
-      bits_transaction = bits_transaction_fixture()
+      bits_transaction = insert(:bits_transaction)
       assert %Ecto.Changeset{} = Bits.change_bits_transaction(bits_transaction)
     end
   end
