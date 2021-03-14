@@ -39,11 +39,12 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
   def stream_settings_factory do
     %StreamClosedCaptionerPhoenix.Settings.StreamSettings{
       caption_delay: 0,
-      user: build(:user)
+      user: build(:user),
+      language: "en-US"
     }
   end
 
-  def translate_lanuage_factory do
+  def translate_language_factory do
     %StreamClosedCaptionerPhoenix.Settings.TranslateLanguage{
       language: "en",
       user: build(:user)

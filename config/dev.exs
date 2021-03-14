@@ -7,7 +7,11 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   database: "stream-cc-development",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+  # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+  # !!! From now on, migrations should only be done from Ecto !!!
+  migration_source: "ecto_schema_migrations"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

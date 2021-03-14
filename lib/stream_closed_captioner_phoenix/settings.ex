@@ -136,15 +136,16 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
   ## Examples
 
-      iex> create_stream_settings(%{field: value})
+      iex> create_stream_settings(user, %{field: value})
       {:ok, %StreamSettings{}}
 
-      iex> create_stream_settings(%{field: bad_value})
+      iex> create_stream_settings(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_stream_settings(attrs \\ %{}) do
-    %StreamSettings{}
+  def create_stream_settings(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:stream_settings)
     |> StreamSettings.changeset(attrs)
     |> Repo.insert()
   end
@@ -254,9 +255,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def get_translate_languages_by_user(user_id),
     do: TranslateLanguage |> where(user_id: ^user_id) |> Repo.all()
 
-  @spec get_formatted_translate_languages_by_user(any) :: map
   def get_formatted_translate_languages_by_user(%User{} = user) do
-    user.translate_languages
+    get_translate_languages_by_user(user.id)
     |> Enum.map(fn tl -> tl.language end)
     |> filter_languages
   end
@@ -275,15 +275,16 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
   ## Examples
 
-      iex> create_translate_language(%{field: value})
+      iex> create_translate_language(user, %{field: value})
       {:ok, %TranslateLanguage{}}
 
-      iex> create_translate_language(%{field: bad_value})
+      iex> create_translate_language(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_translate_language(attrs \\ %{}) do
-    %TranslateLanguage{}
+  def create_translate_language(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:translate_languages)
     |> TranslateLanguage.changeset(attrs)
     |> Repo.insert()
   end

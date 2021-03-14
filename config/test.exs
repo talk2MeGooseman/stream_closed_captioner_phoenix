@@ -10,7 +10,11 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   password: "postgres",
   database: "stream_closed_captioner_phoenix_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+  # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+  # !!! From now on, migrations should only be done from Ecto !!!
+  migration_source: "ecto_schema_migrations"
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

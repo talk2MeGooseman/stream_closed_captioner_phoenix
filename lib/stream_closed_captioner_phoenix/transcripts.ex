@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
   alias StreamClosedCaptionerPhoenix.Repo
 
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.Transcripts.{Transcript, Message}
+  alias StreamClosedCaptionerPhoenix.Transcripts.{Message, Transcript}
 
   @doc """
   Returns the list of transcripts by user_id.
