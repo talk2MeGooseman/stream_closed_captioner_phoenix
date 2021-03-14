@@ -1,18 +1,10 @@
 defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
+  import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
   setup :register_and_log_in_user
 
   alias StreamClosedCaptionerPhoenix.Bits
-
-  # @update_attrs %{amount: 43, user_id: 43}
-  # @invalid_attrs %{amount: nil, user_id: nil}
-
-  def fixture(:bits_balance_debit, user) do
-    attrs = %{amount: 42, user_id: user.id}
-    {:ok, bits_balance_debit} = Bits.create_bits_balance_debit(attrs)
-    bits_balance_debit
-  end
 
   describe "index" do
     test "lists all bits_balance_debits", %{conn: conn} do
@@ -34,7 +26,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
   end
 
   defp create_bits_balance_debit(%{user: user}) do
-    bits_balance_debit = fixture(:bits_balance_debit, user)
+    bits_balance_debit = insert(:bits_balance_debit, user: user)
     %{bits_balance_debit: bits_balance_debit}
   end
 end
