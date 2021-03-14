@@ -230,6 +230,15 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schema_migrations (
+    version character varying NOT NULL
+);
+
+
+--
 -- Name: stream_settings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -514,6 +523,14 @@ ALTER TABLE ONLY public.messages
 
 
 --
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
 -- Name: stream_settings stream_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -630,6 +647,13 @@ CREATE INDEX index_translate_languages_on_user_id ON public.translate_languages 
 
 
 --
+-- Name: index_translate_languages_on_user_id_and_language; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_translate_languages_on_user_id_and_language ON public.translate_languages USING btree (user_id, language);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -655,7 +679,15 @@ CREATE UNIQUE INDEX index_users_on_uid ON public.users USING btree (uid);
 --
 
 ALTER TABLE ONLY public.bits_balances
-    ADD CONSTRAINT fk_rails_1a2fa97ecf FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_1a2fa97ecf FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: bits_balance_debits fk_rails_51a42188b3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bits_balance_debits
+    ADD CONSTRAINT fk_rails_51a42188b3 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -663,7 +695,7 @@ ALTER TABLE ONLY public.bits_balances
 --
 
 ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT fk_rails_832df11d70 FOREIGN KEY (transcript_id) REFERENCES public.transcripts(id);
+    ADD CONSTRAINT fk_rails_832df11d70 FOREIGN KEY (transcript_id) REFERENCES public.transcripts(id) ON DELETE CASCADE;
 
 
 --
@@ -671,7 +703,7 @@ ALTER TABLE ONLY public.messages
 --
 
 ALTER TABLE ONLY public.stream_settings
-    ADD CONSTRAINT fk_rails_cd3c3eab8f FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_cd3c3eab8f FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -679,7 +711,7 @@ ALTER TABLE ONLY public.stream_settings
 --
 
 ALTER TABLE ONLY public.transcripts
-    ADD CONSTRAINT fk_rails_d177bec369 FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_d177bec369 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -687,7 +719,15 @@ ALTER TABLE ONLY public.transcripts
 --
 
 ALTER TABLE ONLY public.translate_languages
-    ADD CONSTRAINT fk_rails_e519515539 FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk_rails_e519515539 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: bits_transactions fk_rails_efed94c0a9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bits_transactions
+    ADD CONSTRAINT fk_rails_efed94c0a9 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -695,4 +735,37 @@ ALTER TABLE ONLY public.translate_languages
 --
 
 SET search_path TO "$user", public;
+
+INSERT INTO "schema_migrations" (version) VALUES
+('20181215042500'),
+('20181215044817'),
+('20181215061611'),
+('20190126225152'),
+('20190228043541'),
+('20190228044701'),
+('20190302043547'),
+('20190305024912'),
+('20190305033528'),
+('20190319032506'),
+('20190328033704'),
+('20190423024351'),
+('20190430021443'),
+('20190619042102'),
+('20190710024750'),
+('20190710042405'),
+('20190814215545'),
+('20190815172152'),
+('20190816230605'),
+('20190822211136'),
+('20190920022535'),
+('20191101044623'),
+('20200601062940'),
+('20200625034824'),
+('20200625040815'),
+('20200724071915'),
+('20201220214745'),
+('20210313175937'),
+('20210313184049'),
+('20210313184403');
+
 
