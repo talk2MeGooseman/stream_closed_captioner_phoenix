@@ -14,6 +14,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguage do
     translate_language
     |> cast(attrs, [:user_id, :language])
     |> foreign_key_constraint(:user_id, name: "fk_rails_e519515539")
+    |> unique_constraint([:language, :user_id], name: "index_translate_languages_on_user_id_and_language")
     |> validate_required([:user_id, :language])
     |> validate_inclusion(:language, StreamClosedCaptionerPhoenix.Settings.valid_language_codes())
   end
@@ -23,5 +24,6 @@ defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguage do
     translate_language
     |> cast(attrs, [:language])
     |> validate_required([:language])
+    |> unique_constraint([:language, :user_id], name: "index_translate_languages_on_user_id_and_language")
   end
 end

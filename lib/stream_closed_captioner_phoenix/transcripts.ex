@@ -6,6 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
 
+  alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Transcripts.{Transcript, Message}
 
   @doc """
@@ -72,15 +73,16 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
 
   ## Examples
 
-      iex> create_transcript(%{field: value})
+      iex> create_transcript(user, %{field: value})
       {:ok, %Transcript{}}
 
-      iex> create_transcript(%{field: bad_value})
+      iex> create_transcript(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_transcript(attrs \\ %{}) do
-    %Transcript{}
+  def create_transcript(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:transcripts)
     |> Transcript.changeset(attrs)
     |> Repo.insert()
   end
@@ -168,16 +170,16 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
 
   ## Examples
 
-      iex> get_users_message!(123)
+      iex> get_users_message!(transcript, 123)
       %Message{}
 
-      iex> get_users_message!(456)
+      iex> get_users_message!(transcript, 456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_transcripts_message!(%{id: transcript_id}, id) do
+  def get_transcripts_message!(%Transcript{} = transcript, id) do
     Message
-    |> where(transcript_id: ^transcript_id)
+    |> where(transcript_id: ^transcript.id)
     |> where(id: ^id)
     |> Repo.one!()
   end
@@ -187,15 +189,16 @@ defmodule StreamClosedCaptionerPhoenix.Transcripts do
 
   ## Examples
 
-      iex> create_message(%{field: value})
+      iex> create_message(transcript, %{field: value})
       {:ok, %Message{}}
 
-      iex> create_message(%{field: bad_value})
+      iex> create_message(transcript, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_message(attrs \\ %{}) do
-    %Message{}
+  def create_message(%Transcript{} = transcript, attrs \\ %{}) do
+    transcript
+    |> Ecto.build_assoc(:messages)
     |> Message.changeset(attrs)
     |> Repo.insert()
   end

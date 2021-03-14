@@ -4,8 +4,9 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
   def user_factory do
     %StreamClosedCaptionerPhoenix.Accounts.User{
       email: sequence(:email, &"email-#{&1}@example.com"),
-      password: "hello world!",
-      uid: "12345",
+      encrypted_password: "hello world!",
+      sign_in_count: 0,
+      uid: sequence(:uid, &"12345#{&1}"),
       username: "talk2megooseman",
       login: "talk2megooseman"
     }
@@ -59,7 +60,8 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
   def transcript_factory do
     %StreamClosedCaptionerPhoenix.Transcripts.Transcript{
       name: "Some Date",
-      session: "12345c"
+      session: sequence(:session, &"abc#{&1}"),
+      user: build(:user)
     }
   end
 

@@ -61,6 +61,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
       :offline_image_url,
       :uid
     ])
+    |> unique_constraint(:uid, name: "index_users_on_uid")
     |> validate_email()
     |> validate_password(opts)
   end
