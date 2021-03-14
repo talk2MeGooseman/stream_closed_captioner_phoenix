@@ -1,4 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
+  import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
   setup :register_and_log_in_user
@@ -9,7 +10,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
   @invalid_attrs %{name: nil, session: nil, user_id: nil}
 
   def fixture(:transcript, user) do
-    transcript_fixture(%{user_id: user.id})
+    insert(:transcript, user: user)
   end
 
   describe "index" do
@@ -51,7 +52,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
     test "renders errors when try to update a transcript that doesnt belong to the user", %{
       conn: conn
     } do
-      new_transcript = transcript_fixture()
+      new_transcript = insert(:transcript)
 
       assert_raise Ecto.NoResultsError, fn ->
         put(conn, Routes.transcript_path(conn, :update, new_transcript),

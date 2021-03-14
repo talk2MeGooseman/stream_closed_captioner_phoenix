@@ -1,4 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.MessageControllerTest do
+  import StreamClosedCaptionerPhoenix.Factory
+
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
   setup :register_and_log_in_user
@@ -9,8 +11,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.MessageControllerTest do
   @invalid_attrs %{text: nil}
 
   def fixture(:message, user) do
-    transcript = transcript_fixture(%{user_id: user.id})
-    message_fixture(%{text: "Create Text", transcript_id: transcript.id})
+    transcript = insert(:transcript, user: user)
+    insert(:message, transcript: transcript)
   end
 
   describe "edit message" do
