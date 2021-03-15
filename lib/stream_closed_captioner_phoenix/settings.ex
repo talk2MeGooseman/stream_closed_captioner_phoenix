@@ -146,7 +146,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def create_stream_settings(%User{} = user, attrs \\ %{}) do
     user
     |> Ecto.build_assoc(:stream_settings)
-    |> StreamSettings.changeset(attrs)
+    |> StreamSettings.create_changeset(attrs)
     |> Repo.insert()
   end
 

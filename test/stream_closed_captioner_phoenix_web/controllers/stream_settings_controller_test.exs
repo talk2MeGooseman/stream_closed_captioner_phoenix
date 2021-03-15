@@ -16,7 +16,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
     showcase: false,
     switch_settings_position: false,
     text_uppercase: false,
-    user_id: 43
   }
   @invalid_attrs %{
     caption_delay: nil,
@@ -28,7 +27,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
     showcase: nil,
     switch_settings_position: nil,
     text_uppercase: nil,
-    user_id: nil
   }
 
   def fixture(:stream_settings, user) do

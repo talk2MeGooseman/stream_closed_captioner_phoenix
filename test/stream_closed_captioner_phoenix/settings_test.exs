@@ -46,11 +46,9 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     test "create_stream_settings/1 with valid data creates a stream_settings" do
       user = insert(:user)
       attrs = params_for(:stream_settings, %{
-        caption_delay: 42,
         cc_box_size: true,
         filter_profanity: true,
         hide_text_on_load: true,
-        language: "some language",
         pirate_mode: true,
         showcase: true,
         switch_settings_position: true,
@@ -59,11 +57,11 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
       assert {:ok, %StreamSettings{} = stream_settings} = Settings.create_stream_settings(user, attrs)
 
-      assert stream_settings.caption_delay == 42
+      assert stream_settings.caption_delay == 0
       assert stream_settings.cc_box_size == true
       assert stream_settings.filter_profanity == true
       assert stream_settings.hide_text_on_load == true
-      assert stream_settings.language == "some language"
+      assert stream_settings.language == "en-US"
       assert stream_settings.pirate_mode == true
       assert stream_settings.showcase == true
       assert stream_settings.switch_settings_position == true
