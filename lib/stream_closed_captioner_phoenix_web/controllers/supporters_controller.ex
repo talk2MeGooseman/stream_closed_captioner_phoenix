@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    {:ok, %{ "data" => data }} = StreamClosedCaptionerPhoenix.GoosemanApp.fetch_supporters()
+    render(conn, "index.html", data: data)
   end
 end

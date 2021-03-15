@@ -1,1 +1,24 @@
 Supporters Page
+
+<h2>Twitch Subs</h2>
+<%= for subscriber <- get_in(@data, ["helix", "me", "subscribers"]) do %>
+  <div>
+    <%= subscriber["tier"] %>
+    <%= subscriber["user"]["displayName"] %>
+    <%= subscriber["user"]["id"] %>
+    <%= subscriber["user"]["profilePictureUrl"] %>
+    <%= subscriber["user"]["description"] %>
+  </div>
+<% end %>
+
+<h2>Patrons</h2>
+<%= for patrons <- get_in(@data, ["patreon", "patrons"]) do %>
+  <div>
+    <%= patrons["patronStatus"] %>
+    <%= patrons["currentlyEntitledAmountCents"] %>
+    <%= patrons["lifeTimeSupporterCents"] %>
+    <%= patrons["user"]["fullName"] %>
+    <%= patrons["user"]["imageUrl"] %>
+    <%= patrons["user"]["about"] %>
+  </div>
+<% end %>

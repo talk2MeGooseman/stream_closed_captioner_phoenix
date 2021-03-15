@@ -35,13 +35,11 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Absinthe for GraphQL
       {:absinthe, "~> 1.5.0"},
       {:absinthe_plug, "~> 1.5.0"},
-
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.0.0"},
-
       # Waffle for file upload
       {:waffle, "~> 1.1.1"},
       {:waffle_ecto, "~> 0.0.9"},
@@ -64,6 +62,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phx_gen_auth, "~> 0.6", only: [:dev], runtime: false},
       {:sobelow, "~> 0.8", only: :dev},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:neuron, "~> 5.0"},
       {:phoenix, "~> 1.5.7"},
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
