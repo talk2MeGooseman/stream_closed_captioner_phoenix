@@ -105,7 +105,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def find_or_register_user(attrs) do
     case get_user_by_channel_id(%{id: attrs["id"]}) do
       %User{} = user ->
-        User.oauth_update_changeset(user, %{
+        {:ok, updated_user} = User.oauth_update_changeset(user, %{
           email: attrs["email"],
           username: attrs["display_name"],
           profile_image_url: attrs["profile_image_url"],
@@ -115,17 +115,25 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
         })
         |> Repo.update()
 
+        { :ok, %{ user: updated_user} }
       _ ->
-        register_user(%{
-          email: attrs["email"],
-          password: generate_secure_password(),
-          uid: attrs["id"],
-          username: attrs["display_name"],
-          profile_image_url: attrs["profile_image_url"],
-          login: attrs["login"],
-          description: attrs["description"],
-          offline_image_url: attrs["offline_image_url"]
-        })
+        Ecto.Multi.new()
+        |> Ecto.Multi.run(:user, fn _repo, _changes ->
+          register_user(%{
+            email: attrs["email"],
+            password: generate_secure_password(),
+            uid: attrs["id"],
+            username: attrs["display_name"],
+            profile_image_url: attrs["profile_image_url"],
+            login: attrs["login"],
+            description: attrs["description"],
+            offline_image_url: attrs["offline_image_url"]
+          })
+        end)
+        |> Ecto.Multi.run(:stream_setings, fn _repo, %{user: user} ->
+          StreamClosedCaptionerPhoenix.Settings.create_stream_settings(user)
+        end)
+        |> Repo.transaction()
     end
   end
 
@@ -433,6 +441,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def generate_secure_password do
-    SecureRandom.base64
+    SecureRandom.base64()
   end
 end

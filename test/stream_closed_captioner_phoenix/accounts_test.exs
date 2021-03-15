@@ -23,6 +23,47 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
   end
 
+  describe "find_or_register_user/1" do
+    test "creates a user and stream setting if none exist" do
+      attrs = %{
+        "id" => "12345",
+        "email" => "test@email.com",
+        "display_name" => "talk2megooseman",
+        "login" => "talk2megooseman",
+        "profile_image_url" => "https://image.com",
+        "description" => "hello world",
+        "offline_image_url" => "https://image.com"
+      }
+
+      {:ok, data} = Accounts.find_or_register_user(attrs)
+
+      assert data.user.email == attrs["email"]
+      assert data.user.uid == attrs["id"]
+
+      assert StreamClosedCaptionerPhoenix.Settings.get_stream_settings_by_user_id!(data.user.id)
+    end
+
+    test "finds a user with matching information" do
+      attrs = %{
+        "id" => "12345",
+        "email" => "test@email.com",
+        "display_name" => "newusername",
+        "login" => "newusername",
+        "profile_image_url" => "https://image.com",
+        "description" => "hello world",
+        "offline_image_url" => "https://image.com"
+      }
+      insert(:user, uid: attrs["id"] )
+
+      {:ok, data} = Accounts.find_or_register_user(attrs)
+
+      assert data.user.uid == attrs["id"]
+      refute data.user.email == attrs["email"]
+      assert data.user.username == attrs["display_name"]
+      assert data.user.description == attrs["description"]
+    end
+  end
+
   describe "get_user_by_email_and_password/2" do
     test "does not return the user if the email does not exist" do
       refute Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")

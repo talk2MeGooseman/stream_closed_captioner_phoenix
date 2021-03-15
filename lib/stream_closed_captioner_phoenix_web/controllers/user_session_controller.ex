@@ -37,7 +37,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
     %{extra: %{ raw_info: %{ user: user }}} = auth
     [user_info] = user["data"]
     case Accounts.find_or_register_user(user_info) do
-      {:ok, user} ->
+      {:ok, %{user: user}} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
         |> UserAuth.log_in_user(user, %{"remember_me" => "true"})

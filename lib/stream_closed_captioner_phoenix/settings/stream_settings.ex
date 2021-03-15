@@ -32,6 +32,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :pirate_mode,
       :caption_delay
     ])
+    |> put_change(:language, "en-US")
+    |> put_change(:caption_delay, 0)
     |> foreign_key_constraint(:user_id, name: "fk_rails_cd3c3eab8f")
     |> unique_constraint(:user_id, name: "index_stream_settings_on_user_id")
     |> validate_required([
