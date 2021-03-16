@@ -59,7 +59,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
       :login,
       :description,
       :offline_image_url,
-      :uid
+      :uid,
+      :provider
     ])
     |> unique_constraint(:uid, name: "index_users_on_uid")
     |> validate_email()
@@ -73,9 +74,23 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
       :profile_image_url,
       :login,
       :description,
-      :offline_image_url
+      :offline_image_url,
+      :provider,
+      :uid
     ])
     |> validate_required([:username, :login])
+  end
+
+  def remove_provider(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, [])
+    |> change(provider: nil)
+    |> change(uid: nil)
+    |> change(username: nil)
+    |> change(profile_image_url: nil)
+    |> change(login: nil)
+    |> change(description: nil)
+    |> change(offline_image_url: nil)
   end
 
   defp validate_email(changeset) do
@@ -175,9 +190,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     end
   end
 
-  def avatar_changeset(user, attrs) do
+  def provider_changeset(user, attrs) do
     user
-    |> cast(attrs, [])
-    |> cast_attachments(attrs, [:avatar])
+    |> cast(attrs, [:provider])
   end
 end

@@ -50,6 +50,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "remove_provider"} = params) do
+    user = conn.assigns.current_user
+    case Accounts.remove_user_provider(user) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Twitch connection successfully removed.")
+        |> redirect(to: Routes.user_settings_path(conn, :edit))
+
+      {:error, changeset} ->
+        render(conn, "edit.html", password_changeset: changeset)
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_user, token) do
       :ok ->
@@ -70,6 +83,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
+    |> assign(:provider_changeset, Accounts.change_user_provider(user))
     |> assign(:user, user)
   end
 end

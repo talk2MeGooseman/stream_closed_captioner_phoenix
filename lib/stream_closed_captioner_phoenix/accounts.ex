@@ -60,29 +60,25 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
-  Gets a user by their channel id aka uid
+  Gets a user by their provider and uid
 
   Return nil fo user doesnt exist
 
   ## Examples
 
-      iex> get_user_by_channel_id(123)
+      iex> get_user_by_channel_id("twitch", 123)
       %User{}
 
-      iex> get_user_by_channel_id(457)
+      iex> get_user_by_channel_id("twitch", 457)
       nil
 
   """
-  def get_user_by_channel_id(%{id: id}) do
+  def get_user_for_provider(provider, uid) do
     User
-    |> where(uid: ^id)
+    |> where(uid: ^uid)
+    |> where(provider: ^provider)
     |> Repo.one()
   end
-
-  defp maybe_preload(query, nil), do: query
-  defp maybe_preload(query, preload), do: Repo.preload(query, preload)
-
-  ## User registration
 
   @doc """
   Registers a user.
@@ -102,38 +98,51 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Repo.insert()
   end
 
-  def find_or_register_user(attrs) do
-    case get_user_by_channel_id(%{id: attrs["id"]}) do
+  def find_or_register_user_with_oauth(attrs, current_user) when is_nil(current_user) do
+    case get_user_for_provider("twitch", attrs["id"]) do
       %User{} = user ->
-        {:ok, updated_user} = User.oauth_update_changeset(user, %{
-          email: attrs["email"],
-          username: attrs["display_name"],
-          profile_image_url: attrs["profile_image_url"],
-          login: attrs["login"],
-          description: attrs["description"],
-          offline_image_url: attrs["offline_image_url"]
-        })
-        |> Repo.update()
-
-        { :ok, %{ user: updated_user} }
-      _ ->
-        Ecto.Multi.new()
-        |> Ecto.Multi.run(:user, fn _repo, _changes ->
-          register_user(%{
+        {:ok, updated_user} =
+          User.oauth_update_changeset(user, %{
             email: attrs["email"],
-            password: generate_secure_password(),
-            uid: attrs["id"],
             username: attrs["display_name"],
             profile_image_url: attrs["profile_image_url"],
             login: attrs["login"],
             description: attrs["description"],
             offline_image_url: attrs["offline_image_url"]
           })
-        end)
-        |> Ecto.Multi.run(:stream_setings, fn _repo, %{user: user} ->
-          StreamClosedCaptionerPhoenix.Settings.create_stream_settings(user)
-        end)
-        |> Repo.transaction()
+          |> Repo.update()
+
+        {:ok, %{user: updated_user}}
+
+      _ ->
+        case get_user_by_email(attrs["email"]) do
+          %User{} ->
+            {:error,
+             "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}
+
+          _ ->
+            register_oauth_user(attrs)
+        end
+    end
+  end
+
+  def find_or_register_user_with_oauth(attrs, current_user) do
+    case get_user_for_provider("twitch", attrs["id"]) do
+      %User{} = user when user.id != current_user.id ->
+        {:error, "we got issues"}
+
+      _ ->
+        User.oauth_update_changeset(current_user, %{
+          email: attrs["email"],
+          provider: "twitch",
+          username: attrs["display_name"],
+          profile_image_url: attrs["profile_image_url"],
+          login: attrs["login"],
+          description: attrs["description"],
+          offline_image_url: attrs["offline_image_url"],
+          uid: attrs["id"]
+        })
+        |> Repo.update()
     end
   end
 
@@ -166,6 +175,19 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user's provider.
+
+  ## Examples
+
+      iex> change_user_provider(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_provider(user, attrs \\ %{}) do
+    User.provider_changeset(user, attrs)
+  end
+
+  @doc """
   Emulates that the email will change without actually changing
   it in the database.
 
@@ -183,6 +205,24 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> User.email_changeset(attrs)
     |> User.validate_current_password(password)
     |> Ecto.Changeset.apply_action(:update)
+  end
+
+  @doc """
+  Remove the provider information for a given user.
+
+  ## Examples
+
+      iex> remove_user_provider(user)
+      {:ok, %User{}}
+
+      iex> remove_user_provider(user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def remove_user_provider(user) do
+    user
+    |> User.remove_provider(%{})
+    |> Repo.update()
   end
 
   @doc """
@@ -442,5 +482,26 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def generate_secure_password do
     SecureRandom.base64()
+  end
+
+  defp register_oauth_user(attrs \\ %{}) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user, fn _repo, _changes ->
+      register_user(%{
+        email: attrs["email"],
+        password: generate_secure_password(),
+        uid: attrs["id"],
+        username: attrs["display_name"],
+        profile_image_url: attrs["profile_image_url"],
+        login: attrs["login"],
+        description: attrs["description"],
+        offline_image_url: attrs["offline_image_url"],
+        provider: "twitch"
+      })
+    end)
+    |> Ecto.Multi.run(:stream_setings, fn _repo, %{user: user} ->
+      StreamClosedCaptionerPhoenix.Settings.create_stream_settings(user)
+    end)
+    |> Repo.transaction()
   end
 end

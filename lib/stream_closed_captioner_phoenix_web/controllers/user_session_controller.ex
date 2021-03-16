@@ -34,10 +34,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
+    current_user = conn.assigns.current_user
     %{extra: %{ raw_info: %{ user: user }}} = auth
     [user_info] = user["data"]
-    case Accounts.find_or_register_user(user_info) do
+    case Accounts.find_or_register_user_with_oauth(user_info, current_user) do
       {:ok, %{user: user}} ->
+        conn
+        |> put_flash(:info, "Successfully authenticated.")
+        |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
+      {:ok, %Accounts.User{} = user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
         |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
