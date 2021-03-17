@@ -5,6 +5,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
   alias Ueberauth.Strategy.Helpers
 
   alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenix.AccountsOauth
   alias StreamClosedCaptionerPhoenixWeb.UserAuth
 
   def new(conn, _params) do
@@ -37,7 +38,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
     current_user = conn.assigns.current_user
     %{extra: %{ raw_info: %{ user: user }}} = auth
     [user_info] = user["data"]
-    case Accounts.find_or_register_user_with_oauth(user_info, current_user) do
+
+    case AccountsOauth.find_or_register_user_with_oauth(user_info, current_user) do
       {:ok, %{user: user}} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")

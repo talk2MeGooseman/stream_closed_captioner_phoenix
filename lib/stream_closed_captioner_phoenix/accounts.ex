@@ -60,27 +60,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
-  Gets a user by their provider and uid
-
-  Return nil fo user doesnt exist
-
-  ## Examples
-
-      iex> get_user_by_channel_id("twitch", 123)
-      %User{}
-
-      iex> get_user_by_channel_id("twitch", 457)
-      nil
-
-  """
-  def get_user_for_provider(provider, uid) do
-    User
-    |> where(uid: ^uid)
-    |> where(provider: ^provider)
-    |> Repo.one()
-  end
-
-  @doc """
   Registers a user.
 
   ## Examples
@@ -96,54 +75,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
-  end
-
-  def find_or_register_user_with_oauth(attrs, current_user) when is_nil(current_user) do
-    case get_user_for_provider("twitch", attrs["id"]) do
-      %User{} = user ->
-        {:ok, updated_user} =
-          User.oauth_update_changeset(user, %{
-            email: attrs["email"],
-            username: attrs["display_name"],
-            profile_image_url: attrs["profile_image_url"],
-            login: attrs["login"],
-            description: attrs["description"],
-            offline_image_url: attrs["offline_image_url"]
-          })
-          |> Repo.update()
-
-        {:ok, %{user: updated_user}}
-
-      _ ->
-        case get_user_by_email(attrs["email"]) do
-          %User{} ->
-            {:error,
-             "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}
-
-          _ ->
-            register_oauth_user(attrs)
-        end
-    end
-  end
-
-  def find_or_register_user_with_oauth(attrs, current_user) do
-    case get_user_for_provider("twitch", attrs["id"]) do
-      %User{} = user when user.id != current_user.id ->
-        {:error, "we got issues"}
-
-      _ ->
-        User.oauth_update_changeset(current_user, %{
-          email: attrs["email"],
-          provider: "twitch",
-          username: attrs["display_name"],
-          profile_image_url: attrs["profile_image_url"],
-          login: attrs["login"],
-          description: attrs["description"],
-          offline_image_url: attrs["offline_image_url"],
-          uid: attrs["id"]
-        })
-        |> Repo.update()
-    end
   end
 
   @doc """
@@ -219,7 +150,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def remove_user_provider(user) do
+  def remove_user_provider(%User{} = user) do
     user
     |> User.remove_provider(%{})
     |> Repo.update()
@@ -441,37 +372,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   @doc """
-  Updates a post.
-
-  ## Examples
-
-      iex> update_user_avatar(user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user_avatar(user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_user_avatar(%User{} = user, attrs) do
-    user
-    |> User.avatar_changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user_avatar(user)
-      %Ecto.Changeset{source: %User{}}
-
-  """
-  def change_user_avatar(%User{} = user) do
-    User.avatar_changeset(user, %{})
-  end
-
-  @doc """
   Returns a randomly generated password.
 
   ## Examples
@@ -482,26 +382,5 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def generate_secure_password do
     SecureRandom.base64()
-  end
-
-  defp register_oauth_user(attrs \\ %{}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.run(:user, fn _repo, _changes ->
-      register_user(%{
-        email: attrs["email"],
-        password: generate_secure_password(),
-        uid: attrs["id"],
-        username: attrs["display_name"],
-        profile_image_url: attrs["profile_image_url"],
-        login: attrs["login"],
-        description: attrs["description"],
-        offline_image_url: attrs["offline_image_url"],
-        provider: "twitch"
-      })
-    end)
-    |> Ecto.Multi.run(:stream_setings, fn _repo, %{user: user} ->
-      StreamClosedCaptionerPhoenix.Settings.create_stream_settings(user)
-    end)
-    |> Repo.transaction()
   end
 end
