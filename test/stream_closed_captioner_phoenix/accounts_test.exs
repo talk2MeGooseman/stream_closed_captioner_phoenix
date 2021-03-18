@@ -106,6 +106,18 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
   end
 
+  describe "delete_user/1" do
+    test "deletes the provided user" do
+      user = insert(:user)
+
+      assert {:ok, _} = Accounts.delete_user(user)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Accounts.get_user!(user.id)
+      end
+    end
+  end
+
   describe "change_user_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_registration(%User{})

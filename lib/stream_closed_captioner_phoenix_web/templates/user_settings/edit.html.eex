@@ -82,6 +82,9 @@
           <%= link "Connect your Twitch Account", to: "/auth/twitch", class: "btn btn-sm btn-link" %>
           <% end %>
         </section>
+        <section>
+          <%= link "Click here to delete account", to: Routes.user_registration_path(@conn, :delete), method: :delete, data: [confirm: "Are you sure you want to delete your account?"] %>
+        </section>
       </div>
     </div>
   </div>

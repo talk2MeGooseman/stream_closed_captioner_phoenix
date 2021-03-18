@@ -22,4 +22,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationController do
         render(conn, "new.html", changeset: changeset)
     end
   end
+
+  def delete(conn, _params) do
+    current_user = conn.assigns.current_user
+
+    case Accounts.delete_user(current_user) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "Account successfully deleted.")
+        |> redirect(to: "/")
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, reason)
+        |> redirect(to: Routes.user_settings_path(conn, :edit))
+    end
+  end
 end

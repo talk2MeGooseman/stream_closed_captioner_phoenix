@@ -52,4 +52,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
       assert response =~ "should be at least 6 character"
     end
   end
+
+  describe "DELETE /users/register" do
+    setup :register_and_log_in_user
+
+    test "renders registration page", %{conn: conn} do
+      new_conn = delete(conn, Routes.user_registration_path(conn, :delete))
+
+      assert redirected_to(new_conn) =~ "/"
+      assert get_flash(new_conn, :info) =~ "Account successfully deleted."
+    end
+  end
 end

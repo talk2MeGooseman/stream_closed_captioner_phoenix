@@ -86,6 +86,22 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   @doc """
+  Delete a user.
+
+  ## Examples
+
+      iex> delete_user(%User{})
+      {:ok, %User{}}
+
+      iex> delete_user(%User{})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
   ## Examples
