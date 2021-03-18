@@ -13,12 +13,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationController do
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"user" => user_params}) do
     case Accounts.register_user(user_params) do
-      {:ok, user} ->
+      {:ok, %{user: user}} ->
         conn
         |> put_flash(:info, "User created successfully.")
         |> UserAuth.log_in_user(user)
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, _, %Ecto.Changeset{} = changeset, _} ->
         render(conn, "new.html", changeset: changeset)
     end
   end

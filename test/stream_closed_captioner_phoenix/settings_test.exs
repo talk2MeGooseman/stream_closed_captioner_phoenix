@@ -215,6 +215,17 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                Settings.create_translate_language(user, attrs)
     end
 
+    test "create_translate_language/1 doesnt allow more then 3 languages" do
+      user = insert(:user)
+      insert(:translate_language, %{ language: "en", user: user })
+      insert(:translate_language, %{ language: "es", user: user })
+      insert(:translate_language, %{ language: "et", user: user })
+      attrs = params_for(:translate_language, %{ language: "et" })
+
+      assert {:error, %Ecto.Changeset{}} =
+               Settings.create_translate_language(user, attrs)
+    end
+
     test "create_translate_language/1 with invalid data returns error changeset" do
       user = insert(:user)
       assert {:error, %Ecto.Changeset{}} = Settings.create_translate_language(user, @invalid_attrs)

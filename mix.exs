@@ -48,6 +48,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       # Other stuff
       {:ecto_psql_extras, "~> 0.2"},
+      {:ecto_extras, "~> 0.1.3"}, # Add some ecto helpers
       {:exconstructor, "~> 1.1"},
       {:expletive, "~> 0.1.4"},
       {:ex_machina, "~> 2.7.0"},

@@ -44,10 +44,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
         conn
         |> put_flash(:info, "Successfully authenticated.")
         |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
-      {:ok, %Accounts.User{} = user} ->
-        conn
-        |> put_flash(:info, "Successfully authenticated.")
-        |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
       {:error, reason} ->
         conn
         |> put_flash(:error, reason)

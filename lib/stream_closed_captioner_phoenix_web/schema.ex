@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.Schema
-  alias StreamClosedCaptionerPhoenix.{Accounts, Bits, Settings}
+  alias StreamClosedCaptionerPhoenix.{Accounts, Settings}
 
   import_types(Schema.AccountsTypes)
   import_types(Schema.Types.Custom.JSON)
@@ -51,10 +51,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   #  end
 
   def get_channel_info(_, %{id: id}, _resolution) do
-    case StreamClosedCaptionerPhoenix.Accounts.get_user_by_channel_id(%{
-           id: id,
-           preload: [:bits_balance, :translate_languages]
-         }) do
+    case StreamClosedCaptionerPhoenix.AccountsOauth.get_user_for_provider("twitch", id) do
       nil ->
         {:error, "Channel #{id} not found"}
 

@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
-  alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenix.{Accounts, AccountsOauth}
   alias StreamClosedCaptionerPhoenixWeb.UserAuth
 
   plug :assign_email_and_password_changesets
@@ -83,7 +83,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
-    |> assign(:provider_changeset, Accounts.change_user_provider(user))
+    |> assign(:provider_changeset, AccountsOauth.change_user_provider(user))
     |> assign(:user, user)
   end
 end

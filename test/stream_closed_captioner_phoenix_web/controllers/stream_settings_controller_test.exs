@@ -1,5 +1,4 @@
 defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
-  import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
   setup :register_and_log_in_user
@@ -93,7 +92,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
   end
 
   defp create_stream_settings(%{conn: _conn, user: user}) do
-    stream_settings = insert(:stream_settings, user: user)
-    %{stream_settings: stream_settings}
+    %{stream_settings: user.stream_settings}
   end
 end

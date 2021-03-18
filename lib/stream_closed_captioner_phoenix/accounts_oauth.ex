@@ -4,8 +4,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Repo
-  alias StreamClosedCaptionerPhoenix.Settings
-
 
   @doc """
   Gets a user by their provider and uid
@@ -26,6 +24,19 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
     |> where(uid: ^uid)
     |> where(provider: ^provider)
     |> Repo.one()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user's provider.
+
+  ## Examples
+
+      iex> change_user_provider(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_provider(user, attrs \\ %{}) do
+    User.provider_changeset(user, attrs)
   end
 
   def find_or_register_user_with_oauth(attrs, current_user) when is_nil(current_user) do
@@ -59,7 +70,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
   def find_or_register_user_with_oauth(attrs, %User{} = current_user) do
     case get_user_for_provider("twitch", attrs["id"]) do
       %User{} = user when user.id != current_user.id ->
-        {:error, "Your Twitch account is connected to another account, please log out and log in with Twitch to remove the connection from your other account."}
+        {:error,
+         "Your Twitch account is connected to another account, please log out and log in with Twitch to remove the connection from your other account."}
 
       _ ->
         User.oauth_update_changeset(current_user, %{
@@ -73,27 +85,24 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
           uid: attrs["id"]
         })
         |> Repo.update()
+        |> case do
+          {:ok, user} -> {:ok, %{user: user}}
+          {:error, message} -> {:error, message}
+        end
     end
   end
 
-  defp register_oauth_user(attrs \\ %{}) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.run(:user, fn _repo, _changes ->
-      Accounts.register_user(%{
-        email: attrs["email"],
-        password: Accounts.generate_secure_password(),
-        uid: attrs["id"],
-        username: attrs["display_name"],
-        profile_image_url: attrs["profile_image_url"],
-        login: attrs["login"],
-        description: attrs["description"],
-        offline_image_url: attrs["offline_image_url"],
-        provider: "twitch"
-      })
-    end)
-    |> Ecto.Multi.run(:stream_setings, fn _repo, %{user: user} ->
-      Settings.create_stream_settings(user)
-    end)
-    |> Repo.transaction()
+  defp register_oauth_user(attrs) do
+    Accounts.register_user(%{
+      email: attrs["email"],
+      password: Accounts.generate_secure_password(),
+      uid: attrs["id"],
+      username: attrs["display_name"],
+      profile_image_url: attrs["profile_image_url"],
+      login: attrs["login"],
+      description: attrs["description"],
+      offline_image_url: attrs["offline_image_url"],
+      provider: "twitch"
+    })
   end
 end

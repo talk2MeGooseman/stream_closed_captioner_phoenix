@@ -6,6 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.Accounts.{User, UserToken, UserNotifier}
+  alias StreamClosedCaptionerPhoenix.Settings
 
   ## Database getters
 
@@ -72,9 +73,16 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user, fn _repo, _changes ->
+      %User{}
+      |> User.registration_changeset(attrs)
+      |> Repo.insert()
+    end)
+    |> Ecto.Multi.run(:stream_settings, fn _repo, %{user: user} ->
+      Settings.create_stream_settings(user)
+    end)
+    |> Repo.transaction()
   end
 
   @doc """
@@ -103,19 +111,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def change_user_email(user, attrs \\ %{}) do
     User.email_changeset(user, attrs)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for changing the user's provider.
-
-  ## Examples
-
-      iex> change_user_provider(user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
-  def change_user_provider(user, attrs \\ %{}) do
-    User.provider_changeset(user, attrs)
   end
 
   @doc """

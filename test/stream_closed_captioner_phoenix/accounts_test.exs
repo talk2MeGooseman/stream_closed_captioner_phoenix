@@ -23,47 +23,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
   end
 
-  describe "find_or_register_user/1" do
-    test "creates a user and stream setting if none exist" do
-      attrs = %{
-        "id" => "12345",
-        "email" => "test@email.com",
-        "display_name" => "talk2megooseman",
-        "login" => "talk2megooseman",
-        "profile_image_url" => "https://image.com",
-        "description" => "hello world",
-        "offline_image_url" => "https://image.com"
-      }
-
-      {:ok, data} = Accounts.find_or_register_user(attrs)
-
-      assert data.user.email == attrs["email"]
-      assert data.user.uid == attrs["id"]
-
-      assert StreamClosedCaptionerPhoenix.Settings.get_stream_settings_by_user_id!(data.user.id)
-    end
-
-    test "finds a user with matching information" do
-      attrs = %{
-        "id" => "12345",
-        "email" => "test@email.com",
-        "display_name" => "newusername",
-        "login" => "newusername",
-        "profile_image_url" => "https://image.com",
-        "description" => "hello world",
-        "offline_image_url" => "https://image.com"
-      }
-      insert(:user, uid: attrs["id"] )
-
-      {:ok, data} = Accounts.find_or_register_user(attrs)
-
-      assert data.user.uid == attrs["id"]
-      refute data.user.email == attrs["email"]
-      assert data.user.username == attrs["display_name"]
-      assert data.user.description == attrs["description"]
-    end
-  end
-
   describe "get_user_by_email_and_password/2" do
     test "does not return the user if the email does not exist" do
       refute Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
@@ -97,7 +56,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
   describe "register_user/1" do
     test "requires email and password to be set" do
-      {:error, changeset} = Accounts.register_user(%{})
+      {:error, _, changeset, _} = Accounts.register_user(%{})
 
       assert %{
                password: ["can't be blank"],
@@ -106,7 +65,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "validates email and password when given" do
-      {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not 6"})
+      {:error, _, changeset, _} = Accounts.register_user(%{email: "not valid", password: "not 6"})
 
       assert %{
                email: ["must have the @ sign and no spaces"],
@@ -116,29 +75,34 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "validates maximum values for email and password for security" do
       too_long = String.duplicate("db", 100)
-      {:error, changeset} = Accounts.register_user(%{email: too_long, password: too_long})
+      {:error, _, changeset, _} = Accounts.register_user(%{email: too_long, password: too_long})
       assert "should be at most 160 character(s)" in errors_on(changeset).email
       assert "should be at most 80 character(s)" in errors_on(changeset).password
     end
 
     test "validates email uniqueness" do
       %{email: email} = user_fixture()
-      {:error, changeset} = Accounts.register_user(%{email: email})
+      {:error, _, changeset, _} = Accounts.register_user(%{email: email})
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased email too, to check that email case is ignored.
-      {:error, changeset} =
+      {:error, _, changeset, _} =
         Accounts.register_user(%{email: String.upcase(email), password: "nice password"})
 
       assert "has already been taken" in errors_on(changeset).email
     end
 
-    test "registers users with a encrypted password" do
+    test "registers users with a encrypted password and creates settings" do
       email = unique_user_email()
-      {:ok, user} = Accounts.register_user(%{email: email, password: valid_user_password()})
+
+      {:ok, %{user: user, stream_settings: settings}} =
+        Accounts.register_user(%{email: email, password: valid_user_password()})
+
       assert user.email == email
       assert is_binary(user.encrypted_password)
       assert is_nil(user.password)
+
+      assert settings.cc_box_size == false
     end
   end
 

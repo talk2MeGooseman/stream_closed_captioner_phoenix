@@ -86,6 +86,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     |> validate_required([
       :language
     ])
+    |> unique_constraint(:user_id, name: "index_stream_settings_on_user_id")
     |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
   end
 end
