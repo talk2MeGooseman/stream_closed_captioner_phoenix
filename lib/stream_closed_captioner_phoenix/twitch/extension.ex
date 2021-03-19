@@ -15,6 +15,12 @@ defmodule Twitch.Extension do
   @spec developer_segment :: :developer
   def developer_segment, do: @developer
 
+  @spec get_live_channels(
+          %Twitch.Extension.Credentials{
+            :client_id => any
+          },
+          String.t() | nil
+        ) :: list
   def get_live_channels(%Credentials{} = credentials, current_cursor \\ nil) do
     headers = [
       {"Content-Type", "application/json"},
@@ -82,6 +88,24 @@ defmodule Twitch.Extension do
     |> Jason.decode!()
   end
 
+  @spec set_configuration_for(
+          %Twitch.Extension.Credentials{
+            :client_id => any,
+            :jwt_token => any
+          },
+          String.t(),
+          String.t(),
+          any
+        ) :: %{
+          :__struct__ => HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
+          optional(:body) => any,
+          optional(:headers) => list,
+          optional(:id) => reference,
+          optional(:redirect_url) => any,
+          optional(:request) => HTTPoison.Request.t(),
+          optional(:request_url) => any,
+          optional(:status_code) => integer
+        }
   def set_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         segment,
