@@ -11,5 +11,6 @@
       "username": "postgres"
     }
   ],
-  "elixirLinter.useStrict": true
+  "elixirLinter.useStrict": true,
+  "editor.formatOnSave": true
 }

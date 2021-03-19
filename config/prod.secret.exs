@@ -39,6 +39,11 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
   redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
 
+config :goth,
+  json: System.get_env("BAMBOO_EMAIL_CREDS")
+
+config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

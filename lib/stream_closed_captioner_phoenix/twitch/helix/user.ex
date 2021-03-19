@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.Twitch.Stream do
+defmodule Twitch.Helix.User do
   defstruct [
     :id,
     :user_id,
