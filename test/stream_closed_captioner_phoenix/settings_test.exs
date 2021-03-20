@@ -40,22 +40,27 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "get_stream_settings!/1 returns the stream_settings with given id" do
       stream_settings = insert(:stream_settings)
-      assert Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user) == stream_settings
+
+      assert Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user) ==
+               stream_settings
     end
 
     test "create_stream_settings/1 with valid data creates a stream_settings" do
       user = insert(:user)
-      attrs = params_for(:stream_settings, %{
-        cc_box_size: true,
-        filter_profanity: true,
-        hide_text_on_load: true,
-        pirate_mode: true,
-        showcase: true,
-        switch_settings_position: true,
-        text_uppercase: true,
-      })
 
-      assert {:ok, %StreamSettings{} = stream_settings} = Settings.create_stream_settings(user, attrs)
+      attrs =
+        params_for(:stream_settings, %{
+          cc_box_size: true,
+          filter_profanity: true,
+          hide_text_on_load: true,
+          pirate_mode: true,
+          showcase: true,
+          switch_settings_position: true,
+          text_uppercase: true
+        })
+
+      assert {:ok, %StreamSettings{} = stream_settings} =
+               Settings.create_stream_settings(user, attrs)
 
       assert stream_settings.caption_delay == 0
       assert stream_settings.cc_box_size == true
@@ -71,17 +76,19 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "create_stream_settings/1 will not create more than one stream settings per user" do
       user = insert(:user)
-      attrs = params_for(:stream_settings, %{
-        caption_delay: 42,
-        cc_box_size: true,
-        filter_profanity: true,
-        hide_text_on_load: true,
-        language: "some language",
-        pirate_mode: true,
-        showcase: true,
-        switch_settings_position: true,
-        text_uppercase: true,
-      })
+
+      attrs =
+        params_for(:stream_settings, %{
+          caption_delay: 42,
+          cc_box_size: true,
+          filter_profanity: true,
+          hide_text_on_load: true,
+          language: "some language",
+          pirate_mode: true,
+          showcase: true,
+          switch_settings_position: true,
+          text_uppercase: true
+        })
 
       assert {:ok, %StreamSettings{}} = Settings.create_stream_settings(user, attrs)
 
@@ -117,7 +124,8 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert {:error, %Ecto.Changeset{}} =
                Settings.update_stream_settings(stream_settings, @invalid_attrs)
 
-      assert stream_settings == Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
+      assert stream_settings ==
+               Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
     end
 
     test "update_stream_settings/2 return error when captions delay is less than 0" do
@@ -127,7 +135,9 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                Settings.update_stream_settings(stream_settings, %{caption_delay: -5})
 
       assert [{:caption_delay, _error_details}] = error_changeset.errors
-      assert stream_settings == Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
+
+      assert stream_settings ==
+               Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
     end
 
     test "delete_stream_settings/1 deletes the stream_settings" do
@@ -158,12 +168,16 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "get_translate_language!/1 returns the translate_language with given id" do
       translate_language = insert(:translate_language)
-      assert Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user) == translate_language
+
+      assert Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user) ==
+               translate_language
     end
 
     test "get_formatted_translate_languages_by_user/1 returns a map of a users languages codes and names" do
       translate_language = insert(:translate_language)
-      translate_language = insert(:translate_language, %{language: "es", user: translate_language.user})
+
+      translate_language =
+        insert(:translate_language, %{language: "es", user: translate_language.user})
 
       assert Settings.get_formatted_translate_languages_by_user(translate_language.user) == %{
                "en" => "English",
@@ -173,7 +187,9 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "get_formatted_translate_languages_by_user/1 with id returns a map of user languages codes and names" do
       translate_language = insert(:translate_language)
-      translate_language = insert(:translate_language, %{language: "es", user: translate_language.user})
+
+      translate_language =
+        insert(:translate_language, %{language: "es", user: translate_language.user})
 
       %{id: id} = StreamClosedCaptionerPhoenix.Accounts.get_user!(translate_language.user_id)
 
@@ -185,6 +201,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "get_formatted_translate_languages_by_user/1 return default languages if the user doesnt have custom ones" do
       user = insert(:user)
+
       assert Settings.get_formatted_translate_languages_by_user(user) == %{
                "en" => "English",
                "es" => "Spanish",
@@ -208,27 +225,26 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       user = insert(:user)
       attrs = params_for(:translate_language)
 
-      assert {:ok, %TranslateLanguage{}} =
-               Settings.create_translate_language(user, attrs)
+      assert {:ok, %TranslateLanguage{}} = Settings.create_translate_language(user, attrs)
 
-      assert {:error, %Ecto.Changeset{}} =
-               Settings.create_translate_language(user, attrs)
+      assert {:error, %Ecto.Changeset{}} = Settings.create_translate_language(user, attrs)
     end
 
     test "create_translate_language/1 doesnt allow more then 3 languages" do
       user = insert(:user)
-      insert(:translate_language, %{ language: "en", user: user })
-      insert(:translate_language, %{ language: "es", user: user })
-      insert(:translate_language, %{ language: "et", user: user })
-      attrs = params_for(:translate_language, %{ language: "et" })
+      insert(:translate_language, %{language: "en", user: user})
+      insert(:translate_language, %{language: "es", user: user})
+      insert(:translate_language, %{language: "et", user: user})
+      attrs = params_for(:translate_language, %{language: "et"})
 
-      assert {:error, %Ecto.Changeset{}} =
-               Settings.create_translate_language(user, attrs)
+      assert {:error, %Ecto.Changeset{}} = Settings.create_translate_language(user, attrs)
     end
 
     test "create_translate_language/1 with invalid data returns error changeset" do
       user = insert(:user)
-      assert {:error, %Ecto.Changeset{}} = Settings.create_translate_language(user, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Settings.create_translate_language(user, @invalid_attrs)
     end
 
     test "update_translate_language/2 with valid data updates the translate_language" do
@@ -247,14 +263,14 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert {:error, %Ecto.Changeset{}} =
                Settings.update_translate_language(translate_language, @invalid_attrs)
 
-      assert translate_language == Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user)
+      assert translate_language ==
+               Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user)
     end
 
     test "delete_translate_language/1 deletes the translate_language" do
       translate_language = insert(:translate_language)
 
-      assert {:ok, %TranslateLanguage{}} =
-               Settings.delete_translate_language(translate_language)
+      assert {:ok, %TranslateLanguage{}} = Settings.delete_translate_language(translate_language)
 
       assert_raise Ecto.NoResultsError, fn ->
         Settings.get_translate_language!(translate_language.id)

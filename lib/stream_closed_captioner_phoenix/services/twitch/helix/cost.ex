@@ -1,7 +1,7 @@
 defmodule Twitch.Helix.Cost do
   defstruct [
     :amount,
-    :type,
+    :type
   ]
 
   use ExConstructor

@@ -52,6 +52,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
   def update(conn, %{"action" => "remove_provider"}) do
     user = conn.assigns.current_user
+
     case Accounts.remove_user_provider(user) do
       {:ok, _user} ->
         conn

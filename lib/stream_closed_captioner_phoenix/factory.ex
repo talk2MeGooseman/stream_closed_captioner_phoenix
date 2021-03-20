@@ -48,7 +48,7 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
   def translate_language_factory do
     %StreamClosedCaptionerPhoenix.Settings.TranslateLanguage{
       language: "en",
-      user: build(:user),
+      user: build(:user)
     }
   end
 

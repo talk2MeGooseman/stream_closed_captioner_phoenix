@@ -14,7 +14,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
     pirate_mode: false,
     showcase: false,
     switch_settings_position: false,
-    text_uppercase: false,
+    text_uppercase: false
   }
   @invalid_attrs %{
     caption_delay: nil,
@@ -25,7 +25,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
     pirate_mode: nil,
     showcase: nil,
     switch_settings_position: nil,
-    text_uppercase: nil,
+    text_uppercase: nil
   }
 
   def fixture(:stream_settings, user) do

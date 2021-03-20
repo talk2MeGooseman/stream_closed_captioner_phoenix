@@ -7,6 +7,7 @@ defmodule Twitch.Helix.ProductData do
     :display_name,
     :in_development
   ]
+
   use ExConstructor
 
   def new(data, args \\ []) do

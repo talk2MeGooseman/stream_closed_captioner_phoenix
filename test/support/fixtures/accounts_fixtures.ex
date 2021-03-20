@@ -8,7 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsFixtures do
   def valid_user_password, do: "hello world!"
 
   def user_fixture(attrs \\ %{}) do
-    {:ok, %{ user: user}} =
+    {:ok, %{user: user}} =
       attrs
       |> Enum.into(%{
         email: unique_user_email(),

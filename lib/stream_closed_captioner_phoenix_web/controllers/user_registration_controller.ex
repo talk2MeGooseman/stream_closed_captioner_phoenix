@@ -31,6 +31,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationController do
         conn
         |> put_flash(:info, "Account successfully deleted.")
         |> redirect(to: "/")
+
       {:error, reason} ->
         conn
         |> put_flash(:error, reason)

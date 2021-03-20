@@ -7,6 +7,11 @@ defmodule Twitch.Jwt do
       token_secret: System.get_env("TWITCH_TOKEN_SECRET")
     }
 
+  @spec sign_token_for(:pubsub | :standard, String.t()) :: %Twitch.Extension.Credentials{
+          client_id: binary,
+          token_secret: binary,
+          jwt_token: term()
+        }
   def sign_token_for(:standard, channel_id) do
     credentials = get_credentials()
 

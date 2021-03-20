@@ -11,8 +11,9 @@ defmodule Twitch.Helix.Transaction do
     :user_login,
     :user_name,
     :product_type,
-    :product_data,
+    :product_data
   ]
+
   use ExConstructor
 
   def new(data, args \\ []) do

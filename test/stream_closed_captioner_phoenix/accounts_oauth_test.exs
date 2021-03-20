@@ -6,7 +6,6 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
   alias StreamClosedCaptionerPhoenix.AccountsOauth
 
   describe "find_or_register_user_with_oauth/2" do
-
     test "when no current user, creates a new user with settings" do
       attrs = %{
         "id" => "12345",
@@ -37,6 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
         "description" => "hello world",
         "offline_image_url" => "https://image.com"
       }
+
       insert(:user, uid: attrs["id"], provider: "twitch")
 
       {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, nil)
@@ -84,7 +84,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       insert(:user, uid: attrs["id"], provider: "twitch")
       current_user = insert(:user, uid: nil, provider: nil)
 
-      assert {:error, _message} = AccountsOauth.find_or_register_user_with_oauth(attrs, current_user)
+      assert {:error, _message} =
+               AccountsOauth.find_or_register_user_with_oauth(attrs, current_user)
     end
   end
 end
