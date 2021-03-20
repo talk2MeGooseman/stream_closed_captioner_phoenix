@@ -15,6 +15,10 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 Done through service
 
+## Debug Live View
+
+`liveSocket.enableDebug()`
+
 ## Learn more
 
 - Official website: https://www.phoenixframework.org/
