@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.GoosemanApp do
+defmodule GoosemanApp do
   def fetch_supporters() do
     Neuron.Config.set(url: "https://gooseman-app.azurewebsites.net/graphql/twitch")
 
