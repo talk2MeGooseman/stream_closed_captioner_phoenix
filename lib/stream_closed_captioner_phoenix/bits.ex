@@ -131,15 +131,16 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   ## Examples
 
-      iex> create_bits_balance(%{field: value})
+      iex> create_bits_balance(user, %{})
       {:ok, %BitsBalance{}}
 
-      iex> create_bits_balance(%{field: bad_value})
+      iex> create_bits_balance(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_bits_balance(attrs \\ %{}) do
-    %BitsBalance{}
+  def create_bits_balance(%User{} = user, attrs \\ %{total: 0}) do
+    user
+    |> Ecto.build_assoc(:bits_balance)
     |> BitsBalance.changeset(attrs)
     |> Repo.insert()
   end

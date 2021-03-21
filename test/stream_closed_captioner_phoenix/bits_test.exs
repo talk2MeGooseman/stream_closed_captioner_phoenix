@@ -69,34 +69,34 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     @invalid_attrs %{total: nil, user_id: 100}
 
     test "list_bits_balances/0 returns all bits_balances" do
-      bits_balance = bits_balance_fixture()
-      assert Bits.list_bits_balances() == [bits_balance]
+      bits_balance = insert(:bits_balance)
+      assert Bits.list_bits_balances() |> Repo.preload(:user) == [bits_balance]
     end
 
     test "get_bits_balance!/1 returns the bits_balance with given id" do
-      bits_balance = bits_balance_fixture()
-      assert Bits.get_bits_balance!(bits_balance.id) == bits_balance
+      bits_balance = insert(:bits_balance)
+      assert Bits.get_bits_balance!(bits_balance.id) |> Repo.preload(:user) == bits_balance
     end
 
     test "create_bits_balance/1 with valid data creates a bits_balance" do
-      attrs = %{total: 42, user_id: user_fixture().id}
-      assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(attrs)
-      assert bits_balance.total == 42
-      assert bits_balance.user_id == attrs.user_id
+      user = insert(:user)
+      assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(user)
+      assert bits_balance.total == 0
+      assert bits_balance.user_id == user.id
     end
 
     test "create_bits_balance/1 doesnt create a new record if a user already as one" do
-      attrs = %{total: 42, user_id: user_fixture().id}
-      assert {:ok, %BitsBalance{}} = Bits.create_bits_balance(attrs)
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance(attrs)
+      user = insert(:user) # User is already created with an assoicated bits balance
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance(user)
     end
 
     test "create_bits_balance/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance(@invalid_attrs)
+      user = insert(:user)
+      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance(user, @invalid_attrs)
     end
 
     test "update_bits_balance/2 with valid data updates the bits_balance" do
-      bits_balance = bits_balance_fixture()
+      bits_balance =  insert(:bits_balance)
 
       assert {:ok, %BitsBalance{} = bits_balance} =
                Bits.update_bits_balance(bits_balance, @update_attrs)
@@ -105,19 +105,19 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "update_bits_balance/2 with invalid data returns error changeset" do
-      bits_balance = bits_balance_fixture()
+      bits_balance = insert(:bits_balance)
       assert {:error, %Ecto.Changeset{}} = Bits.update_bits_balance(bits_balance, @invalid_attrs)
-      assert bits_balance == Bits.get_bits_balance!(bits_balance.id)
+      assert bits_balance == Bits.get_bits_balance!(bits_balance.id) |> Repo.preload(:user)
     end
 
     test "delete_bits_balance/1 deletes the bits_balance" do
-      bits_balance = bits_balance_fixture()
+      bits_balance = insert(:bits_balance)
       assert {:ok, %BitsBalance{}} = Bits.delete_bits_balance(bits_balance)
       assert_raise Ecto.NoResultsError, fn -> Bits.get_bits_balance!(bits_balance.id) end
     end
 
     test "change_bits_balance/1 returns a bits_balance changeset" do
-      bits_balance = bits_balance_fixture()
+      bits_balance = insert(:bits_balance)
       assert %Ecto.Changeset{} = Bits.change_bits_balance(bits_balance)
     end
   end
