@@ -1,5 +1,5 @@
 defmodule Twitch.Extension do
-  import Twitch.Helpers
+  import Helpers
 
   alias Twitch.Extension.{Channel, Credentials}
 
@@ -88,11 +88,11 @@ defmodule Twitch.Extension do
 
   @spec get_configuration_for(
           %Twitch.Extension.Credentials{
-            :client_id => binary(),
+            :client_id => String.t,
             :jwt_token => term()
           },
           atom(),
-          binary()
+          String.t
         ) :: any
   def get_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
@@ -117,7 +117,7 @@ defmodule Twitch.Extension do
 
   @spec set_configuration_for(
           %Twitch.Extension.Credentials{
-            :client_id => binary(),
+            :client_id => String.t,
             :jwt_token => term()
           },
           atom(),
