@@ -1,5 +1,5 @@
 defmodule Twitch.Oauth do
-  import Twitch.Helpers
+  import Helpers
 
   alias Twitch.Helix.Credentials
 

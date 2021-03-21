@@ -138,7 +138,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_bits_balance(%User{} = user, attrs \\ %{total: 0}) do
+  def create_bits_balance(%User{} = user, attrs \\ %{}) do
     user
     |> Ecto.build_assoc(:bits_balance)
     |> BitsBalance.changeset(attrs)

@@ -21,7 +21,7 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
 
   def bits_balance_factory do
     %StreamClosedCaptionerPhoenix.Bits.BitsBalance{
-      total: 500,
+      balance: 500,
       user: build(:user)
     }
   end

@@ -64,9 +64,9 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   describe "bits_balances" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalance
 
-    @valid_attrs %{total: 42}
-    @update_attrs %{total: 43}
-    @invalid_attrs %{total: nil, user_id: 100}
+    @valid_attrs %{balance: 42}
+    @update_attrs %{balance: 43}
+    @invalid_attrs %{balance: nil, user_id: 100}
 
     test "list_bits_balances/0 returns all bits_balances" do
       bits_balance = insert(:bits_balance)
@@ -81,12 +81,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     test "create_bits_balance/1 with valid data creates a bits_balance" do
       user = insert(:user)
       assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(user)
-      assert bits_balance.total == 0
+      assert bits_balance.balance == 0
       assert bits_balance.user_id == user.id
     end
 
     test "create_bits_balance/1 doesnt create a new record if a user already as one" do
-      user = insert(:user) # User is already created with an assoicated bits balance
+      user = insert(:user)
+      assert {:ok, %BitsBalance{}} = Bits.create_bits_balance(user)
       assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance(user)
     end
 
@@ -101,7 +102,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert {:ok, %BitsBalance{} = bits_balance} =
                Bits.update_bits_balance(bits_balance, @update_attrs)
 
-      assert bits_balance.total == 43
+      assert bits_balance.balance == 43
     end
 
     test "update_bits_balance/2 with invalid data returns error changeset" do

@@ -10,7 +10,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsFixtures do
     {:ok, bits_balance} =
       attrs
       |> Enum.into(%{
-        total: 0,
+        balance: 0,
         user_id: user_fixture().id
       })
       |> StreamClosedCaptionerPhoenix.Bits.create_bits_balance()

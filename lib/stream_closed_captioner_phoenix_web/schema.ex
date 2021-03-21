@@ -23,7 +23,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   @desc "Users bits balance"
   object :bits_balance do
-    field :total, :integer
+    field :balance, :integer
   end
 
   @desc "Translations information"

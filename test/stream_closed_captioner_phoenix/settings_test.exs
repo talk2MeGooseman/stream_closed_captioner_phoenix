@@ -173,18 +173,6 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                translate_language
     end
 
-    test "get_formatted_translate_languages_by_user/1 returns a map of a users languages codes and names" do
-      translate_language = insert(:translate_language)
-
-      translate_language =
-        insert(:translate_language, %{language: "es", user: translate_language.user})
-
-      assert Settings.get_formatted_translate_languages_by_user(translate_language.user) == %{
-               "en" => "English",
-               "es" => "Spanish"
-             }
-    end
-
     test "get_formatted_translate_languages_by_user/1 with id returns a map of user languages codes and names" do
       translate_language = insert(:translate_language)
 
@@ -196,17 +184,6 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert Settings.get_formatted_translate_languages_by_user(id) == %{
                "en" => "English",
                "es" => "Spanish"
-             }
-    end
-
-    test "get_formatted_translate_languages_by_user/1 return default languages if the user doesnt have custom ones" do
-      user = insert(:user)
-
-      assert Settings.get_formatted_translate_languages_by_user(user) == %{
-               "en" => "English",
-               "es" => "Spanish",
-               "de" => "German",
-               "fr" => "French"
              }
     end
 

@@ -5,7 +5,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
-  alias StreamClosedCaptionerPhoenix.Accounts.{User, UserToken, UserNotifier}
+  alias StreamClosedCaptionerPhoenix.Accounts.{User, UserNotifier, UserToken}
+  alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Settings
 
   ## Database getters
@@ -81,6 +82,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     end)
     |> Ecto.Multi.run(:stream_settings, fn _repo, %{user: user} ->
       Settings.create_stream_settings(user)
+    end)
+    |> Ecto.Multi.run(:bits_balance, fn _repo, %{user: user} ->
+      Bits.create_bits_balance(user)
     end)
     |> Repo.transaction()
   end
