@@ -9,8 +9,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   describe "bits_balance_debits" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
 
-    @valid_attrs %{amount: 42}
-    @update_attrs %{amount: 43}
+    @valid_attrs %{amount: 500}
+    @update_attrs %{amount: 500}
     @invalid_attrs %{amount: nil}
 
     def bits_balance_debit_fixture(attrs \\ %{}) do
@@ -20,6 +20,18 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
         |> Bits.create_bits_balance_debit()
 
       bits_balance_debit
+    end
+
+    test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
+      bits_balance = insert(:bits_balance, balance: 0)
+      assert {:insufficent_balance} = Bits.activate_translations_for(bits_balance.user)
+    end
+
+    test "activate_translations_for/1 return :ok if user has minimum balance" do
+      bits_balance = insert(:bits_balance, balance: 500)
+      assert {:ok, _} = Bits.activate_translations_for(bits_balance.user)
+
+      assert Bits.get_bits_balance!(bits_balance.id).balance == 0
     end
 
     test "list_bits_balance_debits/0 returns all bits_balance_debits" do

@@ -6,9 +6,28 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
 
   import Ecto.Query, warn: false
+
+  alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
   alias StreamClosedCaptionerPhoenix.Repo
 
-  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+  def activate_translations_for(%User{} = user) do
+    user = Repo.preload(user, :bits_balance)
+
+    if user.bits_balance.balance >= 500 do
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:debit, fn _repo, _ ->
+        create_bits_balance_debit(user, %{amount: 500})
+      end)
+      |> Ecto.Multi.run(:balance, fn _repo, %{ debit: debit} ->
+        new_balance = user.bits_balance.balance - debit.amount
+        update_bits_balance(user.bits_balance, %{ balance: new_balance })
+      end)
+      |> Repo.transaction()
+    else
+      {:insufficent_balance}
+    end
+  end
 
   @doc """
   Returns the list of bits_balance_debits.

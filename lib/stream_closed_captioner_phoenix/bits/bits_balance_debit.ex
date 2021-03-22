@@ -15,5 +15,6 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit do
     |> cast(attrs, [:user_id, :amount])
     |> foreign_key_constraint(:user_id, name: "fk_rails_51a42188b3")
     |> validate_required([:user_id, :amount])
+    |> validate_number(:amount, greater_than_or_equal_to: 500)
   end
 end
