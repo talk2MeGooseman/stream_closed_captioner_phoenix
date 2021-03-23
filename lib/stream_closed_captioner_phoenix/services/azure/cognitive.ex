@@ -4,26 +4,45 @@ defmodule Azure.Cognitive do
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
 
-  @spec translate(list(String.t), String.t) :: Translations.t
-  def translate(languages, text) when is_list(languages) and is_binary(text) do
-    language_tuple_list = Enum.map(languages, fn lang -> {:to, lang} end)
-    params = [{"api-version", "3.0"}, {:profanityAction, "Marked"} | language_tuple_list]
+  @spec translate(String.t(), list(String.t()), String.t()) :: Translations.t()
+  def translate(from_language \\ "en", to_languages, text)
+      when is_list(to_languages) and is_binary(text) do
+    language_tuple_list =
+      Enum.flat_map(to_languages, fn lang ->
+        [code | _] = String.split(from_language, "-")
 
-    headers = [
-        {"Content-Type", "application/json"},
-        {"Ocp-Apim-Subscription-Key", System.get_env("COGNITIVE_SERVICE_KEY")},
-        {"X-ClientTraceId", UUID.generate()}
+        if lang != code do
+          [{:to, lang}]
+        else
+          []
+        end
+      end)
+
+    params = [
+      {"api-version", "3.0"},
+      {:profanityAction, "Marked"},
+      {:from, from_language} | language_tuple_list
     ]
 
-    body = Jason.encode!([%{
-      text: text
-    }])
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Ocp-Apim-Subscription-Key", System.get_env("COGNITIVE_SERVICE_KEY")},
+      {"X-ClientTraceId", UUID.generate()}
+    ]
 
-    [translations] = "https://api.cognitive.microsofttranslator.com/translate"
-    |> encode_url_and_params(params)
-    |> HTTPoison.post!(body, headers)
-    |> Map.fetch!(:body)
-    |> Jason.decode!()
+    body =
+      Jason.encode!([
+        %{
+          text: text
+        }
+      ])
+
+    [translations] =
+      "https://api.cognitive.microsofttranslator.com/translate"
+      |> encode_url_and_params(params)
+      |> HTTPoison.post!(body, headers)
+      |> Map.fetch!(:body)
+      |> Jason.decode!()
 
     Translations.new(translations)
   end

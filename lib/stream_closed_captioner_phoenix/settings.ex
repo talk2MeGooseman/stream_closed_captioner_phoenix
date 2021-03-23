@@ -256,12 +256,12 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     do: TranslateLanguage |> where(user_id: ^user_id) |> Repo.all()
 
   @doc """
-  Gets a list of language codes that a user would like to translate to
+  Gets a map of the languages that a user would like to translate to
 
   ## Examples
 
       iex> get_formatted_translate_languages_by_user(user_id)
-      ["en", "es", "fr"]
+      %{en: "English", es: "Spanish", fr: "French"}
   """
   def get_formatted_translate_languages_by_user(user_id) do
     get_translate_languages_by_user(user_id)
