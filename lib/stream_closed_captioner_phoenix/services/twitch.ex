@@ -11,16 +11,6 @@ defmodule Twitch do
     |> Extension.get_live_channels()
   end
 
-  @spec send_pubsub_message(binary, map) :: %{
-          :__struct__ => HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
-          optional(:body) => any,
-          optional(:headers) => list,
-          optional(:id) => reference,
-          optional(:redirect_url) => any,
-          optional(:request) => HTTPoison.Request.t(),
-          optional(:request_url) => any,
-          optional(:status_code) => integer
-        }
   def send_pubsub_message(channel_id, message) when is_map(message) do
     Jwt.sign_token_for(:pubsub, channel_id)
     |> Extension.send_pubsub_message_for(channel_id, message)

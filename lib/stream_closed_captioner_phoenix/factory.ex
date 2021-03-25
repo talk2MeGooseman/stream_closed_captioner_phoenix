@@ -8,8 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
       sign_in_count: 0,
       uid: sequence(:uid, &"12345#{&1}"),
       username: "talk2megooseman",
-      login: "talk2megooseman",
-      stream_settings: build(:stream_settings)
+      login: "talk2megooseman"
     }
   end
 

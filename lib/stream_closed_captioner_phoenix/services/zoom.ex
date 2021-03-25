@@ -1,7 +1,7 @@
 defmodule Zoom do
   import Helpers
 
-  @spec send_captions_to(String.t | URI.t(), String.t, map) ::
+  @spec send_captions_to(String.t() | URI.t(), String.t(), Zoom.Params.t()) ::
           {:error, HTTPoison.Error.t()}
           | {:ok,
              %{
@@ -15,11 +15,13 @@ defmodule Zoom do
                optional(:request_url) => any,
                optional(:status_code) => integer
              }}
-  def send_captions_to(url, text, params) do
-    headers = [{
-      {:Accept, "*/*"},
-      {"Content-Type", "text/plain"}
-    }]
+  def send_captions_to(url, text, %Zoom.Params{} = params) do
+    headers = [
+      {
+        {:Accept, "*/*"},
+        {"Content-Type", "text/plain"}
+      }
+    ]
 
     url
     |> encode_url_and_params(params)

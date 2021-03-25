@@ -1,27 +1,70 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
+  alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.Bits
+  alias StreamClosedCaptionerPhoenix.{Bits, Repo, Settings}
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
-  alias StreamClosedCaptionerPhoenix.Settings
-  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
+  alias Twitch.Extension.CaptionsPayload
 
-  @spec process_text(String.t(), User.t()) :: String.t()
-  def process_text(text, %StreamSettings{} = stream_settings) do
-    Profanity.maybe_censor_for(stream_settings, text)
-    # TODO Need to add async job to store captions for history
+  def pipeline_to(:zoom, %User{} = user, message) do
+    user = Repo.preload(user, :stream_settings)
+
+    params = %Zoom.Params{
+      seq: Map.get(message, :seq),
+      lang: user.stream_settings.language
+    }
+
+    url = Map.get(message, :url)
+    text = maybe_censor_message_for(user, message) |> Map.get(:final)
+    Zoom.send_captions_to(url, text, params)
+  end
+
+  def pipeline_to(:twitch, %User{} = user, message) do
+    user = Repo.preload(user, :stream_settings)
+
+    payload = %CaptionsPayload{interim: "", final: "", translations: nil, delay: 0}
+    payload = Map.merge(payload, maybe_censor_message_for(user, message))
+
+    payload =
+      case maybe_translate(user, get_in(message, [:interim])) do
+        %Translations{} = translations ->
+          Map.merge(
+            payload,
+            translations
+          )
+
+        nil ->
+          payload
+      end
+
+    case Twitch.send_pubsub_message(user.uid, payload) do
+      {:ok, _} -> IO.puts("Message sent successfully")
+      {:error, message} -> IO.puts("Error occurred: #{message}")
+    end
+  end
+
+  defp maybe_censor_message_for(%User{} = user, message) do
+    message
+    |> Map.put(
+      :interim,
+      Profanity.maybe_censor_for(user.stream_settings, get_in(message, [:interim]))
+    )
+    |> Map.put(
+      :final,
+      Profanity.maybe_censor_for(user.stream_settings, get_in(message, [:final]))
+    )
   end
 
   @spec maybe_translate(
           %StreamClosedCaptionerPhoenix.Accounts.User{:id => any},
           String.t()
         ) :: nil | Azure.Cognitive.Translations.t()
-  def maybe_translate(%User{} = user, text) when is_binary(text) do
+  defp maybe_translate(%User{} = user, text) when is_binary(text) do
     case Bits.get_user_active_debit(user.id) do
       %BitsBalanceDebit{} ->
         get_translations(user, text)
 
-      _ ->
+      nil ->
         case Bits.activate_translations_for(user) do
           {:ok, _} -> get_translations(user, text)
           _ -> nil
@@ -36,6 +79,4 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     Azure.perform_translations(from_language, to_languages, text)
   end
-
-  # def defp twitch_connected?(%User{provider: provider, uid: uid}), do: provider == "twitch" and is_binary(uid)
 end

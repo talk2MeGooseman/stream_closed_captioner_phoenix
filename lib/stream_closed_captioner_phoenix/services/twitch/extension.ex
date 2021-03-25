@@ -49,21 +49,25 @@ defmodule Twitch.Extension do
 
   @spec send_pubsub_message_for(
           %Twitch.Extension.Credentials{
-            :client_id => binary,
-            :jwt_token => term()
+            :client_id => any,
+            :jwt_token => any
           },
-          binary,
-          map()
-        ) :: %{
-          :__struct__ => HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
-          optional(:body) => any,
-          optional(:headers) => list,
-          optional(:id) => reference,
-          optional(:redirect_url) => any,
-          optional(:request) => HTTPoison.Request.t(),
-          optional(:request_url) => any,
-          optional(:status_code) => integer
-        }
+          String.t(),
+          Twitch.Extension.CaptionsPayload.t()
+        ) ::
+          {:error, HTTPoison.Error.t()}
+          | {:ok,
+             %{
+               :__struct__ =>
+                 HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
+               optional(:body) => any,
+               optional(:headers) => list,
+               optional(:id) => reference,
+               optional(:redirect_url) => any,
+               optional(:request) => HTTPoison.Request.t(),
+               optional(:request_url) => any,
+               optional(:status_code) => integer
+             }}
   def send_pubsub_message_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         channel_id,
@@ -83,16 +87,16 @@ defmodule Twitch.Extension do
       })
 
     encode_url_and_params("https://api.twitch.tv/extensions/message/" <> channel_id)
-    |> HTTPoison.post!(body, headers)
+    |> HTTPoison.post(body, headers)
   end
 
   @spec get_configuration_for(
           %Twitch.Extension.Credentials{
-            :client_id => String.t,
+            :client_id => String.t(),
             :jwt_token => term()
           },
           atom(),
-          String.t
+          String.t()
         ) :: any
   def get_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
@@ -115,24 +119,6 @@ defmodule Twitch.Extension do
     |> Jason.decode!()
   end
 
-  @spec set_configuration_for(
-          %Twitch.Extension.Credentials{
-            :client_id => String.t,
-            :jwt_token => term()
-          },
-          atom(),
-          String.t(),
-          map()
-        ) :: %{
-          :__struct__ => HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
-          optional(:body) => any,
-          optional(:headers) => list,
-          optional(:id) => reference,
-          optional(:redirect_url) => any,
-          optional(:request) => HTTPoison.Request.t(),
-          optional(:request_url) => any,
-          optional(:status_code) => integer
-        }
   def set_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         segment,
@@ -153,6 +139,6 @@ defmodule Twitch.Extension do
       })
 
     encode_url_and_params("https://api.twitch.tv/extensions/" <> client_id <> "/configurations")
-    |> HTTPoison.put!(body, headers)
+    |> HTTPoison.put(body, headers)
   end
 end
