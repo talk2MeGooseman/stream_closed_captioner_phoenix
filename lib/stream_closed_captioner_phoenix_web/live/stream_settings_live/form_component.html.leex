@@ -1,0 +1,65 @@
+<%= f = form_for @changeset, "#",
+  id: "stream_settings-form",
+  class: "block",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+<div class="mb-6">
+  <%= label f, :caption_delay, class: "form-label" %>
+  <%= number_input f, :caption_delay %>
+  <%= error_tag f, :caption_delay %>
+</div>
+
+<div class="mb-6">
+  <%= label f, :language, class: "form" %>
+  <%= text_input f, :language %>
+  <%= error_tag f, :language %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :filter_profanity, class: "form-checkbox" %>
+  <%= label f, :filter_profanity, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :filter_profanity %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :hide_text_on_load, class: "form-checkbox" %>
+  <%= label f, :hide_text_on_load, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :hide_text_on_load %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :text_uppercase, class: "form-checkbox" %>
+  <%= label f, :text_uppercase, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :text_uppercase %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :cc_box_size, class: "form-checkbox" %>
+  <%= label f, :cc_box_size, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :cc_box_size %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :switch_settings_position, class: "form-checkbox" %>
+  <%= label f, :switch_settings_position, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :switch_settings_position %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :showcase, class: "form-checkbox" %>
+  <%= label f, :showcase, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :showcase %>
+</div>
+
+<div class="mb-6">
+  <%= checkbox f, :pirate_mode, class: "form-checkbox" %>
+  <%= label f, :pirate_mode, class: "form-label ml-1 inline" %>
+  <%= error_tag f, :pirate_mode %>
+</div>
+
+<div class="mt-8 mb-2">
+  <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary btn-sm" %>
+</div>
+</form>

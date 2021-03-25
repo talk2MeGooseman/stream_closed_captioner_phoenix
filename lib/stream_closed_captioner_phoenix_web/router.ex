@@ -137,6 +137,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
 
-    get "/dashboard", DashboardController, :index
+    live "/dashboard", DashboardLive.Index, :index
+    live "/dashboard/settings", DashboardLive.Index, :settings
   end
 end

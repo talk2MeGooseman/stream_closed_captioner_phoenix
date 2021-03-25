@@ -1,0 +1,21 @@
+<%= if @live_action in [:settings] do %>
+<%= live_modal @socket, StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent,
+    id: @stream_settings.id,
+    title: @page_title,
+    action: @live_action,
+    stream_settings: @stream_settings,
+    return_to: Routes.dashboard_index_path(@socket, :index) %>
+<% end %>
+
+<div class="flex flex-wrap">
+  <div class="w-full md:w-2/3">
+    <div class="card shadow">
+      <div class="card-header">
+        <h5 class="card-title">
+          Dashboard
+        </h5>
+      </div>
+      <span><%= live_patch "Twitch Settings", to: Routes.dashboard_index_path(@socket, :settings) %></span>
+    </div>
+  </div>
+</div>
