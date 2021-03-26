@@ -1,36 +1,64 @@
-<h5 class="px-5 pb-2 text-lg leading-normal text-center">Log in</h5>
-<%= form_for @conn, Routes.user_session_path(@conn, :create), [as: :user], fn f -> %>
-  <%= if @error_message do %>
+<section class="px-4 py-24 mx-auto max-w-7xl">
+  <div class="w-full mx-auto space-y-5 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12">
+    <h1 class="text-4xl font-semibold text-center text-gray-900">Login</h1>
+    <div class="pb-6 space-y-2 border-b border-gray-200">
+      <a href="/auth/twitch" class="w-full py-3 btn btn-icon btn-primary">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          x="0px" y="0px" viewBox="0 0 2400 2800" style="enable-background:new 0 0 2400 2800;" xml:space="preserve">
+          <style type="text/css">
+            .st0 {
+              fill: #FFFFFF;
+            }
+
+            .st1 {
+              fill: #9146FF;
+            }
+          </style>
+          <title>Twitch Glitch</title>
+          <g>
+            <polygon class="st0"
+              points="2200,1300 1800,1700 1400,1700 1050,2050 1050,1700 600,1700 600,200 2200,200 	" />
+            <g>
+              <g id="Layer_1-2">
+                <path class="st1" d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600
+				V1300z" />
+                <rect x="1700" y="550" class="st1" width="200" height="600" />
+                <rect x="1150" y="550" class="st1" width="200" height="600" />
+              </g>
+            </g>
+          </g>
+        </svg>
+        Continue with Twitch
+      </a>
+    </div>
+    <%= form_for @conn, Routes.user_session_path(@conn, :create), [as: :user, class: "space-y-4"], fn f -> %>
+
+    <%= if @error_message do %>
     <div class="alert alert-danger">
       <small><%= @error_message %></small>
     </div>
-  <% end %>
+    <% end %>
 
-  <div class="mt-4 mb-4">
-    <%= label f, :email, class: "form-label" %>
+    <%= label class: "block" do %>
+    <span class="block mb-1 text-xs font-medium text-gray-700">Your Email</span>
     <%= text_input f, :email, required: true, class: "form-input" %>
-  </div>
+    <% end %>
 
-  <div class="mb-4">
-    <%= label f, :password, class: "form-label" %>
+    <%= label class: "block" do %>
+    <span class="block mb-1 text-xs font-medium text-gray-700">Your Password</span>
     <%= password_input f, :password, required: true, class: "form-input" %>
-  </div>
+    <% end %>
 
-  <%= label f, :remember_me, class: "form-label" do %>
+    <%= label f, :remember_me, class: "form-label" do %>
     <%= checkbox f, :remember_me, class: "form-checkbox" %>
     <span class="ml-1">Keep me logged in for 60 days</span>
-  <% end %>
+    <% end %>
 
-  <div class="mt-6">
-    <%= submit "Log in", class: "btn btn-dark w-full" %>
+    <%= submit "Continue with email", class: "w-full py-3 btn btn-primary" %>
+    <% end %>
+    <div class="my-2 text-center">
+      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "text-sm text-gray-700 underline hover:text-purple-700" %>
+      <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "text-sm text-gray-700 underline hover:text-purple-700" %>
+    </div>
   </div>
-<% end %>
-
-<div class="mt-3 text-center text-gray-600">
-  <small>Already have an account?</small>
-</div>
-
-<div class="mt-3">
-  <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "btn btn-link btn-sm" %>
-  <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "btn btn-link btn-sm" %>
-</div>
+</section>

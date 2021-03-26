@@ -137,7 +137,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
 
-    live "/dashboard", DashboardLive.Index, :index
-    live "/dashboard/settings", DashboardLive.Index, :settings
+    live "/dashboard", DashboardLive.Index, :index,
+      layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, "logged_in.html"}
+
+    live "/dashboard/settings", DashboardLive.Index, :settings,
+      layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, "logged_in.html"}
   end
 end

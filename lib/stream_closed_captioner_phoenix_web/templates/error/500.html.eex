@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <%= csrf_meta_tag() %>
+  <%= live_title_tag assigns[:page_title] || "StreamClosedCaptionerPhoenix", suffix: " · Phoenix Framework" %>
+  <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>" />
+  <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+</head>
+
+<body class="flex flex-col h-full">
+  <section class="px-4 py-24 mx-auto max-w-7xl">
+    <div class="grid items-center w-full grid-cols-1 gap-10 mx-auto md:w-4/5 lg:grid-cols-2 xl:gap-32">
+      <div>
+        <p class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">Error 404</p>
+        <h1 class="mb-4 text-2xl font-extrabold leading-tight tracking-tight text-left text-gray-900 md:text-4xl">Oops!
+          The page you're looking for isn't here.</h1>
+        <p class="mb-5 text-base text-left text-gray-800 md:text-xl">You might have the wrong address, or the page may
+          have moved.</p>
+        <a href="/" class="w-full mb-2 btn btn-lg btn-light sm:w-auto sm:mb-0">Back to homepage</a>
+      </div>
+      <div>
+        <div class="w-full h-full bg-gray-200 rounded-lg content-center">
+          <img class="p-8" src="https://media.giphy.com/media/Ta3v3I4GI1gH7Rqek6/giphy-downsized.gif" />
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>

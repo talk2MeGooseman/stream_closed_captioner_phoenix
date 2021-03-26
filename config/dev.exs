@@ -21,7 +21,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
 # with webpack to recompile .js and .css sources.
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   http: [port: 4000],
-  debug_errors: true,
+  debug_errors: false,
   code_reloader: true,
   check_origin: false,
   watchers: [
@@ -29,7 +29,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
       "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
-      "--watch-stdin",
+      "--watch-poll",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
