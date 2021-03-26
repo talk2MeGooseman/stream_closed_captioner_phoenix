@@ -16,6 +16,12 @@
         </h5>
       </div>
       <span><%= live_patch "Twitch Settings", to: Routes.dashboard_index_path(@socket, :settings) %></span>
+      <div id="caption-actions" phx-update="ignore">
+        <div data-controller="captions">
+          <button data-action="click->captions#startCaptions">Click to Start Captions</button>
+          <div data-captions-target="output"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

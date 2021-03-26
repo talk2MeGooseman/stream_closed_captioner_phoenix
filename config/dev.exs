@@ -29,7 +29,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
       "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
-      "--watch-poll",
+      "--watch-stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
