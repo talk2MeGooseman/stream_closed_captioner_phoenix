@@ -12,6 +12,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.Index do
       session_current_user(session)
       |> Repo.preload(:stream_settings)
 
+    socket = assign(socket, :current_user, current_user)
+    socket = assign(socket, :live_socket_id, Map.get(session, "live_socket_id"))
     {:ok, assign(socket, :stream_settings, current_user.stream_settings)}
   end
 

@@ -8,6 +8,8 @@
   <%= csrf_meta_tag() %>
   <%= live_title_tag assigns[:page_title] || "StreamClosedCaptionerPhoenix", suffix: " · Phoenix Framework" %>
   <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>" />
+  <script>window.userId = "<%= assigns[:current_user].id %>";</script>
+  <script>window.userToken = "<%= assigns[:live_socket_id] %>";</script>
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
 

@@ -13,29 +13,33 @@ import "../css/app.scss"
 //     import socket from "./socket"
 //
 import "phoenix_html"
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 import NProgress from "nprogress"
-import {LiveSocket} from "phoenix_live_view"
-import {InitToast} from "./init_toast.js"
+import { LiveSocket } from "phoenix_live_view"
+import { InitToast } from "./init_toast.js"
+import socket from "./service/socket"
 
 let Hooks = {}
 Hooks.InitToast = InitToast
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks: Hooks,
-  params: {_csrf_token: csrfToken},
+  params: { _csrf_token: csrfToken },
   dom: {
-    onBeforeElUpdated(from, to){
-      if(from.__x){ window.Alpine.clone(from.__x, to) }
-    }
-  }
+    onBeforeElUpdated(from, to) {
+      if (from.__x) {
+        window.Alpine.clone(from.__x, to)
+      }
+    },
+  },
 })
 
-
 // Show progress bar on live navigation and form submits
-window.addEventListener("phx:page-loading-start", info => NProgress.start())
-window.addEventListener("phx:page-loading-stop", info => NProgress.done())
+window.addEventListener("phx:page-loading-start", (info) => NProgress.start())
+window.addEventListener("phx:page-loading-stop", (info) => NProgress.done())
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
@@ -45,7 +49,6 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
 
 import "./stimulus"
 import "alpinejs"

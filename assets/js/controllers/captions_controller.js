@@ -2,6 +2,7 @@ import BaseController from "./base_controller"
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { forEach, isEmpty } from "ramda"
+import { captionsChannel } from "../channels"
 
 export default class extends BaseController {
   static targets = ["output"]
@@ -14,7 +15,7 @@ export default class extends BaseController {
       // createSpeechChannel()
       this.ccActivityBroadcaster = new BroadcastChannel("cc-active")
 
-      if (window._speechHandler ) {
+      if (window._speechHandler) {
         this.speechRecognitionHandler = window._speechHandler
       } else {
         this.speechRecognitionHandler = window._speechHandler = new SpeechRecognitionHandler()
@@ -22,9 +23,21 @@ export default class extends BaseController {
 
       this.speechRecognitionHandler.setLanguage("en-US")
 
-      this.removeEvents.push(this.speechRecognitionHandler.onEvent("started", this.recognitionStarted))
-      this.removeEvents.push(this.speechRecognitionHandler.onEvent("stopped", this.recognitionStopped))
-      this.removeEvents.push(this.speechRecognitionHandler.onEvent("interim", this.sendMessage))
+      this.removeEvents.push(
+        this.speechRecognitionHandler.onEvent(
+          "started",
+          this.recognitionStarted
+        )
+      )
+      this.removeEvents.push(
+        this.speechRecognitionHandler.onEvent(
+          "stopped",
+          this.recognitionStopped
+        )
+      )
+      this.removeEvents.push(
+        this.speechRecognitionHandler.onEvent("interim", this.sendMessage)
+      )
 
       this.initLanguageChangeListener()
       this.initBrowserChannelMessageListener()
@@ -33,7 +46,7 @@ export default class extends BaseController {
   }
 
   disconnect() {
-    this.removeEvents.forEach(e => (e()))
+    this.removeEvents.forEach((e) => e())
   }
 
   initOBSChannelListener = () => {
@@ -106,7 +119,7 @@ export default class extends BaseController {
   }
 
   sendMessage = (data) => {
-    console.log(data)
+    captionsChannel.push("publish", data, 5000)
     this.outputTarget.textContent = isEmpty(data.interim)
       ? data.final
       : data.interim

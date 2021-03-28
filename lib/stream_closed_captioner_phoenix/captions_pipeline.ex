@@ -22,11 +22,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   def pipeline_to(:twitch, %User{} = user, message) do
     user = Repo.preload(user, :stream_settings)
 
-    payload = %CaptionsPayload{interim: "", final: "", translations: nil, delay: 0}
-    payload = Map.merge(payload, maybe_censor_message_for(user, message))
+    payload = CaptionsPayload.new(message)
+    payload = Map.merge(payload, maybe_censor_message_for(user, payload))
 
     payload =
-      case maybe_translate(user, get_in(message, [:interim])) do
+      case maybe_translate(user, Map.get(payload, :interim)) do
         %Translations{} = translations ->
           Map.merge(
             payload,
@@ -47,11 +47,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     message
     |> Map.put(
       :interim,
-      Profanity.maybe_censor_for(user.stream_settings, get_in(message, [:interim]))
+      Profanity.maybe_censor_for(user.stream_settings, Map.get(message, :interim))
     )
     |> Map.put(
       :final,
-      Profanity.maybe_censor_for(user.stream_settings, get_in(message, [:final]))
+      Profanity.maybe_censor_for(user.stream_settings, Map.get(message, :final))
     )
   end
 

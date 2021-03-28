@@ -1,4 +1,5 @@
 defmodule Twitch.Extension.CaptionsPayload do
+  @derive Jason.Encoder
   @type t :: %__MODULE__{
           interim: String.t(),
           final: String.t(),
