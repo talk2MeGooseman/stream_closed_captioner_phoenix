@@ -19,9 +19,9 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       |> Ecto.Multi.run(:debit, fn _repo, _ ->
         create_bits_balance_debit(user, %{amount: 500})
       end)
-      |> Ecto.Multi.run(:balance, fn _repo, %{ debit: debit} ->
+      |> Ecto.Multi.run(:balance, fn _repo, %{debit: debit} ->
         new_balance = user.bits_balance.balance - debit.amount
-        update_bits_balance(user.bits_balance, %{ balance: new_balance })
+        update_bits_balance(user.bits_balance, %{balance: new_balance})
       end)
       |> Repo.transaction()
     else

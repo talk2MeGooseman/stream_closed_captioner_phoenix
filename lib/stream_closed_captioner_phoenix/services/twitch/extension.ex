@@ -109,11 +109,9 @@ defmodule Twitch.Extension do
       {"Authorization", "Bearer #{token}"}
     ]
 
-    encode_url_and_params(
-      "https://api.twitch.tv/extensions/" <>
-        client_id <> "/configurations/segments/" <> to_string(segment),
-      %{channel_id: channel_id}
-    )
+    ("https://api.twitch.tv/extensions/" <>
+       client_id <> "/configurations/segments/" <> to_string(segment))
+    |> encode_url_and_params(%{channel_id: channel_id})
     |> HTTPoison.get!(headers)
     |> Map.fetch!(:body)
     |> Jason.decode!()
@@ -138,7 +136,8 @@ defmodule Twitch.Extension do
         content: Jason.encode!(data)
       })
 
-    encode_url_and_params("https://api.twitch.tv/extensions/" <> client_id <> "/configurations")
+    ("https://api.twitch.tv/extensions/" <> client_id <> "/configurations")
+    |> encode_url_and_params()
     |> HTTPoison.put(body, headers)
   end
 end
