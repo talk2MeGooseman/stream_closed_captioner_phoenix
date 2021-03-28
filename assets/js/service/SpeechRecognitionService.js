@@ -1,8 +1,4 @@
-/* eslint-disable max-statements */
-
-// Sub - Appl_jax
-
-import uuid from 'uuid/v4'
+import uuid from "uuid/v4"
 
 const INTERVAL_TIMER = 1000
 
@@ -14,29 +10,31 @@ export default class SpeechRecognitionService {
     this.recognitionService = this.initSpeechRecognition()
 
     this.speechToTextActive = false
-    this.finalSpeechBuffer = ''
-    this.lastSentFinalSpeechBuffer = ''
-    this.interimSpeechBuffer = ''
+    this.finalSpeechBuffer = ""
+    this.lastSentFinalSpeechBuffer = ""
+    this.interimSpeechBuffer = ""
     this.sessionId = uuid()
     this._pause = false
 
-    this.recognitionService.onresult = (event) => this.onRecognitionResult(event)
+    this.recognitionService.onresult = (event) =>
+      this.onRecognitionResult(event)
     this.recognitionService.onend = () => this.onRecognitionEnd()
   }
 
   initSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition
 
     const recognitionService = new SpeechRecognition()
 
-    recognitionService.lang = 'en-US'
+    recognitionService.lang = "en-US"
     recognitionService.interimResults = true
     recognitionService.maxAlternatives = 1
     return recognitionService
   }
 
   onRecognitionResult(event) {
-    if (event.results === '' || this._pause) return
+    if (event.results === "" || this._pause) return
     this.interimSpeechBuffer = this.parseSpeechResults(event.results)
   }
 
@@ -44,16 +42,17 @@ export default class SpeechRecognitionService {
   onRecognitionEnd() {
     if (!this._pause || this.interimSpeechBuffer.length > 0) {
       this.finalSpeechBuffer = this.interimSpeechBuffer
-      if (this.onRecognitionEndCallback) this.onRecognitionEndCallback(this.finalSpeechBuffer)
+      if (this.onRecognitionEndCallback)
+        this.onRecognitionEndCallback(this.finalSpeechBuffer)
     }
 
-    this.interimSpeechBuffer = ''
+    this.interimSpeechBuffer = ""
 
     if (this.speechToTextActive) {
       this.recognitionService.start()
     } else {
-      this.finalSpeechBuffer = ''
-      this.lastSentFinalSpeechBuffer = ''
+      this.finalSpeechBuffer = ""
+      this.lastSentFinalSpeechBuffer = ""
     }
   }
 
@@ -92,9 +91,10 @@ export default class SpeechRecognitionService {
     // eslint-disable-next-line complexity
     this.intervalId = setInterval(() => {
       if (
-        this.interimSpeechBuffer.length === 0
-        && this.finalSpeechBuffer === this.lastSentFinalSpeechBuffer
-      ) return
+        this.interimSpeechBuffer.length === 0 &&
+        this.finalSpeechBuffer === this.lastSentFinalSpeechBuffer
+      )
+        return
 
       this.lastSentFinalSpeechBuffer = this.finalSpeechBuffer
 
@@ -109,7 +109,7 @@ export default class SpeechRecognitionService {
   }
 
   parseSpeechResults(speechArray) {
-    let results = ''
+    let results = ""
 
     for (const key in speechArray) {
       // eslint-disable-next-line no-prototype-builtins

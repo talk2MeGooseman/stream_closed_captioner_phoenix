@@ -1,10 +1,11 @@
 import BaseController from "./base_controller"
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
-import { isEmpty } from "ramda"
+import { forEach, isEmpty } from "ramda"
 
 export default class extends BaseController {
   static targets = ["output"]
+  removeEvents = []
 
   connect() {
     console.log("Captions Controller")
@@ -13,17 +14,26 @@ export default class extends BaseController {
       // createSpeechChannel()
       this.ccActivityBroadcaster = new BroadcastChannel("cc-active")
 
-      this.speechRecognitionHandler = new SpeechRecognitionHandler()
+      if (window._speechHandler ) {
+        this.speechRecognitionHandler = window._speechHandler
+      } else {
+        this.speechRecognitionHandler = window._speechHandler = new SpeechRecognitionHandler()
+      }
 
       this.speechRecognitionHandler.setLanguage("en-US")
-      this.speechRecognitionHandler.onEvent("started", this.recognitionStarted)
-      this.speechRecognitionHandler.onEvent("stopped", this.recognitionStopped)
-      this.speechRecognitionHandler.onEvent("interim", this.sendMessage)
+
+      this.removeEvents.push(this.speechRecognitionHandler.onEvent("started", this.recognitionStarted))
+      this.removeEvents.push(this.speechRecognitionHandler.onEvent("stopped", this.recognitionStopped))
+      this.removeEvents.push(this.speechRecognitionHandler.onEvent("interim", this.sendMessage))
 
       this.initLanguageChangeListener()
       this.initBrowserChannelMessageListener()
       this.initOBSChannelListener()
     }
+  }
+
+  disconnect() {
+    this.removeEvents.forEach(e => (e()))
   }
 
   initOBSChannelListener = () => {

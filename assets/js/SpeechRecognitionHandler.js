@@ -20,7 +20,6 @@ export default class SpeechRecognitionHandler {
 
   constructor() {
     this.eventSubscribers = {}
-    console.log("Rebuilt")
     this.speechRecogService = new SpeechRecognitionService()
 
     this.speechRecogService.onSpeechIntervalCallback = this.onSpeechIntervals.bind(
@@ -53,6 +52,10 @@ export default class SpeechRecognitionHandler {
       return
     }
     this.eventSubscribers[event] = callback
+
+    return () => {
+      delete this.eventSubscribers[event]
+    }
   }
 
   /**
