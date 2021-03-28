@@ -42,7 +42,7 @@ RUN apt-get update \
   fi \
   #
   # Install dependencies
-  && apt-get install -y build-essential \
+  && apt-get install -y build-essential inotify-tools \
   #
   # Clean up
   && apt-get autoremove -y \
@@ -60,3 +60,7 @@ RUN su ${USERNAME} -c "mix local.hex --force \
 
 # [Optional] Uncomment this line to install additional package.
 # RUN  mix ...
+
+# Install the Doppler CLI
+RUN (curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sh
+
