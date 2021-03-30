@@ -2,7 +2,6 @@ import BaseController from "./base_controller"
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { forEach, isEmpty } from "ramda"
-import { captionsChannel } from "../channels"
 
 export default class extends BaseController {
   static targets = ["output"]
@@ -11,6 +10,10 @@ export default class extends BaseController {
   connect() {
     console.log("Captions Controller")
     if (isBrowserCompatible()) {
+      import("../channels").then(({ captionsChannel }) => {
+        this.captionsChannel = captionsChannel
+      })
+
       // Need to open websocket channel
       // createSpeechChannel()
       this.ccActivityBroadcaster = new BroadcastChannel("cc-active")
@@ -119,7 +122,12 @@ export default class extends BaseController {
   }
 
   sendMessage = (data) => {
-    captionsChannel.push("publish", data, 5000)
+    this.captionsChannel
+      .push("publish", data, 5000)
+      .receive("ok", (payload) => console.log("phoenix replied:", payload))
+      .receive("error", (err) => console.log("phoenix errored", err))
+      .receive("timeout", () => console.log("timed out pushing"))
+
     this.outputTarget.textContent = isEmpty(data.interim)
       ? data.final
       : data.interim
