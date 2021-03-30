@@ -17,7 +17,6 @@ import { Socket } from "phoenix"
 import NProgress from "nprogress"
 import { LiveSocket } from "phoenix_live_view"
 import { InitToast } from "./init_toast.js"
-import socket from "./service/socket"
 
 let Hooks = {}
 Hooks.InitToast = InitToast

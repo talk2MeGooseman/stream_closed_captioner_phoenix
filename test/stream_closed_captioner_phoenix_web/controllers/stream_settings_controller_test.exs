@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsControllerTest do
-  use StreamClosedCaptionerPhoenixWeb.ConnCase
+  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
   setup :register_and_log_in_user
 

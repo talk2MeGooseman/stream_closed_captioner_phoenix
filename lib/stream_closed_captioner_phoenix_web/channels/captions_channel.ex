@@ -22,14 +22,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (captions:lobby).
-  @impl true
-  def handle_in("shout", payload, socket) do
-    broadcast(socket, "shout", payload)
-    {:noreply, socket}
-  end
-
   # Add authorization logic here as required.
   defp authorized?(socket, user_id) do
     user_id == to_string(socket.assigns.current_user.id)

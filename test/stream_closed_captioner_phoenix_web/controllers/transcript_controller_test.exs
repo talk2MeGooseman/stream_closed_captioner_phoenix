@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.TranscriptControllerTest do
   import StreamClosedCaptionerPhoenix.Factory
-  use StreamClosedCaptionerPhoenixWeb.ConnCase
+  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
   setup :register_and_log_in_user
 
