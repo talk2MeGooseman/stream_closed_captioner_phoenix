@@ -38,8 +38,13 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       end
 
     case Twitch.send_pubsub_message(user.uid, payload) do
-      {:ok, _} -> IO.puts("Message sent successfully")
-      {:error, message} -> IO.puts("Error occurred: #{message}")
+      {:ok, _} ->
+        IO.puts("Message sent successfully")
+        {:ok, payload}
+
+      {:error, message} ->
+        IO.puts("Error occurred: #{message}")
+        :error
     end
   end
 

@@ -15,8 +15,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   @impl true
   def handle_in("publish", payload, socket) do
     user = socket.assigns.current_user
-    StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload)
-    {:reply, {:ok, payload}, socket}
+
+    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
+      {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
+      :error -> {:error, "Issue sending captions."}
+    end
   end
 
   # It is also common to receive messages from the client and
