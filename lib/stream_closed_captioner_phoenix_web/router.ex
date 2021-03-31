@@ -15,6 +15,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug :fetch_current_user
   end
 
+  pipeline :logged_in do
+    plug :put_root_layout, {StreamClosedCaptionerPhoenixWeb.LayoutView, :logged_in}
+  end
+
   pipeline :kaffy_browser do
     plug :accepts, ["html", "json"]
     plug :fetch_session
@@ -117,18 +121,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :logged_in]
 
-    delete "/users/register", UserRegistrationController, :delete
-
-    get "/users/settings", UserSettingsController, :edit
-    put "/users/settings", UserSettingsController, :update
-    get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
-    put "/users/settings/update_avatar", UserSettingsController, :update_avatar
-
-    scope "/user/" do
+    scope "/users/" do
       get "/stream_settings", StreamSettingsController, :edit
       put "/stream_settings", StreamSettingsController, :update
+
+      delete "/register", UserRegistrationController, :delete
+
+      get "/settings", UserSettingsController, :edit
+      put "/settings", UserSettingsController, :update
+      get "/settings/confirm_email/:token", UserSettingsController, :confirm_email
+
+      live "/captions-settings", StreamSettingsLive.Index, :update
     end
 
     resources "/transcripts", TranscriptController, except: [:create, :new] do

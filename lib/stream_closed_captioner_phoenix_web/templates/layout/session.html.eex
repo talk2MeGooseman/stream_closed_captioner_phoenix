@@ -15,7 +15,7 @@
   <header>
     <nav class="flex flex-wrap items-center justify-between py-2 px-4 fixed top-0 right-0 left-0 z-30 bg-gray-700">
       <a class="inline-block mr-4 py-1 text-xl text-gray-300" href="#"><i class="fas fa-bolt"></i>
-        StreamClosedCaptionerPhoenix</a>
+        Stream CC</a>
     </nav>
   </header>
 

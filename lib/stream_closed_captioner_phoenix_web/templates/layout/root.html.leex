@@ -11,24 +11,12 @@
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
 
-<body class="h-full pt-32 bg-gray-100">
-  <%= thesis_editor(@conn) %>
-  <header class="fixed top-0 left-0 right-0 z-30 px-2 py-4 bg-white shadow sm:px-4">
-    <div class="container flex items-center justify-between mx-auto">
-      <a href="/" title="StreamClosedCaptionerPhoenix Home Page" class="flex items-center text-xl text-gray-900">
-        StreamClosedCaptionerPhoenix
-      </a>
-      <div class="flex items-center space-x-1">
-        <div class="hidden md:inline-flex space-x-1">
-          <%= link "Home", to: Routes.page_path(@conn, :index), class: "btn btn-sm btn-link" %>
-        </div>
-        <%= render "_user_menu.html", assigns %>
-      </div>
-    </div>
-  </header>
+<body class="h-full bg-gray-100">
+  <%= render "_header.html", assigns %>
   <%= @inner_content %>
 
   <%= render "_footer.html", assigns %>
+  <script src="https://cdn.jsdelivr.net/npm/kutty@latest/dist/dropdown.min.js"></script>
 </body>
 
 </html>

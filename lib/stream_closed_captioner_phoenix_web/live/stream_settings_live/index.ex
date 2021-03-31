@@ -1,10 +1,9 @@
-defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.Index do
+defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
   use StreamClosedCaptionerPhoenixWeb, :live_view
 
   import StreamClosedCaptionerPhoenixWeb.LiveHelpers
 
-  alias StreamClosedCaptionerPhoenix.{Accounts, Repo, Settings}
-  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
+  alias StreamClosedCaptionerPhoenix.Repo
 
   @impl true
   def mount(_params, session, socket) do
@@ -22,13 +21,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :settings, _params) do
+  defp apply_action(socket, _, _params) do
     socket
-    |> assign(:page_title, "Caption Settings")
-  end
-
-  defp apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "Dashboard")
+    |> assign(:page_title, "Captions settings")
   end
 end

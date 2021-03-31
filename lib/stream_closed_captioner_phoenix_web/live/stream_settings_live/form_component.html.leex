@@ -6,60 +6,64 @@
   phx_submit: "save" %>
 
 <div class="mb-6">
-  <%= label f, :caption_delay, class: "form-label" %>
-  <%= number_input f, :caption_delay %>
-  <%= error_tag f, :caption_delay %>
+  <%= label f, :caption_delay, class: "block text-sm mb-1 mt-4" %>
+  <%= number_input f, :caption_delay, class: "form-input bg-red-100" %>
+  <%= error_tag f, :caption_delay, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= label f, :language, class: "form" %>
-  <%= text_input f, :language %>
-  <%= error_tag f, :language %>
+  <%= label f, "Your Language", class: "block text-sm mb-1 mt-4" %>
+  <%= text_input f, :language, class: "form-input bg-red-100" %>
+  <%= error_tag f, :language, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= checkbox f, :filter_profanity, class: "form-checkbox" %>
-  <%= label f, :filter_profanity, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :filter_profanity %>
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :filter_profanity, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Censor Profanity</span>
+  <% end %>
+  <%= error_tag f, :filter_profanity, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= checkbox f, :hide_text_on_load, class: "form-checkbox" %>
-  <%= label f, :hide_text_on_load, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :hide_text_on_load %>
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :hide_text_on_load, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Hide Captions by Default</span>
+  <% end %>
+  <%= error_tag f, :hide_text_on_load, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= checkbox f, :text_uppercase, class: "form-checkbox" %>
-  <%= label f, :text_uppercase, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :text_uppercase %>
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :text_uppercase, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Uppercase Text By Default</span>
+  <% end %>
+  <%= error_tag f, :text_uppercase, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= checkbox f, :cc_box_size, class: "form-checkbox" %>
-  <%= label f, :cc_box_size, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :cc_box_size %>
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :cc_box_size, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Display Captions in Box Size</span>
+  <% end %>
+  <%= error_tag f, :cc_box_size, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= checkbox f, :switch_settings_position, class: "form-checkbox" %>
-  <%= label f, :switch_settings_position, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :switch_settings_position %>
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :switch_settings_position, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Display Settings on Left Side</span>
+  <% end %>
+  <%= error_tag f, :switch_settings_position, class: "text-red-700 text-sm mt-1" %>
 </div>
 
-<div class="mb-6">
-  <%= checkbox f, :showcase, class: "form-checkbox" %>
-  <%= label f, :showcase, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :showcase %>
-</div>
-
-<div class="mb-6">
-  <%= checkbox f, :pirate_mode, class: "form-checkbox" %>
-  <%= label f, :pirate_mode, class: "form-label ml-1 inline" %>
-  <%= error_tag f, :pirate_mode %>
-</div>
+<%# <div class="mb-6">
+  <%# <%= checkbox f, :pirate_mode, class: "form-checkbox bg-green-100" %>
+  <%# <%= label f, :pirate_mode, class: "flex items-center mt-4" %>
+  <%# <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
+<%# </div> %>
 
 <div class="mt-8 mb-2">
-  <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary btn-sm" %>
+  <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
 </div>
 </form>
