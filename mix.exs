@@ -69,6 +69,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:joken, "~> 2.3"},
       # Admin Dashboard
       {:kaffy, "~> 0.9.0"},
+      {:mox, "~> 1.0.0"},
       {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
       {:neuron, "~> 5.0"},
       {:phoenix_ecto, "~> 4.1"},
