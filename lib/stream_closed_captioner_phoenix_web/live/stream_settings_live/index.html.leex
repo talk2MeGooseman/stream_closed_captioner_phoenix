@@ -1,9 +1,11 @@
 <div class="flex flex-wrap">
-  <div class="w-full md:w-2/3">
+  <div
+    class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
     <h2 class="text-xl font-semibold text-gray-900">Caption Settings</h2>
     <%= live_component @socket, StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent,
         id: @stream_settings.id,
         stream_settings: @stream_settings
      %>
   </div>
+</div>
 </div>

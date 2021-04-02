@@ -33,7 +33,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     quote do
       use Phoenix.View,
         root: "lib/stream_closed_captioner_phoenix_web/templates",
-        namespace: StreamClosedCaptionerPhoenixWeb
+        namespace: StreamClosedCaptionerPhoenixWeb,
+        pattern: "**/*"
 
       # Import convenience functions from controllers
       import Phoenix.Controller,

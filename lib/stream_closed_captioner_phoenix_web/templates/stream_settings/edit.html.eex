@@ -1,3 +1,0 @@
-<h1>Edit Stream settings</h1>
-
-<%= render "form.html", Map.put(assigns, :action, Routes.stream_settings_path(@conn, :update)) %>

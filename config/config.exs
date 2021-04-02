@@ -27,6 +27,22 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :phoenix, :filter_parameters, [
+  "Ocp-Apim-Subscription-Key",
+  "current_password",
+  "password",
+  "secret_key",
+  "access_key_id",
+  "secret_access_key",
+  "secret_key_base",
+  "client_id",
+  "client_secret",
+  "default_signer",
+  "token_secret",
+  "Authorization",
+  ""
+]
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
