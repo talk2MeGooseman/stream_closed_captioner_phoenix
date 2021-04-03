@@ -3,8 +3,9 @@ defmodule Azure.Cognitive do
 
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
+  @behaviour Azure.CognitiveProvider
 
-  @spec translate(String.t(), list(String.t()), String.t()) :: Translations.t()
+  @impl Azure.CognitiveProvider
   def translate(from_language \\ "en", to_languages, text)
       when is_list(to_languages) and is_binary(text) do
     language_tuple_list =

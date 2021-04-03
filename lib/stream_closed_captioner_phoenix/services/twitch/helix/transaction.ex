@@ -14,6 +14,18 @@ defmodule Twitch.Helix.Transaction do
     :product_data
   ]
 
+  @type t :: %__MODULE__{
+          id: String.t(),
+          timestamp: String.t(),
+          broadcaster_id: String.t(),
+          broadcaster_login: String.t(),
+          broadcaster_name: String.t(),
+          user_id: String.t(),
+          user_login: String.t(),
+          user_name: String.t(),
+          product_type: String.t(),
+          product_data: String.t()
+        }
   use ExConstructor
 
   def new(data, args \\ []) do

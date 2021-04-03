@@ -2,10 +2,10 @@ defmodule Azure.Cognitive.Translations do
   alias Azure.Cognitive.Translation
 
   @type t :: %__MODULE__{
-    translations: list(Translation.t),
-  }
+          translations: list(Translation.t())
+        }
   defstruct [
-    :translations,
+    :translations
   ]
 
   use ExConstructor

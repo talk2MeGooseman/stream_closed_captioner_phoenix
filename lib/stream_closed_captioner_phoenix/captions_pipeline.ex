@@ -6,6 +6,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
   alias Twitch.Extension.CaptionsPayload
 
+  @type message_map :: %{
+          required(:final) => String.t(),
+          required(:interim) => String.t(),
+          required(:session) => String.t()
+        }
+
+  @spec pipeline_to(
+          :twitch | :zoom,
+          StreamClosedCaptionerPhoenix.Accounts.User.t(),
+          message_map()
+        ) ::
+          {:error, String.t()}
+          | {:ok, CaptionsPayload.t()}
+
   def pipeline_to(:zoom, %User{} = user, message) do
     user = Repo.preload(user, :stream_settings)
 
@@ -27,9 +41,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     payload =
       case maybe_translate(user, Map.get(payload, :interim)) do
-        %Translations{} = translations ->
-          Map.merge(
+        %Translations{translations: translations} ->
+          Map.put(
             payload,
+            :translations,
             translations
           )
 
@@ -38,13 +53,16 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       end
 
     case Twitch.send_pubsub_message(user.uid, payload) do
-      {:ok, _} ->
+      {:ok, %HTTPoison.Response{status_code: 204}} ->
         IO.puts("Message sent successfully")
         {:ok, payload}
 
-      {:error, message} ->
-        IO.puts("Error occurred: #{message}")
-        :error
+      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+        IO.puts("Request was rejected")
+        {:error, body}
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
     end
   end
 

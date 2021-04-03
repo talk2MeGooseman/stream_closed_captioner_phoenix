@@ -8,6 +8,13 @@ defmodule Twitch.Helix.ProductData do
     :in_development
   ]
 
+  @type t :: %__MODULE__{
+          sku: String.t(),
+          cost: non_neg_integer(),
+          display_name: String.t(),
+          in_development: boolean()
+        }
+
   use ExConstructor
 
   def new(data, args \\ []) do

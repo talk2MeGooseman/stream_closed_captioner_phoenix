@@ -3,8 +3,8 @@ defmodule Twitch.Jwt do
 
   def get_credentials,
     do: %Credentials{
-      client_id: System.get_env("TWITCH_CLIENT_ID"),
-      token_secret: System.get_env("TWITCH_TOKEN_SECRET")
+      client_id: System.get_env("TWITCH_CLIENT_ID") || "",
+      token_secret: System.get_env("TWITCH_TOKEN_SECRET") || ""
     }
 
   @spec sign_token_for(:pubsub | :standard, String.t()) :: %Twitch.Extension.Credentials{

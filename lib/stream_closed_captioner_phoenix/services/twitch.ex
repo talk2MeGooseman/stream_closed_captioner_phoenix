@@ -5,35 +5,29 @@ defmodule Twitch do
 
   alias Twitch.{Extension, Helix, Jwt, Oauth}
 
+  def api_client,
+    do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_extension_client)
+
   @spec extension_live_channels :: list
   def extension_live_channels() do
     Jwt.get_credentials()
-    |> Extension.get_live_channels()
+    |> api_client().get_live_channels()
   end
 
   def send_pubsub_message(channel_id, message) when is_map(message) do
     Jwt.sign_token_for(:pubsub, channel_id)
-    |> Extension.send_pubsub_message_for(channel_id, message)
+    |> api_client().send_pubsub_message_for(channel_id, message)
   end
 
+  @spec get_extension_broadcaster_configuration_for(binary) :: any
   def get_extension_broadcaster_configuration_for(channel_id) do
     Jwt.sign_token_for(:standard, channel_id)
-    |> Extension.get_configuration_for(Extension.broadcaster_segment(), channel_id)
+    |> api_client().get_configuration_for(Extension.broadcaster_segment(), channel_id)
   end
 
-  @spec set_extension_broadcaster_configuration_for(binary, map) :: %{
-          :__struct__ => HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
-          optional(:body) => any,
-          optional(:headers) => list,
-          optional(:id) => reference,
-          optional(:redirect_url) => any,
-          optional(:request) => HTTPoison.Request.t(),
-          optional(:request_url) => any,
-          optional(:status_code) => integer
-        }
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
-    |> Extension.set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
+    |> api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
   end
 
   @spec get_live_streams(list(binary())) :: list

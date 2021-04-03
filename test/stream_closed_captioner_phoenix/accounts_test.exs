@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   import StreamClosedCaptionerPhoenix.Factory
 
-  use StreamClosedCaptionerPhoenix.DataCase
+  use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenix.Accounts
   import StreamClosedCaptionerPhoenix.AccountsFixtures

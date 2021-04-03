@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.PageLiveTest do
-  use StreamClosedCaptionerPhoenixWeb.ConnCase
+  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
 

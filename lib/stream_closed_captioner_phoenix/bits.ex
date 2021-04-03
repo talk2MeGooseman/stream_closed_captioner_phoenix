@@ -142,8 +142,12 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       iex> get_bits_balance!(456)
       ** (Ecto.NoResultsError)
 
+      iex> get_bits_balance!(user)
+      %BitsBalance{}
+
   """
-  def get_bits_balance!(id), do: Repo.get!(BitsBalance, id)
+  def get_bits_balance!(id) when is_integer(id), do: Repo.get!(BitsBalance, id)
+  def get_bits_balance!(%User{} = user), do: Repo.get_by!(BitsBalance, user_id: user.id)
 
   @doc """
   Creates a bits_balance.
@@ -240,7 +244,13 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       ** (Ecto.NoResultsError)
 
   """
-  def get_bits_transaction!(id), do: Repo.get!(BitsTransaction, id)
+  def get_bits_transaction!(id) when is_integer(id), do: Repo.get!(BitsTransaction, id)
+
+  def get_bits_transactions!(%User{} = user) do
+    BitsBalanceDebit
+    |> where(user_id: ^user.id)
+    |> Repo.all()
+  end
 
   @doc """
   Creates a bits_transaction.

@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.BitsTest do
   import StreamClosedCaptionerPhoenix.Factory
-  use StreamClosedCaptionerPhoenix.DataCase
+  use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenix.{Bits, Repo}
   import StreamClosedCaptionerPhoenix.BitsFixtures
@@ -109,7 +109,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "update_bits_balance/2 with valid data updates the bits_balance" do
-      bits_balance =  insert(:bits_balance)
+      bits_balance = insert(:bits_balance)
 
       assert {:ok, %BitsBalance{} = bits_balance} =
                Bits.update_bits_balance(bits_balance, @update_attrs)

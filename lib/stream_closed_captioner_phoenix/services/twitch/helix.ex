@@ -1,16 +1,11 @@
 defmodule Twitch.Helix do
   import Helpers
 
+  alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction}
+  @behaviour Twitch.HelixProvider
 
-  @spec get_streams(
-          %Twitch.Helix.Credentials{
-            :access_token => String.t,
-            :client_id => String.t
-          },
-          list(String.t),
-          String.t | nil
-        ) :: list(Stream.t)
+  @impl HelixProvider
   def get_streams(%Credentials{} = credentials, user_ids, cursor \\ nil) do
     headers = [
       {"Content-Type", "application/json"},
@@ -36,10 +31,7 @@ defmodule Twitch.Helix do
     end
   end
 
-  @spec get_transactions(%Twitch.Helix.Credentials{
-          :access_token => String.t,
-          :client_id => String.t
-        }) :: list(Transaction.t)
+  @impl HelixProvider
   def get_transactions(%Credentials{} = %{client_id: client_id, access_token: access_token}) do
     headers = [
       {"Content-Type", "application/json"},

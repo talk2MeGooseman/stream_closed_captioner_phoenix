@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
   import StreamClosedCaptionerPhoenix.Factory
 
-  use StreamClosedCaptionerPhoenix.DataCase
+  use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenix.AccountsOauth
 

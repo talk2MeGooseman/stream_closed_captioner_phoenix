@@ -1,7 +1,9 @@
 defmodule Twitch.Extension do
   import Helpers
 
+  alias Twitch.ExtensionProvider
   alias Twitch.Extension.{Channel, Credentials}
+  @behaviour ExtensionProvider
 
   @broadcaster :broadcaster
   @spec broadcaster_segment :: :broadcaster
@@ -15,12 +17,7 @@ defmodule Twitch.Extension do
   @spec developer_segment :: :developer
   def developer_segment, do: @developer
 
-  @spec get_live_channels(
-          %Twitch.Extension.Credentials{
-            :client_id => String.t()
-          },
-          String.t() | nil
-        ) :: list
+  @impl ExtensionProvider
   def get_live_channels(%Credentials{} = credentials, current_cursor \\ nil) do
     headers = [
       {"Content-Type", "application/json"},
@@ -47,27 +44,7 @@ defmodule Twitch.Extension do
     end
   end
 
-  @spec send_pubsub_message_for(
-          %Twitch.Extension.Credentials{
-            :client_id => any,
-            :jwt_token => any
-          },
-          String.t(),
-          Twitch.Extension.CaptionsPayload.t()
-        ) ::
-          {:error, HTTPoison.Error.t()}
-          | {:ok,
-             %{
-               :__struct__ =>
-                 HTTPoison.AsyncResponse | HTTPoison.MaybeRedirect | HTTPoison.Response,
-               optional(:body) => any,
-               optional(:headers) => list,
-               optional(:id) => reference,
-               optional(:redirect_url) => any,
-               optional(:request) => HTTPoison.Request.t(),
-               optional(:request_url) => any,
-               optional(:status_code) => integer
-             }}
+  @impl ExtensionProvider
   def send_pubsub_message_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         channel_id,
@@ -90,14 +67,7 @@ defmodule Twitch.Extension do
     |> HTTPoison.post(body, headers)
   end
 
-  @spec get_configuration_for(
-          %Twitch.Extension.Credentials{
-            :client_id => String.t(),
-            :jwt_token => term()
-          },
-          atom(),
-          String.t()
-        ) :: any
+  @impl ExtensionProvider
   def get_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         segment,
@@ -117,6 +87,7 @@ defmodule Twitch.Extension do
     |> Jason.decode!()
   end
 
+  @impl ExtensionProvider
   def set_configuration_for(
         %Credentials{} = %{client_id: client_id, jwt_token: token},
         segment,

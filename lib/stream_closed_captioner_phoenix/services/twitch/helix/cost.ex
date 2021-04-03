@@ -4,5 +4,9 @@ defmodule Twitch.Helix.Cost do
     :type
   ]
 
+  @type t :: %__MODULE__{
+          amount: non_neg_integer(),
+          type: String.t()
+        }
   use ExConstructor
 end

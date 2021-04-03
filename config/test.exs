@@ -27,3 +27,7 @@ config :logger, level: :warn
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
   adapter: Bamboo.TestAdapter
+
+config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.MockExtension
+config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.MockHelix
+config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.MockCognitive

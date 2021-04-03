@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenix.EmailsTest do
-  use StreamClosedCaptionerPhoenix.DataCase
+  use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenix.Emails
 
