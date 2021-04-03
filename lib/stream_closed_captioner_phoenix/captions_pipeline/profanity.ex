@@ -16,16 +16,19 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity do
 
   ## Examples
 
-      iex> StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity.maybe_censor_for(%StreamClosedCaptionerPhoenix.Settings.StreamSettings{filter_profanity: true}, "Wow OMERGUDLUL123")
+      iex> StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity.maybe_censor(%StreamClosedCaptionerPhoenix.Settings.StreamSettings{filter_profanity: true}, "Wow OMERGUDLUL123")
       "Wow *************"
 
-      iex> StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity.maybe_censor_for(%StreamClosedCaptionerPhoenix.Settings.StreamSettings{filter_profanity: false}, "Wow OMERGUDLUL123")
+      iex> StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity.maybe_censor(%StreamClosedCaptionerPhoenix.Settings.StreamSettings{filter_profanity: false}, "Wow OMERGUDLUL123")
       "Wow OMERGUDLUL123"
   """
-  @spec maybe_censor_for(StreamingSettings.t, String.t) :: String.t
-  def maybe_censor_for(%StreamSettings{filter_profanity: filter_profanity}, text) when filter_profanity == false, do: text
+  @spec maybe_censor(StreamingSettings.t(), String.t()) :: String.t()
+  def maybe_censor(%StreamSettings{filter_profanity: filter_profanity}, text)
+      when filter_profanity == false,
+      do: text
 
-  def maybe_censor_for(%StreamSettings{filter_profanity: filter_profanity}, text) when filter_profanity == true do
+  def maybe_censor(%StreamSettings{filter_profanity: filter_profanity}, text)
+      when filter_profanity == true do
     Expletive.sanitize(text, @global_expletives_config, :stars)
   end
 end

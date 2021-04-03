@@ -14,9 +14,9 @@ defmodule Twitch do
     |> api_client().get_live_channels()
   end
 
-  def send_pubsub_message(channel_id, message) when is_map(message) do
+  def send_pubsub_message(payload, channel_id) when is_map(payload) do
     Jwt.sign_token_for(:pubsub, channel_id)
-    |> api_client().send_pubsub_message_for(channel_id, message)
+    |> api_client().send_pubsub_message_for(channel_id, payload)
   end
 
   @spec get_extension_broadcaster_configuration_for(binary) :: any
@@ -25,6 +25,7 @@ defmodule Twitch do
     |> api_client().get_configuration_for(Extension.broadcaster_segment(), channel_id)
   end
 
+  @spec set_extension_broadcaster_configuration_for(binary, map) :: any
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
     |> api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)

@@ -1,9 +1,8 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.{Bits, Repo, Settings}
-  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
-  alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
+  alias StreamClosedCaptionerPhoenix.Repo
+  alias StreamClosedCaptionerPhoenix.CaptionsPipeline.{Profanity, Translations}
   alias Twitch.Extension.CaptionsPayload
 
   @type message_map :: %{
@@ -29,30 +28,22 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     }
 
     url = Map.get(message, :url)
-    text = maybe_censor_message_for(user, message) |> Map.get(:final)
+    text = maybe_censor_for(message, :final, user) |> Map.get(:final)
     Zoom.send_captions_to(url, text, params)
   end
 
   def pipeline_to(:twitch, %User{} = user, message) do
     user = Repo.preload(user, :stream_settings)
 
-    payload = CaptionsPayload.new(message)
-    payload = Map.merge(payload, maybe_censor_message_for(user, payload))
+    CaptionsPayload.new(message)
+    |> maybe_censor_for(:interim, user)
+    |> maybe_censor_for(:final, user)
+    |> Translations.maybe_translate(:interim, user)
+    |> send_to(:twitch, user)
+  end
 
-    payload =
-      case maybe_translate(user, Map.get(payload, :interim)) do
-        %Translations{translations: translations} ->
-          Map.put(
-            payload,
-            :translations,
-            translations
-          )
-
-        nil ->
-          payload
-      end
-
-    case Twitch.send_pubsub_message(user.uid, payload) do
+  defp send_to(payload, :twitch, user) do
+    case Twitch.send_pubsub_message(payload, user.uid) do
       {:ok, %HTTPoison.Response{status_code: 204}} ->
         IO.puts("Message sent successfully")
         {:ok, payload}
@@ -66,40 +57,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  defp maybe_censor_message_for(%User{} = user, message) do
-    message
-    |> Map.put(
-      :interim,
-      Profanity.maybe_censor_for(user.stream_settings, Map.get(message, :interim))
+  defp maybe_censor_for(payload, key, %User{} = user) do
+    Map.put(
+      payload,
+      key,
+      Profanity.maybe_censor(user.stream_settings, Map.get(payload, key))
     )
-    |> Map.put(
-      :final,
-      Profanity.maybe_censor_for(user.stream_settings, Map.get(message, :final))
-    )
-  end
-
-  @spec maybe_translate(
-          %StreamClosedCaptionerPhoenix.Accounts.User{:id => any},
-          String.t()
-        ) :: nil | Azure.Cognitive.Translations.t()
-  defp maybe_translate(%User{} = user, text) when is_binary(text) do
-    case Bits.get_user_active_debit(user.id) do
-      %BitsBalanceDebit{} ->
-        get_translations(user, text)
-
-      nil ->
-        case Bits.activate_translations_for(user) do
-          {:ok, _} -> get_translations(user, text)
-          _ -> nil
-        end
-    end
-  end
-
-  defp get_translations(%User{} = user, text) do
-    user = StreamClosedCaptionerPhoenix.Repo.preload(user, :stream_settings)
-    from_language = user.stream_settings.language
-    to_languages = Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys()
-
-    Azure.perform_translations(from_language, to_languages, text)
   end
 end
