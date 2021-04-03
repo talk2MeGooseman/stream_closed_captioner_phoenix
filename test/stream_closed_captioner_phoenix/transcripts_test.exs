@@ -12,20 +12,19 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
 
     test "list_transcripts/0 returns all transcripts" do
       transcripts = insert_list(3, :transcript)
-      assert Transcripts.list_transcripts() |> Repo.preload(:user) == transcripts
+      assert Transcripts.list_transcripts() == transcripts
     end
 
     test "get_transcript!/1 returns the transcript with given id" do
       transcript = insert(:transcript)
-      assert Transcripts.get_transcript!(transcript.id) |> Repo.preload(:user) == transcript
+      assert Transcripts.get_transcript!(transcript.id) == transcript
     end
 
     test "get_users_transcript!/2 returns the transcript with given id" do
-      transcript = insert(:transcript)
+      transcript = insert(:transcript, user: build(:user))
 
-      assert Transcripts.get_users_transcript!(transcript.user, transcript.id)
-             |> Repo.preload(:user) ==
-               transcript
+      assert Transcripts.get_users_transcript!(transcript.user, transcript.id).id ==
+               transcript.id
     end
 
     test "create_transcript/1 with valid data creates a transcript" do
@@ -60,7 +59,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
       assert {:error, %Ecto.Changeset{}} =
                Transcripts.update_transcript(transcript, @invalid_attrs)
 
-      assert transcript == Transcripts.get_transcript!(transcript.id) |> Repo.preload(:user)
+      assert transcript.id == Transcripts.get_transcript!(transcript.id).id
     end
 
     test "delete_transcript/1 deletes the transcript" do
@@ -90,7 +89,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
     end
 
     test "get_transcripts_message!/2 returns the message with given id" do
-      message = insert(:message)
+      message = insert(:message, transcript: build(:transcript))
       expected = Transcripts.get_transcripts_message!(message.transcript, message.id)
 
       assert Map.drop(expected, [:transcript]) ==

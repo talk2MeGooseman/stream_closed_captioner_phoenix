@@ -35,18 +35,18 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "list_stream_settings/0 returns all stream_settings" do
       stream_settings = insert(:stream_settings)
-      assert Settings.list_stream_settings() |> Repo.preload(:user) == [stream_settings]
+      assert Settings.list_stream_settings() == [stream_settings]
     end
 
     test "get_stream_settings!/1 returns the stream_settings with given id" do
       stream_settings = insert(:stream_settings)
 
-      assert Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user) ==
+      assert Settings.get_stream_settings!(stream_settings.id) ==
                stream_settings
     end
 
     test "create_stream_settings/1 with valid data creates a stream_settings" do
-      user = insert(:user)
+      user = insert(:user, stream_settings: nil)
 
       attrs =
         params_for(:stream_settings, %{
@@ -75,7 +75,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "create_stream_settings/1 will not create more than one stream settings per user" do
-      user = insert(:user)
+      user = insert(:user, stream_settings: nil)
 
       attrs =
         params_for(:stream_settings, %{
@@ -125,7 +125,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                Settings.update_stream_settings(stream_settings, @invalid_attrs)
 
       assert stream_settings ==
-               Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
+               Settings.get_stream_settings!(stream_settings.id)
     end
 
     test "update_stream_settings/2 return error when captions delay is less than 0" do
@@ -136,8 +136,8 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
       assert [{:caption_delay, _error_details}] = error_changeset.errors
 
-      assert stream_settings ==
-               Settings.get_stream_settings!(stream_settings.id) |> Repo.preload(:user)
+      assert stream_settings.id ==
+               Settings.get_stream_settings!(stream_settings.id).id
     end
 
     test "delete_stream_settings/1 deletes the stream_settings" do
@@ -162,19 +162,19 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     @invalid_attrs %{language: nil, user_id: nil}
 
     test "list_translate_languages/0 returns all translate_languages" do
-      translate_language = insert(:translate_language)
-      assert Settings.list_translate_languages() |> Repo.preload(:user) == [translate_language]
+      translate_language = insert(:translate_language, user: build(:user))
+      assert Enum.map(Settings.list_translate_languages(), & &1.id) == [translate_language.id]
     end
 
     test "get_translate_language!/1 returns the translate_language with given id" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
 
-      assert Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user) ==
-               translate_language
+      assert Settings.get_translate_language!(translate_language.id).id ==
+               translate_language.id
     end
 
     test "get_formatted_translate_languages_by_user/1 with id returns a map of user languages codes and names" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
 
       translate_language =
         insert(:translate_language, %{language: "es", user: translate_language.user})
@@ -225,7 +225,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_translate_language/2 with valid data updates the translate_language" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
 
       assert {:ok, %TranslateLanguage{} = translate_language} =
                Settings.update_translate_language(translate_language, @update_attrs)
@@ -235,17 +235,17 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_translate_language/2 with invalid data returns error changeset" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
 
       assert {:error, %Ecto.Changeset{}} =
                Settings.update_translate_language(translate_language, @invalid_attrs)
 
-      assert translate_language ==
-               Settings.get_translate_language!(translate_language.id) |> Repo.preload(:user)
+      assert translate_language.id ==
+               Settings.get_translate_language!(translate_language.id).id
     end
 
     test "delete_translate_language/1 deletes the translate_language" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
 
       assert {:ok, %TranslateLanguage{}} = Settings.delete_translate_language(translate_language)
 
@@ -255,7 +255,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "change_translate_language/1 returns a translate_language changeset" do
-      translate_language = insert(:translate_language)
+      translate_language = insert(:translate_language, user: build(:user))
       assert %Ecto.Changeset{} = Settings.change_translate_language(translate_language)
     end
   end
