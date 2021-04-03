@@ -2,9 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
-  alias StreamClosedCaptionerPhoenix.{Bits, Repo}
-  import StreamClosedCaptionerPhoenix.BitsFixtures
-  import StreamClosedCaptionerPhoenix.AccountsFixtures
+  alias StreamClosedCaptionerPhoenix.Bits
 
   describe "bits_balance_debits" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit

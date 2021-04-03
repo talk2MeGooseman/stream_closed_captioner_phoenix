@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
-  alias StreamClosedCaptionerPhoenix.{Repo, Settings}
+  alias StreamClosedCaptionerPhoenix.Settings
 
   describe "stream_settings" do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings

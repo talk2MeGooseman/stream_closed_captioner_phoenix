@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsTest do
   import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
-  alias StreamClosedCaptionerPhoenix.{Transcripts, Repo}
+  alias StreamClosedCaptionerPhoenix.Transcripts
 
   describe "transcripts" do
     alias StreamClosedCaptionerPhoenix.Transcripts.Transcript
