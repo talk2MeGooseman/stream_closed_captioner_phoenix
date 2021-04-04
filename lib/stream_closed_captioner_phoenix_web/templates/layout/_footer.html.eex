@@ -3,7 +3,7 @@
     Reserved.
   </p>
   <div class="flex items-center space-x-6">
-    <%= link "Privacy Plicy", to: "/privacy", class: "mb-8 text-sm text-center text-gray-700 md:text-left md:mb-0" %>
+    <%= link "Privacy Policy", to: "/privacy", class: "mb-8 text-sm text-center text-gray-700 md:text-left md:mb-0" %>
     <%= link "Terms", to: "/terms", class: "mb-8 text-sm text-center text-gray-700 md:text-left md:mb-0" %>
     <a href="https://twitter.com/talk2megooseman">
       <span class="sr-only">Twitter</span>
