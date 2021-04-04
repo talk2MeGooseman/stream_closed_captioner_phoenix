@@ -4,7 +4,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.Index do
   import StreamClosedCaptionerPhoenixWeb.LiveHelpers
 
   alias StreamClosedCaptionerPhoenix.{Accounts, Repo, Settings}
-  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
   @impl true
   def mount(_params, session, socket) do
