@@ -3,16 +3,23 @@ import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { forEach, isEmpty } from "ramda"
 
+const TURN_OFF_TXT = "Click to Stop Captions"
+
 export default class extends BaseController {
-  static targets = ["output"]
+  static targets = [
+    "outputOutline",
+    "realOutput",
+    "finalOutput",
+    "interimOutput",
+    "start",
+  ]
+
   removeEvents = []
+  cachedButtonText = ""
 
   connect() {
-    console.log("Captions Controller")
     if (isBrowserCompatible()) {
-      import("../channels").then(({ captionsChannel }) => {
-        this.captionsChannel = captionsChannel
-      })
+      import("../channels").then(this.successfulSocketConnection)
 
       // Need to open websocket channel
       // createSpeechChannel()
@@ -29,13 +36,13 @@ export default class extends BaseController {
       this.removeEvents.push(
         this.speechRecognitionHandler.onEvent(
           "started",
-          this.recognitionStarted
+          this.recognitionStarted.bind(this)
         )
       )
       this.removeEvents.push(
         this.speechRecognitionHandler.onEvent(
           "stopped",
-          this.recognitionStopped
+          this.recognitionStopped.bind(this)
         )
       )
       this.removeEvents.push(
@@ -50,6 +57,11 @@ export default class extends BaseController {
 
   disconnect() {
     this.removeEvents.forEach((e) => e())
+  }
+
+  successfulSocketConnection = ({ captionsChannel }) => {
+    this.captionsChannel = captionsChannel
+    this.startTarget.disabled = false
   }
 
   initOBSChannelListener = () => {
@@ -96,7 +108,11 @@ export default class extends BaseController {
     window.onbeforeunload = () =>
       "Navigating away will stop Closed Captioning, are you sure?"
 
-    console.log("STARTED")
+    this.cachedButtonText = this.startTarget.textContent
+    this.startTarget.textContent = "Click to Stop Captions"
+    this.startTarget.classList.remove("btn-primary")
+    this.startTarget.classList.add("btn-warning")
+
     try {
       gtag("event", "start", {
         // eslint-disable-next-line camelcase
@@ -110,7 +126,10 @@ export default class extends BaseController {
   recognitionStopped = () => {
     window.onbeforeunload = null
 
-    console.log("STOPPED")
+    this.startTarget.classList.add("btn-primary")
+    this.startTarget.classList.remove("btn-warning")
+    this.startTarget.textContent = this.cachedButtonText
+
     try {
       gtag("event", "stop", {
         // eslint-disable-next-line camelcase
@@ -124,12 +143,18 @@ export default class extends BaseController {
   sendMessage = (data) => {
     this.captionsChannel
       .push("publish", data, 5000)
-      .receive("ok", (payload) => console.log("phoenix replied:", payload))
+      .receive("ok", this.displayCaptions)
       .receive("error", (err) => console.log("phoenix errored", err))
       .receive("timeout", () => console.log("timed out pushing"))
+  }
 
-    this.outputTarget.textContent = isEmpty(data.interim)
-      ? data.final
-      : data.interim
+  displayCaptions = (captions) => {
+    console.log("phoenix replied:", captions)
+
+    this.outputOutlineTarget.classList.add("hidden")
+    this.realOutputTarget.classList.remove("hidden")
+
+    this.interimOutputTarget.textContent = captions.interim
+    this.finalOutputTarget.textContent = captions.final
   }
 }

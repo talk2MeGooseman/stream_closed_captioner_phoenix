@@ -28,7 +28,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.SettingsPanelComponent d
             <span class="badge bg-green-700 text-white">Enabled</span>
           <% value == :false -> %>
             <span class="badge bg-red-700 text-white">Disabled</span>
-
           <% true -> %>
             <%= value %>
           <% end %>
