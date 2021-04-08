@@ -11,6 +11,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.Index do
       session_current_user(session)
       |> Repo.preload(:stream_settings)
 
+    twitch_enabled = current_user.provider === "twitch" && is_binary(current_user.uid)
+
+    socket = assign(socket, :twitch_enabled, twitch_enabled)
+    socket = assign(socket, :zoom_enabled, false)
     socket = assign(socket, :current_user, current_user)
     socket = assign(socket, :live_socket_id, Map.get(session, "live_socket_id"))
     {:ok, assign(socket, :stream_settings, current_user.stream_settings)}

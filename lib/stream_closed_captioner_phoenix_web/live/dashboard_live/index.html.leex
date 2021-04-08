@@ -8,19 +8,13 @@
 <% end %>
 <section class="px-4 pb-12 mx-auto max-w-7xl">
   <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
-    <div class="flex-row items-center p-5 card">
-      <div class="flex items-center justify-center w-10 h-10 text-pink-700 bg-pink-100 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5">
-          <path fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd" />
-        </svg>
-      </div>
-      <div class="ml-3">
-        <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 truncate">Enabled</h2>
-        <p class="text-sm leading-none text-gray-600">Twitch</p>
-      </div>
-    </div>
+    <!-- Twitch Indicator -->
+    <%= if @twitch_enabled do %>
+    <%= live_component @socket, StreamClosedCaptionerPhoenixWeb.DashboardLive.TwitchEnabledIndicatorComponent, settings: @stream_settings %>
+    <% else %>
+    <%= live_component @socket, StreamClosedCaptionerPhoenixWeb.DashboardLive.TwitchDisabledIndicatorComponent, settings: @stream_settings %>
+    <% end %>
+    <!-- Zoom Indicator -->
     <div class="flex-row items-center p-5 card">
       <div class="flex items-center justify-center w-10 h-10 text-green-700 bg-green-100 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5">
@@ -31,9 +25,13 @@
       </div>
       <div class="ml-3">
         <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 truncate">Enabled</h2>
-        <p class="text-sm leading-none text-gray-600">Zoom</p>
+        <p class="text-sm leading-none text-gray-600">Send to Zoom</p>
+      </div>
+      <div class="flex-grow text-right">
+        <button class="btn btn-primary">On</buttion>
       </div>
     </div>
+    <!-- OBS Indicator -->
     <div class="flex-row items-center p-5 card">
       <div class="flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5">
@@ -43,8 +41,11 @@
         </svg>
       </div>
       <div class="ml-3">
-        <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 truncate">Enabled</h2>
-        <p class="text-sm leading-none text-gray-600">OBS Websocket</p>
+        <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 truncate">Disabled</h2>
+        <p class="text-sm leading-none text-gray-600">Send to OBS Websocket</p>
+      </div>
+      <div class="flex-grow text-right">
+        <button class="btn btn-primary">On</buttion>
       </div>
     </div>
   </div>
