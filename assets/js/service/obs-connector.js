@@ -1,6 +1,6 @@
-import { T } from 'ramda'
+import { T } from "ramda"
 
-import OBSWebSocket from '@/lib/obs-websocket'
+import { OBSWebSocket } from "../utils"
 
 export default class OBSConnector {
   constructor() {
@@ -27,13 +27,15 @@ export default class OBSConnector {
   connect({ host, password, port } = {}) {
     this.password = password
 
-    this.obs.on('socket.open', T)
-    this.obs.on('socket.auth', this.disconnect)
-    this.obs.on('socket.auth-failed', this.disconnect)
-    this.obs.on('socket.ready', () => { this.connected = true })
-    this.obs.on('socket.close', this.onClose)
-    this.obs.on('event', (message) => {
-      const event = message['update-type']
+    this.obs.on("socket.open", T)
+    this.obs.on("socket.auth", this.disconnect)
+    this.obs.on("socket.auth-failed", this.disconnect)
+    this.obs.on("socket.ready", () => {
+      this.connected = true
+    })
+    this.obs.on("socket.close", this.onClose)
+    this.obs.on("event", (message) => {
+      const event = message["update-type"]
       const listeners = this.eventListeners[event]
 
       if (listeners) {
@@ -46,15 +48,15 @@ export default class OBSConnector {
 
   onClose = () => {
     this.connected = false
-    this.obs.removeAllListeners('socket.close')
+    this.obs.removeAllListeners("socket.close")
   }
 
   disconnect = () => {
-    this.obs.removeAllListeners('socket.open')
-    this.obs.removeAllListeners('socket.auth')
-    this.obs.removeAllListeners('socket.auth-failed')
-    this.obs.removeAllListeners('socket.ready')
-    this.obs.removeAllListeners('event')
+    this.obs.removeAllListeners("socket.open")
+    this.obs.removeAllListeners("socket.auth")
+    this.obs.removeAllListeners("socket.auth-failed")
+    this.obs.removeAllListeners("socket.ready")
+    this.obs.removeAllListeners("event")
     this.obs.disconnect()
     this.eventListeners = {}
   }
@@ -73,7 +75,7 @@ export default class OBSConnector {
    */
   sendEvent(type, fields = {}) {
     return this.obs.send({
-      'request-type': type,
+      "request-type": type,
       ...fields,
     })
   }
@@ -90,7 +92,6 @@ export default class OBSConnector {
     if (!this.eventListeners[event]) {
       this.eventListeners[event] = []
     }
-
     this.eventListeners[event].push(callback)
   }
 
@@ -101,8 +102,8 @@ export default class OBSConnector {
    * @returns {Promise}
    * @memberof OBSConnector
    */
-  sendCaptions(text = '') {
-    return this.sendEvent('SendCaptions', {
+  sendCaptions(text = "") {
+    return this.sendEvent("SendCaptions", {
       text,
     })
   }
@@ -114,7 +115,7 @@ export default class OBSConnector {
    * @memberof OBSConnector
    */
   getScenes() {
-    return this.sendEvent('GetSceneList')
+    return this.sendEvent("GetSceneList")
   }
 
   /**
@@ -125,7 +126,7 @@ export default class OBSConnector {
    * @memberof OBSConnector
    */
   onStreamStopped(callback) {
-    this.onEvent('StreamStopped', callback)
+    this.onEvent("StreamStopped", callback)
   }
 
   /**
@@ -136,7 +137,7 @@ export default class OBSConnector {
    * @memberof OBSConnector
    */
   onRecordingStopped(callback) {
-    this.onEvent('RecordingStopped', callback)
+    this.onEvent("RecordingStopped", callback)
   }
 
   /**
@@ -147,6 +148,6 @@ export default class OBSConnector {
    * @memberof OBSConnector
    */
   onSwitchScene(callback) {
-    this.onEvent('SwitchScenes', callback)
+    this.onEvent("SwitchScenes", callback)
   }
 }

@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.SettingsPanelComponent d
     ~L"""
     <div class="card">
     <div class="px-4 py-3 border-0 card-header">
-      <h4 class="font-medium text-gray-800">Current Settings</h4>
+      <h4 class="font-medium text-gray-800">Your Settings</h4>
     </div>
     <div class="px-4 mb-1 -mt-2 divide-y divide-gray-200 card-body">
       <%= for { setting_name, value } <- Map.take(@settings, settings_block_list) |> Map.to_list do %>

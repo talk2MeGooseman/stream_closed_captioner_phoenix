@@ -13,12 +13,14 @@
     "@tailwindcss/typography": "^0.4.0",
     "alpinejs": "^2.7.3",
     "debug": "^4.3.1",
+    "eventemitter3": "^4.0.7",
     "kutty": "^0.5.1",
     "nprogress": "^0.2.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
     "ramda": "^0.27.1",
+    "sha.js": "^2.4.11",
     "stimulus": "^2.0.0",
     "stimulus-use": "^0.23.0",
     "tailwindcss": "^2.0.1"
@@ -66,5 +68,8 @@
     "terser-webpack-plugin": "^2.3.2",
     "webpack": "4.41.5",
     "webpack-cli": "^3.3.2"
-  }
+  },
+  "browserslist": [
+    "since 2017-06"
+  ]
 }
