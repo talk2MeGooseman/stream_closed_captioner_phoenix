@@ -1,11 +1,11 @@
-import BaseController from "./base_controller"
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { forEach, isEmpty } from "ramda"
+import { ApplicationController } from "stimulus-use"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
-export default class extends BaseController {
+export default class extends ApplicationController {
   static targets = [
     "outputOutline",
     "realOutput",
@@ -149,7 +149,7 @@ export default class extends BaseController {
   }
 
   displayCaptions = (captions) => {
-    console.log("phoenix replied:", captions)
+    this.dispatch("payload", captions)
 
     this.outputOutlineTarget.classList.add("hidden")
     this.realOutputTarget.classList.remove("hidden")

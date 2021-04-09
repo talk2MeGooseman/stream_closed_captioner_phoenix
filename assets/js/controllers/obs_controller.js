@@ -1,21 +1,30 @@
 import debugLogger from "debug"
 
-import BaseController from "./base_controller"
+import { ApplicationController } from "stimulus-use"
 
 import OBSConnector from "../service/obs-connector"
 import { sendEvent, onEvent, capitalize } from "../utils"
+import { isNil, isEmpty } from "ramda"
 
-const debug = debugLogger("cc:obs-controller")
+// const debug = debugLogger("cc:obs-controller")
+const debug = console.log
 
 const CAPTIONS_MAX_LENGTH = 128
 const CONNECTION_STATE = {
   DISCONNECTED: "Connect",
   CONNECTING: "Connecting",
   CONNECTED: "Connected",
+  ERROR: "Error",
 }
 
-export default class extends BaseController {
-  static targets = ["offButton", "onButton", "onMarker", "errorMarker"]
+export default class extends ApplicationController {
+  static targets = [
+    "offButton",
+    "onButton",
+    "onMarker",
+    "errorMarker",
+    "errorMessage",
+  ]
 
   connect() {
     this.password = undefined
@@ -38,14 +47,20 @@ export default class extends BaseController {
   }
 
   async connectToOBS() {
+    if (isNil(this.port) || isEmpty(this.port)) {
+      return this.displayErrorMessage("Port is missing.")
+    }
+
     try {
       if (this.obsConnector.connected) {
         this.obsConnector.disconnect()
         this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
       } else {
         this.updateButtonState(CONNECTION_STATE.CONNECTING)
-        await this.enableOBSConnection()
-        this.updateButtonState(CONNECTION_STATE.CONNECTED)
+        const isConnected = await this.enableOBSConnection()
+        if (isConnected) {
+          this.updateButtonState(CONNECTION_STATE.CONNECTED)
+        }
       }
     } catch (error) {
       this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
@@ -53,26 +68,47 @@ export default class extends BaseController {
     }
   }
 
-  updateButtonState = (state) => {
+  updateButtonState = (state, message) => {
+    this.clearErrorMessage()
+
     switch (state) {
       case CONNECTION_STATE.CONNECTING:
         break
       case CONNECTION_STATE.CONNECTED:
-        console.log("connected")
+        debug("Connected")
         this.onButtonTarget.classList.remove("hidden")
         this.onMarkerTarget.classList.remove("hidden")
         this.offButtonTarget.classList.add("hidden")
         this.errorMarkerTarget.classList.add("hidden")
         break
       case CONNECTION_STATE.DISCONNECTED:
-        console.log("disconnected")
+        debug("Disconnected")
         this.onButtonTarget.classList.add("hidden")
         this.onMarkerTarget.classList.add("hidden")
         this.offButtonTarget.classList.remove("hidden")
         this.errorMarkerTarget.classList.remove("hidden")
+        break
+      case CONNECTION_STATE.ERROR:
+        debug("Error Occurred")
+        this.onButtonTarget.classList.add("hidden")
+        this.onMarkerTarget.classList.add("hidden")
+        this.offButtonTarget.classList.remove("hidden")
+        this.errorMarkerTarget.classList.remove("hidden")
+        this.displayErrorMessage(message)
+        break
       default:
         break
     }
+  }
+
+  clearErrorMessage() {
+    this.errorMessageTarget.classList.add("hidden")
+    this.errorMessageTarget.innerText = ""
+  }
+
+  displayErrorMessage(text) {
+    this.errorMessageTarget.classList.remove("hidden")
+    this.errorMessageTarget.innerText = text
   }
 
   async enableOBSConnection() {
@@ -104,21 +140,26 @@ export default class extends BaseController {
 
   onAuthNeeded = () => {
     debug("Auth is needed to connect")
-    this.updateButtonState(false)
-    sendEvent("error", "OBS Websocket requires a password")
+    this.updateButtonState(
+      CONNECTION_STATE.ERROR,
+      "OBS Websocket requires a password"
+    )
   }
 
   onAuthFail = () => {
     debug("Auth has failed")
-    this.updateButtonState(false)
-    sendEvent("error", "OBS Websocket password was incorrect")
+    this.updateButtonState(
+      CONNECTION_STATE.ERROR,
+      "OBS Websocket password was incorrect"
+    )
   }
 
   // eslint-disable-next-line no-empty-function
   onConnectionClose = () => {}
 
-  onCaptionReceived = ({ detail: { final, interim } }) => {
-    debug("Captions Received", { final, interim })
+  onCaptionsReceived = ({ detail: { interim, final } }) => {
+    debug("Captions Received", { interim, final })
+
     if (this.obsConnector.connected) {
       const textToSendBuffer = []
 

@@ -3,6 +3,7 @@
 import debugLogger from "debug"
 import EventEmitter from "eventemitter3"
 import Sha256Hash from "sha.js/sha256"
+import { isNil } from "ramda"
 
 const debug = debugLogger("cc:obs-websocket")
 
@@ -196,7 +197,7 @@ export class OBSWebSocket extends EventEmitter {
       return true
     }
 
-    if (this._password === null) {
+    if (isNil(this._password)) {
       debug("login", "password missing")
       this.emit("socket.auth")
       return false
