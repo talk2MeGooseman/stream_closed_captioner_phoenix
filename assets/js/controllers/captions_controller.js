@@ -18,6 +18,15 @@ export default class extends ApplicationController {
   cachedButtonText = ""
 
   connect() {
+    this.zoomData = {
+      enabled: false,
+      seq: 0,
+    }
+
+    this.twitchData = {
+      enabled: true,
+    }
+
     if (isBrowserCompatible()) {
       import("../channels").then(this.successfulSocketConnection)
 
@@ -57,6 +66,21 @@ export default class extends ApplicationController {
 
   disconnect() {
     this.removeEvents.forEach((e) => e())
+  }
+
+  onZoomChange({ detail: { enabled, url } }) {
+    this.zoomData = {
+      ...this.zoomData,
+      enabled,
+      url,
+    }
+  }
+
+  onTwitchChange({ detail: { enabled } }) {
+    console.log("twitch", enabled)
+    this.twitchData = {
+      enabled,
+    }
   }
 
   successfulSocketConnection = ({ captionsChannel }) => {
@@ -141,14 +165,21 @@ export default class extends ApplicationController {
   }
 
   sendMessage = (data) => {
+    const publishData = {
+      ...data,
+      zoom: this.zoomData,
+      twitch: this.twitchData,
+    }
+
     this.captionsChannel
-      .push("publish", data, 5000)
+      .push("publish", publishData, 5000)
       .receive("ok", this.displayCaptions)
       .receive("error", (err) => console.log("phoenix errored", err))
       .receive("timeout", () => console.log("timed out pushing"))
   }
 
   displayCaptions = (captions) => {
+    this.zoomData.seq = this.zoomData.seq + 1
     this.dispatch("payload", captions)
 
     this.outputOutlineTarget.classList.add("hidden")

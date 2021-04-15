@@ -15,16 +15,14 @@ defmodule Zoom do
                optional(:request_url) => any,
                optional(:status_code) => integer
              }}
-  def send_captions_to(url, text, %Zoom.Params{} = params) do
+  def send_captions_to(url, text, %Zoom.Params{seq: seq, lang: lang}) do
     headers = [
-      {
-        {:Accept, "*/*"},
-        {"Content-Type", "text/plain"}
-      }
+      {"Accept", "*/*"},
+      {"Content-Type", "text/plain"}
     ]
 
     url
-    |> encode_url_and_params(params)
+    |> encode_url_and_params(%{seq: seq, lang: lang})
     |> HTTPoison.post(text, headers)
   end
 end

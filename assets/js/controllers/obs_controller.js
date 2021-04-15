@@ -3,7 +3,7 @@ import debugLogger from "debug"
 import { ApplicationController } from "stimulus-use"
 
 import OBSConnector from "../service/obs-connector"
-import { sendEvent, onEvent, capitalize } from "../utils"
+import { capitalize } from "../utils"
 import { isNil, isEmpty } from "ramda"
 
 // const debug = debugLogger("cc:obs-controller")
@@ -18,17 +18,11 @@ const CONNECTION_STATE = {
 }
 
 export default class extends ApplicationController {
-  static targets = [
-    "offButton",
-    "onButton",
-    "onMarker",
-    "errorMarker",
-    "errorMessage",
-  ]
+  static targets = ["offButton", "onButton", "errorMarker", "errorMessage"]
 
   connect() {
     this.password = undefined
-    this.port = undefined
+    this.port = 4444
     this.obsConnector = new OBSConnector()
     this.captionsFinalTextsCache = []
   }
@@ -47,6 +41,7 @@ export default class extends ApplicationController {
   }
 
   async connectToOBS() {
+    console.log("obs")
     if (isNil(this.port) || isEmpty(this.port)) {
       return this.displayErrorMessage("Port is missing.")
     }
@@ -63,8 +58,7 @@ export default class extends ApplicationController {
         }
       }
     } catch (error) {
-      this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
-      sendEvent("error", error)
+      this.updateButtonState(CONNECTION_STATE.ERROR, error)
     }
   }
 
@@ -77,21 +71,18 @@ export default class extends ApplicationController {
       case CONNECTION_STATE.CONNECTED:
         debug("Connected")
         this.onButtonTarget.classList.remove("hidden")
-        this.onMarkerTarget.classList.remove("hidden")
         this.offButtonTarget.classList.add("hidden")
         this.errorMarkerTarget.classList.add("hidden")
         break
       case CONNECTION_STATE.DISCONNECTED:
         debug("Disconnected")
         this.onButtonTarget.classList.add("hidden")
-        this.onMarkerTarget.classList.add("hidden")
         this.offButtonTarget.classList.remove("hidden")
-        this.errorMarkerTarget.classList.remove("hidden")
+        this.errorMarkerTarget.classList.add("hidden")
         break
       case CONNECTION_STATE.ERROR:
         debug("Error Occurred")
         this.onButtonTarget.classList.add("hidden")
-        this.onMarkerTarget.classList.add("hidden")
         this.offButtonTarget.classList.remove("hidden")
         this.errorMarkerTarget.classList.remove("hidden")
         this.displayErrorMessage(message)
@@ -127,8 +118,6 @@ export default class extends ApplicationController {
     this.obsConnector.on("socket.close", this.onConnectionClose)
     this.obsConnector.onStreamStopped(this.onStreamStop)
     this.obsConnector.onSwitchScene(this.onSwitchScene)
-
-    this.removeCaptionsEvent = onEvent("captions", this.onCaptionReceived)
 
     return Promise.resolve(true)
   }

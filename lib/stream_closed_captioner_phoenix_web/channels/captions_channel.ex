@@ -10,15 +10,37 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
+  @impl true
+  def handle_in(
+        "publish",
+        %{"twitch" => %{"enabled" => twitch_enabled}, "zoom" => %{"enabled" => zoom_enabled}} =
+          payload,
+        socket
+      )
+      when twitch_enabled == false and zoom_enabled == false do
+    user = socket.assigns.current_user
+
+    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
+      {:ok, payload} -> {:reply, {:ok, payload}, socket}
+      {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
+    end
+  end
+
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
-  @impl true
   def handle_in("publish", payload, socket) do
     user = socket.assigns.current_user
 
+    if get_in(payload, ["zoom", "enabled"]) == true do
+      case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:zoom, user, payload) do
+        {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
+        {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
+      end
+    end
+
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
-      :error -> {:error, "Issue sending captions."}
+      {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
 
