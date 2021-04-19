@@ -1,6 +1,4 @@
 defmodule Zoom do
-  import Helpers
-
   @spec send_captions_to(String.t() | URI.t(), String.t(), Zoom.Params.t()) ::
           {:error, HTTPoison.Error.t()}
           | {:ok,
@@ -21,8 +19,7 @@ defmodule Zoom do
       {"Content-Type", "text/plain"}
     ]
 
-    url
-    |> encode_url_and_params(%{seq: seq, lang: lang})
+    (url <> "&" <> URI.encode_query(%{seq: seq, lang: lang}))
     |> HTTPoison.post(text, headers)
   end
 end
