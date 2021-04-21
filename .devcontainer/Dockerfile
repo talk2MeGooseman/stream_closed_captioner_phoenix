@@ -60,7 +60,3 @@ RUN su ${USERNAME} -c "mix local.hex --force \
 
 # [Optional] Uncomment this line to install additional package.
 # RUN  mix ...
-
-# Install the Doppler CLI
-RUN (curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sh
-
