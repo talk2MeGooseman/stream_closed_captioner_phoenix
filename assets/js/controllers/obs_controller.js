@@ -144,11 +144,9 @@ export default class extends ApplicationController {
   }
 
   // eslint-disable-next-line no-empty-function
-  onConnectionClose = () => {}
+  onConnectionClose = () => { }
 
   onCaptionsReceived = ({ detail: { interim, final } }) => {
-    debug("Captions Received", { interim, final })
-
     if (this.obsConnector.connected) {
       const textToSendBuffer = []
 

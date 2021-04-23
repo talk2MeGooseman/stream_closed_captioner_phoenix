@@ -20,7 +20,6 @@ export default class extends ApplicationController {
   connect() {
     this.zoomData = {
       enabled: false,
-      seq: 0,
     }
 
     this.twitchData = {
@@ -55,7 +54,10 @@ export default class extends ApplicationController {
         )
       )
       this.removeEvents.push(
-        this.speechRecognitionHandler.onEvent("interim", this.sendMessage)
+        this.speechRecognitionHandler.onEvent("final", this.receiveFinalMessage)
+      )
+      this.removeEvents.push(
+        this.speechRecognitionHandler.onEvent("interim", this.receiveInterimMessage)
       )
 
       this.initLanguageChangeListener()
@@ -164,22 +166,44 @@ export default class extends ApplicationController {
     }
   }
 
-  sendMessage = (data) => {
+  receiveInterimMessage = (data) => {
     const publishData = {
       ...data,
-      zoom: this.zoomData,
       twitch: this.twitchData,
     }
 
     this.captionsChannel
-      .push("publish", publishData, 5000)
-      .receive("ok", this.displayCaptions)
-      .receive("error", (err) => console.log("phoenix errored", err))
+      .push("publishInterim", publishData, 5000)
+      .receive("ok", (response) => this.displayCaptions(response))
+      .receive("error", (err) => console.log("phoenix error", err))
+      .receive("timeout", () => console.log("timed out pushing"))
+  }
+
+  receiveFinalMessage = (data) => {
+    if (!this.zoomData.enabled) return
+
+    const publishData = {
+      ...data,
+      zoom: {
+        ...this.zoomData,
+        seq: this.getZoomSequence(this.zoomData.url)
+      },
+    }
+
+    console.log("publishFinal", data)
+    this.captionsChannel
+      .push("publishFinal", publishData, 5000)
+      .receive("ok", (response) => console.log)
+      .receive("error", (err) => console.log("phoenix error", err))
       .receive("timeout", () => console.log("timed out pushing"))
   }
 
   displayCaptions = (captions) => {
-    this.zoomData.seq = this.zoomData.seq + 1
+    if (this.zoomData.enabled) {
+      const seq = this.getZoomSequence(this.zoomData.url) + 1
+      this.setZoomSequence(this.zoomData.url, seq)
+    }
+
     this.dispatch("payload", captions)
 
     this.outputOutlineTarget.classList.add("hidden")
@@ -187,5 +211,24 @@ export default class extends ApplicationController {
 
     this.interimOutputTarget.textContent = captions.interim
     this.finalOutputTarget.textContent = captions.final
+  }
+
+  setZoomSequence = (url, value = 1) => {
+    const urlObj = new URL(url)
+    let id = urlObj.searchParams.get("id")
+
+    localStorage.setItem(`zoom:${id}`, value)
+  }
+
+  getZoomSequence = (url) => {
+    const urlObj = new URL(url)
+    let id = urlObj.searchParams.get("id")
+
+    const result = localStorage.getItem(`zoom:${id}`)
+    if (result !== "NaN") {
+      return parseInt(localStorage.getItem(`zoom:${id}`))
+    }
+
+    return 1
   }
 }

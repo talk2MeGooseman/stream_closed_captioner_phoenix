@@ -15,10 +15,11 @@ export default class extends ApplicationController {
     this.enabled = false
   }
 
-  disconnect() {}
+  disconnect() { }
 
   onUrlChange(e) {
     this.url = e.target.value
+    this.dispatch("state", { enabled: this.enabled, url: this.url })
   }
 
   enable = () => {

@@ -13,7 +13,7 @@ const debug = debugLogger("cc:speech-handler")
  * }} SpeechInterval
  */
 
-const EVENT_TYPES = ["started", "stopped", "interim", "finalInterval"]
+const EVENT_TYPES = ["started", "stopped", "interim", "final"]
 
 export default class SpeechRecognitionHandler {
   delayTime = 0
@@ -43,7 +43,7 @@ export default class SpeechRecognitionHandler {
 
   /**
    * Subscribe to Speech Recognition Handler events
-   * @param {"started" | "stopped" | "interim" | "finalInterval"} event
+   * @param {"started" | "stopped" | "interim" | "final"} event
    * @param {Function} callback
    */
   onEvent = (event, callback) => {
@@ -116,8 +116,8 @@ export default class SpeechRecognitionHandler {
    */
   onEndIntervals(text) {
     debug("End Speech Interval", text)
-    if (this.eventSubscribers["finalInterval"]) {
-      this.eventSubscribers["finalInterval"](text)
+    if (this.eventSubscribers["final"]) {
+      this.eventSubscribers["final"](text)
     }
   }
 

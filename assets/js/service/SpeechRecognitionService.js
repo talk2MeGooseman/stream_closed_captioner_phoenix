@@ -35,18 +35,22 @@ export default class SpeechRecognitionService {
 
   onRecognitionResult(event) {
     if (event.results === "" || this._pause) return
+
     this.interimSpeechBuffer = this.parseSpeechResults(event.results)
+
+    if (this.isFinalSpeechResult(event.results)) {
+      this.finalSpeechBuffer = this.interimSpeechBuffer
+      this.interimSpeechBuffer = ""
+    }
   }
 
-  // eslint-disable-next-line complexity
   onRecognitionEnd() {
-    if (!this._pause || this.interimSpeechBuffer.length > 0) {
-      this.finalSpeechBuffer = this.interimSpeechBuffer
-      if (this.onRecognitionEndCallback)
-        this.onRecognitionEndCallback(this.finalSpeechBuffer)
+    if (!this._pause || this.finalSpeechBuffer.length > 0) {
+      if (this.onRecognitionEndCallback && (this.lastFinal != this.speechData.final)) {
+        this.lastFinal = this.speechData.final
+        this.onRecognitionEndCallback(this.speechData)
+      }
     }
-
-    this.interimSpeechBuffer = ""
 
     if (this.speechToTextActive) {
       this.recognitionService.start()
@@ -99,13 +103,17 @@ export default class SpeechRecognitionService {
       this.lastSentFinalSpeechBuffer = this.finalSpeechBuffer
 
       if (this.onSpeechIntervalCallback) {
-        this.onSpeechIntervalCallback({
-          session: this.sessionId,
-          interim: this.interimSpeechBuffer,
-          final: this.finalSpeechBuffer,
-        })
+        this.onSpeechIntervalCallback(this.speechData)
       }
     }, INTERVAL_TIMER)
+  }
+
+  get speechData() {
+    return {
+      session: this.sessionId,
+      interim: this.interimSpeechBuffer,
+      final: this.finalSpeechBuffer,
+    }
   }
 
   parseSpeechResults(speechArray) {
@@ -121,5 +129,10 @@ export default class SpeechRecognitionService {
     }
 
     return results
+  }
+
+  isFinalSpeechResult(speechArray) {
+    const [speechResult] = speechArray
+    return speechResult.isFinal == true
   }
 }
