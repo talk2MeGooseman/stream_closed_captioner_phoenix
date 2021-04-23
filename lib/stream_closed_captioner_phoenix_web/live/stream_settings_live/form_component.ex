@@ -6,11 +6,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
   @impl true
   def update(%{stream_settings: stream_settings} = assigns, socket) do
     changeset = Settings.change_stream_settings(stream_settings)
+    language_selection = Settings.spoken_languages()
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:changeset, changeset)
+     |> assign(:language_selection, language_selection)}
   end
 
   @impl true
@@ -28,8 +30,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
       {:ok, _stream_settings} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Stream settings updated successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
+         |> put_flash(:info, "Stream settings updated successfully")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

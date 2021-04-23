@@ -6,14 +6,14 @@
   phx_submit: "save" %>
 
 <div class="mb-6">
-  <%= label f, :caption_delay, class: "block text-sm mb-1 mt-4" %>
+  <%= label f, "Caption Delay (in seconds)", class: "block text-sm mb-1 mt-4" %>
   <%= number_input f, :caption_delay, class: "form-input bg-red-100" %>
   <%= error_tag f, :caption_delay, class: "text-red-700 text-sm mt-1" %>
 </div>
 
 <div class="mb-6">
-  <%= label f, "Your Language", class: "block text-sm mb-1 mt-4" %>
-  <%= text_input f, :language, class: "form-input bg-red-100" %>
+  <%= label f, "Your Language or Dialect", class: "block text-sm mb-1 mt-4" %>
+  <%= select f, :language, @language_selection, class: "form-select bg-red-100" %>
   <%= error_tag f, :language, class: "text-red-700 text-sm mt-1" %>
 </div>
 
@@ -59,8 +59,8 @@
 
 <%# <div class="mb-6">
   <%# <%= checkbox f, :pirate_mode, class: "form-checkbox bg-green-100" %>
-  <%# <%= label f, :pirate_mode, class: "flex items-center mt-4" %>
-  <%# <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
+<%# <%= label f, :pirate_mode, class: "flex items-center mt-4" %>
+<%# <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
 <%# </div> %>
 
 <div class="mt-8 mb-2">
