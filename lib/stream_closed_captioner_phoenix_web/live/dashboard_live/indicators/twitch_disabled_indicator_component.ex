@@ -13,7 +13,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardLive.TwitchDisabledIndicatorC
           </svg>
         </div>
         <div class="ml-3">
-          <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 truncate">Twitch Extension Captions</h2>
+          <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 whitespace-normal">Twitch Extension Captions</h2>
           <p class="text-sm leading-none text-gray-600">Please connect your Twitch account to enable this feature.</p>
         </div>
         <div class="flex-grow text-right">
