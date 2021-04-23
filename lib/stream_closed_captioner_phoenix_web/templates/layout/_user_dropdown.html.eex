@@ -1,12 +1,16 @@
 <div x-data="dropdown()">
   <button class="p-0 rounded-full btn btn-white" x-spread="trigger">
     <div class="avatar avatar-sm">
-      <img src="https://placekitten.com/200/200" alt="Photo of Praveen Juge" />
+      <%= img_tag(@current_user.profile_image_url, alt: "Account profile image") %>
     </div>
   </button>
   <div class="absolute top-12 right-0 dropdown-list" id="profile-menu" x-position="left-start" x-spread="dropdown"
     x-cloak>
-    <p class="dropdown-header">Praveen Juge</p>
+    <%= if @current_user.login do %>
+    <p class="dropdown-header"><%= @current_user.login %></p>
+    <% else %>
+    <p class="dropdown-header"><%= @current_user.email %></p>
+    <% end %>
     <%= link to: Routes.user_settings_path(@conn, :edit), class: "dropdown-item" do %>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
       <path fill-rule="evenodd"
