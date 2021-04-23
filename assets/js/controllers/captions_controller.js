@@ -1,6 +1,6 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
-import { forEach, isEmpty } from "ramda"
+import { forEach, isEmpty, isNil } from "ramda"
 import { ApplicationController } from "stimulus-use"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
@@ -190,20 +190,17 @@ export default class extends ApplicationController {
       },
     }
 
-    console.log("publishFinal", data)
     this.captionsChannel
       .push("publishFinal", publishData, 5000)
-      .receive("ok", (response) => console.log)
+      .receive("ok", (response) => {
+        const seq = this.getZoomSequence(this.zoomData.url) + 1
+        this.setZoomSequence(this.zoomData.url, seq)
+      })
       .receive("error", (err) => console.log("phoenix error", err))
       .receive("timeout", () => console.log("timed out pushing"))
   }
 
   displayCaptions = (captions) => {
-    if (this.zoomData.enabled) {
-      const seq = this.getZoomSequence(this.zoomData.url) + 1
-      this.setZoomSequence(this.zoomData.url, seq)
-    }
-
     this.dispatch("payload", captions)
 
     this.outputOutlineTarget.classList.add("hidden")
@@ -225,7 +222,7 @@ export default class extends ApplicationController {
     let id = urlObj.searchParams.get("id")
 
     const result = localStorage.getItem(`zoom:${id}`)
-    if (result !== "NaN") {
+    if (!isNil(result)) {
       return parseInt(localStorage.getItem(`zoom:${id}`))
     }
 
