@@ -65,7 +65,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
     {:ok,
      %{
-       languages: Settings.get_formatted_translate_languages_by_user(user),
+       languages: Settings.get_formatted_translate_languages_by_user(user.id),
        activated: !is_nil(debit),
        created_at: Map.get(debit || %{}, :created_at)
      }}

@@ -42,37 +42,8 @@
             <path
               d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1zM3 15a2 2 0 114 0 2 2 0 01-4 0z" />
           </svg>
-          <span>Articles</span>
+          <span>Annoucements</span>
         </a>
-        <div x-data="collapse()">
-          <div
-            class="flex items-center justify-between px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
-            role="button" x-spread="trigger">
-            <div class="flex items-center">
-              <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
-              <span>Integrations</span>
-            </div>
-            <svg :class="{ 'rotate-90': open }" class="flex-shrink-0 w-4 h-4 ml-2 transition transform"
-              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="mb-4" x-spread="collapse" x-cloak>
-            <a class="flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200"
-              href="#">Shopify</a>
-            <a class="flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200"
-              href="#">Slack</a>
-            <a class="flex items-center py-2 pl-12 pr-4 transition cursor-pointer hover:bg-gray-800 hover:text-gray-200"
-              href="#">Zapier</a>
-          </div>
-        </div>
         <a class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
           href="#"> <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -81,7 +52,7 @@
               clip-rule="evenodd" />
             <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z" />
           </svg>
-          <span>Changelog</span>
+          <span>Help / FAQ</span>
         </a>
         <%= live_patch to: Routes.stream_settings_index_path(@conn, :update), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
         <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
