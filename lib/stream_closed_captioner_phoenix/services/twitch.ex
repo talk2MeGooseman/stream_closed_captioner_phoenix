@@ -25,7 +25,7 @@ defmodule Twitch do
     |> api_client().get_configuration_for(Extension.broadcaster_segment(), channel_id)
   end
 
-  @spec set_extension_broadcaster_configuration_for(binary, map) :: any
+  @spec set_extension_broadcaster_configuration_for(binary, map) :: {:ok, HTTPoison.Response.t | HTTPoison.AsyncResponse.t | HTTPoison.MaybeRedirect.t} | {:error, HTTPoison.Error.t}
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
     |> api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)

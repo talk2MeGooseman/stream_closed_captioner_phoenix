@@ -349,6 +349,34 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     stream_settings
     |> StreamSettings.update_changeset(attrs)
     |> Repo.update()
+    |> maybe_sync_with_twitch()
+  end
+
+  defp maybe_sync_with_twitch({:error, changeset}), do: {:error, changeset}
+
+  defp maybe_sync_with_twitch({:ok, stream_settings}) do
+    # Check if they have an associated Twitch account
+    %{user: user} = Repo.preload(stream_settings, :user)
+
+    if(user.provider == "twitch" && is_binary(user.uid)) do
+      # Filter fields
+      # Format to camelcase
+      settings = %{
+        language: stream_settings.language,
+        textUppercase: stream_settings.text_uppercase || false,
+        hideCC: stream_settings.hide_text_on_load || false,
+        ccBoxSize: stream_settings.cc_box_size || false,
+        switchSettingsPosition: stream_settings.switch_settings_position || false
+      }
+
+      # Send to Twitch
+      case Twitch.set_extension_broadcaster_configuration_for(user.uid, settings) do
+        {:ok, _} -> IO.puts("Sent to Twitch Successfully")
+        {:error, _} -> IO.puts("Issue Syncing to Twitch")
+      end
+    end
+
+    {:ok, stream_settings }
   end
 
   @doc """
