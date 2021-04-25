@@ -65,6 +65,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.0"},
       {:hackney, "~> 1.9"},
+      {:heartcheck, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.3"},
       # Admin Dashboard
