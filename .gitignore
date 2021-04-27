@@ -34,7 +34,6 @@ npm-debug.log
 /priv/static/
 TwitchStreamCaptioner_production*
 .env*
-/config/dev.secret.exs
 node_modules/.bin/sha.js
 node_modules/eventemitter3/index.d.ts
 node_modules/eventemitter3/index.js
