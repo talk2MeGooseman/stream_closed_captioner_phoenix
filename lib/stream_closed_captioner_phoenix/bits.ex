@@ -253,6 +253,21 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   end
 
   @doc """
+  Gets a single bits_transaction by its transaction_id.
+
+  ## Examples
+
+      iex> get_bits_transaction_by("123")
+      %BitsTransaction{}
+
+      iex> get_bits_transaction_by("456")
+      nil
+
+  """
+  def get_bits_transaction_by(transaction_id) when is_binary(transaction_id),
+    do: Repo.get_by(BitsTransaction, transaction_id: transaction_id)
+
+  @doc """
   Creates a bits_transaction.
 
   ## Examples
