@@ -101,7 +101,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_stream_settings/2 with valid data updates the stream_settings but not the user" do
-      stream_settings = insert(:stream_settings)
+      stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
 
       assert {:ok, %StreamSettings{} = stream_settings} =
                Settings.update_stream_settings(stream_settings, @update_attrs)
