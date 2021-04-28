@@ -314,4 +314,63 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   def change_bits_transaction(%BitsTransaction{} = bits_transaction, attrs \\ %{}) do
     BitsTransaction.changeset(bits_transaction, attrs)
   end
+
+  def process_bits_transaction(uid, decoded_token) do
+    transaction_info = decoded_token |> List.first() |> Map.get('data')
+    transaction_id = Map.get(transaction_info, "transactionId")
+    amount = get_in(transaction_info, ["product", "const", "amount"])
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:validate_transaction, validate_transaction(transaction_id))
+    |> Ecto.Multi.run(:retrieve_channel_user, retrieve_user_by_uid(uid))
+    |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
+    |> Ecto.Multi.run(:add_to_balance, add_to_balance(amount))
+    |> Ecto.Multi.run(:save_transaction, save_transaction(transaction_info))
+  end
+
+  defp validate_transaction(transaction_id) do
+    fn _repo, _ ->
+      case get_bits_transaction_by(transaction_id) do
+        nil -> {:ok}
+        _transaction -> {:error, "Transaction #{transaction_id} is already recorded."}
+      end
+    end
+  end
+
+  defp retrieve_user_by_uid(uid) do
+    fn _repo, _ ->
+      case StreamClosedCaptionerPhoenix.AccountsOauth.get_user_for_provider("twitch", uid) do
+        nil ->
+          {:error, "Channel #{uid} not found"}
+
+        user ->
+          {:ok, user}
+      end
+    end
+  end
+
+  defp retrieve_balance(_repo, %{retrieve_channel_user: user}) do
+    user = Repo.preload(user, :bits_balance)
+    {:ok, user.bits_balance}
+  end
+
+  defp add_to_balance(amount) do
+    fn repo, %{retrieve_balance: bits_balance} ->
+      bits_balance
+      |> update_bits_balance(%{balance: bits_balance.amount + amount})
+      |> repo.update()
+    end
+  end
+
+  defp save_transaction(transaction_info) do
+    fn _repo, %{retrieve_channel_user: user} ->
+      create_bits_transaction(user, %{
+        amount: get_in(transaction_info, ['product', 'cost', 'amount']),
+        purchaser_uid: get_in(transaction_info, ['userId']),
+        sku: get_in(transaction_info, ['product']['sku']),
+        time: get_in(transaction_info, ['time']),
+        transaction_id: get_in(transaction_info, ['transactionId'])
+      })
+    end
+  end
 end

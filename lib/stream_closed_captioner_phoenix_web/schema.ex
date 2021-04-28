@@ -52,27 +52,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   mutation do
     # Add mutations here. Example
-    field :activate_translations, type: :twitch_transaction do
+    field :update_bits_balance, type: :twitch_transaction do
       # once decded has transaction information
       arg(:chanel_id, :string)
 
-      resolve(&activate_translations/3)
+      resolve(&update_bits_balance/3)
     end
   end
 
-  def activate_translations(_parent, args, %{context: %{decoded_token: decoded_token}}) do
-    transaction_id = ""
-    # Validate that transaction has not already occurred
-    case Bits.get_bits_transaction_by(transaction_id) do
-      nil -> {:ok, %{response: "happy path"}}
-      _transaction -> {:error, "Transaction #{transaction_id} is already recorded."}
-    end
-
-    # Get user associated to the transaction
-    # Credit the account bits balance
+  def update_bits_balance(_parent, %{channel_id: channel_id}, %{
+        context: %{decoded_token: decoded_token}
+      }) do
+    Bits.process_bits_transaction(channel_id, decoded_token)
   end
 
-  def activate_translations(_parent, _args, _resolution) do
+  def update_bits_balance(_parent, _args, _resolution) do
     {:error, "Access denied, missing or invalid token"}
   end
 
