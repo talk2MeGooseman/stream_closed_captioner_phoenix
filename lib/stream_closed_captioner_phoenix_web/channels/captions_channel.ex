@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   use StreamClosedCaptionerPhoenixWeb, :channel
+  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
 
   @impl true
   def join("captions:" <> user_id, _payload, socket) do
@@ -28,8 +29,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     user = socket.assigns.current_user
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
-      {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
-      {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
+      {:ok, sent_payload} ->
+        send(self(), :after_send)
+        {:reply, {:ok, sent_payload}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
 
@@ -40,6 +45,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
       {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
     end
+  end
+
+  def handle_info(:after_send, socket) do
+    {:ok, _} =
+      ActivePresence.track(socket, socket.assigns.current_user.id, %{
+        last_active: inspect(System.system_time(:second))
+      })
+
+    {:noreply, socket}
   end
 
   # Add authorization logic here as required.

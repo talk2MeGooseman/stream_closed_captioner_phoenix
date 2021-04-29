@@ -14,9 +14,10 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: StreamClosedCaptionerPhoenix.PubSub},
       # Start the Endpoint (http/https)
-      StreamClosedCaptionerPhoenixWeb.Endpoint
+      StreamClosedCaptionerPhoenixWeb.Endpoint,
       # Start a worker by calling: StreamClosedCaptionerPhoenix.Worker.start_link(arg)
       # {StreamClosedCaptionerPhoenix.Worker, arg}
+      StreamClosedCaptionerPhoenixWeb.ActivePresence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -4,6 +4,7 @@ defmodule Azure.Cognitive.Translations do
   @type t :: %__MODULE__{
           translations: list(Translation.t())
         }
+  @derive Jason.Encoder
   defstruct [
     :translations
   ]

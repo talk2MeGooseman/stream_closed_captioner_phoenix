@@ -3,7 +3,7 @@ defmodule Azure.Cognitive.Translation do
           text: String.t(),
           to: String.t()
         }
-
+  @derive Jason.Encoder
   defstruct [
     :text,
     :to
