@@ -326,6 +326,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
     |> Ecto.Multi.run(:add_to_balance, add_to_balance(amount))
     |> Ecto.Multi.run(:save_transaction, save_transaction(transaction_info))
+    |> Repo.transaction()
   end
 
   defp validate_transaction(transaction_id) do
