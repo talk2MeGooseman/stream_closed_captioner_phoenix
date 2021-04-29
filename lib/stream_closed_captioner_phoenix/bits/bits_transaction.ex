@@ -32,8 +32,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransaction do
       :time,
       :purchaser_uid,
       :sku,
-      :amount,
-      :display_name
+      :amount
     ])
   end
 end

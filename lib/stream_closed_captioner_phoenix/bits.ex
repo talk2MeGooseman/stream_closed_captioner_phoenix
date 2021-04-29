@@ -315,10 +315,22 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     BitsTransaction.changeset(bits_transaction, attrs)
   end
 
+  @doc """
+  Procceses a transaction from Twitch that will credit a users bits balance account
+  and record the transaction.
+
+  ## Examples
+
+      iex> process_bits_transaction(uid, transaction_data)
+      %{:ok, transaction_multi_map}
+
+      iex> process_bits_transaction(uid, transaction_data)
+      %{:error, :validate_transaction, "Transaction 1 is already recorded.", %{}}
+  """
   def process_bits_transaction(uid, decoded_token) do
-    transaction_info = decoded_token |> List.first() |> Map.get('data')
+    transaction_info = decoded_token |> List.first() |> Map.get("data")
     transaction_id = Map.get(transaction_info, "transactionId")
-    amount = get_in(transaction_info, ["product", "const", "amount"])
+    amount = get_in(transaction_info, ["product", "cost", "amount"])
 
     Ecto.Multi.new()
     |> Ecto.Multi.run(:validate_transaction, validate_transaction(transaction_id))
@@ -332,7 +344,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   defp validate_transaction(transaction_id) do
     fn _repo, _ ->
       case get_bits_transaction_by(transaction_id) do
-        nil -> {:ok}
+        nil -> {:ok, transaction_id}
         _transaction -> {:error, "Transaction #{transaction_id} is already recorded."}
       end
     end
@@ -356,21 +368,20 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   end
 
   defp add_to_balance(amount) do
-    fn repo, %{retrieve_balance: bits_balance} ->
+    fn _repo, %{retrieve_balance: bits_balance} ->
       bits_balance
-      |> update_bits_balance(%{balance: bits_balance.amount + amount})
-      |> repo.update()
+      |> update_bits_balance(%{balance: bits_balance.balance + amount})
     end
   end
 
   defp save_transaction(transaction_info) do
     fn _repo, %{retrieve_channel_user: user} ->
       create_bits_transaction(user, %{
-        amount: get_in(transaction_info, ['product', 'cost', 'amount']),
-        purchaser_uid: get_in(transaction_info, ['userId']),
-        sku: get_in(transaction_info, ['product']['sku']),
-        time: get_in(transaction_info, ['time']),
-        transaction_id: get_in(transaction_info, ['transactionId'])
+        amount: get_in(transaction_info, ["product", "cost", "amount"]),
+        purchaser_uid: get_in(transaction_info, ["userId"]),
+        sku: get_in(transaction_info, ["product", "sku"]),
+        time: get_in(transaction_info, ["time"]),
+        transaction_id: get_in(transaction_info, ["transactionId"])
       })
     end
   end

@@ -195,9 +195,29 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       end
     end
 
-    test "change_bits_transaction1 returns a bits_transaction changeset" do
+    test "change_bits_transaction returns a bits_transaction changeset" do
       bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
       assert %Ecto.Changeset{} = Bits.change_bits_transaction(bits_transaction)
+    end
+
+    test "process_bits_transaction updates user channel bits balance if they exist" do
+      user = insert(:user)
+
+      data = [%{
+        "data" => %{
+          "transactionId" => "1",
+          "userId" => "1235",
+          "time" => NaiveDateTime.utc_now(),
+          "product" => %{
+            "sku" => "translation500",
+            "cost" => %{
+              "amount" => 500
+            }
+          }
+        }
+      }]
+
+      assert {:ok, _} = Bits.process_bits_transaction(user.uid, )
     end
   end
 end
