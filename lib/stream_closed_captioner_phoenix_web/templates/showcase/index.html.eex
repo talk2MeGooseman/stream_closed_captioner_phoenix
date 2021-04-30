@@ -1,0 +1,24 @@
+Showcase
+
+<section class="w-full px-4 py-24 mx-auto max-w-7xl md:w-4/5">
+  <%= for user_stream <- @data do %>
+  <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+    <div>
+      <a href="#">
+        <img src="<%= set_stream_thumnail_dimensions(user_stream.thumbnail_url, "1280", "640") %>"
+          class="object-cover w-full h-56 mb-5 bg-center rounded" alt="Kutty" loading="lazy" />
+      </a>
+      <p class="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase"><%= user_stream.game_name %></p>
+      <h2 class="mb-2 text-xl font-bold leading-snug text-gray-900">
+        <a href="#" class="text-gray-900 hover:text-purple-700"><%= user_stream.title %></a>
+      </h2>
+      <a class="flex items-center text-gray-700" href="#">
+        <div>
+          <p class="text-sm font-semibold text-gray-900"><%= user_stream.user_name %></p>
+          <p class="text-sm text-gray-600">Viewers: <%= user_stream.viewer_count %></p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <% end %>
+</section>
