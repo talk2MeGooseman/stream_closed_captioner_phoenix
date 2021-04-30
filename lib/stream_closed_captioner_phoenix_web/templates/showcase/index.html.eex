@@ -1,6 +1,12 @@
-Showcase
-
 <section class="w-full px-4 py-24 mx-auto max-w-7xl md:w-4/5">
+  <h2 class="mb-2 text-3xl font-extrabold leading-tight text-gray-900">Live Twitch Streams</h2>
+  <p class="mb-20 text-lg text-gray-500">Discover streamers that are using Stream Closed Captioner on their channels
+  </p>
+  <%= if Enum.empty?(@data) do %>
+  <div class="alert bg-yellow-100 text-primary alert-lg">
+    No Twitch channels are live right now.
+  </div>
+  <% end %>
   <%= for user_stream <- @data do %>
   <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
     <div>

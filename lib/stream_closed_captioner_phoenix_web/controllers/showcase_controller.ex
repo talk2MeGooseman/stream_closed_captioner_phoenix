@@ -3,7 +3,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
 
   def index(conn, _params) do
     active_user_map = StreamClosedCaptionerPhoenixWeb.ActivePresence.list("active_channels")
-    # Filter by last publish no more than 5 minutes ago
     channel_ids =
       Enum.reduce(active_user_map, [], fn data, acc -> reduced_user_list(data, acc) end)
 
@@ -15,6 +14,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
   end
 
   defp reduced_user_list({_, %{user: %{uid: uid}}}, acc) when is_binary(uid) do
+    # Filter by last publish no more than 5 minutes ago
     [uid | acc]
   end
 
