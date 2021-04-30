@@ -61,6 +61,15 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_users_map(ids) do
+    query =
+      from u in User,
+        where: u.id in ^ids,
+        select: {u.id, u}
+
+    query |> Repo.all() |> Enum.into(%{})
+  end
+
   @doc """
   Registers a user.
 

@@ -5,6 +5,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   @impl true
   def join("captions:" <> user_id, _payload, socket) do
     if authorized?(socket, user_id) do
+      send(self(), :after_join)
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -30,7 +31,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
-        send(self(), :after_send)
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->
@@ -47,10 +47,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  def handle_info(:after_send, socket) do
+  def handle_info(:after_join, socket) do
+    {:ok, _} = ActivePresence.track(socket, socket.assigns.current_user.id, %{})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:after_publish, socket) do
     {:ok, _} =
-      ActivePresence.track(socket, socket.assigns.current_user.id, %{
-        last_active: inspect(System.system_time(:second))
+      ActivePresence.update(socket, socket.assigns.current_user.id, %{
+        last_publish: inspect(System.system_time(:second))
       })
 
     {:noreply, socket}
