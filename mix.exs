@@ -87,7 +87,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:sweet_xml, "~> 0.6"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
-      {:thesis, "~> 0.3.4"},
       {:timex, "~> 3.6"},
       {:ueberauth_twitch, "~> 0.0.2"},
       {:ueberauth, "~> 0.6"}

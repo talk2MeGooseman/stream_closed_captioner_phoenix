@@ -1,7 +1,7 @@
-defmodule StreamClosedCaptionerPhoenixWeb.PageController do
+defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
-  def dynamic(conn, _params) do
-    render_dynamic(conn)
+  def index(conn, _params) do
+    render(conn, "index.html")
   end
 end
