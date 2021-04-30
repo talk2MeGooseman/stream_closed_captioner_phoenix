@@ -31,6 +31,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
+        send(self(), :after_publish)
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->

@@ -3,7 +3,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   import Ecto.Changeset
   use Waffle.Ecto.Schema
 
-  @derive {Inspect, except: [:password]}
+  @derive {Inspect, except: [:password, :encrypted_password]}
+  @derive {Jason.Encoder,
+           only: [:email, :provider, :uid, :username, :login, :profile_image_url, :description]}
+
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
