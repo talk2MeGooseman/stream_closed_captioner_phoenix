@@ -201,23 +201,25 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "process_bits_transaction updates user channel bits balance if they exist" do
-      user = insert(:user)
+      user = insert(:user, provider: "twitch")
 
-      data = [%{
-        "data" => %{
-          "transactionId" => "1",
-          "userId" => "1235",
-          "time" => NaiveDateTime.utc_now(),
-          "product" => %{
-            "sku" => "translation500",
-            "cost" => %{
-              "amount" => 500
+      data = [
+        %{
+          "data" => %{
+            "transactionId" => "1",
+            "userId" => "1235",
+            "time" => NaiveDateTime.utc_now(),
+            "product" => %{
+              "sku" => "translation500",
+              "cost" => %{
+                "amount" => 500
+              }
             }
           }
         }
-      }]
+      ]
 
-      assert {:ok, _} = Bits.process_bits_transaction(user.uid, )
+      assert {:ok, _} = Bits.process_bits_transaction(user.uid, data)
     end
   end
 end
