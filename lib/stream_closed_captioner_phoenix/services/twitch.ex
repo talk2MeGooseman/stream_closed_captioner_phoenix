@@ -35,6 +35,8 @@ defmodule Twitch do
   end
 
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
+  def get_live_streams([]), do: []
+
   def get_live_streams(user_ids) do
     Oauth.get_client_access_token()
     |> Helix.get_streams(user_ids)
