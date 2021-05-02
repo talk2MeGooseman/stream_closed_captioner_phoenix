@@ -21,14 +21,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(%{"token" => "users_sessions:" <> encoded_token}, socket, _connect_info) do
-    token = Base.url_decode64!(encoded_token)
-
-    case Accounts.get_user_by_session_token(token) do
-      %User{} = user ->
-        {:ok, assign(socket, :current_user, user)}
-
-      _ ->
+  def connect(%{"token" => token}, socket, _connect_info) do
+    case Phoenix.Token.verify(socket, "user socket", token, max_age: 5184000) do
+      {:ok, user_id} ->
+        current_user = Accounts.get_user!(user_id)
+        {:ok, assign(socket, :current_user, current_user)}
+      {:error, reason} ->
         :error
     end
   end

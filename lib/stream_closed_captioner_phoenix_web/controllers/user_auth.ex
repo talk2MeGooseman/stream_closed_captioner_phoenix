@@ -109,12 +109,38 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
   end
 
   @doc """
+  Used for helping auth user over websocket channel
+  """
+  def put_socket_token(conn, _) do
+    if current_user = conn.assigns[:current_user] do
+      token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+      assign(conn, :socket_token, token)
+    else
+      conn
+    end
+  end
+
+  @doc """
   Used for routes that require the user to not be authenticated.
   """
   def redirect_if_user_is_authenticated(conn, _opts) do
     if conn.assigns[:current_user] do
       conn
       |> redirect(to: signed_in_path(conn))
+      |> halt()
+    else
+      conn
+    end
+  end
+
+  @doc """
+  Used for routes that only an admin can access
+  """
+  def redirect_if_not_admin(conn, _opts) do
+    user = conn.assigns[:current_user]
+    if !Accounts.is_admin?(user) do
+      conn
+      |> redirect(to: "/")
       |> halt()
     else
       conn

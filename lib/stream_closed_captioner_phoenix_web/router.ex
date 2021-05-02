@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Router do
   use StreamClosedCaptionerPhoenixWeb, :router
-  use Kaffy.Routes, scope: "/admin", pipe_through: [:kaffy_browser]
+  use Kaffy.Routes, scope: "/admin", pipe_through: [:admin_protected]
   require Ueberauth
 
   import StreamClosedCaptionerPhoenixWeb.UserAuth
@@ -13,10 +13,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :put_socket_token
   end
 
   pipeline :logged_in do
     plug :put_root_layout, {StreamClosedCaptionerPhoenixWeb.LayoutView, :logged_in}
+  end
+
+  pipeline :admin_protected do
+    plug :fetch_current_user
+    plug :redirect_if_not_admin
   end
 
   pipeline :kaffy_browser do
@@ -142,11 +148,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     end
 
     resources "/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show]
-
-    live "/dashboard", DashboardLive.Index, :index,
-      layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, "logged_in.html"}
-
-    live "/dashboard/settings", DashboardLive.Index, :settings,
-      layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, "logged_in.html"}
+    resources "/dashboard", DashboardController, only: [:index]
   end
 end

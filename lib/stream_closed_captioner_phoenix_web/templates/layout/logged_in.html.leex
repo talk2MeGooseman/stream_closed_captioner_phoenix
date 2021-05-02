@@ -12,7 +12,7 @@
     window.userId = "<%= assigns[:current_user].id %>";
   </script>
   <script>
-    window.userToken = "<%= assigns[:live_socket_id] %>";
+    window.userToken = "<%= assigns[:socket_token] %>";
   </script>
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
@@ -27,7 +27,7 @@
         "w-20") %>
       </a>
       <nav class="text-sm font-medium text-gray-500" aria-label="Main Navigation">
-        <%= live_patch to: Routes.dashboard_index_path(@conn, :index), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
+        <%= live_patch to: Routes.dashboard_path(@conn, :index), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
         <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path
@@ -47,12 +47,11 @@
         <a class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
           href="https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61"
           target="blank">
-          <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z"
-              clip-rule="evenodd" />
-            <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z" />
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           <span>Help / FAQ</span>
         </a>
