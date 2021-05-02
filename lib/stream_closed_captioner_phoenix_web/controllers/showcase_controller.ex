@@ -13,12 +13,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     render(conn, "index.html", data: stream_list)
   end
 
-  defp reduced_user_list({_, %{user: %{uid: uid}}}, acc) when is_binary(uid) do
-    # Filter by last publish no more than 5 minutes ago
-    [uid | acc]
+  defp reduced_user_list({_, %{user: %{uid: uid}, metas: metas}}, acc) when is_binary(uid) do
+    last_publish = metas |> List.first |> Map.get(:last_publish, 0)
+    elapased_time = current_timestamp() - last_publish
+
+    cond do
+      elapased_time <= 300 -> [uid | acc]
+      true -> acc
+    end
   end
 
   defp reduced_user_list(_, acc) do
     acc
   end
+
+  defp current_timestamp, do: System.system_time(:seconds)
 end

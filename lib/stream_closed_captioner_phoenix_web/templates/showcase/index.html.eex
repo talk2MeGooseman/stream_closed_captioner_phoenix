@@ -8,7 +8,7 @@
   </div>
   <% end %>
   <%= for user_stream <- @data do %>
-  <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+  <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
     <div>
       <a href="#">
         <img src="<%= set_stream_thumnail_dimensions(user_stream.thumbnail_url, "1280", "640") %>"

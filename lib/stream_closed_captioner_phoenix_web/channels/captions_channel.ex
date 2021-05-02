@@ -59,7 +59,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_info(:after_publish, socket) do
     {:ok, _} =
       ActivePresence.update(self(), "active_channels", socket.assigns.current_user.id, %{
-        last_publish: inspect(System.system_time(:second))
+        last_publish: System.system_time(:second)
       })
 
     {:noreply, socket}
