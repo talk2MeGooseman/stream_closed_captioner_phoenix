@@ -64,11 +64,6 @@
         </svg>
         <span>Caption Settings</span>
         <% end %>
-        <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-        <%= link to: Routes.live_dashboard_path(@conn, :home), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
-        <span>Live Dashboard</span>
-        <% end %>
-        <% end %>
       </nav>
     </nav>
     <div class="ml-0 transition md:ml-60">
@@ -84,7 +79,6 @@
         <div class="hidden -ml-3 form-icon md:block w-96">
         </div>
         <div class="flex items-center">
-          <%= render "_notification.html", assigns %>
           <%= render "_user_dropdown.html", assigns %>
         </div>
       </header>

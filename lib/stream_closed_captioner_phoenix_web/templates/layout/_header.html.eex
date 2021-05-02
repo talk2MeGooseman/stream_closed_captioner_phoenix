@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between mx-auto max-w-7xl">
     <div class="flex items-center space-x-3">
       <div class="inline-flex md:hidden" x-data="{ open: false }">
-        <button class="flex-none px-2 btn btn-white btn-sm" @click="open = true">
+        <button class="flex-none px-2 btn btn-link btn-icon" @click="open = true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -21,41 +21,45 @@
             </svg>
             <span class="sr-only">Close Menu</span>
           </button>
-          <a class="w-full btn btn-icon btn-link" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
-              <path
-                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            Dashboard
-          </a>
-          <a class="w-full btn btn-icon btn-primary" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
-              <path fill-rule="evenodd"
-                d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v7h-2l-1 2H8l-1-2H5V5z"
-                clip-rule="evenodd" />
-            </svg>
-            Inbox
-          </a>
-          <a class="w-full btn btn-icon btn-link" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
-              <path
-                d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-            </svg>
-            Videos
-          </a>
+          <%= if @current_user do %>
+          <%= link to: Routes.dashboard_path(@conn, :index), class: "w-full btn btn-icon btn-link" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
+            <path
+              d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Dashboard
+          <% end %>
+          <% end %>
+          <%= link to: Routes.showcase_path(@conn, :index), class: "w-full btn btn-icon btn-link" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
+            <path
+              d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+          </svg>
+          Showcase
+          <% end %>
+          <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "w-full btn btn-icon btn-link" do %>
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="flex-shrink-0 w-5 h-5 mr-2 transition group-hover:text-gray-300" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          FAQ
+          <% end %>
         </div>
       </div>
       <a href="/" title="Stream Closed Captioner Home Page" class="flex items-center">
         <span>Stream CC</span>
       </a>
-      <%= if @current_user do %>
       <div class="hidden space-x-1 md:inline-flex">
+        <%= if @current_user do %>
         <%= link to: Routes.dashboard_path(@conn, :index), class: "btn btn-sm btn-icon btn-link" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
           <path
             d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
         </svg>
         Dashboard
+        <% end %>
         <% end %>
         <%= link to: Routes.showcase_path(@conn, :index), class: "btn btn-sm btn-icon btn-link" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
@@ -64,12 +68,18 @@
         </svg>
         Showcase
         <% end %>
+        <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "btn btn-sm btn-icon btn-link" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-5 h-5 mr-2 transition group-hover:text-gray-300"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        FAQ
+        <% end %>
       </div>
-      <% end %>
     </div>
     <div class="flex items-center space-x-3">
       <%= if @current_user do %>
-      <%= render "_notification.html", assigns %>
       <%= render "_user_dropdown.html", assigns %>
       <% else %>
       <div class="lex items-center space-x-3">

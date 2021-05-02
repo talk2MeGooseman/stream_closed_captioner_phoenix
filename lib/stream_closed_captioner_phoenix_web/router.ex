@@ -74,17 +74,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
   if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
-
     scope "/" do
       pipe_through :browser
-
-      forward "/monitoring", HeartCheck.Plug,
-        heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
-
-      live_dashboard "/live-dashboard",
-        metrics: StreamClosedCaptionerPhoenixWeb.Telemetry,
-        ecto_repos: [StreamClosedCaptionerPhoenix.Repo]
     end
   end
 
@@ -102,9 +93,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get "/users/confirm", UserConfirmationController, :new
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :confirm
+
+    forward "/monitoring", HeartCheck.Plug,
+      heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
   end
 
   ## Authentication routes
+
+  import Phoenix.LiveDashboard.Router
+  scope "/", StreamClosedCaptionerPhoenixWeb do
+    pipe_through [:browser, :admin_protected]
+
+    live_dashboard "/live-dashboard",
+      metrics: StreamClosedCaptionerPhoenixWeb.Telemetry,
+      ecto_repos: [StreamClosedCaptionerPhoenix.Repo]
+  end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated, :put_session_layout]
