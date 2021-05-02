@@ -78,6 +78,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     "cy" => "Welsh",
     "yua" => "Yucatec Maya"
   }
+  def translatable_languages, do: @translatable_languages
 
   @spoken_languages %{
     "Afrikaans" => [

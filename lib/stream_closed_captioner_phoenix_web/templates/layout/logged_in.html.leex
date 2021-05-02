@@ -23,8 +23,8 @@
       class="fixed top-0 left-0 z-20 h-full pb-10 overflow-x-hidden overflow-y-auto transition origin-left transform bg-gray-900 w-60 md:translate-x-0"
       :class="{ '-translate-x-full' : !sideBar, 'translate-x-0' : sideBar }" @click.away="sideBar = false">
       <a href="/" class="flex items-center px-4 py-5">
-        <%= img_tag(Routes.static_path(@conn, "/images/cc100x100.png"), alt: "Account profile image", class:
-        "w-20") %>
+        <%= img_tag(Routes.static_path(@conn, "/images/cc100x100.png"), alt: "Stream Closed Captioner Logo", class:
+        "w-20 rounded") %>
       </a>
       <nav class="text-sm font-medium text-gray-500" aria-label="Main Navigation">
         <%= live_patch to: Routes.dashboard_path(@conn, :index), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>

@@ -13,6 +13,8 @@ defmodule Azure.Cognitive.Translations do
 
   def new(data, args \\ []) do
     res = super(data, args)
-    %{res | translations: Enum.map(res.translations, &Translation.new/1)}
+    %{res | translations: Enum.reduce(res.translations, %{}, fn translation, acc ->
+      Map.put(acc, translation["to"], Translation.new(translation))
+    end)}
   end
 end

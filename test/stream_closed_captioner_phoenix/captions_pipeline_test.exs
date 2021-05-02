@@ -79,7 +79,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                   delay: 0,
                   final: "",
                   interim: "Hello",
-                  translations: [%Azure.Cognitive.Translation{text: "Hola", to: "es"}]
+                  translations: %{ "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}]
                 }}
 
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
