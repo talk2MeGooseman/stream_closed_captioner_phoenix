@@ -5,6 +5,10 @@
   <div class="flex items-center space-x-6">
     <%= link "Privacy Policy", to: "/privacy", class: "mb-8 text-sm text-center text-gray-700 md:text-left md:mb-0" %>
     <%= link "Terms", to: "/terms", class: "mb-8 text-sm text-center text-gray-700 md:text-left md:mb-0" %>
+    <a href="https://patreon.com/talk2megooseman">
+      <span class="sr-only">Patreon</span>
+      <%= img_tag(Routes.static_path(@conn, "/images/patreon.svg"), alt: "Patreon Logo", class: "w-5 h-5") %>
+    </a>
     <a href="https://twitter.com/talk2megooseman">
       <span class="sr-only">Twitter</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="2500" height="2031" viewBox="-0.25 -0.25 1109.5 901.5"

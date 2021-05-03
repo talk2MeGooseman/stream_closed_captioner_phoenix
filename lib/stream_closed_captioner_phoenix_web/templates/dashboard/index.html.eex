@@ -92,8 +92,22 @@
   <div class="card shadow">
     <div class="card-header">
       <h5 class="card-title">
-        Your Captions
+        Your Sent Captions
       </h5>
+    </div>
+    <div class="card-header">
+      <div class="flex-1 p-2">
+        <h5 class="text-sm font-bold text-gray-900"><%= !is_nil(@translation_active) %></h5>
+        <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
+      </div>
+      <div class="flex-1 p-2">
+        <h5 class="text-sm font-bold text-gray-900"><%= @bits_balance %></h5>
+        <p class="text-sm font-medium leading-none text-gray-600">Translation Credit Balance</p>
+      </div>
+      <div class="flex-1 p-2">
+        <h5 class="text-sm font-bold text-gray-900"><%= Map.values(@translate_languages) |> Enum.join(", ") %></h5>
+        <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
+      </div>
     </div>
     <div id="caption-actions" phx-update="ignore">
       <div data-controller="captions"
