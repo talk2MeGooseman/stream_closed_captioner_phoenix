@@ -1,0 +1,23 @@
+{
+  "AWSEBDockerrunVersion": 1,
+  "volumes": [
+    {
+      "name": "stream_closed_captioner_phoenix",
+      "host": {
+        "sourcePath": "/app"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "stream_closed_captioner_phoenix",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 4000
+        }
+      ]
+    }
+  ]
+}

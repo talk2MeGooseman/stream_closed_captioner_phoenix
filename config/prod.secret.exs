@@ -12,7 +12,7 @@ database_url =
     """
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-  # ssl: true,
+  ssl: true,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
@@ -30,7 +30,13 @@ secret_key_base =
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
-    transport_options: [socket_opts: [:inet6]]
+    transport_options: [socket_opts: [:inet6]],
+    compress: true
+  ],
+  url: [
+    scheme: "http",
+    host: System.get_env("HOST"),
+    port: {:system, "PORT"}
   ],
   secret_key_base: secret_key_base
 
