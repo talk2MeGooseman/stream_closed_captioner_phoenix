@@ -12,6 +12,8 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Push to GitHub Packages
+        env: # Or as an environment variable
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
