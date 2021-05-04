@@ -69,3 +69,8 @@ node_modules/sha.js/sha512.js
 node_modules/sha.js/test/hash.js
 node_modules/sha.js/test/test.js
 node_modules/sha.js/test/vectors.js
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
