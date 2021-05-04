@@ -1,23 +1,12 @@
 {
-  "AWSEBDockerrunVersion": 1,
-  "volumes": [
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "talk2megooseman/stream_closed_captioner_phoenix",
+    "Update": "true"
+  },
+  "Ports": [
     {
-      "name": "stream_closed_captioner_phoenix",
-      "host": {
-        "sourcePath": "/app"
-      }
-    }
-  ],
-  "containerDefinitions": [
-    {
-      "name": "stream_closed_captioner_phoenix",
-      "essential": true,
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 4000
-        }
-      ]
+      "ContainerPort": "4000"
     }
   ]
 }
