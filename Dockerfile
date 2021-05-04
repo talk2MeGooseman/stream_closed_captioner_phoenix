@@ -23,8 +23,8 @@ COPY assets/package.json assets/package-lock.json ./assets/
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
 # assets -- copy asset files so purgecss doesnt remove css files
-COPY lib/guzman_app_elixir_web/templates/ lib/guzman_app_elixir_web/templates/
-COPY lib/guzman_app_elixir_web/views/ lib/guzman_app_elixir_web/views/
+COPY lib/stream_closed_captioner_phoenix_web/templates/ lib/stream_closed_captioner_phoenix_web/templates/
+COPY lib/stream_closed_captioner_phoenix_web/views/ lib/stream_closed_captioner_phoenix_web/views/
 
 COPY priv priv
 COPY assets assets
@@ -47,8 +47,8 @@ RUN chown nobody:nobody /app
 
 USER nobody:nobody
 
-COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/guzman_app_elixir ./
+COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/stream_closed_captioner_phoenix ./
 
 ENV HOME=/app
 
-CMD ["bin/guzman_app_elixir", "start"]
+CMD ["bin/stream_closed_captioner_phoenix", "start"]
