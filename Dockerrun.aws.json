@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "https://ghcr.io/talk2megooseman/stream_closed_captioner_phoenix",
+    "Name": "ghcr.io/talk2megooseman/stream_closed_captioner_phoenix:0.0.1.d",
     "Update": "true"
   },
   "Ports": [
