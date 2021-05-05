@@ -5,7 +5,7 @@
 # is restricted to this project.
 
 # General application configuration
-use Mix.Config
+import Config
 
 config :stream_closed_captioner_phoenix,
   ecto_repos: [StreamClosedCaptionerPhoenix.Repo]

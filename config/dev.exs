@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # Configure your database
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
