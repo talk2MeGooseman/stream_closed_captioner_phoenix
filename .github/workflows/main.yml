@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -21,3 +19,5 @@ jobs:
           registry: docker.pkg.github.com
           repository: talk2megooseman/stream_closed_captioner_phoenix/stream_closed_captioner_phoenix_image
           tag_with_ref: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
