@@ -58,4 +58,4 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
   sub: "erik.guzman@guzman.codes",
   sandbox: false
 
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
