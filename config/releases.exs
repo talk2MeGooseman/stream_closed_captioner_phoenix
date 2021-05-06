@@ -29,7 +29,6 @@ secret_key_base =
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   http: [
-    host: String.to_integer(System.get_env("HOST")),
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]],
     compress: true
