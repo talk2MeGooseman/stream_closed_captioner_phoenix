@@ -89,6 +89,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     end
   end
 
+  scope "/" do
+    pipe_through :browser
+
+    forward "/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
+  end
+
   scope "/", StreamClosedCaptionerPhoenixWeb do
     pipe_through :browser
 
@@ -103,8 +109,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get "/users/confirm", UserConfirmationController, :new
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :confirm
-
-    forward "/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
   end
 
   ## Authentication routes
