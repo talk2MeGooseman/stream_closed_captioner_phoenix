@@ -5,6 +5,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
   import StreamClosedCaptionerPhoenixWeb.UserAuth
 
+  use BoomNotifier,
+    notifier: BoomNotifier.MailNotifier,
+    notification_trigger: :exponential,
+    options: [
+      mailer: StreamClosedCaptionerPhoenix.Mailer,
+      from: "erik.guzman@guzman.codes",
+      to: "erik.guzman@guzman.codes",
+      subject: "BOOM error caught"
+    ]
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -94,13 +104,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :confirm
 
-    forward "/monitoring", HeartCheck.Plug,
-      heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
+    forward "/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
   end
 
   ## Authentication routes
 
   import Phoenix.LiveDashboard.Router
+
   scope "/", StreamClosedCaptionerPhoenixWeb do
     pipe_through [:browser, :admin_protected]
 

@@ -4,12 +4,7 @@
 # remember to add this file to your .gitignore.
 import Config
 
-database_url =
-  System.get_env("DATABASE_URL") ||
-    raise """
-    environment variable DATABASE_URL is missing.
-    For example: ecto://USER:PASS@HOST/DATABASE
-    """
+database_url = System.get_env("DATABASE_URL")
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   # ssl: true,
@@ -20,12 +15,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   # !!! From now on, migrations should only be done from Ecto !!!
   migration_source: "ecto_schema_migrations"
 
-secret_key_base =
-  System.get_env("SECRET_KEY_BASE") ||
-    raise """
-    environment variable SECRET_KEY_BASE is missing.
-    You can generate one by calling: mix phx.gen.secret
-    """
+secret_key_base = System.get_env("SECRET_KEY_BASE")
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   http: [
