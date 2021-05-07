@@ -4,16 +4,11 @@
 # remember to add this file to your .gitignore.
 import Config
 
-database_url =
-  System.get_env("DATABASE_URL") ||
-    raise """
-    environment variable DATABASE_URL is missing.
-    For example: ecto://USER:PASS@HOST/DATABASE
-    """
-
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-  ssl: true,
-  url: database_url,
+  username: System.get_env("RDS_USERNAME"),
+  password: System.get_env("RDS_PASSWORD"),
+  database: System.get_env("RDS_DB_NAME"),
+  hostname: System.get_env("RDS_HOSTNAME"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
