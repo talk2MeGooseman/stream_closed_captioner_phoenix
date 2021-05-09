@@ -8,7 +8,7 @@
     <% end %>
     <!-- Zoom Indicator -->
     <div phx-update="ignore">
-      <div class="p-5 card" data-controller="zoom">
+      <div class="p-5 card shadow" data-controller="zoom">
         <div class="flex flex-row items-center">
           <div data-zoom-target="errorMarker"
             class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded">
@@ -45,7 +45,7 @@
     </div>
     <!-- OBS Indicator -->
     <div phx-update="ignore">
-      <div class="p-5 card" data-controller="obs" data-action="captions:payload@window->obs#onCaptionsReceived">
+      <div class="p-5 card shadow" data-controller="obs" data-action="captions:payload@window->obs#onCaptionsReceived">
         <div class="flex flex-row items-center">
           <!-- X svg -->
           <div data-obs-target="errorMarker"
@@ -87,17 +87,26 @@
     </div>
   </div>
 </section>
-<!-- Captions Sections -->
+<!-- Translation Sections -->
 <section class="px-4 pb-12">
   <div class="card shadow">
     <div class="card-header">
       <h5 class="card-title">
-        Your Sent Captions
+        Twitch Translation Information
       </h5>
+      <span class="flex flex-row">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+          </path>
+        </svg>
+        Help
+      </span>
     </div>
-    <div class="card-header">
+    <div class="card-header divide-x text-center">
       <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900"><%= !is_nil(@translation_active) %></h5>
+        <h5 class="text-sm font-bold text-gray-900"><%= display_translation_status(@translation_active) %></h5>
         <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
       </div>
       <div class="flex-1 p-2">
@@ -108,6 +117,25 @@
         <h5 class="text-sm font-bold text-gray-900"><%= Map.values(@translate_languages) |> Enum.join(", ") %></h5>
         <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
       </div>
+    </div>
+  </div>
+</section>
+<!-- Captions Sections -->
+<section class="px-4 pb-12">
+  <div class="card shadow">
+    <div class="card-header">
+      <h5 class="card-title">
+        Your Captions
+      </h5>
+      <span class="flex flex-row">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+          </path>
+        </svg>
+        Help
+      </span>
     </div>
     <div id="caption-actions" phx-update="ignore">
       <div data-controller="captions"

@@ -1,5 +1,5 @@
 <div phx-update="ignore">
-  <div class="p-5 card" data-controller="twitch">
+  <div class="p-5 card shadow" data-controller="twitch">
     <div class="flex flex-row items-center">
       <div data-twitch-target="errorMarker"
         class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded">

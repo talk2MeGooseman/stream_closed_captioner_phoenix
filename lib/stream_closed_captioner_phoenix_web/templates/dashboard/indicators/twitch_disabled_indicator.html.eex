@@ -1,5 +1,5 @@
 <div>
-  <div class="flex-row items-center p-5 card">
+  <div class="flex-row items-center p-5 card shadow">
     <div class="flex items-center justify-center w-14 h-14 text-green-700 bg-green-100 rounded">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5">
         <path fill-rule="evenodd"
