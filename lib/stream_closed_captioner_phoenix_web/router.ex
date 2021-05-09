@@ -62,7 +62,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   pipeline :graphql do
-    plug StreamClosedCaptionerPhoenixWeb.Context
+    plug StreamClosedCaptionerPhoenixWeb.Context # Gets user and validates token
+    plug CORSPlug, origin: ["http://localhost:4000", "https://localhost:4000", "https://h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"]
   end
 
   if Mix.env() == :dev do
@@ -74,6 +75,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     pipe_through :graphql
 
     forward "/", Absinthe.Plug, schema: StreamClosedCaptionerPhoenixWeb.Schema
+    options "/", Absinthe.Plug, :options
   end
 
   # Enables LiveDashboard only for development

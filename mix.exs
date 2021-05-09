@@ -40,6 +40,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},
       {:boom_notifier, "~> 0.2.0"},
       {:bypass, "~> 2.1.0"},
+      {:cors_plug, "~> 2.0"},
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.0.0"},
       # Waffle for file upload

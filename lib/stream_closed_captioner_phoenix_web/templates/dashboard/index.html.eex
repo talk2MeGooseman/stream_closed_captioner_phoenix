@@ -94,15 +94,17 @@
       <h5 class="card-title">
         Twitch Translation Information
       </h5>
-      <span class="flex flex-row">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-          </path>
-        </svg>
-        Help
-      </span>
+      <a href="https://www.notion.so/talk2megooseman/How-Translations-Work-d6b58b0356de41a5aa5f73cf908a7531">
+        <span class="flex flex-row">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+          Help
+        </span>
+      </a>
     </div>
     <div class="card-header divide-x text-center">
       <div class="flex-1 p-2">
@@ -127,15 +129,18 @@
       <h5 class="card-title">
         Your Captions
       </h5>
-      <span class="flex flex-row">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-          </path>
-        </svg>
-        Help
-      </span>
+      <a
+        href="https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61">
+        <span class="flex flex-row">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-none w-6 h-6 mr-1 text-gray-700"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+          Help
+        </span>
+      </a>
     </div>
     <div id="caption-actions" phx-update="ignore">
       <div data-controller="captions"
