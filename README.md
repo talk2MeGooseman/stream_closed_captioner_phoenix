@@ -19,6 +19,10 @@ Done through service
 
 `liveSocket.enableDebug()`
 
+## Migrate database
+
+`bin/stream_closed_captioner_phoenix eval "StreamClosedCaptionerPhoenix.Release.migrate"`
+
 ## Learn more
 
 - Official website: https://www.phoenixframework.org/
