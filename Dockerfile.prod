@@ -23,6 +23,7 @@ COPY assets/package.json assets/package-lock.json ./assets/
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
 # assets -- copy asset files so purgecss doesnt remove css files
+COPY lib/stream_closed_captioner_phoenix_web/live/ lib/stream_closed_captioner_phoenix_web/live/
 COPY lib/stream_closed_captioner_phoenix_web/templates/ lib/stream_closed_captioner_phoenix_web/templates/
 COPY lib/stream_closed_captioner_phoenix_web/views/ lib/stream_closed_captioner_phoenix_web/views/
 
