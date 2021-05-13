@@ -38,7 +38,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   @desc "Information the a Twitch transaction"
   object :twitch_transaction do
-    field :response, :string
+    field :response, :json
   end
 
   query do
@@ -56,8 +56,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   mutation do
     # Add mutations here. Example
     field :process_bits_transaction, type: :twitch_transaction do
-      # once decded has transaction information
-      arg(:chanel_id, :string)
+      arg(:channel_id, non_null(:id))
 
       resolve(&process_bits_transaction/3)
     end
@@ -66,7 +65,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   def process_bits_transaction(_parent, %{channel_id: channel_id}, %{
         context: %{decoded_token: decoded_token}
       }) do
-    Bits.process_bits_transaction(channel_id, decoded_token)
+    case Bits.process_bits_transaction(channel_id, decoded_token) do
+      {:ok, _} -> {:ok, %{message: "Transaction Successful"}}
+      {:error, _, message, _} -> {:error, %{message: message}}
+    end
   end
 
   def process_bits_transaction(_parent, _args, _resolution) do

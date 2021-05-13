@@ -328,7 +328,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       %{:error, :validate_transaction, "Transaction 1 is already recorded.", %{}}
   """
   def process_bits_transaction(uid, decoded_token) do
-    transaction_info = decoded_token |> List.first() |> Map.get("data")
+    transaction_info = decoded_token |> Map.get("data")
     transaction_id = Map.get(transaction_info, "transactionId")
     amount = get_in(transaction_info, ["product", "cost", "amount"])
 
@@ -380,7 +380,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
         amount: get_in(transaction_info, ["product", "cost", "amount"]),
         purchaser_uid: get_in(transaction_info, ["userId"]),
         sku: get_in(transaction_info, ["product", "sku"]),
-        time: get_in(transaction_info, ["time"]),
+        # get_in(transaction_info, ["time"]),
+        time: Timex.now(),
         transaction_id: get_in(transaction_info, ["transactionId"])
       })
     end
