@@ -23,6 +23,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(:fetch_current_user)
+    plug(StreamClosedCaptionerPhoenixWeb.Maintenance)
     plug(:put_socket_token)
   end
 
