@@ -38,7 +38,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   @desc "Information the a Twitch transaction"
   object :twitch_transaction do
-    field :response, :json
+    field :message, :json
   end
 
   query do
