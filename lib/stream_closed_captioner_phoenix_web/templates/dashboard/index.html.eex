@@ -7,7 +7,7 @@
     <%= render "indicators/twitch_disabled_indicator.html", settings: @stream_settings %>
     <% end %>
     <!-- Zoom Indicator -->
-    <div phx-update="ignore">
+    <div>
       <div class="p-5 card shadow" data-controller="zoom">
         <div class="flex flex-row items-center">
           <div data-zoom-target="errorMarker"
@@ -44,7 +44,7 @@
       </div>
     </div>
     <!-- OBS Indicator -->
-    <div phx-update="ignore">
+    <div>
       <div class="p-5 card shadow" data-controller="obs" data-action="captions:payload@window->obs#onCaptionsReceived">
         <div class="flex flex-row items-center">
           <!-- X svg -->
@@ -106,13 +106,14 @@
         </span>
       </a>
     </div>
-    <div class="card-header divide-x text-center">
+    <div data-controller="translations" class="card-header divide-x text-center">
       <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900"><%= display_translation_status(@translation_active) %></h5>
+        <h5 class="text-sm font-bold text-gray-900" data-translations-target="translationStatus">
+          <%= display_translation_status(@translation_active) %></h5>
         <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
       </div>
       <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900"><%= @bits_balance %></h5>
+        <h5 class="text-sm font-bold text-gray-900" data-translations-target="bitsBalance"><%= @bits_balance %></h5>
         <p class="text-sm font-medium leading-none text-gray-600">Translation Credit Balance</p>
       </div>
       <div class="flex-1 p-2">
@@ -142,7 +143,7 @@
         </span>
       </a>
     </div>
-    <div id="caption-actions" phx-update="ignore">
+    <div id="caption-actions">
       <div data-controller="captions"
         data-action="twitch:state@window->captions#onTwitchChange zoom:state@window->captions#onZoomChange">
         <div class="p-4">

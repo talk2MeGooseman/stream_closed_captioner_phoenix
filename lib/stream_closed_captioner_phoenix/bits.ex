@@ -338,6 +338,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
     |> Ecto.Multi.run(:add_to_balance, add_to_balance(amount))
     |> Ecto.Multi.run(:save_transaction, save_transaction(transaction_info))
+    |> Ecto.Multi.run(:publish_activity, &publish_activity/2)
     |> Repo.transaction()
   end
 
@@ -385,5 +386,15 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
         transaction_id: get_in(transaction_info, ["transactionId"])
       })
     end
+  end
+
+  defp publish_activity(_repo, %{retrieve_channel_user: user, add_to_balance: bits_balance}) do
+    StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
+      "captions:#{user.id}",
+      "transaction",
+      %{balance: bits_balance.balance}
+    )
+
+    {:ok, nil}
   end
 end
