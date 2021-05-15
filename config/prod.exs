@@ -46,7 +46,7 @@ config :logger, level: :info
 # no data is ever sent via http, always redirecting to https:
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  force_ssl: [hsts: true]
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]]
 
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
