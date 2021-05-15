@@ -39,6 +39,6 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:latest
-          docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID --all-tags
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
