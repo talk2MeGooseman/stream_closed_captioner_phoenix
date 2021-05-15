@@ -94,3 +94,7 @@ config :ueberauth, Ueberauth,
        ]},
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
   ]
+
+config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension
+config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
+config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
