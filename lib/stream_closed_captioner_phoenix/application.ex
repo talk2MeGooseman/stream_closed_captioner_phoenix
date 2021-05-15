@@ -6,7 +6,12 @@ defmodule StreamClosedCaptionerPhoenix.Application do
   use Application
 
   def start(_type, _args) do
+    # List all child processes to be supervised
+    topologies = Application.get_env(:libcluster, :topologies) || []
+
     children = [
+      # start libcluster
+      {Cluster.Supervisor, [topologies, [name: StreamClosedCaptionerPhoenix.ClusterSupervisor]]},
       # Start the Ecto repository
       StreamClosedCaptionerPhoenix.Repo,
       # Start the Telemetry supervisor
