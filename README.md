@@ -23,10 +23,10 @@ Done through service
 
 `bin/stream_closed_captioner_phoenix eval "StreamClosedCaptionerPhoenix.Release.migrate"`
 
-## Learn more
+## Debugging on Elastic Beanstalk
 
-- Official website: https://www.phoenixframework.org/
-- Guides: https://hexdocs.pm/phoenix/overview.html
-- Docs: https://hexdocs.pm/phoenix
-- Forum: https://elixirforum.com/c/phoenix-forum
-- Source: https://github.com/phoenixframework/phoenix
+`eb logs`
+`eb ssh` to get into the EC2 machine
+`sudo -s` on the EC2 machine to run Docker commands and attach to the instance
+`docker ps` will list the running containers
+`docker exec -i -t container_name COMMAND` will connect you to the container in a Bash shell
