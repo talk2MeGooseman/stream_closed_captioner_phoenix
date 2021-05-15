@@ -45,6 +45,21 @@ config :goth,
 
 config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
 
+dns_name = System.get_env("CLUSTER_QUERY")
+app_name = System.get_env("CLUSTER_BASENAME")
+
+config :libcluster,
+  topologies: [
+    dns_poll_example: [
+      strategy: Elixir.Cluster.Strategy.DNSPoll,
+      config: [
+        polling_interval: 5_000,
+        query: dns_name,
+        node_basename: app_name
+      ]
+    ]
+  ]
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix
