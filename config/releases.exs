@@ -50,12 +50,10 @@ app_name = System.get_env("CLUSTER_BASENAME")
 
 config :libcluster,
   topologies: [
-    dns_poll_example: [
-      strategy: Elixir.Cluster.Strategy.DNSPoll,
+    example: [
+      strategy: ClusterEC2.Strategy.Tags,
       config: [
-        polling_interval: 5_000,
-        query: dns_name,
-        node_basename: app_name
+        ec2_tagname: "elasticbeanstalk:environment-name"
       ]
     ]
   ]
