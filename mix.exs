@@ -41,6 +41,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:boom_notifier, "~> 0.2.0"},
       {:bypass, "~> 2.1.0"},
       {:cors_plug, "~> 2.0"},
+      {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.0.0"},
       # Waffle for file upload
