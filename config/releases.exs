@@ -44,17 +44,14 @@ app_name = System.get_env("CLUSTER_BASENAME")
 
 config :libcluster,
   topologies: [
-    example: [
-      strategy: ClusterEC2.Strategy.Tags,
+    k8s_example: [
+      strategy: Cluster.Strategy.Kubernetes,
       config: [
-        ec2_tagname: "elasticbeanstalk:environment-name"
+        kubernetes_selector: "${LIBCLUSTER_KUBERNETES_SELECTOR}",
+        kubernetes_node_basename: "${LIBCLUSTER_KUBERNETES_NODE_BASENAME}"
       ]
     ]
   ]
-
-config :ex_aws,
-  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
-  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role]
 
 # ## Using releases (Elixir v1.9+)
 #

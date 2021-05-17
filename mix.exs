@@ -49,7 +49,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:waffle_ecto, "~> 0.0.9"},
       # If using Waffle with S3:
       {:ex_aws, "~> 2.1.2"},
-      {:ex_aws_s3, "~> 2.0"},
       # Other stuff
       {:bcrypt_elixir, "~> 2.0"},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
