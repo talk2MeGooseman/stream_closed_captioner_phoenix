@@ -25,7 +25,7 @@ secret_key_base =
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   server: true,
   http: [port: String.to_integer(System.get_env("PORT") || "4000")],
-  url: [host: System.get_env("HOST"), port: 443]
+  url: [host: System.get_env("HOST"), port: 443],
   secret_key_base: secret_key_base
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
