@@ -39,16 +39,16 @@ config :goth,
 
 config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
 
-dns_name = System.get_env("CLUSTER_QUERY")
-app_name = System.get_env("CLUSTER_BASENAME")
+k8s_selector = System.get_env("LIBCLUSTER_KUBERNETES_SELECTOR")
+k8s_name = System.get_env("LIBCLUSTER_KUBERNETES_NODE_BASENAME")
 
 config :libcluster,
   topologies: [
     k8s_example: [
       strategy: Cluster.Strategy.Kubernetes,
       config: [
-        kubernetes_selector: "${LIBCLUSTER_KUBERNETES_SELECTOR}",
-        kubernetes_node_basename: "${LIBCLUSTER_KUBERNETES_NODE_BASENAME}"
+        kubernetes_selector: k8s_selector,
+        kubernetes_node_basename: k8s_name
       ]
     ]
   ]
