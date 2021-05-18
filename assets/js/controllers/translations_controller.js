@@ -24,9 +24,10 @@ export default class extends ApplicationController {
       this.bitsBalanceTarget.innerHTML = balance
     })
 
-    this.captionsChannel.on("translationActivated", ({ enabled }) => {
+    this.captionsChannel.on("translationActivated", ({ enabled, balance }) => {
       if (enabled) {
         this.translationStatusTarget.innerHTML = "Enabled"
+        this.bitsBalanceTarget.innerHTML = balance
       }
     })
   }

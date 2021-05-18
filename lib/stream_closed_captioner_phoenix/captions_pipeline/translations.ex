@@ -15,12 +15,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
       nil ->
         case Bits.activate_translations_for(user) do
           {:ok, _} ->
-            StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
-              "captions:#{user.id}",
-              "translationActivated",
-              %{enabled: true}
-            )
-
             %Translations{translations: translations} = get_translations(user, text)
             %{payload | translations: translations}
 

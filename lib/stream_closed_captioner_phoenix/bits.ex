@@ -23,6 +23,15 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
         new_balance = user.bits_balance.balance - debit.amount
         update_bits_balance(user.bits_balance, %{balance: new_balance})
       end)
+      |> Ecto.Multi.run(:broadcast, fn _repo, %{balance: %{balance: balance}} ->
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
+          "captions:#{user.id}",
+          "translationActivated",
+          %{enabled: true, balance: balance}
+        )
+
+        {:ok, true}
+      end)
       |> Repo.transaction()
     else
       {:insufficent_balance}
