@@ -120,6 +120,10 @@
         <h5 class="text-sm font-bold text-gray-900"><%= Map.values(@translate_languages) |> Enum.join(", ") %></h5>
         <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
       </div>
+      <div class="flex-1 p-2">
+        <h5 class="text-sm font-bold text-gray-900">500 credits</h5>
+        <p class="text-sm font-medium leading-none text-gray-600">Activates 24 hours of Translations</p>
+      </div>
     </div>
   </div>
 </section>
@@ -156,6 +160,7 @@
             <p class="uppercase" data-captions-target="finalOutput"></p>
             <p class="uppercase" data-captions-target="interimOutput"></p>
           </div>
+          <div class=" text-red-900" data-captions-target="warning"></div>
         </div>
         <button class="w-full btn btn-primary" data-captions-target="start" data-action="click->captions#startCaptions"
           disabled>
