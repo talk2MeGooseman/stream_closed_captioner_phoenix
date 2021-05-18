@@ -38,8 +38,12 @@ defmodule Twitch do
   def get_live_streams([]), do: []
 
   def get_live_streams(user_ids) do
-    Oauth.get_client_access_token()
-    |> Helix.get_streams(user_ids)
+    chunked_user_ids = Enum.chunk_every(user_ids, 80)
+
+    Enum.flat_map(chunked_user_ids, fn uids ->
+      Oauth.get_client_access_token()
+      |> Helix.get_streams(uids)
+    end)
   end
 
   @spec get_extension_transactons() :: list
