@@ -37,7 +37,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     case Zoom.send_captions_to(url, text, params) do
       {:ok, %HTTPoison.Response{status_code: 200}} ->
-        IO.puts("Zoom message sent successfully")
         {:ok, payload}
 
       {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
@@ -45,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         {:error, body}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
+        IO.puts("Request was error")
         {:error, reason}
     end
   end
@@ -73,7 +73,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   defp send_to(payload, :twitch, user) do
     case Twitch.send_pubsub_message(payload, user.uid) do
       {:ok, %HTTPoison.Response{status_code: 204}} ->
-        IO.puts("Message sent successfully")
         {:ok, payload}
 
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
@@ -81,6 +80,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         {:error, body}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
+        IO.puts("Request was error")
         {:error, reason}
     end
   end
