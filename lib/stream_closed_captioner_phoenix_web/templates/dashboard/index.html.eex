@@ -121,8 +121,8 @@
         <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
       </div>
       <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900">500 credits</h5>
-        <p class="text-sm font-medium leading-none text-gray-600">Activates 24 hours of Translations</p>
+        <p class="text-sm font-medium leading-none text-gray-600">500 credits are required for to activate translations
+          for 24 hours</p>
       </div>
     </div>
   </div>

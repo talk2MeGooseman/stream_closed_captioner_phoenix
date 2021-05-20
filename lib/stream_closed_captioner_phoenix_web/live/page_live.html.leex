@@ -92,16 +92,17 @@
         <p class="text-gray-600 mb-8">
           Choose to activate it as a video overlay or panel extension for your channel, it also works on mobile.
         </p>
-        <a href="#" class="w-full btn btn-dark btn-lg sm:w-auto">Learn More</a>
+        <a href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
+          class="w-full btn btn-dark btn-lg sm:w-auto">Click to install</a>
       </div>
       <div class="w-full sm:w-1/2 p-6">
-        <img src="https://placekitten.com/400/200" />
+        <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"), alt: "Image of the Twitch extension installation page") %>
       </div>
     </div>
     <!-- Step 2 --->
     <div class="flex flex-wrap flex-col-reverse sm:flex-row">
       <div class="w-full sm:w-1/2 p-6 mt-6">
-        <img src="https://placekitten.com/400/200" />
+        <%= img_tag(Routes.static_path(@socket, "/images/register.png"), alt: "Stream Closed Captioner registration page") %>
       </div>
       <div class="w-full sm:w-1/2 p-6 mt-6">
         <div class="align-middle">
@@ -112,7 +113,7 @@
             You can easily sign up using your Twitch account to get started on your channel, or sign up with e-mail if
             you want to just use it for Zoom.
           </p>
-          <a href="#" class="w-full btn btn-dark btn-lg sm:w-auto">Learn More</a>
+          <%= link "Sign up today", to: Routes.user_registration_path(@socket, :new), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
         </div>
       </div>
     </div>
@@ -125,16 +126,16 @@
         <p class="text-gray-600 mb-8">
           Open up the settings panel to set your native language or your Zoom URL and more...
         </p>
-        <a href="#" class="w-full btn btn-dark btn-lg sm:w-auto">Learn More</a>
+        <%= link "Configure settings", to: Routes.stream_settings_index_path(@socket, :update), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
       </div>
       <div class="w-full sm:w-1/2 p-6">
-        <img src="https://placekitten.com/400/200" />
+        <%= img_tag(Routes.static_path(@socket, "/images/settings.png"), alt: "Stream Closed Captioner caption settings page") %>
       </div>
     </div>
     <!-- Step 4 --->
     <div class="flex flex-wrap flex-col-reverse sm:flex-row">
       <div class="w-full sm:w-1/2 p-6 mt-6">
-        <img src="https://placekitten.com/400/200" />
+        <%= img_tag(Routes.static_path(@socket, "/images/captions-start.png"), alt: "Stream Closed Captioner dashboard page focused on the start captions button") %>
       </div>
       <div class="w-full sm:w-1/2 p-6 mt-6">
         <div class="align-middle">
@@ -144,7 +145,7 @@
           <p class="text-gray-600 mb-8">
             Click a single button to start Closed Captioning on your Twitch channel or Zoom meeting.
           </p>
-          <a href="#" class="w-full btn btn-dark btn-lg sm:w-auto">Learn More</a>
+          <%= link "Start using it today!", to: Routes.dashboard_path(@socket, :index), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
         </div>
       </div>
     </div>

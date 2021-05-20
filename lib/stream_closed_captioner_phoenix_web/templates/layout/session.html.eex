@@ -11,13 +11,8 @@
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
 
-<body class="h-full">
-  <header>
-    <nav class="flex flex-wrap items-center justify-between py-2 px-4 fixed top-0 right-0 left-0 z-30 bg-gray-700">
-      <a class="inline-block mr-4 py-1 text-xl text-gray-300" href="#"><i class="fas fa-bolt"></i>
-        Stream CC</a>
-    </nav>
-  </header>
+<body class="h-full bg-gray-100">
+  <%= render "_header.html", assigns %>
 
   <main role="main" class="container mx-auto mb-8 px-4 max-w-6xl">
     <p class="alert alert-info alert-left toast" role="alert"><%= get_flash(@conn, :info) %></p>

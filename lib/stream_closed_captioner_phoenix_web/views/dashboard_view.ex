@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardView do
   use StreamClosedCaptionerPhoenixWeb, :view
 
   def display_translation_status(translation_active) when is_nil(translation_active),
-    do: "Disabled"
+    do: "Not Activated"
 
-  def display_translation_status(translation_active), do: "Enabled"
+  def display_translation_status(translation_active), do: "Activated"
 end
