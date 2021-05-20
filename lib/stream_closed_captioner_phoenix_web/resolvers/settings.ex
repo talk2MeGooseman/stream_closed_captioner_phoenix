@@ -9,7 +9,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Settings do
      %{
        languages: Settings.get_formatted_translate_languages_by_user(user.id),
        activated: !is_nil(debit),
-       created_at: Timex.to_datetime(time, "Etc/UTC")
+       created_at: format_datetime(time)
      }}
   end
+
+  defp format_datetime(time) when is_nil(time), do: nil
+  defp format_datetime(time), do: Timex.to_datetime(time, "Etc/UTC")
 end
