@@ -1,6 +1,4 @@
 defmodule Azure do
-  alias Azure.Cognitive
-
   def api_client,
     do: Application.get_env(:stream_closed_captioner_phoenix, :azure_cognitive_client)
 

@@ -55,7 +55,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     CaptionsPayload.new(message)
     |> maybe_censor_for(:interim, user)
     |> maybe_censor_for(:final, user)
-    |> Translations.maybe_translate(:interim, user)
+    |> Translations.maybe_translate(:final, user)
     |> send_to(:twitch, user)
   end
 

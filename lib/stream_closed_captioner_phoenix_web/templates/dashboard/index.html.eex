@@ -127,14 +127,19 @@
     </div>
   </div>
 </section>
+<!-- Instructions -->
 <section class="px-4 pb-4">
   <div x-data="collapse()">
     <button class="btn btn-primary" aria-controls="basicCollapse" aria-expanded="false" x-spread="trigger">Quick Start
       Instructions</button>
     <div class="grid gap-3 bg-white" id="basicCollapse" x-spread="collapse" x-cloak>
       <ul class="list">
-        <li class="list-item">Reddit</li>
-        <li class="list-item">Reddit</li>
+        <li class="list-item">Optional: Install the Twitch Extension</li>
+        <li class="list-item">2. Set your language in you Caption Settings</li>
+        <li class="list-item">3. When your're ready to start sending captions, click "Click to Start Captions"</li>
+        <li class="list-item">4. Allow microphone permissions if prompted next to address bar</li>
+        <li class="list-item">5. Double check you have the correct microphone selected.</li>
+        <li class="list-item">6. Click here for more details instructions or additional help.</li>
       </ul>
     </div>
   </div>

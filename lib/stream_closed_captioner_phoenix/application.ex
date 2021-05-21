@@ -22,7 +22,8 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       StreamClosedCaptionerPhoenixWeb.Endpoint,
       # Start a worker by calling: StreamClosedCaptionerPhoenix.Worker.start_link(arg)
       # {StreamClosedCaptionerPhoenix.Worker, arg}
-      StreamClosedCaptionerPhoenixWeb.ActivePresence
+      StreamClosedCaptionerPhoenixWeb.ActivePresence,
+      StreamClosedCaptionerPhoenix.TranslationCache
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

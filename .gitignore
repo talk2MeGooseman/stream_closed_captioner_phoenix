@@ -75,3 +75,4 @@ node_modules/sha.js/test/vectors.js
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 docker.env
+tmp/new_relic.log

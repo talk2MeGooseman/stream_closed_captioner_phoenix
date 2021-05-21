@@ -2,7 +2,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
   use Phoenix.Socket
 
   alias StreamClosedCaptionerPhoenix.Accounts
-  alias StreamClosedCaptionerPhoenix.Accounts.User
 
   ## Channels
   # channel "room:*", StreamClosedCaptionerPhoenixWeb.RoomChannel
@@ -22,11 +21,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
   # performing token verification on connect.
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
-    case Phoenix.Token.verify(socket, "user socket", token, max_age: 5184000) do
+    case Phoenix.Token.verify(socket, "user socket", token, max_age: 5_184_000) do
       {:ok, user_id} ->
         current_user = Accounts.get_user!(user_id)
         {:ok, assign(socket, :current_user, current_user)}
-      {:error, reason} ->
+
+      {:error, _} ->
         :error
     end
   end

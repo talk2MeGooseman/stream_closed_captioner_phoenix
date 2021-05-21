@@ -20,7 +20,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :filter_profanity, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Censor Profanity</span>
+  <span class="ml-2 cursor-pointer">Additional Profanity Censoring</span>
   <% end %>
   <%= error_tag f, :filter_profanity, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -28,7 +28,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :hide_text_on_load, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Hide Captions by Default</span>
+  <span class="ml-2 cursor-pointer">Hide Captions by Default (Twitch only)</span>
   <% end %>
   <%= error_tag f, :hide_text_on_load, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -36,7 +36,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :text_uppercase, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Uppercase Text By Default</span>
+  <span class="ml-2 cursor-pointer">Uppercase Text By Default (Twitch only)</span>
   <% end %>
   <%= error_tag f, :text_uppercase, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -44,7 +44,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :cc_box_size, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Display Captions in Box Size</span>
+  <span class="ml-2 cursor-pointer">Display Captions in Box Size (Twitch only)</span>
   <% end %>
   <%= error_tag f, :cc_box_size, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -52,7 +52,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :switch_settings_position, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Display Settings on Left Side</span>
+  <span class="ml-2 cursor-pointer">Display Settings on Left Side (Twitch only)</span>
   <% end %>
   <%= error_tag f, :switch_settings_position, class: "text-red-700 text-sm mt-1" %>
 </div>
