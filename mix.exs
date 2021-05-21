@@ -77,6 +77,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:mox, "~> 1.0.0"},
       {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
       {:neuron, "~> 5.0"},
+      {:new_relic_agent, "~> 1.0"},
       {:phoenix_ecto, "~> 4.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_dashboard, "~> 0.4"},
