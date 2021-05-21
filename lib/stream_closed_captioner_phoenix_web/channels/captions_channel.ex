@@ -27,14 +27,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
+    NewRelic.start_transaction("Captions", "twitch")
     user = socket.assigns.current_user
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
         send(self(), :after_publish)
+        NewRelic.stop_transaction()
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->
+        NewRelic.stop_transaction()
         {:reply, {:error, "Issue sending captions."}, socket}
     end
   end

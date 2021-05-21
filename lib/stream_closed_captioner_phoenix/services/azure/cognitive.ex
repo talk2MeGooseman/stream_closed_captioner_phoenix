@@ -1,6 +1,7 @@
 defmodule Azure.Cognitive do
   import Helpers
 
+  alias NewRelic.Instrumented.HTTPoison
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
   @behaviour Azure.CognitiveProvider

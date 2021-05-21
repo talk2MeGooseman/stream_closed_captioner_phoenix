@@ -2,6 +2,7 @@ defmodule Twitch.Oauth do
   import Helpers
 
   alias Twitch.Helix.Credentials
+  alias NewRelic.Instrumented.HTTPoison
 
   def get_client_access_token() do
     credentials = get_credentials()

@@ -1,6 +1,7 @@
 defmodule Twitch.Helix do
   import Helpers
 
+  alias NewRelic.Instrumented.HTTPoison
   alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction}
   @behaviour Twitch.HelixProvider
