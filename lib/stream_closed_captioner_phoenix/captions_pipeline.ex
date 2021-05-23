@@ -20,6 +20,26 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         ) ::
           {:error, String.t()}
           | {:ok, CaptionsPayload.t()}
+  def pipeline_to(:default, %User{} = user, message) do
+    user = Repo.preload(user, :stream_settings)
+
+    payload =
+      CaptionsPayload.new(message)
+      |> maybe_censor_for(:interim, user)
+      |> maybe_censor_for(:final, user)
+
+    {:ok, payload}
+  end
+
+  def pipeline_to(:twitch, %User{} = user, message) do
+    user = Repo.preload(user, :stream_settings)
+
+    CaptionsPayload.new(message)
+    |> maybe_censor_for(:interim, user)
+    |> maybe_censor_for(:final, user)
+    |> Translations.maybe_translate(:final, user)
+    |> rate_limited_twitch_send(user)
+  end
 
   def pipeline_to(:zoom, %User{} = user, message) do
     user = Repo.preload(user, :stream_settings)
@@ -34,10 +54,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       |> maybe_censor_for(:interim, user)
       |> maybe_censor_for(:final, user)
 
+    zoom_text = Map.get(payload, :final)
     url = get_in(message, ["zoom", "url"])
-    text = Map.get(payload, :final)
 
-    case Zoom.send_captions_to(url, text, params) do
+    case Zoom.send_captions_to(url, zoom_text, params) do
       {:ok, %HTTPoison.Response{status_code: 200}} ->
         {:ok, payload}
 
@@ -51,50 +71,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  def pipeline_to(:twitch, %User{} = user, message) do
-    user = Repo.preload(user, :stream_settings)
-
-    CaptionsPayload.new(message)
-    |> maybe_censor_for(:interim, user)
-    |> maybe_censor_for(:final, user)
-    |> Translations.maybe_translate(:final, user)
-    |> rate_limited_twitch_send(user)
-  end
-
-  def pipeline_to(:default, %User{} = user, message) do
-    user = Repo.preload(user, :stream_settings)
-
-    payload =
-      CaptionsPayload.new(message)
-      |> maybe_censor_for(:interim, user)
-      |> maybe_censor_for(:final, user)
-
-    {:ok, payload}
-  end
-
   defp rate_limited_twitch_send(payload, user) do
     case Hammer.check_rate("twitch:pubsub:#{user.id}", 800, 1) do
       {:allow, _count} ->
-        send_to(payload, :twitch, user)
+        Twitch.send_pubsub_message(payload, user.uid)
 
       {:deny, limit} ->
         Logger.debug("Limit Reached: #{limit}")
         {:error, "Rate limit reached for message to Twitch"}
-    end
-  end
-
-  defp send_to(payload, :twitch, user) do
-    case Twitch.send_pubsub_message(payload, user.uid) do
-      {:ok, %HTTPoison.Response{status_code: 204}} ->
-        {:ok, payload}
-
-      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
-        Logger.debug("Request was rejected")
-        {:error, body}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        Logger.debug("Request was error")
-        {:error, reason}
     end
   end
 

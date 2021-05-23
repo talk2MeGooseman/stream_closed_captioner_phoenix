@@ -3,6 +3,8 @@ defmodule Twitch do
   Service to communicate to Twitch via Helix of Extension APIs
   """
 
+  require Logger
+
   alias Twitch.{Extension, Helix, Jwt, Oauth}
 
   def api_client,
@@ -17,6 +19,18 @@ defmodule Twitch do
   def send_pubsub_message(payload, channel_id) when is_map(payload) do
     Jwt.sign_token_for(:pubsub, channel_id)
     |> api_client().send_pubsub_message_for(channel_id, payload)
+    |> case do
+      {:ok, %HTTPoison.Response{status_code: 204}} ->
+        {:ok, payload}
+
+      {:ok, %HTTPoison.Response{status_code: 400, body: _body}} ->
+        Logger.debug("Request was rejected")
+        {:error, "Request was rejected"}
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        Logger.debug("Request was error")
+        {:error, reason}
+    end
   end
 
   @spec get_extension_broadcaster_configuration_for(binary) :: any
