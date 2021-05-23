@@ -135,18 +135,20 @@
     <div class="grid gap-3 bg-white" id="basicCollapse" x-spread="collapse" x-cloak>
       <ul class="list">
         <li class="list-item">
-          <a target="_blank" href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9">1. Install
+          <a target="_blank" href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
+            class="text-blue-600">1. Install
             the Twitch Extension, if you're streaming on Twitch</a>
         </li>
-        <li class="list-item"><%= link "Configure settings", to: Routes.stream_settings_index_path(@socket, :update) %>
+        <li class="list-item">
+          <%= link "2. Update your language in your caption settings", to: Routes.stream_settings_index_path(@conn, :update), class: "text-blue-600" %>
         </li>
         <li class="list-item">3. When your're ready to start sending captions, click "Click to Start Captions"</li>
         <li class="list-item">4. Allow microphone permissions if prompted next to address bar</li>
         <li class="list-item">5. Double check you have the correct microphone selected.</li>
         <li class="list-item">
-          <a target="_blank"
+          <a target="_blank" class="text-blue-600"
             href="https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61">
-            target="blank">Click here for more details instructions or additional help.
+            Click here for more details instructions or additional help.
           </a>
         </li>
       </ul>
