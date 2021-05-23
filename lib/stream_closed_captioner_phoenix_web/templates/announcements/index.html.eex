@@ -12,13 +12,15 @@
         <%= get_in(page, ["properties", "Published", "date", "start"]) %>
       </p>
       <h2 class="mb-2 text-xl font-extrabold leading-snug tracking-tight text-gray-800 md:text-3xl">
-        <a target="_blank" href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) %>"
+        <a target="_blank"
+          href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) |> String.replace("-", "") %>"
           class="text-gray-900 hover:text-purple-700"><%= get_in(page, ["properties", "Name", "title"]) |> List.first |> get_in(["plain_text"]) %></a>
       </h2>
       <p class="mb-4 text-base font-normal text-gray-600">
         <%= get_in(page, ["properties", "tldr", "rich_text"]) |> List.first |> get_in(["plain_text"]) %>
       </p>
-      <a target="_blank" href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) %>"
+      <a target="_blank"
+        href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) |> String.replace("-", "") %>"
         class="btn btn-primary btn-sm">Continue Reading</a>
     </div>
     <% end %>
