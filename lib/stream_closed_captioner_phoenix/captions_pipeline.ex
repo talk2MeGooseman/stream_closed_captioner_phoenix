@@ -42,11 +42,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         {:ok, payload}
 
       {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-        IO.puts("Request was rejected code: #{code} body: #{body}")
+        Logger.debug("Request was rejected code: #{code} body: #{body}")
         {:error, body}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.puts("Request was error")
+        Logger.debug("Request was error")
         {:error, reason}
     end
   end
@@ -79,6 +79,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
       {:deny, limit} ->
         Logger.debug("Limit Reached: #{limit}")
+        {:error, "Rate limit reached for message to Twitch"}
     end
   end
 
@@ -88,11 +89,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         {:ok, payload}
 
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
-        IO.puts("Request was rejected")
+        Logger.debug("Request was rejected")
         {:error, body}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.puts("Request was error")
+        Logger.debug("Request was error")
         {:error, reason}
     end
   end
