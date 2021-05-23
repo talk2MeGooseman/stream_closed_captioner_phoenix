@@ -53,6 +53,10 @@ config :libcluster,
     ]
   ]
 
+config :stream_closed_captioner_phoenix,
+  api_key: System.get_env("NOTION_API_KEY"),
+  notion_version: System.get_env("NOTION_VERSION"
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

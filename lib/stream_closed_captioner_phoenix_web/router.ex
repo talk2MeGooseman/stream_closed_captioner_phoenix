@@ -117,6 +117,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     get("/terms", TermsController, :index)
     get("/showcase", ShowcaseController, :index)
     get("/supporters", SupportersController, :index)
+    get("/announcements", AnnouncementsController, :index)
 
     delete("/users/log_out", UserSessionController, :delete)
     get("/users/confirm", UserConfirmationController, :new)

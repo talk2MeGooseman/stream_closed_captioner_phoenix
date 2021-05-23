@@ -1,0 +1,26 @@
+<section class="w-full px-4 py-24 mx-auto max-w-7xl">
+  <div class="mb-12 text-left md:text-center">
+    <h2 class="mb-2 text-3xl font-extrabold leading-tight text-gray-900">Annoucements and News
+    </h2>
+    <p class="text-lg text-gray-500">Everything Stream Closed Captioner, where you can find out about news, updates, and
+      features.</p>
+  </div>
+  <div class="flex flex-col space-y-12 divide-y divide-gray-200">
+    <%= for page <- @pages do %>
+    <div class="">
+      <p class="pt-12 mb-3 text-sm font-normal text-gray-500">
+        <%= get_in(page, ["properties", "Published", "date", "start"]) %>
+      </p>
+      <h2 class="mb-2 text-xl font-extrabold leading-snug tracking-tight text-gray-800 md:text-3xl">
+        <a target="_blank" href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) %>"
+          class="text-gray-900 hover:text-purple-700"><%= get_in(page, ["properties", "Name", "title"]) |> List.first |> get_in(["plain_text"]) %></a>
+      </h2>
+      <p class="mb-4 text-base font-normal text-gray-600">
+        <%= get_in(page, ["properties", "tldr", "rich_text"]) |> List.first |> get_in(["plain_text"]) %>
+      </p>
+      <a target="_blank" href="https://www.notion.so/talk2megooseman/<%= get_in(page, ["id"]) %>"
+        class="btn btn-primary btn-sm">Continue Reading</a>
+    </div>
+    <% end %>
+  </div>
+</section>
