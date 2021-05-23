@@ -1,4 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
+  require Logger
+
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Repo
@@ -56,7 +58,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     |> maybe_censor_for(:interim, user)
     |> maybe_censor_for(:final, user)
     |> Translations.maybe_translate(:final, user)
-    |> send_to(:twitch, user)
+    |> rate_limited_twitch_send(user)
   end
 
   def pipeline_to(:default, %User{} = user, message) do
@@ -68,6 +70,16 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       |> maybe_censor_for(:final, user)
 
     {:ok, payload}
+  end
+
+  defp rate_limited_twitch_send(payload, user) do
+    case Hammer.check_rate("twitch:pubsub:#{user.id}", 800, 1) do
+      {:allow, _count} ->
+        send_to(payload, :twitch, user)
+
+      {:deny, limit} ->
+        Logger.debug("Limit Reached: #{limit}")
+    end
   end
 
   defp send_to(payload, :twitch, user) do
