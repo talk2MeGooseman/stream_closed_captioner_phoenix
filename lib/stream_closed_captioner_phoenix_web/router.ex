@@ -21,7 +21,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:fetch_live_flash)
     plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.LayoutView, :root})
     plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug(:put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"})
     plug(:fetch_current_user)
     plug(StreamClosedCaptionerPhoenixWeb.Maintenance)
     plug(:put_socket_token)
@@ -41,12 +41,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug(:put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"})
   end
 
   pipeline :mounted_apps do
     plug(:accepts, ["html"])
-    plug(:put_secure_browser_headers)
+    plug(:put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"})
   end
 
   scope path: "/feature-flags" do
@@ -157,7 +157,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     get("/:provider", UserSessionController, :request)
     get("/:provider/callback", UserSessionController, :callback)
-    post("/:provider/callback", UserSessionController, :callback)
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
