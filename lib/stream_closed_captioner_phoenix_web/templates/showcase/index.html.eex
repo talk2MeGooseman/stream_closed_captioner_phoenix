@@ -18,7 +18,7 @@
       <h2 class="mb-2 text-xl font-bold leading-snug text-gray-900">
         <a href="#" class="text-gray-900 hover:text-purple-700"><%= user_stream.title %></a>
       </h2>
-      <a class="flex items-center text-gray-700" href="#">
+      <a class="flex items-center text-gray-700" href="https://twitch.tv/<%= user_stream.user_name %>">
         <div>
           <p class="text-sm font-semibold text-gray-900"><%= user_stream.user_name %></p>
           <p class="text-sm text-gray-600">Viewers: <%= user_stream.viewer_count %></p>
