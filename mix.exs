@@ -38,7 +38,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},
-      {:boom_notifier, "~> 0.2.0"},
       {:bypass, "~> 2.1.0"},
       {:cachex, "~> 3.3"},
       {:cors_plug, "~> 2.0"},
