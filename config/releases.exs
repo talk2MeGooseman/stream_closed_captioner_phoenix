@@ -23,11 +23,19 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+live_signing_salt =
+  System.get_env("LIVE_SIGNING_SALT") ||
+    raise """
+    environment variable LIVE_SIGNING_SALT is missing.
+    You can generate one by calling: mix phx.gen.secret 32
+    """
+
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   server: true,
   http: [port: String.to_integer(System.get_env("PORT") || "4000")],
   url: [host: System.get_env("HOST"), port: 443],
-  secret_key_base: secret_key_base
+  secret_key_base: secret_key_base,
+  live_view: [signing_salt: live_signing_salt]
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID"),

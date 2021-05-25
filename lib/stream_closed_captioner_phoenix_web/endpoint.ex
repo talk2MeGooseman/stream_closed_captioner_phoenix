@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_stream_closed_captioner_phoenix_key",
-    signing_salt: "0JfoiBDr"
+    signing_salt: System.get_env("COOKIE_SIGNING_SALT", "0JfoiBDr")
   ]
 
   socket "/socket", StreamClosedCaptionerPhoenixWeb.UserSocket,
