@@ -15,6 +15,8 @@ export default class extends ApplicationController {
     "warning"
   ]
 
+  static values = { language: String }
+
   removeEvents = []
   cachedButtonText = ""
 
@@ -40,7 +42,7 @@ export default class extends ApplicationController {
         this.speechRecognitionHandler = window._speechHandler = new SpeechRecognitionHandler()
       }
 
-      this.speechRecognitionHandler.setLanguage("en-US")
+      this.speechRecognitionHandler.setLanguage(this.languageValue || "en-US")
 
       this.removeEvents.push(
         this.speechRecognitionHandler.onEvent(
