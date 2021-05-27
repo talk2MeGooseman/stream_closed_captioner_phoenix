@@ -33,23 +33,29 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
-    NewRelic.start_transaction("Captions", "twitch")
-    sent_on_time = Map.get(payload, "sentOn")
-    user = socket.assigns.current_user
+    ref = socket_ref(socket)
 
-    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
-      {:ok, sent_payload} ->
-        send(self(), :after_publish)
-        NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
-        NewRelic.stop_transaction()
-        {:reply, {:ok, sent_payload}, socket}
+    Task.start_link(fn ->
+      NewRelic.start_transaction("Captions", "twitch")
+      sent_on_time = Map.get(payload, "sentOn")
+      user = socket.assigns.current_user
 
-      {:error, _} ->
-        NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
-        NewRelic.add_attributes(errored: true)
-        NewRelic.stop_transaction()
-        {:reply, {:error, "Issue sending captions."}, socket}
-    end
+      case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
+        {:ok, sent_payload} ->
+          send(self(), :after_publish)
+          NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
+          NewRelic.stop_transaction()
+          Phoenix.Channel.reply(ref, {:ok, sent_payload})
+
+        {:error, _} ->
+          NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
+          NewRelic.add_attributes(errored: true)
+          NewRelic.stop_transaction()
+          Phoenix.Channel.reply(ref, {:error, "Issue sending captions."})
+      end
+    end)
+
+    {:noreply, socket}
   end
 
   def handle_in("publishInterim", payload, socket) do
