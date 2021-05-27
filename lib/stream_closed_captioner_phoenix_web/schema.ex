@@ -4,6 +4,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   alias StreamClosedCaptionerPhoenixWeb.{Schema, Resolvers}
   alias StreamClosedCaptionerPhoenix.Bits
 
+  def middleware(middleware, _field, _object) do
+    [NewRelic.Absinthe.Middleware | middleware]
+  end
+
   import_types(Schema.AccountsTypes)
   import_types(Schema.Types.Custom.JSON)
   import_types(Schema.Types.Custom.DateTime)

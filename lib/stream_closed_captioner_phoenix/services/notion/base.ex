@@ -1,5 +1,6 @@
 defmodule Notion.Base do
   @moduledoc false
+  alias NewRelic.Instrumented.HTTPoison
 
   alias Notion.Parser
   import Notion.Utils

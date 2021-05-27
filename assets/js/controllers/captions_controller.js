@@ -63,7 +63,6 @@ export default class extends ApplicationController {
         this.speechRecognitionHandler.onEvent("interim", this.receiveInterimMessage)
       )
 
-      this.initLanguageChangeListener()
       this.initBrowserChannelMessageListener()
       this.initOBSChannelListener()
     } else {
@@ -102,10 +101,6 @@ export default class extends ApplicationController {
 
   startCaptions = () => {
     this.speechRecognitionHandler.toggleOn()
-  }
-
-  initLanguageChangeListener = () => {
-    // document.body.addEventListener("stimulus-reflex:success", this.setLanguage)
   }
 
   initBrowserChannelMessageListener = () => {
@@ -174,6 +169,7 @@ export default class extends ApplicationController {
   receiveInterimMessage = (data) => {
     const publishData = {
       ...data,
+      sentOn: (new Date()).toISOString(),
       twitch: this.twitchData,
     }
 

@@ -80,6 +80,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.0"},
+      {:new_relic_absinthe, "~> 0.0.4"},
       {:observer_cli, "~> 1.6"},
       {:phoenix_ecto, "~> 4.1"},
       {:phoenix_html, "~> 2.11"},

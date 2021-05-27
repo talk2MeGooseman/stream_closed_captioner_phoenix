@@ -31,7 +31,7 @@
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [4000, 4001, 5432],
+	// "forwardPorts": [4000, 4001, 5432],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "mix deps.get"
