@@ -33,8 +33,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   defp deps do
     [
       # Absinthe for GraphQL
-      {:absinthe, "~> 1.5.0"},
-      {:absinthe_plug, "~> 1.5.0"},
+      {:absinthe, "~> 1.6"},
+      {:absinthe_phoenix, "~> 2.0"},
+      {:absinthe_plug, "~> 1.5"},
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},

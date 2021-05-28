@@ -6,8 +6,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Context do
   def init(opts), do: opts
 
   def call(conn, _) do
-    IO.puts("HEY I AM IN HERE")
-
     context =
       %{}
       |> build_user_context(conn)

@@ -71,7 +71,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
   if Mix.env() == :dev do
     forward("/sent_emails", Bamboo.SentEmailViewerPlug)
-    forward("/graphiql", Absinthe.Plug.GraphiQL, schema: StreamClosedCaptionerPhoenixWeb.Schema)
+
+    forward("/graphiql", Absinthe.Plug.GraphiQL,
+      schema: StreamClosedCaptionerPhoenixWeb.Schema,
+      socket: StreamClosedCaptionerPhoenixWeb.UserSocket
+    )
   end
 
   scope "/api" do

@@ -1,12 +1,13 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: StreamClosedCaptionerPhoenixWeb.Schema
 
   alias StreamClosedCaptionerPhoenix.Accounts
 
   ## Channels
   # channel "room:*", StreamClosedCaptionerPhoenixWeb.RoomChannel
 
-  channel "captions:*", StreamClosedCaptionerPhoenixWeb.CaptionsChannel
+  channel("captions:*", StreamClosedCaptionerPhoenixWeb.CaptionsChannel)
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -25,6 +26,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
       {:ok, user_id} ->
         current_user = Accounts.get_user!(user_id)
         {:ok, assign(socket, :current_user, current_user)}
+
+      {:error, _} ->
+        :error
+    end
+  end
+
+  def connect(%{"Authorization" => "Bearer " <> token} = _params, socket, _connect_info) do
+    case Twitch.Jwt.verify_and_validate(token) do
+      {:ok, _} ->
+        socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{})
+        {:ok, socket}
 
       {:error, _} ->
         :error

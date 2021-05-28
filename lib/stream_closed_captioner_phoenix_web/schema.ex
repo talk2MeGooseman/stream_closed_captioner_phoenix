@@ -45,6 +45,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :message, :json
   end
 
+  @desc "Twitch Captions"
+  object :twitch_caption do
+    field :interim, :string
+    field :final, :string
+  end
+
   query do
     # Add queries here. Example
     import_fields(:accounts_queries)
@@ -63,6 +69,33 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       arg(:channel_id, non_null(:id))
 
       resolve(&process_bits_transaction/3)
+    end
+  end
+
+  subscription do
+    field :new_twitch_caption, :twitch_caption do
+      arg(:channel_id, non_null(:id))
+
+      # The topic function is used to determine what topic a given subscription
+      # cares about based on its arguments. You can think of it as a way to tell the
+      # difference between
+      # subscription {
+      #   newTwitchCaption(channel_id: "1") { content }
+      # }
+      #
+      # and
+      #
+      # If needed, you can also provide a list of topics:
+      #   {:ok, topic: ["absinthe-graphql/absinthe", "elixir-lang/elixir"]}
+      # Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, %{ interim: "hello", final: "final" }, new_twitch_caption: "1")
+      config(fn args, _ ->
+        {:ok, topic: args.channel_id}
+      end)
+
+      # resolve(fn root, _, _ ->
+      #   IO.inspect(root)
+      #   {:ok, root}
+      # end)
     end
   end
 

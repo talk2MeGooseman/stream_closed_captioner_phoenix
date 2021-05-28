@@ -14,7 +14,8 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
   # !!! From now on, migrations should only be done from Ecto !!!
-  migration_source: "ecto_schema_migrations"
+  migration_source: "ecto_schema_migrations",
+  ownership_timeout: 999_999_999
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
