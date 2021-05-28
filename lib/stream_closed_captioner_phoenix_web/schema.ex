@@ -49,6 +49,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   object :twitch_caption do
     field :interim, :string
     field :final, :string
+    field :translations, :json
   end
 
   query do

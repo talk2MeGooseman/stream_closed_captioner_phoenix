@@ -44,6 +44,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
         {:ok, sent_payload} ->
           send(self(), :after_publish)
           NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
+
+          Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
+            new_twitch_caption: user.uid
+          )
+
           NewRelic.stop_transaction()
           Phoenix.Channel.reply(ref, {:ok, sent_payload})
 
@@ -58,6 +63,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     ActivePresence.update(self(), "active_channels", socket.assigns.current_user.id, %{
       last_publish: System.system_time(:second)
     })
+
     {:noreply, socket}
   end
 
