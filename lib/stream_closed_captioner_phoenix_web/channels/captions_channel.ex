@@ -43,17 +43,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
         {:ok, sent_payload} ->
           send(self(), :after_publish)
-          NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
 
           Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
             new_twitch_caption: user.uid
           )
 
+          NewRelic.add_attributes(twitch_uid: user.uid)
+          NewRelic.add_attributes(total_time_to_send_ms: time_to_complete(sent_on_time))
           NewRelic.stop_transaction()
           Phoenix.Channel.reply(ref, {:ok, sent_payload})
 
         {:error, _} ->
-          NewRelic.add_attributes(total_time_to_send: time_to_complete(sent_on_time))
+          NewRelic.add_attributes(twitch_uid: user.uid)
+          NewRelic.add_attributes(total_time_to_send_ms: time_to_complete(sent_on_time))
           NewRelic.add_attributes(errored: true)
           NewRelic.stop_transaction()
           Phoenix.Channel.reply(ref, {:error, "Issue sending captions."})
@@ -95,6 +97,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     parsed_sent_on = Timex.parse!(sent_on, "{ISO:Extended}")
     current_time = Timex.now()
 
-    DateTime.diff(current_time, parsed_sent_on)
+    DateTime.diff(current_time, parsed_sent_on, :millisecond)
   end
 end
