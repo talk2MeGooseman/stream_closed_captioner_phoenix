@@ -1,4 +1,5 @@
 import uuid from "uuid/v4"
+import * as workerTimers from 'worker-timers';
 
 const INTERVAL_TIMER = 1000
 
@@ -70,7 +71,7 @@ export default class SpeechRecognitionService {
   stop() {
     this.recognitionService.abort()
     this.speechToTextActive = false
-    clearInterval(this.intervalId)
+    workerTimers.clearInterval(this.intervalId)
   }
 
   pause(value) {
@@ -93,7 +94,7 @@ export default class SpeechRecognitionService {
 
   startSpeechInterval() {
     // eslint-disable-next-line complexity
-    this.intervalId = setInterval(() => {
+    this.intervalId = workerTimers.setInterval(() => {
       if (
         this.interimSpeechBuffer.length === 0 &&
         this.finalSpeechBuffer === this.lastSentFinalSpeechBuffer

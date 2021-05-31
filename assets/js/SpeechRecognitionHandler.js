@@ -1,6 +1,7 @@
 import debugLogger from "debug"
 
 import SpeechRecognitionService from "./service/SpeechRecognitionService"
+import * as workerTimers from 'worker-timers';
 
 const debug = debugLogger("cc:speech-handler")
 
@@ -126,7 +127,7 @@ export default class SpeechRecognitionHandler {
    * @private
    */
   sendInterimDataWithDelay() {
-    this.interimIntervalId = setInterval(() => {
+    this.interimIntervalId = workerTimers.setInterval(() => {
       const callback = this.eventSubscribers["interim"]
 
       if (this.interimDataQueue.length === 0 || !callback) {
@@ -149,7 +150,7 @@ export default class SpeechRecognitionHandler {
    * @private
    */
   stopSendInterimDataInterval() {
-    clearTimeout(this.interimIntervalId)
+    workerTimers.clearInterval(this.interimIntervalId)
   }
 
   /**
