@@ -48,17 +48,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
             new_twitch_caption: user.uid
           )
 
-          NewRelic.add_attributes(twitch_uid: user.uid)
-          NewRelic.add_attributes(total_time_to_send_ms: time_to_complete(sent_on_time))
-          NewRelic.stop_transaction()
+          new_relic_track(:ok, user, sent_on_time)
           Phoenix.Channel.reply(ref, {:ok, sent_payload})
 
         {:error, _} ->
-          NewRelic.add_attributes(twitch_uid: user.uid)
-          NewRelic.add_attributes(total_time_to_send_ms: time_to_complete(sent_on_time))
-          NewRelic.add_attributes(errored: true)
-          NewRelic.stop_transaction()
-          Phoenix.Channel.reply(ref, {:error, "Issue sending captions."})
+          new_relic_track(:error, user, sent_on_time)
+          Phoenix.Channel.reply(ref, {:error, %{message: "Issue sending captions."}})
       end
     end)
 
@@ -98,5 +93,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     current_time = Timex.now()
 
     DateTime.diff(current_time, parsed_sent_on, :millisecond)
+  end
+
+  defp new_relic_track(:ok, user, sent_on) do
+    NewRelic.add_attributes(twitch_uid: user.uid)
+    NewRelic.add_attributes(total_time_to_send_ms: time_to_complete(sent_on))
+    NewRelic.stop_transaction()
+  end
+
+  defp new_relic_track(:error, user, sent_on) do
+    NewRelic.add_attributes(errored: true)
+    new_relic_track(:ok, user, sent_on)
   end
 end
