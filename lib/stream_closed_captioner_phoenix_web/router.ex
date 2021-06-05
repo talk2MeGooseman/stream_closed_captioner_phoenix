@@ -130,8 +130,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     live_dashboard("/live-dashboard",
       ecto_repos: [StreamClosedCaptionerPhoenix.Repo],
-      metrics: StreamClosedCaptionerPhoenixWeb.Telemetry,
-      metrics_history: {StreamClosedCaptionerPhoenix.MyStorage, :metrics_history, []}
+      metrics: StreamClosedCaptionerPhoenixWeb.Telemetry
     )
   end
 
