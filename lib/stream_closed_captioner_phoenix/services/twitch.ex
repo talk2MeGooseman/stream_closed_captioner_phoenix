@@ -16,6 +16,9 @@ defmodule Twitch do
     |> api_client().get_live_channels()
   end
 
+  def send_pubsub_message(_payload, channel_id) when is_nil(channel_id),
+    do: {:error, "Missing Channel ID"}
+
   def send_pubsub_message(payload, channel_id) when is_map(payload) do
     Jwt.sign_token_for(:pubsub, channel_id)
     |> api_client().send_pubsub_message_for(channel_id, payload)
