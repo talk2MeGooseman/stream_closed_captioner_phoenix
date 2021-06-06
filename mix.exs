@@ -36,6 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe, "~> 1.6"},
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
+      {:absinthe_cache, git: "https://github.com/IvanIvanoff/absinthe_cache", branch: "master"},
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},

@@ -1,4 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema do
+  import AbsintheCache, only: [cache_resolve: 1, cache_resolve: 2]
+
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.{Schema, Resolvers}
@@ -20,11 +22,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :uid, :string
 
     field :bits_balance, :bits_balance do
-      resolve(&Resolvers.Bits.bits_balance/3)
+      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: 60, max_ttl_offset: 10)
     end
 
     field :translations, :translations do
-      resolve(&Resolvers.Settings.get_translations_info/3)
+      cache_resolve(&Resolvers.Settings.get_translations_info/3, ttl: 60, max_ttl_offset: 10)
     end
   end
 
@@ -60,7 +62,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :channel_info, :channel_info do
       arg(:id, non_null(:id))
 
-      resolve(&Resolvers.AccountsOauth.get_channel_info/3)
+      cache_resolve(&Resolvers.AccountsOauth.get_channel_info/3, ttl: 60, max_ttl_offset: 10)
     end
   end
 
