@@ -12,29 +12,42 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   alias StreamClosedCaptionerPhoenix.Repo
 
   def activate_translations_for(%User{} = user) do
-    user = Repo.preload(user, :bits_balance)
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:bits_balance_check, bits_balance_check(user))
+    |> Ecto.Multi.run(:debit, fn _repo, _ ->
+      create_bits_balance_debit(user, %{amount: 500})
+    end)
+    |> Ecto.Multi.run(:update_balance, &update_bits_balance_transaction/2)
+    |> Ecto.Multi.run(:broadcast, broadcast_updated_bits_balance(user))
+    |> Repo.transaction()
+  end
 
-    if user.bits_balance.balance >= 500 do
-      Ecto.Multi.new()
-      |> Ecto.Multi.run(:debit, fn _repo, _ ->
-        create_bits_balance_debit(user, %{amount: 500})
-      end)
-      |> Ecto.Multi.run(:balance, fn _repo, %{debit: debit} ->
-        new_balance = user.bits_balance.balance - debit.amount
-        update_bits_balance(user.bits_balance, %{balance: new_balance})
-      end)
-      |> Ecto.Multi.run(:broadcast, fn _repo, %{balance: %{balance: balance}} ->
-        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
-          "captions:#{user.id}",
-          "translationActivated",
-          %{enabled: true, balance: balance}
-        )
+  defp bits_balance_check(user) do
+    fn _repo, _ ->
+      user = Repo.preload(user, :bits_balance, force: true)
 
-        {:ok, true}
-      end)
-      |> Repo.transaction()
-    else
-      {:insufficent_balance}
+      if user.bits_balance.balance >= 500 do
+        {:ok, user.bits_balance}
+      else
+        {:error, :insufficent_balance}
+      end
+    end
+  end
+
+  defp update_bits_balance_transaction(_repo, %{bits_balance_check: bits_balance, debit: debit}) do
+    new_balance = bits_balance.balance - debit.amount
+    update_bits_balance(bits_balance, %{balance: new_balance})
+  end
+
+  defp broadcast_updated_bits_balance(user) do
+    fn _repo, %{update_balance: %{balance: balance}} ->
+      StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
+        "captions:#{user.id}",
+        "translationActivated",
+        %{enabled: true, balance: balance}
+      )
+
+      {:ok, true}
     end
   end
 

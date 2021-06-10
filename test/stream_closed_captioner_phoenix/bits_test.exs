@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
   import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
-  alias StreamClosedCaptionerPhoenix.Bits
+  alias StreamClosedCaptionerPhoenix.{Bits, Accounts}
 
   describe "bits_balance_debits" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
@@ -22,13 +22,29 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 0))
-      assert {:insufficent_balance} = Bits.activate_translations_for(user)
+      assert {:error, :bits_balance_check, _, _} = Bits.activate_translations_for(user)
     end
 
     test "activate_translations_for/1 return :ok if user has minimum balance" do
-      user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
-      assert {:ok, _} = Bits.activate_translations_for(user)
+      parent = self()
+      created_user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
 
+      user = Accounts.get_user!(created_user.id)
+
+      task1 =
+        Task.async(fn ->
+          Ecto.Adapters.SQL.Sandbox.allow(Repo, parent, self())
+          Bits.activate_translations_for(user)
+        end)
+
+      task2 =
+        Task.async(fn ->
+          Ecto.Adapters.SQL.Sandbox.allow(Repo, parent, self())
+          Bits.activate_translations_for(user)
+        end)
+
+      assert {:ok, _} = Task.await(task1)
+      assert {:error, :bits_balance_check, :insufficent_balance, _} = Task.await(task2)
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
@@ -203,21 +219,19 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     test "process_bits_transaction updates user channel bits balance if they exist" do
       user = insert(:user, provider: "twitch")
 
-      data = [
-        %{
-          "data" => %{
-            "transactionId" => "1",
-            "userId" => "1235",
-            "time" => NaiveDateTime.utc_now(),
-            "product" => %{
-              "sku" => "translation500",
-              "cost" => %{
-                "amount" => 500
-              }
+      data = %{
+        "data" => %{
+          "transactionId" => "1",
+          "userId" => "1235",
+          "time" => NaiveDateTime.utc_now(),
+          "product" => %{
+            "sku" => "translation500",
+            "cost" => %{
+              "amount" => 500
             }
           }
         }
-      ]
+      }
 
       assert {:ok, _} = Bits.process_bits_transaction(user.uid, data)
     end
