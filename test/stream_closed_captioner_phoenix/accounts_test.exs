@@ -6,6 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   alias StreamClosedCaptionerPhoenix.Accounts
   import StreamClosedCaptionerPhoenix.AccountsFixtures
   alias StreamClosedCaptionerPhoenix.Accounts.{User, UserToken}
+  alias StreamClosedCaptionerPhoenix.Settings
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
@@ -95,14 +96,14 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     test "registers users with a encrypted password and creates settings" do
       email = unique_user_email()
 
-      {:ok, %{user: user, stream_settings: settings}} =
+      {:ok, %{user: user}} =
         Accounts.register_user(%{email: email, password: valid_user_password()})
 
       assert user.email == email
       assert is_binary(user.encrypted_password)
       assert is_nil(user.password)
 
-      assert settings.cc_box_size == false
+      assert Settings.get_stream_settings_by_user_id!(user.id)
     end
   end
 

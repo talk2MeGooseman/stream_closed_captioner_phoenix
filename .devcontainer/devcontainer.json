@@ -27,7 +27,8 @@
 		"mtxr.sqltools-driver-pg",
 		"saratravi.elixir-formatter",
 		"jakebecker.elixir-ls",
-		"tabnine.tabnine-vscode"
+		"tabnine.tabnine-vscode",
+		"adamzapasnik.elixir-test-explorer"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
