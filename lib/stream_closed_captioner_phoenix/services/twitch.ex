@@ -30,6 +30,10 @@ defmodule Twitch do
         Logger.debug("Request was rejected")
         {:error, "Request was rejected"}
 
+      {:ok, %HTTPoison.Response{status_code: 500, body: _body}} ->
+        Logger.debug("Twitch doing Twitch stuff")
+        {:error, "500, Twitch throwing errors for some reason."}
+
       {:ok, %HTTPoison.Response{status_code: 502, body: _body}} ->
         Logger.debug("Twitch doing Twitch stuff")
         {:error, "502, cant reach Twitch atm."}
