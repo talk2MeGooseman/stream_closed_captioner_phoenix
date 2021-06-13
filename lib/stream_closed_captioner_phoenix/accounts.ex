@@ -22,8 +22,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def is_admin?(nil), do: false
+
   def is_admin?(user) do
-   user.uid == "120750024"
+    user.uid == "120750024"
   end
 
   ## Database getters

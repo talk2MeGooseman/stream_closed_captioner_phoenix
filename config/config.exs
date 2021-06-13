@@ -71,7 +71,10 @@ config :ex_aws,
 config :kaffy,
   otp_app: :stream_closed_captioner_phoenix,
   ecto_repo: StreamClosedCaptionerPhoenix.Repo,
-  router: StreamClosedCaptionerPhoenixWeb.Router
+  router: StreamClosedCaptionerPhoenixWeb.Router,
+  scheduled_tasks: [
+    StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

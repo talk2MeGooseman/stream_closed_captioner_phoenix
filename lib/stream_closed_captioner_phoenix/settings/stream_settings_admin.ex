@@ -1,5 +1,20 @@
 defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
   alias StreamClosedCaptionerPhoenix.Accounts
+  # alias StreamClosedCaptionerPhoenix.Accounts.UserQueries
+
+  def task_stream_settings() do
+    [
+      # %{
+      #   name: "Users with out Stream Settings",
+      #   initial_value: 0,
+      #   every: 15,
+      #   action: fn _v ->
+      #     user_ids = UserQueries.get_users_without_settings()
+      #     {:ok, user_ids}
+      #   end
+      # }
+    ]
+  end
 
   def plural_name(_) do
     "Stream Settings"
