@@ -1,6 +1,12 @@
 defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
   alias StreamClosedCaptionerPhoenix.Accounts
-  # alias StreamClosedCaptionerPhoenix.Accounts.UserQueries
+  alias StreamClosedCaptionerPhoenix.Accounts.UserQueries
+
+  def search_fields(_schema) do
+    [
+      user: [:email, :username, :uid]
+    ]
+  end
 
   def task_stream_settings() do
     [
@@ -13,6 +19,19 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
       #     {:ok, user_ids}
       #   end
       # }
+    ]
+  end
+
+  def widgets(_schema, _conn) do
+    [
+      %{
+        type: "tidbit",
+        title: "Users with out Stream Settings",
+        content: UserQueries.get_users_without_settings() |> Enum.count(),
+        order: 1,
+        width: 4,
+        icon: ''
+      }
     ]
   end
 
