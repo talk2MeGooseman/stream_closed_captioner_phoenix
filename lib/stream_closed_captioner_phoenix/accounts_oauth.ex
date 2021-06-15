@@ -39,50 +39,55 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
     User.provider_changeset(user, attrs)
   end
 
-  def find_or_register_user_with_oauth(attrs, current_user) when is_nil(current_user) do
-    case get_user_for_provider("twitch", attrs["id"]) do
+  def find_or_register_user_with_oauth(user_attrs, creds, current_user)
+      when is_nil(current_user) do
+    case get_user_for_provider("twitch", user_attrs["id"]) do
       %User{} = user ->
         {:ok, updated_user} =
           Accounts.User.oauth_update_changeset(user, %{
-            email: attrs["email"],
-            username: attrs["display_name"],
-            profile_image_url: attrs["profile_image_url"],
-            login: attrs["login"],
-            description: attrs["description"],
-            offline_image_url: attrs["offline_image_url"]
+            email: user_attrs["email"],
+            username: user_attrs["display_name"],
+            profile_image_url: user_attrs["profile_image_url"],
+            login: user_attrs["login"],
+            description: user_attrs["description"],
+            offline_image_url: user_attrs["offline_image_url"],
+            access_token: creds["access_token"],
+            refresh_token: creds["refresh_token"]
           })
           |> Repo.update()
 
         {:ok, %{user: updated_user}}
 
       _ ->
-        case Accounts.get_user_by_email(attrs["email"]) do
+        case Accounts.get_user_by_email(user_attrs["email"]) do
           %User{} ->
             {:error,
              "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}
 
           _ ->
-            register_oauth_user(attrs)
+            register_oauth_user(user_attrs, creds)
         end
     end
   end
 
-  def find_or_register_user_with_oauth(attrs, %User{} = current_user) do
-    case get_user_for_provider("twitch", attrs["id"]) do
+  def find_or_register_user_with_oauth(user_attrs, creds, %User{} = current_user) do
+    case get_user_for_provider("twitch", user_attrs["id"]) do
       %User{} = user when user.id != current_user.id ->
         {:error,
          "Your Twitch account is connected to another account, please log out and log in with Twitch to remove the connection from your other account."}
 
       _ ->
         User.oauth_update_changeset(current_user, %{
-          email: attrs["email"],
+          email: user_attrs["email"],
           provider: "twitch",
-          username: attrs["display_name"],
-          profile_image_url: attrs["profile_image_url"],
-          login: attrs["login"],
-          description: attrs["description"],
-          offline_image_url: attrs["offline_image_url"],
-          uid: attrs["id"]
+          username: user_attrs["display_name"],
+          profile_image_url: user_attrs["profile_image_url"],
+          login: user_attrs["login"],
+          description: user_attrs["description"],
+          offline_image_url: user_attrs["offline_image_url"],
+          uid: user_attrs["id"],
+          access_token: creds["access_token"],
+          refresh_token: creds["refresh_token"]
         })
         |> Repo.update()
         |> case do
@@ -92,7 +97,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
     end
   end
 
-  defp register_oauth_user(attrs) do
+  defp register_oauth_user(attrs, creds) do
     Accounts.register_user(%{
       email: attrs["email"],
       password: Accounts.generate_secure_password(),
@@ -102,7 +107,9 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
       login: attrs["login"],
       description: attrs["description"],
       offline_image_url: attrs["offline_image_url"],
-      provider: "twitch"
+      provider: "twitch",
+      access_token: creds["access_token"],
+      refresh_token: creds["refresh_token"]
     })
   end
 end

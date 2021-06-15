@@ -95,7 +95,7 @@ config :ueberauth, Ueberauth,
        [
          callback_methods: ["POST"]
        ]},
-    twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email"]}
+    twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email user:read:broadcast"]}
   ]
 
 config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension

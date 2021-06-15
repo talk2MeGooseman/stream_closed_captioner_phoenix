@@ -17,11 +17,17 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
         "offline_image_url" => "https://image.com"
       }
 
-      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, nil)
+      creds = %{
+        "access_token" => "12345",
+        "refresh_token" => "12345"
+      }
+
+      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, nil)
 
       assert data.user.email == attrs["email"]
       assert data.user.uid == attrs["id"]
       assert data.user.provider == "twitch"
+      assert data.user.access_token == "12345"
 
       assert StreamClosedCaptionerPhoenix.Settings.get_stream_settings_by_user_id!(data.user.id)
     end
@@ -37,15 +43,21 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
         "offline_image_url" => "https://image.com"
       }
 
+      creds = %{
+        "access_token" => "12345",
+        "refresh_token" => "12345"
+      }
+
       insert(:user, uid: attrs["id"], provider: "twitch")
 
-      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, nil)
+      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, nil)
 
       assert data.user.uid == attrs["id"]
       refute data.user.email == attrs["email"]
       assert data.user.username == attrs["display_name"]
       assert data.user.description == attrs["description"]
       assert data.user.provider == "twitch"
+      assert data.user.access_token == "12345"
     end
 
     test "when current user, connects twitch account if not already connected else where" do
@@ -59,15 +71,21 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
         "offline_image_url" => "https://image.com"
       }
 
+      creds = %{
+        "access_token" => "12345",
+        "refresh_token" => "12345"
+      }
+
       user = insert(:user, uid: nil, provider: nil)
 
-      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, user)
+      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, user)
 
       assert data.user.uid == attrs["id"]
       refute data.user.email == attrs["email"]
       assert data.user.username == attrs["display_name"]
       assert data.user.description == attrs["description"]
       assert data.user.provider == "twitch"
+      assert data.user.access_token == "12345"
     end
 
     test "when current user, doesnt connect twitch accoutn if linked with another user" do
@@ -81,11 +99,16 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
         "offline_image_url" => "https://image.com"
       }
 
+      creds = %{
+        "access_token" => "12345",
+        "refresh_token" => "12345"
+      }
+
       insert(:user, uid: attrs["id"], provider: "twitch")
       current_user = insert(:user, uid: nil, provider: nil)
 
       assert {:error, _message} =
-               AccountsOauth.find_or_register_user_with_oauth(attrs, current_user)
+               AccountsOauth.find_or_register_user_with_oauth(attrs, creds, current_user)
     end
   end
 end

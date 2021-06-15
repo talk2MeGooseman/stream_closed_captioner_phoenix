@@ -8,21 +8,23 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
            only: [:email, :provider, :uid, :username, :login, :profile_image_url, :description]}
 
   schema "users" do
+    field :access_token, :string
+    field :description, :string
     field :email, :string
-    field :password, :string, virtual: true
     field :encrypted_password, :string
-    field :reset_password_token, :string
-    field :reset_password_sent_at, :naive_datetime
-    field :remember_created_at, :naive_datetime
-    field :sign_in_count, :integer
     field :last_sign_in_at, :naive_datetime
+    field :login, :string
+    field :offline_image_url, :string
+    field :password, :string, virtual: true
+    field :profile_image_url, :string
     field :provider, :string
+    field :refresh_token, :string
+    field :remember_created_at, :naive_datetime
+    field :reset_password_sent_at, :naive_datetime
+    field :reset_password_token, :string
+    field :sign_in_count, :integer
     field :uid, :string
     field :username, :string
-    field :profile_image_url, :string
-    field :login, :string
-    field :description, :string
-    field :offline_image_url, :string
 
     has_one :bits_balance, StreamClosedCaptionerPhoenix.Bits.BitsBalance
     has_many :bits_balance_debits, StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
@@ -63,7 +65,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
       :description,
       :offline_image_url,
       :uid,
-      :provider
+      :provider,
+      :access_token,
+      :refresh_token
     ])
     |> unique_constraint(:uid, name: "index_users_on_uid")
     |> validate_email()
@@ -79,7 +83,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
       :description,
       :offline_image_url,
       :provider,
-      :uid
+      :uid,
+      :access_token,
+      :refresh_token
     ])
     |> validate_required([:username, :login])
   end
@@ -94,6 +100,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> change(login: nil)
     |> change(description: nil)
     |> change(offline_image_url: nil)
+    |> change(access_token: nil)
+    |> change(refresh_token: nil)
   end
 
   defp validate_email(changeset) do
