@@ -39,6 +39,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
     %{extra: %{raw_info: %{user: user}}, credentials: creds} = auth
     [user_info] = user["data"]
 
+    creds = Map.from_struct(creds)
+
     case AccountsOauth.find_or_register_user_with_oauth(user_info, creds, current_user) do
       {:ok, %{user: user}} ->
         conn

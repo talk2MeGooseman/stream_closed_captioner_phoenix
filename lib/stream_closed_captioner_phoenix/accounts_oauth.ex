@@ -51,8 +51,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
             login: user_attrs["login"],
             description: user_attrs["description"],
             offline_image_url: user_attrs["offline_image_url"],
-            access_token: creds["access_token"],
-            refresh_token: creds["refresh_token"]
+            access_token: creds[:access_token],
+            refresh_token: creds[:refresh_token]
           })
           |> Repo.update()
 
@@ -86,8 +86,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
           description: user_attrs["description"],
           offline_image_url: user_attrs["offline_image_url"],
           uid: user_attrs["id"],
-          access_token: creds["access_token"],
-          refresh_token: creds["refresh_token"]
+          access_token: creds[:access_token],
+          refresh_token: creds[:refresh_token]
         })
         |> Repo.update()
         |> case do
@@ -108,8 +108,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
       description: attrs["description"],
       offline_image_url: attrs["offline_image_url"],
       provider: "twitch",
-      access_token: creds["access_token"],
-      refresh_token: creds["refresh_token"]
+      access_token: creds[:access_token],
+      refresh_token: creds[:refresh_token]
     })
   end
 end

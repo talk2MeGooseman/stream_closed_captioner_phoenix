@@ -18,8 +18,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       }
 
       creds = %{
-        "access_token" => "12345",
-        "refresh_token" => "12345"
+        :access_token => "12345",
+        :refresh_token => "12345"
       }
 
       {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, nil)
@@ -44,8 +44,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       }
 
       creds = %{
-        "access_token" => "12345",
-        "refresh_token" => "12345"
+        :access_token => "12345",
+        :refresh_token => "12345"
       }
 
       insert(:user, uid: attrs["id"], provider: "twitch")
@@ -72,8 +72,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       }
 
       creds = %{
-        "access_token" => "12345",
-        "refresh_token" => "12345"
+        :access_token => "12345",
+        :refresh_token => "12345"
       }
 
       user = insert(:user, uid: nil, provider: nil)
@@ -100,8 +100,8 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       }
 
       creds = %{
-        "access_token" => "12345",
-        "refresh_token" => "12345"
+        :access_token => "12345",
+        :refresh_token => "12345"
       }
 
       insert(:user, uid: attrs["id"], provider: "twitch")
