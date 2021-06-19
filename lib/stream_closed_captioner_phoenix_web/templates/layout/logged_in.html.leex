@@ -26,6 +26,8 @@
         <%= img_tag(Routes.static_path(@conn, "/images/cc100x100.png"), alt: "Stream Closed Captioner Logo", class:
         "w-20 rounded") %>
       </a>
+      <a href="https://twitter.com/talk2megooseman" target="_blank" class="block px-4 text-white text-sm italic ">by
+        Talk2MeGooseman</a>
       <nav class="text-sm font-medium text-gray-500" aria-label="Main Navigation">
         <%= live_patch to: Routes.dashboard_path(@conn, :index), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
         <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
