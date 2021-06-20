@@ -76,4 +76,9 @@ defmodule Twitch do
     Oauth.get_client_access_token()
     |> Helix.get_transactions()
   end
+
+  def get_users_active_extensions(user) do
+    Oauth.get_users_access_token(user)
+    |> Helix.get_users_active_extensions()
+  end
 end

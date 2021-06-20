@@ -8,4 +8,6 @@ defmodule Twitch.HelixProvider do
             ) :: list(Stream.t())
 
   @callback get_transactions(Credentials.t()) :: list(Transaction.t())
+
+  @callback get_users_active_extensions(Credentials.t()) :: list(any())
 end

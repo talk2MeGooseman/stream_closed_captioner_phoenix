@@ -50,4 +50,21 @@ defmodule Twitch.Helix do
 
     Enum.map(get_in(data, ["data"]), &Transaction.new/1)
   end
+
+  @impl HelixProvider
+  def get_users_active_extensions(
+        %Credentials{} = %{client_id: client_id, access_token: access_token}
+      ) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"Client-Id", client_id},
+      {"Authorization", "Bearer #{access_token}"}
+    ]
+
+    encode_url_and_params("https://api.twitch.tv/helix/users/extensions")
+    |> HTTPoison.get!(headers)
+    |> Map.fetch!(:body)
+    |> Jason.decode!()
+    |> Map.get("data")
+  end
 end

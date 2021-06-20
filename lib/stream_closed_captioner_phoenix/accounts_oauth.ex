@@ -51,7 +51,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
             login: user_attrs["login"],
             description: user_attrs["description"],
             offline_image_url: user_attrs["offline_image_url"],
-            access_token: creds[:access_token],
+            access_token: creds[:token],
             refresh_token: creds[:refresh_token]
           })
           |> Repo.update()
