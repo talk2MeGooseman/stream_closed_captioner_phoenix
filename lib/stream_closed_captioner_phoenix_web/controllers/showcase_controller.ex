@@ -6,8 +6,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     active_users = StreamClosedCaptionerPhoenixWeb.ActivePresence.list("active_channels")
 
     channel_ids = Enum.reduce(active_users, [], fn data, acc -> reduced_user_list(data, acc) end)
-    require IEx
-    IEx.pry()
+
     # Fetch information about the channel to display for Twitch API
     stream_list = Twitch.get_live_streams(channel_ids)
 
