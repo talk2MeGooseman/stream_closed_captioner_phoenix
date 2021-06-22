@@ -75,8 +75,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   @impl true
   def handle_info(:after_join, socket) do
-    {:ok, _} =
+    if String.length(socket.assigns.current_user.uid) > 0 do
       ActivePresence.track(self(), "active_channels", socket.assigns.current_user.uid, %{})
+    end
 
     {:noreply, socket}
   end
