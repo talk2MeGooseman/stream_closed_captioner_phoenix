@@ -1,11 +1,13 @@
 defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
+  @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
-    active_user_map = StreamClosedCaptionerPhoenixWeb.ActivePresence.list("active_channels")
-    channel_ids =
-      Enum.reduce(active_user_map, [], fn data, acc -> reduced_user_list(data, acc) end)
+    active_users = StreamClosedCaptionerPhoenixWeb.ActivePresence.list("active_channels")
 
+    channel_ids = Enum.reduce(active_users, [], fn data, acc -> reduced_user_list(data, acc) end)
+    require IEx
+    IEx.pry()
     # Fetch information about the channel to display for Twitch API
     stream_list = Twitch.get_live_streams(channel_ids)
 
@@ -13,8 +15,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     render(conn, "index.html", data: stream_list)
   end
 
-  defp reduced_user_list({_, %{user: %{uid: uid}, metas: metas}}, acc) when is_binary(uid) do
-    last_publish = metas |> List.first |> Map.get(:last_publish, 0)
+  defp reduced_user_list({uid, %{metas: metas}}, acc) when is_binary(uid) do
+    last_publish = metas |> List.first() |> Map.get(:last_publish, 0)
     elapased_time = current_timestamp() - last_publish
 
     cond do
