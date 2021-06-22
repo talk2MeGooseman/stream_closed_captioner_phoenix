@@ -33,35 +33,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
-    ref = socket_ref(socket)
+    NewRelic.start_transaction("Captions", "twitch")
+    sent_on_time = Map.get(payload, "sentOn")
+    user = socket.assigns.current_user
 
-    Task.start_link(fn ->
-      NewRelic.start_transaction("Captions", "twitch")
-      sent_on_time = Map.get(payload, "sentOn")
-      user = socket.assigns.current_user
-
-      case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
-        {:ok, sent_payload} ->
-          send(self(), :after_publish)
-
-          Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
-            new_twitch_caption: user.uid
-          )
-
-          new_relic_track(:ok, user, sent_on_time)
-          Phoenix.Channel.reply(ref, {:ok, sent_payload})
-
-        {:error, _} ->
-          new_relic_track(:error, user, sent_on_time)
-          Phoenix.Channel.reply(ref, {:error, %{message: "Issue sending captions."}})
-      end
-    end)
-
-    ActivePresence.update(self(), "active_channels", socket.assigns.current_user.uid, %{
+    ActivePresence.update(self(), "active_channels", user.uid, %{
       last_publish: System.system_time(:second)
     })
 
-    {:noreply, socket}
+    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
+      {:ok, sent_payload} ->
+        Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
+          new_twitch_caption: user.uid
+        )
+
+        new_relic_track(:ok, user, sent_on_time)
+        {:reply, {:ok, sent_payload}, socket}
+
+      {:error, _} ->
+        new_relic_track(:error, user, sent_on_time)
+        {:reply, {:error, "Issue sending captions."}, socket}
+    end
   end
 
   def handle_in("publishInterim", payload, socket) do
