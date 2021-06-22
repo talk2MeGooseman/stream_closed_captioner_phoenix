@@ -75,12 +75,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   @impl true
   def handle_info(:after_join, socket) do
-    if String.length(socket.assigns.current_user.uid) > 0 do
-      ActivePresence.track(self(), "active_channels", socket.assigns.current_user.uid, %{})
-    end
-
+    track_user(socket.assigns.current_user.uid)
     {:noreply, socket}
   end
+
+  defp track_user(uid) when is_binary(uid) do
+    if String.length(uid) > 0 do
+      ActivePresence.track(self(), "active_channels", uid, %{})
+    end
+  end
+
+  defp track_user(nil), do: nil
 
   # Add authorization logic here as required.
   defp authorized?(socket, user_id) do
