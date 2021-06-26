@@ -98,9 +98,5 @@ config :ueberauth, Ueberauth,
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email user:read:broadcast"]}
   ]
 
-config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension
-config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
-config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
-
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 5, cleanup_interval_ms: 60_000 * 10]}

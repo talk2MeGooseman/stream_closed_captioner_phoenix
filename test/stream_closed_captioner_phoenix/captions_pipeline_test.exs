@@ -50,7 +50,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
           "session" => "disf12f3"
         })
 
-      assert result == {:error, "Bad Error"}
+      assert result == {:error, "Request was rejected"}
     end
 
     test "when user has enough bits, activates translations and debits amount" do
@@ -68,8 +68,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       result =
         CaptionsPipeline.pipeline_to(:twitch, user, %{
-          "interim" => "Hello",
-          "final" => "",
+          "interim" => "",
+          "final" => "Hello",
           "session" => "disf12f3"
         })
 
@@ -77,9 +77,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                {:ok,
                 %Twitch.Extension.CaptionsPayload{
                   delay: 0,
-                  final: "",
-                  interim: "Hello",
-                  translations: %{ "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}}
+                  final: "Hello",
+                  interim: "",
+                  translations: %{
+                    "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
+                  }
                 }}
 
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)

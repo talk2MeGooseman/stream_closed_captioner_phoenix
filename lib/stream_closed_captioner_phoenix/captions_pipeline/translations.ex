@@ -36,7 +36,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
 
     {_, translations} =
       Cachex.fetch(:translation_cache, key, fn _key ->
-        IO.puts("Load Cache")
         translations = Azure.perform_translations(from_language, to_languages, text)
         {:commit, translations}
       end)

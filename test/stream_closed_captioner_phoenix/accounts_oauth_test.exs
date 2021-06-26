@@ -44,7 +44,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       }
 
       creds = %{
-        :access_token => "12345",
+        :token => "12345",
         :refresh_token => "12345"
       }
 
