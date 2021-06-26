@@ -4,7 +4,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.{Schema, Resolvers}
-  alias StreamClosedCaptionerPhoenix.Bits
 
   def middleware(middleware, _field, _object) do
     [NewRelic.Absinthe.Middleware | middleware]
@@ -71,7 +70,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :process_bits_transaction, type: :twitch_transaction do
       arg(:channel_id, non_null(:id))
 
-      resolve(&process_bits_transaction/3)
+      resolve(&Resolvers.Bits.process_bits_transaction/3)
     end
   end
 
@@ -94,24 +93,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       config(fn args, _ ->
         {:ok, topic: args.channel_id}
       end)
-
-      # resolve(fn root, _, _ ->
-      #   IO.inspect(root)
-      #   {:ok, root}
-      # end)
     end
-  end
-
-  def process_bits_transaction(_parent, %{channel_id: channel_id}, %{
-        context: %{decoded_token: decoded_token}
-      }) do
-    case Bits.process_bits_transaction(channel_id, decoded_token) do
-      {:ok, _} -> {:ok, %{message: "Transaction Successful"}}
-      {:error, _, message, _} -> {:error, %{message: message}}
-    end
-  end
-
-  def process_bits_transaction(_parent, _args, _resolution) do
-    {:error, "Access denied, missing or invalid token"}
   end
 end
