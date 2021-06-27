@@ -520,4 +520,12 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "get_users_map/1" do
+    test "returns map of users by id" do
+      %{id: id} = insert(:user)
+      user = Accounts.get_user!(id)
+      assert %{id => user} == Accounts.get_users_map([id])
+    end
+  end
 end

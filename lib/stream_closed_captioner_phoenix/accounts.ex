@@ -5,7 +5,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
-  alias StreamClosedCaptionerPhoenix.Accounts.{User, UserNotifier, UserToken}
+  alias StreamClosedCaptionerPhoenix.Accounts.{User, UserNotifier, UserToken, UserQueries}
   alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Settings
 
@@ -42,7 +42,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
-    Repo.get_by(User, email: String.downcase(email))
+    String.downcase(email)
+    |> UserQueries.with_email()
+    |> Repo.one()
   end
 
   @doc """
@@ -59,7 +61,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
-    user = Repo.get_by(User, email: String.downcase(email))
+    user = get_user_by_email(email)
     if User.valid_password?(user, password), do: user
   end
 
@@ -77,15 +79,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: UserQueries.with_id(id) |> Repo.one!()
 
   def get_users_map(ids) do
-    query =
-      from u in User,
-        where: u.id in ^ids,
-        select: {u.id, u}
-
-    query |> Repo.all() |> Enum.into(%{})
+    UserQueries.with_ids(ids)
+    |> UserQueries.select_id_user_pair()
+    |> Repo.all()
+    |> Enum.into(%{})
   end
 
   @doc """

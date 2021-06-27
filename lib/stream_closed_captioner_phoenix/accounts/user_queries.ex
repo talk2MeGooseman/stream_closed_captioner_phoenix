@@ -5,6 +5,26 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
   alias StreamClosedCaptionerPhoenix.Repo
 
+  def with_id(query \\ base(), id) do
+    query
+    |> where([user], user.id == ^id)
+  end
+
+  def with_ids(query \\ base(), ids) do
+    query
+    |> where([user], user.id in ^ids)
+  end
+
+  def select_id_user_pair(query \\ base()) do
+    query
+    |> select([user], {user.id, user})
+  end
+
+  def with_email(query \\ base(), email) do
+    query
+    |> where([user], user.email == ^email)
+  end
+
   def query_users_with_settings() do
     query =
       from(u in User,
@@ -26,5 +46,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
       )
 
     Repo.all(query)
+  end
+
+  defp base do
+    from(_ in User, as: :user)
   end
 end
