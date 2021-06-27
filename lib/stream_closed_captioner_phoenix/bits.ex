@@ -1,6 +1,4 @@
 defmodule StreamClosedCaptionerPhoenix.Bits do
-  @seconds_in_hours 3600
-
   @moduledoc """
   The Bits context.
   """
@@ -8,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+  alias StreamClosedCaptionerPhoenix.Bits.{BitsBalanceDebit, BitsBalanceDebitQueries}
   alias StreamClosedCaptionerPhoenix.Repo
 
   def activate_translations_for(%User{} = user) do
@@ -61,7 +59,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def list_bits_balance_debits do
-    Repo.all(BitsBalanceDebit)
+    BitsBalanceDebitQueries.all()
+    |> Repo.all()
   end
 
   @doc """
@@ -74,7 +73,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def list_users_bits_balance_debits(%{id: id}) do
-    BitsBalanceDebit |> where(user_id: ^id) |> Repo.all()
+    BitsBalanceDebitQueries.with_user_id(id)
+    |> Repo.all()
   end
 
   @doc """
@@ -91,10 +91,13 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       ** (Ecto.NoResultsError)
 
   """
-  def get_bits_balance_debit!(id), do: Repo.get!(BitsBalanceDebit, id)
+  def get_bits_balance_debit!(id), do: BitsBalanceDebitQueries.with_id(id) |> Repo.one!()
 
-  def get_users_bits_balance_debit!(%{id: user_id}, id),
-    do: BitsBalanceDebit |> where(user_id: ^user_id) |> where(id: ^id) |> Repo.one!()
+  def get_users_bits_balance_debit!(%{id: user_id}, id) do
+    BitsBalanceDebitQueries.with_user_id(user_id)
+    |> BitsBalanceDebitQueries.with_id(id)
+    |> Repo.one!()
+  end
 
   @doc """
   Gets a get_user_active_debit for the user_id that has occurred in the past 24 hours.
@@ -109,11 +112,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def get_user_active_debit(user_id) do
-    one_day_ago = NaiveDateTime.utc_now() |> NaiveDateTime.add(@seconds_in_hours * -24)
-
-    BitsBalanceDebit
-    |> where(user_id: ^user_id)
-    |> where([u], u.created_at >= ^one_day_ago)
+    BitsBalanceDebitQueries.with_user_id(user_id)
+    |> BitsBalanceDebitQueries.less_than_one_day_ago()
     |> Repo.one()
   end
 

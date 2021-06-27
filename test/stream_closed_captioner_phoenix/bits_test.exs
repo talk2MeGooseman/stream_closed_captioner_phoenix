@@ -48,6 +48,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
+    test "list_users_bits_balance_debits/1 returns all bits_balance_debits for a user" do
+      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+
+      assert Enum.map(Bits.list_users_bits_balance_debits(bits_balance_debit.user), & &1.id) ==
+               [bits_balance_debit.id]
+    end
+
     test "list_bits_balance_debits/0 returns all bits_balance_debits" do
       bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
       assert Enum.map(Bits.list_bits_balance_debits(), & &1.id) == [bits_balance_debit.id]
@@ -57,6 +64,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
 
       assert Bits.get_bits_balance_debit!(bits_balance_debit.id).id ==
+               bits_balance_debit.id
+    end
+
+    test "get_users_bits_balance_debit!/1 returns the bits_balance_debit for given user and debit id" do
+      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+
+      assert Bits.get_users_bits_balance_debit!(bits_balance_debit.user, bits_balance_debit.id).id ==
                bits_balance_debit.id
     end
 
