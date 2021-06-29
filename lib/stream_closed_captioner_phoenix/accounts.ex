@@ -88,6 +88,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Enum.into(%{})
   end
 
+  def user_has_extension_installed?(user) do
+    Twitch.get_users_active_extensions(user)
+    |> Map.get("overlay")
+    |> Map.values()
+    |> Enum.any?(fn ext -> ext["id"] == "h1ekceo16erc49snp0sine3k9ccbh9" end)
+  end
+
   @doc """
   Registers a user.
 

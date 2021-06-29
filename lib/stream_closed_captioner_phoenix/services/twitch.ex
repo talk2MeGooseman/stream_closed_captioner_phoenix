@@ -77,6 +77,49 @@ defmodule Twitch do
     |> Helix.get_transactions()
   end
 
+  @doc """
+  Get all active extensions and user channel has.
+
+  # Examples
+      iex(19)> StreamClosedCaptionerPhoenix.Accounts.user_has_extension_installed?(user)
+      %{
+        "component" => %{
+          "1" => %{
+            "active" => true,
+            "id" => "d4uvtfdr04uq6raoenvj7m86gdk16v",
+            "name" => "Prime Subscription and Loot Reminder",
+            "version" => "2.2.41",
+            "x" => 0,
+            "y" => 0
+          },
+          "2" => %{"active" => false}
+        },
+        "overlay" => %{
+          "1" => %{
+            "active" => true,
+            "id" => "h1ekceo16erc49snp0sine3k9ccbh9",
+            "name" => "Stream Closed Captioner",
+            "version" => "1.6.1"
+          }
+        },
+        "panel" => %{
+          "1" => %{"active" => false},
+          "2" => %{
+            "active" => true,
+            "id" => "d4t75sazjvk9cc84h30mgkyg7evbvz",
+            "name" => "Stream Team",
+            "version" => "1.1.1"
+          },
+          "3" => %{
+            "active" => true,
+            "id" => "uaw3vx1k0ttq74u9b2zfvt768eebh1",
+            "name" => "StreamElements Leaderboards",
+            "version" => "0.4.1"
+          }
+        }
+      }
+
+  """
   def get_users_active_extensions(user) do
     Oauth.get_users_access_token(user)
     |> Helix.get_users_active_extensions()
