@@ -121,6 +121,11 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert Bits.get_bits_balance!(bits_balance.id).id == bits_balance.id
     end
 
+    test "get_bits_balance!/1 returns the bits_balance with given user" do
+      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      assert Bits.get_bits_balance!(bits_balance.user).id == bits_balance.id
+    end
+
     test "create_bits_balance/1 with valid data creates a bits_balance" do
       user = insert(:user, bits_balance: nil)
       assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(user)
@@ -187,6 +192,21 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
 
       assert Bits.get_bits_transaction!(bits_transaction.id).id ==
+               bits_transaction.id
+    end
+
+    test "get_bits_transactions!/1 returns the bits_transactions for the given user" do
+      bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
+
+      assert Enum.map(Bits.get_bits_transactions!(bits_transaction.user), & &1.id) ==
+               [bits_transaction.id]
+    end
+
+    test "get_bits_transaction_by/1 returns the bits_transactions for the given transaction_id" do
+      bits_transaction =
+        insert(:bits_transaction, user: build(:user, bits_balance: nil), transaction_id: "1234")
+
+      assert Bits.get_bits_transaction_by(bits_transaction.transaction_id).id ==
                bits_transaction.id
     end
 

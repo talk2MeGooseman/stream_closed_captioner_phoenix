@@ -6,7 +6,14 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.Bits.{BitsBalanceDebit, BitsBalanceDebitQueries}
+
+  alias StreamClosedCaptionerPhoenix.Bits.{
+    BitsBalanceDebit,
+    BitsBalanceDebitQueries,
+    BitsBalanceQueries,
+    BitsTransactionQueries
+  }
+
   alias StreamClosedCaptionerPhoenix.Repo
 
   def activate_translations_for(%User{} = user) do
@@ -148,7 +155,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def list_bits_balances do
-    Repo.all(BitsBalance)
+    BitsBalanceQueries.all()
+    |> Repo.all()
   end
 
   @doc """
@@ -168,8 +176,15 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       %BitsBalance{}
 
   """
-  def get_bits_balance!(id) when is_integer(id), do: Repo.get!(BitsBalance, id)
-  def get_bits_balance!(%User{} = user), do: Repo.get_by!(BitsBalance, user_id: user.id)
+  def get_bits_balance!(id) when is_integer(id) do
+    BitsBalanceQueries.with_id(id)
+    |> Repo.one!()
+  end
+
+  def get_bits_balance!(%User{} = user) do
+    BitsBalanceQueries.with_user_id(user.id)
+    |> Repo.one!()
+  end
 
   @doc """
   Creates a bits_balance.
@@ -249,7 +264,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   def list_bits_transactions do
-    Repo.all(BitsTransaction)
+    BitsTransactionQueries.all()
+    |> Repo.all()
   end
 
   @doc """
@@ -266,11 +282,13 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       ** (Ecto.NoResultsError)
 
   """
-  def get_bits_transaction!(id) when is_integer(id), do: Repo.get!(BitsTransaction, id)
+  def get_bits_transaction!(id) when is_integer(id) do
+    BitsTransactionQueries.with_id(id)
+    |> Repo.one!()
+  end
 
   def get_bits_transactions!(%User{} = user) do
-    BitsBalanceDebit
-    |> where(user_id: ^user.id)
+    BitsTransactionQueries.with_user_id(user.id)
     |> Repo.all()
   end
 
@@ -286,8 +304,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       nil
 
   """
-  def get_bits_transaction_by(transaction_id) when is_binary(transaction_id),
-    do: Repo.get_by(BitsTransaction, transaction_id: transaction_id)
+  def get_bits_transaction_by(transaction_id) when is_binary(transaction_id) do
+    BitsTransactionQueries.with_transaction_id(transaction_id)
+    |> Repo.one()
+  end
 
   @doc """
   Creates a bits_transaction.
@@ -392,8 +412,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   defp add_to_balance(amount) do
     fn _repo, %{retrieve_balance: bits_balance} ->
-      bits_balance
-      |> update_bits_balance(%{balance: bits_balance.balance + amount})
+      update_bits_balance(bits_balance, %{balance: bits_balance.balance + amount})
     end
   end
 
