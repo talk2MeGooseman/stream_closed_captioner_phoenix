@@ -15,8 +15,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Context do
   end
 
   defp build_user_context(context, conn) do
-    with ["" <> token] <- get_req_header(conn, "authorization"),
-         {:ok, user, _claims} <- StreamClosedCaptionerPhoenix.Guardian.resource_from_token(token) do
+    with "" <> token <- StreamClosedCaptionerPhoenixWeb.UserAuth.fetch_cookie_user_token(conn),
+         user <-
+           StreamClosedCaptionerPhoenix.Accounts.get_user_by_session_token(token) do
       Map.merge(context, %{current_user: user})
     else
       _ -> context

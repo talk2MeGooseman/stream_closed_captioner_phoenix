@@ -57,10 +57,10 @@
     <%= password_input f, :password, required: true, class: "form-input" %>
     <% end %>
 
-    <%= label f, :remember_me, class: "form-label" do %>
-    <%= checkbox f, :remember_me, class: "form-checkbox" %>
-    <span class="ml-1">Keep me logged in for 60 days</span>
-    <% end %>
+    <%# <%= label f, :remember_me, class: "form-label" do %>
+    <%# <%= checkbox f, :remember_me, class: "form-checkbox" %>
+    <%# <span class="ml-1">Keep me logged in for 60 days</span> %>
+    <%# <% end %>
 
     <%= submit "Continue with email", class: "w-full py-3 btn btn-primary" %>
     <% end %>

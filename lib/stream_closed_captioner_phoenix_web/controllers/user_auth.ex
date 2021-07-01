@@ -32,16 +32,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
     |> renew_session()
     |> put_session(:user_token, token)
     |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
-    |> maybe_write_remember_me_cookie(token, params)
+    |> maybe_write_remember_me_cookie(token)
     |> redirect(to: user_return_to || signed_in_path(conn))
   end
 
-  defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
+  defp maybe_write_remember_me_cookie(conn, token) do
     put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
-  end
-
-  defp maybe_write_remember_me_cookie(conn, _token, _params) do
-    conn
   end
 
   # This function renews the session ID and erases the whole
@@ -94,13 +90,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
     assign(conn, :current_user, user)
   end
 
+  def fetch_cookie_user_token(conn) do
+    conn = fetch_cookies(conn, signed: [@remember_me_cookie])
+    conn.cookies[@remember_me_cookie]
+  end
+
   defp ensure_user_token(conn) do
     if user_token = get_session(conn, :user_token) do
       {user_token, conn}
     else
-      conn = fetch_cookies(conn, signed: [@remember_me_cookie])
-
-      if user_token = conn.cookies[@remember_me_cookie] do
+      if user_token = fetch_cookie_user_token(conn) do
         {user_token, put_session(conn, :user_token, user_token)}
       else
         {nil, conn}
@@ -138,6 +137,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
   """
   def redirect_if_not_admin(conn, _opts) do
     user = conn.assigns[:current_user]
+
     if !Accounts.is_admin?(user) do
       conn
       |> redirect(to: "/")
