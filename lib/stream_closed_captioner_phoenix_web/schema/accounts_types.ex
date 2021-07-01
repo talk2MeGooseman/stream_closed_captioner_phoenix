@@ -12,7 +12,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
   @desc "Get information about a user"
   object :me do
     field :id, :id
-    field :extension_installed, :boolean
+
+    field :extension_installed, :boolean do
+      resolve(&has_extension_installed?/3)
+    end
   end
 
   object :accounts_queries do
@@ -27,5 +30,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
     field :me, :me do
       resolve(&Resolvers.Accounts.get_me/3)
     end
+  end
+
+  # Return a boolean indicating whether the user has the extension installed
+  def has_extension_installed?(user, _args, _resolution) do
+    status = StreamClosedCaptionerPhoenix.Accounts.user_has_extension_installed?(user)
+    {:ok, status}
   end
 end

@@ -14,7 +14,7 @@ export default class extends ApplicationController {
     this.enabled = true
   }
 
-  disconnect() {}
+  disconnect() { }
 
   toggleOn = () => {
     this.clearErrorMessage()

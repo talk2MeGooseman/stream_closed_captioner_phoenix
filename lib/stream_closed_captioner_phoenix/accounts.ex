@@ -88,7 +88,14 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Enum.into(%{})
   end
 
-  def user_has_extension_installed?(user) do
+  @doc """
+  Returns true if the user has the extension enabled.
+
+  ## Examples
+      iex> user_has_extension_installed?(user)
+      true
+  """
+  def user_has_extension_installed?(%User{} = user) do
     Twitch.get_users_active_extensions(user)
     |> Map.get("overlay")
     |> Map.values()
