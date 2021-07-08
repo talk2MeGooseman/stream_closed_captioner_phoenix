@@ -96,10 +96,16 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       true
   """
   def user_has_extension_installed?(%User{} = user) do
-    Twitch.get_users_active_extensions(user)
-    |> Map.get("overlay")
+    result = Twitch.get_users_active_extensions(user)
+
+    check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel")
+  end
+
+  defp check_for_extension_in(result, key) do
+    result
+    |> Map.get(key)
     |> Map.values()
-    |> Enum.any?(fn ext -> ext["id"] == "h1ekceo16erc49snp0sine3k9ccbh9" end)
+    |> Enum.any?(fn ext -> ext["id"] == Twitch.extension_id() end)
   end
 
   @doc """

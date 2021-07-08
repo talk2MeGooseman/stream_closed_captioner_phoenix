@@ -3,9 +3,16 @@ defmodule Twitch do
   Service to communicate to Twitch via Helix of Extension APIs
   """
 
+  @extension_id "h1ekceo16erc49snp0sine3k9ccbh9"
+
   require Logger
 
   alias Twitch.{Extension, Helix, Jwt, Oauth}
+
+  @doc """
+  Get the extension's id
+  """
+  def extension_id, do: @extension_id
 
   def api_client,
     do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_extension_client)

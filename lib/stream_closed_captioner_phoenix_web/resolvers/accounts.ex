@@ -11,7 +11,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Accounts do
 
   def get_me(_parent, _params, %{
         context: %{current_user: current_user}
-      }) do
+      })
+      when current_user != nil do
     case StreamClosedCaptionerPhoenix.Accounts.get_user!(current_user.id) do
       nil ->
         {:error, "Access Denied, no current user set"}
