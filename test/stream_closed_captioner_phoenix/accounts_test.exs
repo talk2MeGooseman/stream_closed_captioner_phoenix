@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   import StreamClosedCaptionerPhoenix.Factory
+  import Mox
 
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 

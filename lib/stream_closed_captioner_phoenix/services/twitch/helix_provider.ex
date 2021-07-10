@@ -9,5 +9,5 @@ defmodule Twitch.HelixProvider do
 
   @callback get_transactions(Credentials.t()) :: list(Transaction.t())
 
-  @callback get_users_active_extensions(Credentials.t()) :: list(any())
+  @callback get_users_active_extensions(Credentials.t()) :: map()
 end

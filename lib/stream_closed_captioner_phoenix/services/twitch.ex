@@ -14,13 +14,18 @@ defmodule Twitch do
   """
   def extension_id, do: @extension_id
 
-  def api_client,
+  @spec ext_api_client :: Twitch.ExtensionProvider
+  def ext_api_client,
     do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_extension_client)
+
+  @spec helix_api_client :: Twitch.HelixProvider
+  def helix_api_client,
+    do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_helix_client)
 
   @spec extension_live_channels :: list
   def extension_live_channels() do
     Jwt.get_credentials()
-    |> api_client().get_live_channels()
+    |> ext_api_client().get_live_channels()
   end
 
   def send_pubsub_message(_payload, channel_id) when is_nil(channel_id),
@@ -28,7 +33,7 @@ defmodule Twitch do
 
   def send_pubsub_message(payload, channel_id) when is_map(payload) do
     Jwt.sign_token_for(:pubsub, channel_id)
-    |> api_client().send_pubsub_message_for(channel_id, payload)
+    |> ext_api_client().send_pubsub_message_for(channel_id, payload)
     |> case do
       {:ok, %HTTPoison.Response{status_code: 204}} ->
         {:ok, payload}
@@ -54,7 +59,7 @@ defmodule Twitch do
   @spec get_extension_broadcaster_configuration_for(binary) :: any
   def get_extension_broadcaster_configuration_for(channel_id) do
     Jwt.sign_token_for(:standard, channel_id)
-    |> api_client().get_configuration_for(Extension.broadcaster_segment(), channel_id)
+    |> ext_api_client().get_configuration_for(Extension.broadcaster_segment(), channel_id)
   end
 
   @spec set_extension_broadcaster_configuration_for(binary, map) ::
@@ -63,7 +68,7 @@ defmodule Twitch do
           | {:error, HTTPoison.Error.t()}
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
-    |> api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
+    |> ext_api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
   end
 
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
@@ -74,21 +79,21 @@ defmodule Twitch do
 
     Enum.flat_map(chunked_user_ids, fn uids ->
       Oauth.get_client_access_token()
-      |> Helix.get_streams(uids)
+      |> helix_api_client().get_streams(uids)
     end)
   end
 
   @spec get_extension_transactons() :: list
   def get_extension_transactons() do
     Oauth.get_client_access_token()
-    |> Helix.get_transactions()
+    |> helix_api_client().get_transactions()
   end
 
   @doc """
   Get all active extensions and user channel has.
 
   # Examples
-      iex(19)> StreamClosedCaptionerPhoenix.Accounts.user_has_extension_installed?(user)
+      iex(19)> Twitch.get_users_active_extensions(user)
       %{
         "component" => %{
           "1" => %{
@@ -129,6 +134,6 @@ defmodule Twitch do
   """
   def get_users_active_extensions(user) do
     Oauth.get_users_access_token(user)
-    |> Helix.get_users_active_extensions()
+    |> helix_api_client().get_users_active_extensions()
   end
 end
