@@ -26,7 +26,7 @@ export default class extends ApplicationController {
     }
 
     this.twitchData = {
-      enabled: true,
+      enabled: false,
     }
 
     if (isBrowserCompatible()) {
@@ -83,7 +83,6 @@ export default class extends ApplicationController {
   }
 
   onTwitchChange({ detail: { enabled } }) {
-    console.log("twitch", enabled)
     this.twitchData = {
       enabled,
     }
@@ -138,15 +137,6 @@ export default class extends ApplicationController {
     this.startTarget.textContent = "Click to Stop Captions"
     this.startTarget.classList.remove("btn-primary")
     this.startTarget.classList.add("btn-warning")
-
-    try {
-      gtag("event", "start", {
-        // eslint-disable-next-line camelcase
-        event_category: "CC",
-      })
-    } catch (error) {
-      // Do nothing
-    }
   }
 
   recognitionStopped = () => {
@@ -155,15 +145,6 @@ export default class extends ApplicationController {
     this.startTarget.classList.add("btn-primary")
     this.startTarget.classList.remove("btn-warning")
     this.startTarget.textContent = this.cachedButtonText
-
-    try {
-      gtag("event", "stop", {
-        // eslint-disable-next-line camelcase
-        event_category: "CC",
-      })
-    } catch (error) {
-      // Do nothing
-    }
   }
 
   receiveInterimMessage = (data) => {
