@@ -27,6 +27,14 @@
 
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :pirate_mode, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Translate your English words to Pirate words</span>
+  <% end %>
+  <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
+</div>
+
+<div class="mb-6">
+  <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :hide_text_on_load, class: "form-checkbox bg-green-100" %>
   <span class="ml-2 cursor-pointer">Hide Captions by Default (Twitch only)</span>
   <% end %>
@@ -56,12 +64,6 @@
   <% end %>
   <%= error_tag f, :switch_settings_position, class: "text-red-700 text-sm mt-1" %>
 </div>
-
-<%# <div class="mb-6">
-  <%# <%= checkbox f, :pirate_mode, class: "form-checkbox bg-green-100" %>
-<%# <%= label f, :pirate_mode, class: "flex items-center mt-4" %>
-<%# <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
-<%# </div> %>
 
 <div class="mt-8 mb-2">
   <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>

@@ -86,5 +86,30 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
+
+    test "when pirate mode is active, translates english to pirate" do
+      user = insert(:user, stream_settings: build(:stream_settings, pirate_mode: true))
+
+      Twitch.MockExtension
+      |> expect(:send_pubsub_message_for, fn _creds, _channel, _message ->
+        {:ok, %HTTPoison.Response{status_code: 204}}
+      end)
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "Hello",
+          "final" => "Friend",
+          "session" => "disf12f3"
+        })
+
+      assert result ==
+               {:ok,
+                %Twitch.Extension.CaptionsPayload{
+                  delay: 0,
+                  final: "Matey",
+                  interim: "Ahoy",
+                  translations: nil
+                }}
+    end
   end
 end

@@ -27,6 +27,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       CaptionsPayload.new(message)
       |> maybe_censor_for(:interim, user)
       |> maybe_censor_for(:final, user)
+      |> maybe_pirate_mode_for(:interim, user)
+      |> maybe_pirate_mode_for(:final, user)
 
     {:ok, payload}
   end
@@ -38,6 +40,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     |> maybe_censor_for(:interim, user)
     |> maybe_censor_for(:final, user)
     |> Translations.maybe_translate(:final, user)
+    |> maybe_pirate_mode_for(:interim, user)
+    |> maybe_pirate_mode_for(:final, user)
     |> rate_limited_twitch_send(user)
   end
 
@@ -53,6 +57,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       CaptionsPayload.new(message)
       |> maybe_censor_for(:interim, user)
       |> maybe_censor_for(:final, user)
+      |> maybe_pirate_mode_for(:interim, user)
+      |> maybe_pirate_mode_for(:final, user)
 
     zoom_text = Map.get(payload, :final)
     url = get_in(message, ["zoom", "url"])
@@ -88,5 +94,19 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       key,
       Profanity.maybe_censor(user.stream_settings, Map.get(payload, key))
     )
+  end
+
+  defp maybe_pirate_mode_for(payload, key, %User{} = user) do
+    if user.stream_settings.pirate_mode do
+      {:ok, text} = TalkLikeAX.translate(Map.get(payload, key))
+
+      Map.put(
+        payload,
+        key,
+        text
+      )
+    else
+      payload
+    end
   end
 end
