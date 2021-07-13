@@ -106,23 +106,36 @@
         </span>
       </a>
     </div>
-    <div data-controller="translations" class="card-header divide-x text-center">
-      <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900" data-translations-target="translationStatus">
-          <%= display_translation_status(@translation_active) %></h5>
-        <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
+    <div data-controller="translations" data-action="captions:payload@window->translations#onCaptionsReceived">
+      <div class="card-header divide-x text-center">
+        <div class="flex-1 p-2">
+          <h5 class="text-sm font-bold text-gray-900" data-translations-target="translationStatus">
+            <%= display_translation_status(@translation_active) %></h5>
+          <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
+        </div>
+        <div class="flex-1 p-2">
+          <h5 class="text-sm font-bold text-gray-900" data-translations-target="bitsBalance"><%= @bits_balance %></h5>
+          <p class="text-sm font-medium leading-none text-gray-600">Translation Credit Balance</p>
+        </div>
+        <div class="flex-1 p-2">
+          <h5 class="text-sm font-bold text-gray-900"><%= Map.values(@translate_languages) |> Enum.join(", ") %></h5>
+          <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
+        </div>
+        <div class="flex-1 p-2">
+          <p class="text-sm font-medium leading-none text-gray-600">500 credits are required for to activate translations
+            for 24 hours</p>
+        </div>
       </div>
-      <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900" data-translations-target="bitsBalance"><%= @bits_balance %></h5>
-        <p class="text-sm font-medium leading-none text-gray-600">Translation Credit Balance</p>
-      </div>
-      <div class="flex-1 p-2">
-        <h5 class="text-sm font-bold text-gray-900"><%= Map.values(@translate_languages) |> Enum.join(", ") %></h5>
-        <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
-      </div>
-      <div class="flex-1 p-2">
-        <p class="text-sm font-medium leading-none text-gray-600">500 credits are required for to activate translations
-          for 24 hours</p>
+      <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
+        <div x-spread="trigger" class="p-3 flex justify-between items-center bg-gray-200" role="button" aria-controls="translation-toggle" aria-expanded="false">
+          Translation:
+          <svg :class="{ 'rotate-180': open }" class="transition transform h-4 w-4 flex-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div x-spread="collapse" x-cloak class="" id="translation-toggle">
+          <ul data-translations-target="translationsList" class="list">
+            <li class="list-item">Reddit</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

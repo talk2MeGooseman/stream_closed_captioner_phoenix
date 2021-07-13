@@ -7,7 +7,7 @@ import { ApplicationController } from "stimulus-use"
 const debug = console.log
 
 export default class extends ApplicationController {
-  static targets = ["translationStatus", "bitsBalance"]
+  static targets = ["translationStatus", "bitsBalance", "displayTranslations", "translationsList"]
 
   connect() {
     if (isBrowserCompatible()) {
@@ -30,5 +30,22 @@ export default class extends ApplicationController {
         this.bitsBalanceTarget.innerHTML = balance
       }
     })
+  }
+
+  onCaptionsReceived = ({ detail: { translations } }) => {
+    if (translations) {
+      this.displayTranslationsTarget.classList.remove("hidden")
+      this.translationsListTarget.innerHTML = ""
+
+      for (const lang in translations) {
+        const { name, text } = translations[lang];
+
+        const liNode = document.createElement("li")
+        liNode.classList.add('list-item')
+        liNode.innerText = `${name}: ${text}`
+
+        this.translationsListTarget.appendChild(liNode)
+      }
+    }
   }
 }
