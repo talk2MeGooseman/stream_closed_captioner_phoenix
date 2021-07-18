@@ -127,13 +127,12 @@
         </div>
       </div>
       <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
-        <div x-spread="trigger" class="p-3 flex justify-between items-center bg-gray-200" role="button" aria-controls="translation-toggle" aria-expanded="false">
-          Translation:
+        <div x-spread="trigger" class="p-3 flex justify-between items-center bg-green-100" role="button" aria-controls="translation-toggle" aria-expanded="false">
+          Click here to toggle viewing translated captions
           <svg :class="{ 'rotate-180': open }" class="transition transform h-4 w-4 flex-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
         <div x-spread="collapse" x-cloak class="" id="translation-toggle">
           <ul data-translations-target="translationsList" class="list">
-            <li class="list-item">Reddit</li>
           </ul>
         </div>
       </div>
@@ -176,9 +175,7 @@
     <line x1="12" y1="16" x2="12" y2="12"></line>
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
-  I am currently testing out sending Captions directly to all viewers instead of sending them through Twitch.
-  You or your viewers might experience some issues while I am working on figuring out the size of the servers I need to
-  support this enhanced functionality.
+  Hey there! New features has just been added, <strong>Pirate Translator</strong>. Have your English captions converted to Pirate talk for fun. Turn it on in your settings.
   <br />
   - Talk2MeGooseman
 </div>
