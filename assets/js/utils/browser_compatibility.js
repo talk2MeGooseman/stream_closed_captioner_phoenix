@@ -12,10 +12,9 @@ export const isBrowserCompatible = () => {
       typeof isChromium !== "undefined" &&
       vendorName === "Google Inc." &&
       isOpera === false &&
-      isIEedge === false &&
-      isEdge === true
+      isIEedge == false
 
-    if (!isChrome) {
+    if (!isChrome && !isEdge) {
       return false
     }
   } catch (error) {
