@@ -168,14 +168,14 @@
   </div>
 </section>
 <!-- Captions Sections -->
-<div class="alert bg-primary-light text-primary" role="alert">
+<div class="alert bg-green-200 text-primary text-left" role="alert">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="12" y1="16" x2="12" y2="12"></line>
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
-  Hey there! New features has just been added, <strong>Pirate Translator</strong>. Have your English captions converted to Pirate talk for fun. Turn it on in your settings.
+  Stream Closed Captioner now works on Microsoft Edge. If you no longer want to use Google Chrome you can make the switch to Edge and everything should still work fine.
   <br />
   - Talk2MeGooseman
 </div>
