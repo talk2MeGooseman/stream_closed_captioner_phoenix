@@ -13,7 +13,7 @@ export const isBrowserCompatible = () => {
       vendorName === "Google Inc." &&
       isOpera === false &&
       isIEedge === false &&
-      isEdge === false
+      isEdge === true
 
     if (!isChrome) {
       return false
