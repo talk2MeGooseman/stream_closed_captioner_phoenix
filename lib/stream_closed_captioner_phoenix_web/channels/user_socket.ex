@@ -34,15 +34,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
 
   def connect(%{"Authorization" => "Bearer " <> token} = _params, socket, _connect_info) do
     case Twitch.Jwt.verify_and_validate(token) do
-      {:ok, decoded_token} ->
-        channel_id = Map.get(decoded_token, "channel_id")
-
-        if StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(channel_id) do
-          socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{})
-          {:ok, socket}
-        else
-          :error
-        end
+      {:ok, _} ->
+        socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{})
+        {:ok, socket}
 
       {:error, _} ->
         :error
