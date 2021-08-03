@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
 
   def handle_event(
         "add_blocklist_word",
-        %{"stream_settings" => %{"blocklist_word" => blocklist_word}},
+        %{"stream_settings" => %{"blocklist_word" => blocklist_word}} = params,
         socket
       )
       when byte_size(blocklist_word) == 0 do

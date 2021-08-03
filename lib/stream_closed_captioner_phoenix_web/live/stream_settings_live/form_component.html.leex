@@ -82,7 +82,7 @@
     <ul class="list">
       <%= for word <- assigns.stream_settings.blocklist || [] do %>
       <li class="list-item flex justify-between"><%= word %>
-        <button class="btn btn-icon btn-sm btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+        <button phx-disable-with="Removing..." phx-click="remove_blocklist_word" phx-value-word="<%= word %>" class="btn btn-icon btn-sm btn-light">Remove</button>
       </li>
       <% end %>
     </ul>

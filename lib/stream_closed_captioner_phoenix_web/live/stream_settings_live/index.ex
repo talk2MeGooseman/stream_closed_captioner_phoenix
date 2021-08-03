@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
 
   import StreamClosedCaptionerPhoenixWeb.LiveHelpers
 
-  alias StreamClosedCaptionerPhoenix.Repo
+  alias StreamClosedCaptionerPhoenix.{Repo, Settings}
 
   @impl true
   def mount(_params, session, socket) do
@@ -24,5 +24,26 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
   defp apply_action(socket, _, _params) do
     socket
     |> assign(:page_title, "Captions settings")
+  end
+
+  @impl true
+  def handle_event(
+        "remove_blocklist_word",
+        %{"word" => word} = _params,
+        socket
+      ) do
+    new_blocklist = List.delete(socket.assigns.stream_settings.blocklist, word)
+
+    params = %{"blocklist" => new_blocklist}
+
+    case Settings.update_stream_settings(socket.assigns.stream_settings, params) do
+      {:ok, _stream_settings} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Blocklist updated successfully")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
   end
 end
