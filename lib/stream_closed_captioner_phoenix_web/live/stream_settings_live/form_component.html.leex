@@ -69,3 +69,33 @@
   <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
 </div>
 </form>
+
+<h2 class="text-xl font-semibold text-gray-900">Captions Blocklist Words</h2>
+
+<%= f = form_for @changeset, "#",
+  id: "blocklist-form",
+  class: "block",
+  phx_target: @myself,
+  phx_submit: "add_blocklist_word" %>
+<div class="mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <ul class="list">
+      <%= for word <- assigns.stream_settings.blocklist || [] do %>
+      <li class="list-item flex justify-between"><%= word %>
+        <button class="btn btn-icon btn-sm btn-light"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<div class="mb-6">
+  <%= label f, "Add work to blocklist", class: "block text-sm mb-1 mt-4" %>
+  <%= text_input f, :blocklist_word, class: "form-input" %>
+  <%= error_tag f, :blocklist_word, class: "text-red-700 text-sm mt-1" %>
+</div>
+
+<div class="mt-8 mb-2">
+  <%= submit "Add Blocklist Word", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
+</div>
+</form>
