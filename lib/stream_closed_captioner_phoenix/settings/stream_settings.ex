@@ -3,6 +3,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   import Ecto.Changeset
 
   schema "stream_settings" do
+    field :blocklist, {:array, :string}
     field :caption_delay, :integer
     field :cc_box_size, :boolean, default: false
     field :filter_profanity, :boolean, default: false
@@ -21,16 +22,17 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   def changeset(stream_settings, attrs) do
     stream_settings
     |> cast(attrs, [
-      :language,
-      :user_id,
-      :hide_text_on_load,
-      :text_uppercase,
-      :filter_profanity,
+      :blocklist,
+      :caption_delay,
       :cc_box_size,
-      :switch_settings_position,
-      :showcase,
+      :filter_profanity,
+      :hide_text_on_load,
+      :language,
       :pirate_mode,
-      :caption_delay
+      :showcase,
+      :switch_settings_position,
+      :text_uppercase,
+      :user_id
     ])
     |> foreign_key_constraint(:user_id, name: "fk_rails_cd3c3eab8f")
     |> unique_constraint(:user_id, name: "index_stream_settings_on_user_id")
@@ -73,15 +75,16 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   def update_changeset(stream_settings, attrs) do
     stream_settings
     |> cast(attrs, [
-      :language,
-      :hide_text_on_load,
-      :text_uppercase,
-      :filter_profanity,
+      :blocklist,
+      :caption_delay,
       :cc_box_size,
-      :switch_settings_position,
-      :showcase,
+      :filter_profanity,
+      :hide_text_on_load,
+      :language,
       :pirate_mode,
-      :caption_delay
+      :showcase,
+      :switch_settings_position,
+      :text_uppercase
     ])
     |> validate_required([
       :language

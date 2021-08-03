@@ -18,7 +18,8 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       showcase: false,
       switch_settings_position: false,
       text_uppercase: false,
-      user_id: 43
+      user_id: 43,
+      blocklist: ["no", "kappa"]
     }
     @invalid_attrs %{
       caption_delay: nil,
@@ -116,6 +117,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.switch_settings_position == false
       assert stream_settings.text_uppercase == false
       assert stream_settings.user_id == stream_settings.user_id
+      assert stream_settings.blocklist == ["no", "kappa"]
     end
 
     test "update_stream_settings/2 with invalid data returns error changeset" do
