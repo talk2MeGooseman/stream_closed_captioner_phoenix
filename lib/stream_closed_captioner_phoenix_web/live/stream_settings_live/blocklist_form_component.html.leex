@@ -1,0 +1,36 @@
+<h2 class="text-xl font-semibold text-gray-900">Captions Blocklist Words</h2>
+
+<%= f = form_for @changeset, "#",
+  id: "blocklist-words",
+  class: "block",
+  phx_target: @myself,
+  phx_submit: "remove" %>
+<div class="my-6">
+  <div class="">
+    <ul class="list">
+      <%= for word <- assigns.stream_settings.blocklist || [] do %>
+      <li class="list-item flex justify-between"><%= word %>
+        <%= submit "Remove", phx_disable_with: "Removing", phx_click: "remove_blocklist_word", phx_value_word: word, class: "btn btn-icon btn-sm btn-light" %>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+</form>
+
+<%= f = form_for @changeset, "#",
+  id: "blocklist-form",
+  class: "block",
+  phx_target: @myself,
+  phx_submit: "add" %>
+
+<div class="mb-6">
+  <%= label f, "Add work to blocklist", class: "block text-sm mb-1 mt-4" %>
+  <%= text_input f, :blocklist_word, class: "form-input" %>
+  <%= error_tag f, :blocklist_word, class: "text-red-700 text-sm mt-1" %>
+</div>
+
+<div class="mt-8 mb-2">
+  <%= submit "Add Blocklist Word", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
+</div>
+</form>

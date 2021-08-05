@@ -7,5 +7,13 @@
         stream_settings: @stream_settings
      %>
   </div>
+
+  <div
+    class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
+    <%= live_component @socket, StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.BlocklistFormComponent,
+        id: @stream_settings.id,
+        stream_settings: @stream_settings
+     %>
+  </div>
 </div>
 </div>

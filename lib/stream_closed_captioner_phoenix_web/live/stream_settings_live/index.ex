@@ -32,15 +32,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
         %{"word" => word} = _params,
         socket
       ) do
-    new_blocklist = List.delete(socket.assigns.stream_settings.blocklist, word)
+    current_user =
+      socket.assings.current_user
+      |> Repo.preload(:stream_settings, force: true)
+
+    new_blocklist = List.delete(current_user.stream_settings.blocklist, word)
 
     params = %{"blocklist" => new_blocklist}
 
-    case Settings.update_stream_settings(socket.assigns.stream_settings, params) do
-      {:ok, _stream_settings} ->
+    case Settings.update_stream_settings(current_user.stream_settings, params) do
+      {:ok, stream_settings} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Blocklist updated successfully")}
+         |> assign(:stream_settings, stream_settings)
+         |> put_flash(:info, "Blocklist word removed successfully.")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

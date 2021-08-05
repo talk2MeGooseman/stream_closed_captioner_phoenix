@@ -36,32 +36,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
         {:noreply, assign(socket, :changeset, changeset)}
     end
   end
-
-  def handle_event(
-        "add_blocklist_word",
-        %{"stream_settings" => %{"blocklist_word" => blocklist_word}} = params,
-        socket
-      )
-      when byte_size(blocklist_word) == 0 do
-    {:noreply, assign(socket, :changeset, socket.assigns.changeset)}
-  end
-
-  def handle_event(
-        "add_blocklist_word",
-        %{"stream_settings" => %{"blocklist_word" => blocklist_word}},
-        socket
-      ) do
-    blocklist = socket.assigns.stream_settings.blocklist || []
-    params = %{"blocklist" => [blocklist_word | blocklist]}
-
-    case Settings.update_stream_settings(socket.assigns.stream_settings, params) do
-      {:ok, _stream_settings} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Stream settings updated successfully")}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
-    end
-  end
 end
