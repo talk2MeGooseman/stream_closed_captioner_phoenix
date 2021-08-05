@@ -4,12 +4,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity do
   file = Path.join([__DIR__, "..", "..", "..", "config", "profanity", "english.txt"])
   strip_quotes = fn word -> String.replace(word, ~r/^"\s*|\s*"$/, "") end
 
-  words =
-    File.read!(file)
-    |> String.split("\n")
-    |> Enum.map(strip_quotes)
-
-  @global_expletives_config Expletive.configure(blacklist: words)
+  @default_words File.read!(file)
+                 |> String.split("\n")
+                 |> Enum.map(strip_quotes)
 
   @doc """
   Censors profantiy using global configuration if the user has filter_profanity set to true on their StreamSettings.
@@ -27,8 +24,18 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity do
       when filter_profanity == false,
       do: text
 
-  def maybe_censor(%StreamSettings{filter_profanity: filter_profanity}, text)
+  def maybe_censor(
+        %StreamSettings{filter_profanity: filter_profanity, blocklist: blocklist},
+        text
+      )
       when filter_profanity == true do
-    Expletive.sanitize(text, @global_expletives_config, :stars)
+    blocklist_config = create_blocklist_config(blocklist)
+    Expletive.sanitize(text, blocklist_config, :stars)
   end
+
+  defp create_blocklist_config([]), do: Expletive.configure(blacklist: @default_words)
+  defp create_blocklist_config(nil), do: Expletive.configure(blacklist: @default_words)
+
+  defp create_blocklist_config(user_list),
+    do: Expletive.configure(blacklist: @default_words ++ user_list)
 end

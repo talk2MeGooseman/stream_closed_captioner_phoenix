@@ -36,13 +36,15 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   def pipeline_to(:twitch, %User{} = user, message) do
     user = Repo.preload(user, :stream_settings)
 
-    CaptionsPayload.new(message)
-    |> maybe_censor_for(:interim, user)
-    |> maybe_censor_for(:final, user)
-    |> Translations.maybe_translate(:final, user)
-    |> maybe_pirate_mode_for(:interim, user)
-    |> maybe_pirate_mode_for(:final, user)
-    |> rate_limited_twitch_send(user)
+    payload =
+      CaptionsPayload.new(message)
+      |> maybe_censor_for(:interim, user)
+      |> maybe_censor_for(:final, user)
+      |> Translations.maybe_translate(:final, user)
+      |> maybe_pirate_mode_for(:interim, user)
+      |> maybe_pirate_mode_for(:final, user)
+
+    {:ok, payload}
   end
 
   def pipeline_to(:zoom, %User{} = user, message) do
@@ -72,17 +74,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.debug("Request was error")
         {:error, reason}
-    end
-  end
-
-  defp rate_limited_twitch_send(payload, user) do
-    case Hammer.check_rate("twitch:pubsub:#{user.id}", 800, 1) do
-      {:allow, _count} ->
-        Twitch.send_pubsub_message(payload, user.uid)
-
-      {:deny, limit} ->
-        Logger.debug("Limit Reached: #{limit}")
-        {:error, "Rate limit reached for message to Twitch"}
     end
   end
 

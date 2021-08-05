@@ -13,11 +13,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "it successfully sends regular sentence to Twitch" do
       user = insert(:user)
 
-      Twitch.MockExtension
-      |> expect(:send_pubsub_message_for, fn _creds, _channel, _message ->
-        {:ok, %HTTPoison.Response{status_code: 204}}
-      end)
-
       result =
         CaptionsPipeline.pipeline_to(:twitch, user, %{
           "interim" => "Hello",
@@ -33,24 +28,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                   interim: "Hello",
                   translations: nil
                 }}
-    end
-
-    test "returns error if credentials are invalid" do
-      user = insert(:user)
-
-      Twitch.MockExtension
-      |> expect(:send_pubsub_message_for, fn _creds, _channel, _message ->
-        {:ok, %HTTPoison.Response{status_code: 400, body: "Bad Error"}}
-      end)
-
-      result =
-        CaptionsPipeline.pipeline_to(:twitch, user, %{
-          "interim" => "Hello",
-          "final" => "",
-          "session" => "disf12f3"
-        })
-
-      assert result == {:error, "Request was rejected"}
     end
 
     test "when user has enough bits, activates translations and debits amount" do
@@ -90,11 +67,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when pirate mode is active, translates english to pirate" do
       user = insert(:user, stream_settings: build(:stream_settings, pirate_mode: true))
 
-      Twitch.MockExtension
-      |> expect(:send_pubsub_message_for, fn _creds, _channel, _message ->
-        {:ok, %HTTPoison.Response{status_code: 204}}
-      end)
-
       result =
         CaptionsPipeline.pipeline_to(:twitch, user, %{
           "interim" => "Hello",
@@ -108,6 +80,29 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                   delay: 0,
                   final: "Matey",
                   interim: "Ahoy",
+                  translations: nil
+                }}
+    end
+
+    test "when a user has filter_profanity true and blocklist words, it filters out those words" do
+      user =
+        insert(:user,
+          stream_settings: build(:stream_settings, filter_profanity: true, blocklist: ["poopy"])
+        )
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "Hello poopy head",
+          "final" => "Friend",
+          "session" => "disf12f3"
+        })
+
+      assert result ==
+               {:ok,
+                %Twitch.Extension.CaptionsPayload{
+                  delay: 0,
+                  interim: "Hello ***** head",
+                  final: "Friend",
                   translations: nil
                 }}
     end
