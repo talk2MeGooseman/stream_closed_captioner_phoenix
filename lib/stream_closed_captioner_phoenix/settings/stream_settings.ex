@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   import Ecto.Changeset
 
   schema "stream_settings" do
-    field :blocklist, {:array, :string}
+    field :blocklist, {:array, :string}, default: [], null: false
     field :caption_delay, :integer
     field :cc_box_size, :boolean, default: false
     field :filter_profanity, :boolean, default: false

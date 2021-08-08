@@ -16,10 +16,10 @@
     <div class="my-6">
       <div class="">
         <ul class="list">
-          <%= if Enum.empty?(assigns.stream_settings.blocklist || []) do %>
+          <%= if Enum.empty?(assigns.stream_settings.blocklist) do %>
           <li class="list-item flex justify-between">No words added to your blocklist.</li>
           <% end %>
-          <%= for word <- assigns.stream_settings.blocklist || [] do %>
+          <%= for word <- assigns.stream_settings.blocklist do %>
           <li class="list-item flex justify-between"><%= word %>
             <%= submit "Remove", phx_disable_with: "Removing", phx_click: "remove_blocklist_word", phx_value_word: word, class: "btn btn-icon btn-sm btn-light" %>
           </li>

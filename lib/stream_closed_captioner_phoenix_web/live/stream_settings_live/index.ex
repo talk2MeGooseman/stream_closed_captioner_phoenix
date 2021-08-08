@@ -70,7 +70,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
         %{"stream_settings" => %{"blocklist_word" => blocklist_word}},
         socket
       ) do
-    blocklist = socket.assigns.stream_settings.blocklist || []
+    blocklist = socket.assigns.stream_settings.blocklist
     params = %{"blocklist" => [blocklist_word | blocklist]}
 
     case Settings.update_stream_settings(socket.assigns.stream_settings, params) do

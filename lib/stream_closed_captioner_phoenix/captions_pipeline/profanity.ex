@@ -34,7 +34,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity do
   end
 
   defp create_blocklist_config([]), do: Expletive.configure(blacklist: @default_words)
-  defp create_blocklist_config(nil), do: Expletive.configure(blacklist: @default_words)
 
   defp create_blocklist_config(user_list),
     do: Expletive.configure(blacklist: @default_words ++ user_list)
