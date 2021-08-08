@@ -27,7 +27,12 @@
 		"mtxr.sqltools-driver-pg",
 		"saratravi.elixir-formatter",
 		"jakebecker.elixir-ls",
-		"adamzapasnik.elixir-test-explorer"
+		"adamzapasnik.elixir-test-explorer",
+		"hookyqr.beautify",
+		"streetsidesoftware.code-spell-checker",
+		"samuel-pordeus.elixir-test",
+		"iampeterbanjo.elixirlinter",
+		"benvp.vscode-hex-pm-intellisense"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [4000, 4001, 5432],

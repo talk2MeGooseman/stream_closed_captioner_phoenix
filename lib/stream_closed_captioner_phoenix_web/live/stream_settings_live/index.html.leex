@@ -10,10 +10,40 @@
 
   <div
     class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
-    <%= live_component @socket, StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.BlocklistFormComponent,
-        id: @stream_settings.id,
-        stream_settings: @stream_settings
-     %>
+    <h2 class="text-xl font-semibold text-gray-900">Captions Blocklist Words</h2>
+    <p class="text-sm">All words added to your blocklist will appeared censored in your captions. This works on top of the the already existing default blocklist used in the app.</p>
+
+    <div class="my-6">
+      <div class="">
+        <ul class="list">
+          <%= if Enum.empty?(assigns.stream_settings.blocklist || []) do %>
+          <li class="list-item flex justify-between">No words added to your blocklist.</li>
+          <% end %>
+          <%= for word <- assigns.stream_settings.blocklist || [] do %>
+          <li class="list-item flex justify-between"><%= word %>
+            <%= submit "Remove", phx_disable_with: "Removing", phx_click: "remove_blocklist_word", phx_value_word: word, class: "btn btn-icon btn-sm btn-light" %>
+          </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <%= f = form_for @changeset, "#",
+      id: "blocklist-form",
+      class: "block",
+      phx_submit: "add" %>
+
+    <div class="mb-6">
+      <%= label f, "Add word to blocklist", class: "block text-sm mb-1 mt-4" %>
+      <%= text_input f, :blocklist_word, placeholder: "Add blocklist words here", class: "form-input" %>
+      <%= error_tag f, :blocklist_word, class: "text-red-700 text-sm mt-1" %>
+    </div>
+
+    <div class="mt-8 mb-2">
+      <%= submit "Add Blocklist Word", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
+    </div>
+    </form>
+
   </div>
 </div>
 </div>
