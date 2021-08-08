@@ -62,7 +62,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
         socket
       )
       when byte_size(blocklist_word) == 0 do
-    {:noreply, assign(socket, :changeset, socket.changeset)}
+    {:noreply, assign(socket, :changeset, socket.assigns.changeset)}
   end
 
   def handle_event(
@@ -71,7 +71,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
         socket
       ) do
     blocklist = socket.assigns.stream_settings.blocklist
-    params = %{"blocklist" => [blocklist_word | blocklist]}
+    new_word = String.trim(blocklist_word)
+
+    params = %{"blocklist" => [new_word | blocklist]}
 
     case Settings.update_stream_settings(socket.assigns.stream_settings, params) do
       {:ok, stream_settings} ->

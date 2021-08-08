@@ -3,17 +3,17 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   import Ecto.Changeset
 
   schema "stream_settings" do
-    field :blocklist, {:array, :string}, default: [], null: false
-    field :caption_delay, :integer
-    field :cc_box_size, :boolean, default: false
-    field :filter_profanity, :boolean, default: false
-    field :hide_text_on_load, :boolean, default: false
-    field :language, :string
-    field :pirate_mode, :boolean, default: false
-    field :showcase, :boolean, default: false
-    field :switch_settings_position, :boolean, default: false
-    field :text_uppercase, :boolean, default: false
-    belongs_to :user, StreamClosedCaptionerPhoenix.Accounts.User
+    field(:blocklist, {:array, :string}, default: [], null: false)
+    field(:caption_delay, :integer)
+    field(:cc_box_size, :boolean, default: false)
+    field(:filter_profanity, :boolean, default: false)
+    field(:hide_text_on_load, :boolean, default: false)
+    field(:language, :string)
+    field(:pirate_mode, :boolean, default: false)
+    field(:showcase, :boolean, default: false)
+    field(:switch_settings_position, :boolean, default: false)
+    field(:text_uppercase, :boolean, default: false)
+    belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
 
     timestamps(inserted_at: :created_at)
   end
@@ -42,6 +42,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :caption_delay
     ])
     |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
+    |> validate_word_list(:blocklist)
   end
 
   @doc false
@@ -69,6 +70,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :caption_delay
     ])
     |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
+    |> validate_word_list(:blocklist)
   end
 
   @doc false
@@ -91,5 +93,26 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     ])
     |> unique_constraint(:user_id, name: "index_stream_settings_on_user_id")
     |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
+    |> validate_word_list(:blocklist)
+  end
+
+  defp validate_word_list(changeset, field) when is_atom(field) do
+    validate_change(changeset, field, fn field, value ->
+      case has_valid_words?(value) do
+        true ->
+          []
+
+        false ->
+          [{field, "a blocklist word must contain at least one character"}]
+      end
+    end)
+  end
+
+  defp has_valid_words?([]), do: true
+
+  defp has_valid_words?(list) do
+    Enum.all?(list, fn word ->
+      word |> String.trim() |> String.length() > 0
+    end)
   end
 end
