@@ -1,22 +1,28 @@
 module.exports = {
   darkMode: 'class',
   purge: {
-    enabled: process.env.MIX_ENV === 'prod',
+    enabled: true,
     content: ['../lib/**/*.eex', '../lib/**/*.leex', '../lib/stream_closed_captioner_phoenix_web/live/page_live.html.leex'],
     options: {
-      whitelist: [],
+      safelist: ['dark'],
     },
   },
   plugins: [
+    require("nightwind"),
     require('@tailwindcss/aspect-ratio'),
     require('kutty'),
     require('@tailwindcss/typography'),
-    require("nightwind")
   ],
   theme: {
     nightwind: {
       colors: {
         white: "gray.800",
+        red: {
+          100: "red.100",
+        },
+        yellow: {
+          100: "yellow.100",
+        }
       },
     },
   },

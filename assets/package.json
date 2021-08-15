@@ -26,7 +26,7 @@
     "sha.js": "^2.4.11",
     "stimulus": "^2.0.0",
     "stimulus-use": "^0.23.0",
-    "tailwindcss": "^2.0.1",
+    "tailwindcss": "^2.2.7",
     "worker-timers": "^7.0.29"
   },
   "devDependencies": {
