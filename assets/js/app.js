@@ -51,3 +51,4 @@ window.liveSocket = liveSocket
 
 import "./stimulus"
 import "alpinejs"
+import "./tailwind"

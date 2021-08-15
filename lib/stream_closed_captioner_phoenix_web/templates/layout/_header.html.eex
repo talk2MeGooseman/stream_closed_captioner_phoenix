@@ -1,4 +1,4 @@
-<header class="z-30 w-full px-2 py-2 bg-white shadow sm:px-4">
+<header class="z-30 w-full px-2 py-2 bg-white dark:bg-black shadow sm:px-4">
   <div class="flex items-center justify-between mx-auto max-w-7xl">
     <div class="flex items-center space-x-3">
       <div class="inline-flex md:hidden" x-data="{ open: false }">
@@ -61,7 +61,7 @@
       </a>
       <div class="hidden space-x-1 md:inline-flex">
         <%= if @current_user do %>
-        <%= link to: Routes.dashboard_path(@conn, :index), class: "btn btn-sm btn-icon btn-link" do %>
+        <%= link to: Routes.dashboard_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
           <path
             d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -69,14 +69,14 @@
         Dashboard
         <% end %>
         <% end %>
-        <%= link to: Routes.showcase_path(@conn, :index), class: "btn btn-sm btn-icon btn-link" do %>
+        <%= link to: Routes.showcase_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
           <path
             d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
         </svg>
         Showcase
         <% end %>
-        <%= link to: Routes.announcements_path(@conn, :index), class: "btn btn-sm btn-icon btn-link" do %>
+        <%= link to: Routes.announcements_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />
           <path
@@ -84,7 +84,7 @@
         </svg>
         Announcements
         <% end %>
-        <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "btn btn-sm btn-icon btn-link" do %>
+        <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-5 h-5 mr-2 transition group-hover:text-gray-300"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

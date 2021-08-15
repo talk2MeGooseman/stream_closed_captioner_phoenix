@@ -8,7 +8,7 @@
     <% end %>
     <!-- Zoom Indicator -->
     <div>
-      <div class="p-5 card shadow" data-controller="zoom">
+      <div class="p-5 card shadow dark:bg-gray-800" data-controller="zoom">
         <div class="flex flex-row items-center">
           <div data-zoom-target="errorMarker"
             class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded">
@@ -45,7 +45,7 @@
     </div>
     <!-- OBS Indicator -->
     <div>
-      <div class="p-5 card shadow" data-controller="obs" data-action="captions:payload@window->obs#onCaptionsReceived">
+      <div class="p-5 card shadow dark:bg-gray-800" data-controller="obs" data-action="captions:payload@window->obs#onCaptionsReceived">
         <div class="flex flex-row items-center">
           <!-- X svg -->
           <div data-obs-target="errorMarker"
@@ -89,7 +89,7 @@
 </section>
 <!-- Translation Sections -->
 <section class="px-4 pb-12">
-  <div class="card shadow">
+  <div class="card shadow dark:bg-gray-800">
     <div class="card-header">
       <h5 class="card-title">
         Twitch Translation Information
@@ -180,7 +180,7 @@
   - Talk2MeGooseman
 </div> %>
 <section class="px-4 pb-12">
-  <div class="card shadow">
+  <div class="card shadow dark:bg-gray-800">
     <div class="card-header">
       <h5 class="card-title">
         Your Captions

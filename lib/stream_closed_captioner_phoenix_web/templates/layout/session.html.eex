@@ -11,7 +11,7 @@
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
 
-<body class="h-full bg-gray-100">
+<body class="h-full bg-gray-100 dark:text-white">
   <%= render "_header.html", assigns %>
 
   <main role="main" class="container mx-auto mb-8 px-4 max-w-6xl">

@@ -91,7 +91,7 @@
           Choose to activate it as a video overlay or panel extension for your channel, it also works on mobile.
         </p>
         <a target="_blank" href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-          class="w-full btn btn-dark btn-lg sm:w-auto">Click to install</a>
+          class="w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800">Click to install</a>
       </div>
       <div class="w-full sm:w-1/2 p-6">
         <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"), alt: "Image of the Twitch extension installation page") %>
@@ -111,7 +111,7 @@
             You can easily sign up using your Twitch account to get started on your channel, or sign up with e-mail if
             you want to just use it for Zoom.
           </p>
-          <%= link "Sign up today", to: Routes.user_registration_path(@socket, :new), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
+          <%= link "Sign up today", to: Routes.user_registration_path(@socket, :new), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@
         <p class="text-gray-600 mb-8">
           Open up the settings panel to set your native language or your Zoom URL and more...
         </p>
-        <%= link "Configure settings", to: Routes.stream_settings_index_path(@socket, :update), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
+        <%= link "Configure settings", to: Routes.stream_settings_index_path(@socket, :update), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
       </div>
       <div class="w-full sm:w-1/2 p-6">
         <%= img_tag(Routes.static_path(@socket, "/images/settings.png"), alt: "Stream Closed Captioner caption settings page") %>
@@ -143,7 +143,7 @@
           <p class="text-gray-600 mb-8">
             Click a single button to start Closed Captioning on your Twitch channel or Zoom meeting.
           </p>
-          <%= link "Start using it today!", to: Routes.dashboard_path(@socket, :index), class: "w-full btn btn-dark btn-lg sm:w-auto" %>
+          <%= link "Start using it today!", to: Routes.dashboard_path(@socket, :index), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
         </div>
       </div>
     </div>
