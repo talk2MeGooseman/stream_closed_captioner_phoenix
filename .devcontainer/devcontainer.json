@@ -32,7 +32,9 @@
 		"streetsidesoftware.code-spell-checker",
 		"samuel-pordeus.elixir-test",
 		"iampeterbanjo.elixirlinter",
-		"benvp.vscode-hex-pm-intellisense"
+		"benvp.vscode-hex-pm-intellisense",
+		"zerokol.vscode-eex-beautify",
+		"eamodio.gitlens"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [4000, 4001, 5432],

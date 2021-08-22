@@ -17,8 +17,8 @@
     </div>
 
     <div class="mt-3">
-      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "btn btn-link btn-sm" %>
-      <%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "btn btn-link btn-sm" %>
+      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "btn btn-link btn-sm dark:text-blue-500" %>
+      <%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "btn btn-link btn-sm dark:text-blue-500" %>
     </div>
   </div>
 </section>
