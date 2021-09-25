@@ -21,6 +21,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     quote do
       use Phoenix.Controller, namespace: StreamClosedCaptionerPhoenixWeb
 
+      use PhoenixMetaTags.TagController
       import Plug.Conn
       import StreamClosedCaptionerPhoenixWeb.Gettext
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
@@ -37,6 +38,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       # Import convenience functions from controllers
       import Phoenix.Controller,
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
+
+      use PhoenixMetaTags.TagView
 
       # Include shared imports and aliases for views
       unquote(view_helpers())

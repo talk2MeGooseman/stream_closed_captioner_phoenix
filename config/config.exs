@@ -100,3 +100,12 @@ config :ueberauth, Ueberauth,
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 5, cleanup_interval_ms: 60_000 * 10]}
+
+config :phoenix_meta_tags,
+  title: "Stream Closed Captioner",
+  description:
+    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse.",
+  url: "https://stream-cc.gooseman.codes",
+  image: "/images/cc100x100.png",
+  "og:text":
+    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse."
