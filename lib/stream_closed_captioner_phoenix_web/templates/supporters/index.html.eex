@@ -22,11 +22,20 @@
 <h2 class="text-4xl">Patrons</h2>
 <%= for patrons <- get_in(@data, ["patreon", "patrons"]) || [] do %>
   <div>
-    <%= patrons["patronStatus"] %>
-    <%= patrons["currentlyEntitledAmountCents"] %>
-    <%= patrons["lifeTimeSupporterCents"] %>
-    <%= patrons["user"]["fullName"] %>
-    <%= patrons["user"]["imageUrl"] %>
-    <%= patrons["user"]["about"] %>
+
+    <div class="card p-3 dark:bg-gray-800">
+      <div class="grid grid-cols-3">
+        <div class="col-span-1">
+          <div class="avatar avatar-lg">
+            <img class="" src="<%= patrons["user"]["imageUrl"] %>" />
+          </div>
+        </div>
+        <div class="col-span-2">
+          <%= patrons["patronStatus"] %>
+          <div class="font-semibold text-gray-900"><%= patrons["user"]["fullName"] %></div>
+          <div class="card-body"><%= patrons["user"]["about"] %></div>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>
