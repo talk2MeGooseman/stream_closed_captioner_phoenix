@@ -34,7 +34,8 @@
 		"iampeterbanjo.elixirlinter",
 		"benvp.vscode-hex-pm-intellisense",
 		"zerokol.vscode-eex-beautify",
-		"eamodio.gitlens"
+		"eamodio.gitlens",
+		"robbowen.synthwave-vscode"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [4000, 4001, 5432],

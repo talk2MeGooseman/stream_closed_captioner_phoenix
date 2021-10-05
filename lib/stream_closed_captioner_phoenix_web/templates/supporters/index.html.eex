@@ -1,18 +1,26 @@
-Supporters Page
+<h1 class="text-5xl mb-8">Stream Closed Captioner Supporters</h1>
 
-<h2>Twitch Subs</h2>
+<h2 class="text-4xl">Twitch Subscribers</h2>
+<div class="grid grid-cols-3 gap-4 mb-8">
 <%= for subscriber <- get_in(@data, ["helix", "me", "subscribers"]) do %>
-  <div>
-    <%= subscriber["tier"] %>
-    <%= subscriber["user"]["displayName"] %>
-    <%= subscriber["user"]["id"] %>
-    <%= subscriber["user"]["profilePictureUrl"] %>
-    <%= subscriber["user"]["description"] %>
-  </div>
+    <div class="card p-3 dark:bg-gray-800">
+      <div class="grid grid-cols-3">
+        <div class="col-span-1">
+          <div class="avatar avatar-lg">
+            <img class="" src="<%= subscriber["user"]["profilePictureUrl"] %>" />
+          </div>
+        </div>
+        <div class="col-span-2">
+          <div class="font-semibold text-gray-900"><%= subscriber["user"]["displayName"] %></div>
+          <div class="card-body"><%= subscriber["user"]["description"] %></div>
+        </div>
+      </div>
+    </div>
 <% end %>
+</div>
 
-<h2>Patrons</h2>
-<%= for patrons <- get_in(@data, ["patreon", "patrons"]) do %>
+<h2 class="text-4xl">Patrons</h2>
+<%= for patrons <- get_in(@data, ["patreon", "patrons"]) || [] do %>
   <div>
     <%= patrons["patronStatus"] %>
     <%= patrons["currentlyEntitledAmountCents"] %>
