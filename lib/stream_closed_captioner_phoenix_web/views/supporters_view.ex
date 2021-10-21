@@ -8,10 +8,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersView do
 
   @spec filter_patreon_subscribers(list()) :: list()
   def filter_patreon_subscribers(subscribes) do
-    Enum.filter(subscribes, fn x -> !is_nil(x["patronStatus"]) end)
+    Enum.filter(subscribes, fn x ->
+      x["stauts"] != "declined" || x["totalHistoricalAmountCents"] > 0
+    end)
   end
 
-  def snakeCaseToText(text) do
-    String.replace(text, "_", " ")
+  def getPoliteStatus(text) do
+    case text do
+      "valid" -> "Active Patron"
+      _ -> "Former Patron"
+    end
   end
 end

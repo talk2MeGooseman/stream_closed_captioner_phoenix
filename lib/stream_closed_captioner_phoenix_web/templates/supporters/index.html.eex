@@ -1,7 +1,7 @@
 <h1 class="text-5xl mb-8">Stream Closed Captioner Supporters</h1>
 
 <h2 class="text-4xl">Twitch Subscribers</h2>
-<div class="grid grid-cols-3 gap-4 mb-8">
+<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
 <%= for subscriber <- get_in(@data, ["helix", "me", "subscribers"]) |> filter_twitch_subscribers do %>
     <div class="card p-3 dark:bg-gray-800">
       <div class="grid grid-cols-3">
@@ -20,7 +20,7 @@
 </div>
 
 <h2 class="text-4xl">Patrons</h2>
-<div class="grid grid-cols-3 gap-4 mb-8">
+<div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
 <%= for patrons <- get_in(@data, ["patreon", "patrons"]) |> filter_patreon_subscribers || [] do %>
     <div class="card p-3 dark:bg-gray-800">
       <div class="grid grid-cols-3">
@@ -31,7 +31,7 @@
         </div>
         <div class="col-span-2">
           <div class="font-semibold text-gray-900"><%= patrons["user"]["fullName"] %></div>
-          <span class="capitalize"><%= snakeCaseToText(patrons["patronStatus"]) %></span>
+          <span class="capitalize"><%= getPoliteStatus(patrons["status"]) %></span>
         </div>
       </div>
     </div>

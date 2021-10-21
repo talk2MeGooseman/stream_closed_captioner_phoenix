@@ -45,6 +45,12 @@
           </svg>
           Announcements
           <% end %>
+          <%= link to: Routes.supporters_path(@conn, :index), class: "w-full btn btn-icon btn-link dark:text-blue-500", target: "_blank" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+          Supporters
+          <% end %>
           <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "w-full btn btn-icon btn-link dark:text-blue-500", target: "_blank" do %>
           <svg xmlns="http://www.w3.org/2000/svg"
             class="flex-shrink-0 w-5 h-5 mr-2 transition group-hover:text-gray-300" fill="none" viewBox="0 0 24 24"
@@ -83,6 +89,12 @@
             d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1zM3 15a2 2 0 114 0 2 2 0 01-4 0z" />
         </svg>
         Announcements
+        <% end %>
+        <%= link to: Routes.supporters_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+        </svg>
+        Supporters
         <% end %>
         <%= link to: "https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-5 h-5 mr-2 transition group-hover:text-gray-300"

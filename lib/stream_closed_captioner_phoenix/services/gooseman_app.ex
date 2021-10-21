@@ -19,9 +19,8 @@ defmodule GoosemanApp do
       }
       patreon {
         patrons {
-          patronStatus
-          currentlyEntitledAmountCents
-          lifetimeSupportCents
+          status
+          totalHistoricalAmountCents
           user {
             id
             fullName
