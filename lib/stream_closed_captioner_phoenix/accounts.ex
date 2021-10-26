@@ -9,6 +9,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Settings
 
+  def owner_id, do: "120750024"
+
   @doc """
   Returns boolean if user is admin
 

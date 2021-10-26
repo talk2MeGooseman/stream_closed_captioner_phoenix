@@ -2,17 +2,18 @@ defmodule Twitch.Helix do
   import Helpers
 
   alias NewRelic.Instrumented.HTTPoison
+  alias Twitch.HttpHelpers
   alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction}
   @behaviour Twitch.HelixProvider
 
   @impl HelixProvider
-  def get_streams(%Credentials{} = credentials, user_ids, cursor \\ nil) do
-    headers = [
-      {"Content-Type", "application/json"},
-      {"Client-Id", credentials.client_id},
-      {"Authorization", "Bearer " <> credentials.access_token}
-    ]
+  def get_streams(
+        credentials = %{access_token: access_token},
+        user_ids,
+        cursor \\ nil
+      ) do
+    headers = HttpHelpers.auth_request_headers(access_token)
 
     user_tuple_list = Enum.map(user_ids, fn user_id -> {:user_id, user_id} end)
 
@@ -34,11 +35,7 @@ defmodule Twitch.Helix do
 
   @impl HelixProvider
   def get_transactions(%Credentials{} = %{client_id: client_id, access_token: access_token}) do
-    headers = [
-      {"Content-Type", "application/json"},
-      {"Client-Id", client_id},
-      {"Authorization", "Bearer #{access_token}"}
-    ]
+    headers = HttpHelpers.auth_request_headers(access_token)
 
     data =
       encode_url_and_params("https://api.twitch.tv/helix/extensions/transactions", %{
@@ -52,19 +49,36 @@ defmodule Twitch.Helix do
   end
 
   @impl HelixProvider
-  def get_users_active_extensions(
-        %Credentials{} = %{client_id: client_id, access_token: access_token}
-      ) do
-    headers = [
-      {"Content-Type", "application/json"},
-      {"Client-Id", client_id},
-      {"Authorization", "Bearer #{access_token}"}
-    ]
+  def get_users_active_extensions(%Credentials{} = %{access_token: access_token}) do
+    headers = HttpHelpers.auth_request_headers(access_token)
 
     encode_url_and_params("https://api.twitch.tv/helix/users/extensions")
     |> HTTPoison.get!(headers)
     |> Map.fetch!(:body)
     |> Jason.decode!()
     |> Map.get("data")
+  end
+
+  @impl HelixProvider
+  def send_extension_chat_message(
+        %{jwt_token: token},
+        broadcaster_id,
+        message
+      ) do
+    headers = HttpHelpers.auth_request_headers(token)
+
+    body =
+      Jason.encode!(%{
+        text: message,
+        extension_id: HttpHelpers.client_id(),
+        extension_version: HttpHelpers.extension_version()
+      })
+
+    encode_url_and_params(
+      "https://api.twitch.tv/helix/extensions/chat",
+      %{broadcaster_id: broadcaster_id}
+    )
+    |> HTTPoison.post!(body, headers)
+    |> Map.fetch!(:body)
   end
 end

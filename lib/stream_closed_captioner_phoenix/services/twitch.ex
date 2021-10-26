@@ -136,4 +136,9 @@ defmodule Twitch do
     Oauth.get_users_access_token(user)
     |> helix_api_client().get_users_active_extensions()
   end
+
+  def send_extension_chat_message(channel_id, message) do
+    Jwt.sign_token_for(:standard, channel_id)
+    |> helix_api_client().send_extension_chat_message(channel_id, message)
+  end
 end
