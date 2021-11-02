@@ -13,6 +13,10 @@ defmodule TwitchBot.Handler do
     TMI.supervisor_start_link(config)
   end
 
+  def say(channel, message) do
+    TMI.message(channel, message)
+  end
+
   @impl true
   # def handle_message("!" <> command, sender, chat) do
   #   case command do

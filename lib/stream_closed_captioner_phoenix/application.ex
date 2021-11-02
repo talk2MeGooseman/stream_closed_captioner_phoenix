@@ -31,7 +31,8 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          ttl_check_interval: :timer.seconds(30),
          global_ttl: :timer.minutes(1),
          acquire_lock_timeout: 30_000
-       ]}
+       ]},
+      TwitchBot
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
