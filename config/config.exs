@@ -109,3 +109,8 @@ config :phoenix_meta_tags,
   image: "/images/cc100x100.png",
   "og:text":
     "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse."
+
+config :stream_closed_captioner_phoenix, Oban,
+  repo: StreamClosedCaptionerPhoenix.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [default: 10, events: 10]

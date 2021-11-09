@@ -32,7 +32,8 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          global_ttl: :timer.minutes(1),
          acquire_lock_timeout: 30_000
        ]},
-      TwitchBot
+      TwitchBot,
+      {Oban, oban_config()}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -46,5 +47,10 @@ defmodule StreamClosedCaptionerPhoenix.Application do
   def config_change(changed, _new, removed) do
     StreamClosedCaptionerPhoenixWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  # Conditionally disable queues or plugins here.
+  defp oban_config do
+    Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
   end
 end

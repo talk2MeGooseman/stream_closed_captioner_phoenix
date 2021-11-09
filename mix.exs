@@ -83,6 +83,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.0"},
       {:new_relic_absinthe, "~> 0.0.4"},
+      {:oban, "~> 2.9"},
       {:observer_cli, "~> 1.6"},
       {:phoenix_ecto, "~> 4.1"},
       {:phoenix_html, "~> 2.11"},
