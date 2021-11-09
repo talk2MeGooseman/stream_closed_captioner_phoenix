@@ -13,4 +13,22 @@ defmodule Twitch.HelixProvider do
 
   @callback send_extension_chat_message(Twitch.Extension.Credentials.t(), String.t(), String.t()) ::
               tuple()
+
+  @callback get_live_channels(
+              Credentials.t(),
+              String.t() | nil
+            ) :: [Channel.t()]
+
+  @callback set_configuration_for(
+              Twitch.Extension.Credentials.t(),
+              atom(),
+              String.t(),
+              map()
+            ) :: any
+
+  @callback get_configuration_for(
+              Twitch.Extension.Credentials.t(),
+              atom(),
+              String.t()
+            ) :: {:ok, HTTPoison.Response.t()}
 end

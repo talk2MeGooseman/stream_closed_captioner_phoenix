@@ -4,7 +4,7 @@ defmodule Twitch.Helix do
   alias NewRelic.Instrumented.HTTPoison
   alias Twitch.HttpHelpers
   alias Twitch.HelixProvider
-  alias Twitch.Helix.{Credentials, Stream, Transaction}
+  alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel}
   @behaviour Twitch.HelixProvider
 
   @impl HelixProvider
@@ -80,5 +80,76 @@ defmodule Twitch.Helix do
     )
     |> HTTPoison.post!(body, headers)
     |> Map.fetch!(:body)
+  end
+
+  @impl HelixProvider
+  def get_live_channels(
+        %Credentials{} = %{access_token: access_token} = credentials,
+        current_cursor \\ nil
+      ) do
+    headers = HttpHelpers.auth_request_headers(access_token)
+
+    data =
+      encode_url_and_params(
+        "https://api.twitch.tv/helix/extensions/live",
+        %{
+          first: 100,
+          after: current_cursor,
+          extension_id: Twitch.extension_id()
+        }
+      )
+      |> HTTPoison.get!(headers)
+      |> Map.fetch!(:body)
+      |> Jason.decode!()
+
+    new_cursor = get_in(data, ["pagination"])
+
+    if is_binary(new_cursor) && current_cursor != new_cursor do
+      get_live_channels(credentials, new_cursor) ++
+        Enum.map(get_in(data, ["channels"]), &ExtensionChannel.new/1)
+    else
+      Enum.map(get_in(data, ["channels"]), &ExtensionChannel.new/1)
+    end
+  end
+
+  @impl HelixProvider
+  def set_configuration_for(
+        %{jwt_token: token},
+        segment,
+        channel_id,
+        data
+      ) do
+    headers = HttpHelpers.auth_request_headers(token)
+
+    body =
+      Jason.encode!(%{
+        extension_id: Twitch.extension_id(),
+        broadcaster_id: channel_id,
+        segment: to_string(segment),
+        content: Jason.encode!(data)
+      })
+
+    "https://api.twitch.tv/helix/extensions/configurations"
+    |> encode_url_and_params()
+    |> HTTPoison.put(body, headers)
+  end
+
+  @impl HelixProvider
+  def get_configuration_for(
+        %{jwt_token: token},
+        segment,
+        channel_id
+      ) do
+    headers = HttpHelpers.auth_request_headers(token)
+
+    "https://api.twitch.tv/helix/extensions/configurations"
+    |> encode_url_and_params(%{
+      broadcaster_id: channel_id,
+      extension_id: Twitch.extension_id(),
+      segment: to_string(segment)
+    })
+    |> HTTPoison.get!(headers)
+    |> Map.fetch!(:body)
+    |> Jason.decode!()
   end
 end

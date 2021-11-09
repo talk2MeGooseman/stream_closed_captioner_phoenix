@@ -7,7 +7,7 @@ defmodule Twitch do
 
   require Logger
 
-  alias Twitch.{Extension, Helix, Jwt, Oauth}
+  alias Twitch.{Extension, Jwt, Oauth}
 
   @doc """
   Get the extension's id
@@ -24,8 +24,8 @@ defmodule Twitch do
 
   @spec extension_live_channels :: list
   def extension_live_channels() do
-    Jwt.get_credentials()
-    |> ext_api_client().get_live_channels()
+    Oauth.get_client_access_token()
+    |> helix_api_client().get_live_channels()
   end
 
   def send_pubsub_message(_payload, channel_id) when is_nil(channel_id),
@@ -68,7 +68,7 @@ defmodule Twitch do
           | {:error, HTTPoison.Error.t()}
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
-    |> ext_api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
+    |> helix_api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
   end
 
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
