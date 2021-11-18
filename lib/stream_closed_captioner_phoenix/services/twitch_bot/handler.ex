@@ -1,6 +1,9 @@
 defmodule TwitchBot.Handler do
   use TMI.Handler
 
+  defdelegate is_logged_on?(), to: TMI
+  defdelegate say(chat, message), to: TMI, as: :message
+
   def connect(channels \\ []) do
     config = [
       user: "StreamClosedCaptioner",
@@ -11,10 +14,6 @@ defmodule TwitchBot.Handler do
     ]
 
     TMI.supervisor_start_link(config)
-  end
-
-  def say(channel, message) do
-    TMI.message(channel, message)
   end
 
   @impl true
@@ -29,5 +28,11 @@ defmodule TwitchBot.Handler do
 
   def handle_message(message, sender, chat) do
     Logger.debug("Message in #{chat} from #{sender}: #{message}")
+  end
+
+  def handle_join(chat, user) do
+    Logger.debug("!!!!!!!!! #{user} joined #{chat}")
+
+    # Detect if streamclosedcaptioner joined the channel, update the list of joined channels in TwitchBot Gen Server
   end
 end

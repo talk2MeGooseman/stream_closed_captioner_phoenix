@@ -42,6 +42,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :webhook do
+    plug(:accepts, ["json"])
+    plug(StreamClosedCaptionerPhoenixWeb.HTTPSignature)
+  end
+
   pipeline :api_authenticated do
     plug(StreamClosedCaptionerPhoenixWeb.AuthAccessPipeline)
   end
@@ -94,6 +99,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     pipe_through(:browser)
 
     forward("/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck)
+  end
+
+  scope "/", StreamClosedCaptionerPhoenixWeb do
+    pipe_through(:webhook)
+
+    post("/webhooks", WebhooksController, :create)
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
