@@ -11,6 +11,8 @@ defmodule TwitchBot do
     GenServer.start_link(__MODULE__, pid, name: __MODULE__)
   end
 
+  defdelegate is_logged_on?(), to: TwitchBot.Handler
+
   @spec connect_all(list(String.t())) :: :ok
   @doc """
   Connects to the list of channels provided, overriding previous channels

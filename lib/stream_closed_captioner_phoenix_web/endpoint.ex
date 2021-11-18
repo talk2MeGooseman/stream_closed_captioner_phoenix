@@ -57,13 +57,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
-  plug Plug.Parsers,
+  # Custom parser for handling webhook body
+  plug :parse_body
+
+  opts = [
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
+  ]
 
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
   plug StreamClosedCaptionerPhoenixWeb.Router
+
+  @parser_without_cache Plug.Parsers.init(opts)
+  @parser_with_cache Plug.Parsers.init([body_reader: {BodyReader, :cache_raw_body, []}] ++ opts)
+
+  # All endpoints that start with "webhooks" have their body cached.
+  defp parse_body(%{path_info: ["webhooks" | _]} = conn, _),
+    do: Plug.Parsers.call(conn, @parser_with_cache)
+
+  defp parse_body(conn, _),
+    do: Plug.Parsers.call(conn, @parser_without_cache)
 end

@@ -11,9 +11,9 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
     # If not, connect with TwitchBot
     TwitchBot.connect_to(channel)
     # and send reminder to channel
-    TwitchBot.say(
-      channel,
-      "Hey @#{channel}, here is your friendly reminder to turn on Stream Closed Captioner."
-    )
+    # TwitchBot.say(
+    #   channel,
+    #   "Hey @#{channel}, here is your friendly reminder to turn on Stream Closed Captioner."
+    # )
   end
 end
