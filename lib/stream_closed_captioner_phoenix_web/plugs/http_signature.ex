@@ -10,11 +10,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
   def init(opts), do: opts
 
   @impl true
-  def call(conn, opts) do
-    secret = Twitch.HttpHelpers.client_secret()
-
+  def call(conn, _opts) do
     with {:ok, body} <- raw_body(conn),
-         true <- verify(conn, body, secret, opts) do
+         true <- verify(conn, body) do
       [type] = Plug.Conn.get_req_header(conn, @twitch_message_type)
 
       conn
@@ -27,27 +25,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
     end
   end
 
-  @spec verify(Plug.Conn.t(), binary, any, any) :: boolean
-  def verify(conn, body, secret, opts \\ []) do
-    case Plug.Conn.get_req_header(conn, @twitch_message_type) do
-      ["webhook_callback_verification"] ->
-        true
+  @spec verify(Plug.Conn.t(), binary) :: boolean
+  def verify(conn, body) do
+    message = getHmacMessage(conn, body)
+    hmac = "sha256=" <> getHmac(message)
+    [signature] = Plug.Conn.get_req_header(conn, @twitch_message_signature)
 
-      _ ->
-        message = getHmacMessage(conn, body)
-        hmac = "sha256=" <> getHmac(message)
-        [signature] = Plug.Conn.get_req_header(conn, @twitch_message_signature)
-
-        Plug.Crypto.secure_compare(signature, hmac)
-    end
+    Plug.Crypto.secure_compare(signature, hmac)
   end
 
   @doc """
   Build the message used to get the HMAC.
   """
   def getHmacMessage(conn, body) do
-    require IEx
-    IEx.pry()
     [message_id] = Plug.Conn.get_req_header(conn, @twitch_message_id)
     [message_timestamp] = Plug.Conn.get_req_header(conn, @twitch_message_timestamp)
 
@@ -55,7 +45,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
   end
 
   def getHmac(message),
-    do: Plug.Crypto.MessageVerifier.sign(message, Twitch.HttpHelpers.client_secret())
+    do:
+      :crypto.mac(:hmac, :sha256, Twitch.HttpHelpers.client_secret(), message)
+      |> Base.encode16(case: :lower)
 
   defp raw_body(conn) do
     case conn do
@@ -65,7 +57,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
 
       _ ->
         # If we forget to use the plug or there is no content-type on the request
-        raise "raw body is not present or request content-type is missing"
+        {:error, "raw body is not present or request content-type is missing"}
     end
   end
 end
