@@ -20,7 +20,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
     else
       {:error, _} ->
         conn
-        |> Plug.Conn.put_status(400)
+        |> Plug.Conn.resp(400, "")
+        |> Plug.Conn.halt()
+
+      false ->
+        conn
+        |> Plug.Conn.resp(400, "")
         |> Plug.Conn.halt()
     end
   end
@@ -30,7 +35,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
     message = getHmacMessage(conn, body)
     hmac = "sha256=" <> getHmac(message)
     [signature] = Plug.Conn.get_req_header(conn, @twitch_message_signature)
-
     Plug.Crypto.secure_compare(signature, hmac)
   end
 
@@ -46,7 +50,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
 
   def getHmac(message),
     do:
-      :crypto.mac(:hmac, :sha256, Twitch.HttpHelpers.client_secret(), message)
+      :crypto.mac(:hmac, :sha256, Twitch.HttpHelpers.eventsub_secret(), message)
       |> Base.encode16(case: :lower)
 
   defp raw_body(conn) do

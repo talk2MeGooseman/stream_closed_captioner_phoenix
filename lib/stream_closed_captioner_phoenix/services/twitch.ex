@@ -141,4 +141,23 @@ defmodule Twitch do
     Jwt.sign_token_for(:standard, channel_id)
     |> helix_api_client().send_extension_chat_message(channel_id, message)
   end
+
+  def event_subscribe("golive", broadcaster_id) do
+    Oauth.get_client_access_token()
+    |> ext_api_client().eventsub_subscribe("webhook", "stream.online", "1", %{
+      broadcaster_user_id: broadcaster_id
+    })
+  end
+
+  def event_subscribe("channel_update", broadcaster_id) do
+    Oauth.get_client_access_token()
+    |> helix_api_client().eventsub_subscribe(
+      "webhook",
+      "channel.update",
+      "1",
+      %{
+        broadcaster_user_id: broadcaster_id
+      }
+    )
+  end
 end
