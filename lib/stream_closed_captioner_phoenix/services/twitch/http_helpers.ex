@@ -7,8 +7,17 @@ defmodule Twitch.HttpHelpers do
   def client_id_header, do: [{"Client-Id", client_id()}]
   def extension_version, do: System.get_env("EXTENSION_VERSION") || "1.6.4"
 
+  def webhook_transport,
+    do: %{
+      method: "webhook",
+      callback:
+        "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev/webhooks",
+      secret: eventsub_secret()
+    }
+
+  def eventsub_secret, do: System.get_env("TWITCH_EVENTSUB_SECRET") || ""
   def client_secret, do: System.get_env("TWITCH_CLIENT_SECRET") || ""
 
-  defp token_secret, do: System.get_env("TWITCH_TOKEN_SECRET") || ""
+  def token_secret, do: System.get_env("TWITCH_TOKEN_SECRET") || ""
   defp auth_header(token), do: [{"Authorization", "Bearer " <> token}]
 end

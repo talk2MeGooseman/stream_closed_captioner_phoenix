@@ -152,4 +152,27 @@ defmodule Twitch.Helix do
     |> Map.fetch!(:body)
     |> Jason.decode!()
   end
+
+  def eventsub_subscribe(
+        %{access_token: access_token},
+        "webhook",
+        type,
+        version,
+        condition
+      ) do
+    headers = HttpHelpers.auth_request_headers(access_token)
+    transport = Twitch.HttpHelpers.webhook_transport()
+
+    body =
+      Jason.encode!(%{
+        type: type,
+        version: version,
+        condition: condition,
+        transport: transport
+      })
+
+    encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
+    |> HTTPoison.post!(body, headers)
+    |> Map.fetch!(:body)
+  end
 end
