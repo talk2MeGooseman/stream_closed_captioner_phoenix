@@ -15,9 +15,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
 
   def create(
         %Plug.Conn{assigns: %{twitch_event_type: "notification"}} = conn,
-        %{"subscription" => %{"type" => "channel.update"}} = _params
+        %{"subscription" => %{"type" => type}} = _params
       ) do
-    IO.puts("========== Channel Updated =============")
+    IO.puts("========== Webhook Event: #{type} =============")
 
     resp(conn, 200, "")
   end

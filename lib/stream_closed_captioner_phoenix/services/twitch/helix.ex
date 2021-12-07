@@ -4,7 +4,8 @@ defmodule Twitch.Helix do
   alias NewRelic.Instrumented.HTTPoison
   alias Twitch.HttpHelpers
   alias Twitch.HelixProvider
-  alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel}
+  alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel, EventSub}
+
   @behaviour Twitch.HelixProvider
 
   @impl HelixProvider
@@ -174,5 +175,56 @@ defmodule Twitch.Helix do
     encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
     |> HTTPoison.post!(body, headers)
     |> Map.fetch!(:body)
+  end
+
+  @spec get_eventsub_subscriptions(
+          %{:access_token => binary, optional(any) => any},
+          String.t(),
+          String.t() | nil
+        ) ::
+          list
+  def get_eventsub_subscriptions(
+        %{access_token: access_token},
+        type,
+        cursor \\ nil
+      ) do
+    headers = HttpHelpers.auth_request_headers(access_token)
+
+    params = %{
+      enabled: true,
+      type: type
+    }
+
+    params =
+      if cursor do
+        Enum.into(params, %{after: cursor})
+      else
+        params
+      end
+
+    data =
+      encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", params)
+      |> HTTPoison.get!(headers)
+      |> Map.fetch!(:body)
+      |> Jason.decode!()
+
+    new_cursor = get_in(data, ["pagination", "cursor"])
+
+    if is_binary(new_cursor) && new_cursor != cursor do
+      get_eventsub_subscriptions(access_token, type, cursor) ++
+        Enum.map(get_in(data, ["data"]), &EventSub.new/1)
+    else
+      Enum.map(get_in(data, ["data"]), &EventSub.new/1)
+    end
+  end
+
+  def delete_eventsub_subscription(
+        %{access_token: access_token},
+        id
+      ) do
+    headers = HttpHelpers.auth_request_headers(access_token)
+
+    encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", %{id: id})
+    |> HTTPoison.delete!(headers)
   end
 end
