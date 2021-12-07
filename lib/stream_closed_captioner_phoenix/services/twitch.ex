@@ -142,22 +142,46 @@ defmodule Twitch do
     |> helix_api_client().send_extension_chat_message(channel_id, message)
   end
 
-  def event_subscribe("golive", broadcaster_id) do
+  def event_subscribe("stream.online" = type, broadcaster_id) do
     Oauth.get_client_access_token()
-    |> ext_api_client().eventsub_subscribe("webhook", "stream.online", "1", %{
+    |> helix_api_client().eventsub_subscribe("webhook", type, "1", %{
       broadcaster_user_id: broadcaster_id
     })
   end
 
-  def event_subscribe("channel_update", broadcaster_id) do
+  def event_subscribe("channel.update" = type, broadcaster_id) do
     Oauth.get_client_access_token()
     |> helix_api_client().eventsub_subscribe(
       "webhook",
-      "channel.update",
+      type,
       "1",
       %{
         broadcaster_user_id: broadcaster_id
       }
     )
+  end
+
+  def event_subscribe("extension.bits_transaction.create" = type) do
+    Oauth.get_client_access_token()
+    |> helix_api_client().eventsub_subscribe(
+      "webhook",
+      type,
+      "1",
+      %{
+        extension_client_id: Twitch.HttpHelpers.client_id()
+      }
+    )
+  end
+
+  @spec get_event_subscriptions(String.t()) :: any
+  def get_event_subscriptions(type) do
+    Oauth.get_client_access_token()
+    |> helix_api_client().get_eventsub_subscriptions(type)
+  end
+
+  @spec delete_event_subscription(String.t()) :: any
+  def delete_event_subscription(id) do
+    Oauth.get_client_access_token()
+    |> helix_api_client().delete_eventsub_subscription(id)
   end
 end
