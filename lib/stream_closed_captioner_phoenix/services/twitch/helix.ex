@@ -175,6 +175,7 @@ defmodule Twitch.Helix do
     encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
     |> HTTPoison.post!(body, headers)
     |> Map.fetch!(:body)
+    |> Jason.decode!()
   end
 
   @spec get_eventsub_subscriptions(
@@ -226,5 +227,6 @@ defmodule Twitch.Helix do
 
     encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", %{id: id})
     |> HTTPoison.delete!(headers)
+    |> Map.fetch!(:status_code)
   end
 end

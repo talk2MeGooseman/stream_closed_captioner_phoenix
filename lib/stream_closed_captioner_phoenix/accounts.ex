@@ -5,7 +5,15 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
-  alias StreamClosedCaptionerPhoenix.Accounts.{User, UserNotifier, UserToken, UserQueries}
+
+  alias StreamClosedCaptionerPhoenix.Accounts.{
+    EventsubSubscription,
+    User,
+    UserNotifier,
+    UserToken,
+    UserQueries
+  }
+
   alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Settings
 
@@ -449,5 +457,28 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def generate_secure_password do
     SecureRandom.base64()
+  end
+
+  @doc """
+  Creates a new eventsub_subscription record.
+
+  ## Examples
+
+      iex> create_eventsub_subscription(user, %{field: value})
+      {:ok, %EventsubScription{}}
+
+      iex> create_eventsub_subscription(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_eventsub_subscription(user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:eventsub_subscriptions)
+    |> EventsubSubscription.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def delete_eventsub_subscription(%EventsubSubscription{} = eventsub_subscription) do
+    Repo.delete(eventsub_subscription)
   end
 end
