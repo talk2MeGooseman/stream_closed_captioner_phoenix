@@ -65,6 +65,14 @@
   <%= error_tag f, :switch_settings_position, class: "text-red-700 text-sm mt-1" %>
 </div>
 
+<div class="mb-6">
+  <%= label class: "flex items-center mt-4" do %>
+  <%= checkbox f, :turn_on_reminder, class: "form-checkbox bg-green-100" %>
+  <span class="ml-2 cursor-pointer">Receive Chatbot Reminder to Turn Captions if you forgot after going live (Twitch only)</span>
+  <% end %>
+  <%= error_tag f, :turn_on_reminder, class: "text-red-700 text-sm mt-1" %>
+</div>
+
 <div class="mt-8 mb-2">
   <%= submit "Save", phx_disable_with: "Saving...", class: "btn btn-primary w-full mt-4" %>
 </div>

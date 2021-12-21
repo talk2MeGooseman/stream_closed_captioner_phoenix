@@ -19,8 +19,10 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       switch_settings_position: false,
       text_uppercase: false,
       user_id: 43,
-      blocklist: ["no", "kappa"]
+      blocklist: ["no", "kappa"],
+      turn_on_reminder: true
     }
+
     @invalid_attrs %{
       caption_delay: nil,
       cc_box_size: nil,
@@ -31,7 +33,8 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       showcase: nil,
       switch_settings_position: nil,
       text_uppercase: nil,
-      user_id: nil
+      user_id: nil,
+      turn_on_reminder: nil
     }
 
     test "list_stream_settings/0 returns all stream_settings" do
@@ -73,6 +76,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.switch_settings_position == true
       assert stream_settings.text_uppercase == true
       assert stream_settings.user_id == user.id
+      assert stream_settings.turn_on_reminder == false
     end
 
     test "create_stream_settings/1 will not create more than one stream settings per user" do
@@ -118,6 +122,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.text_uppercase == false
       assert stream_settings.user_id == stream_settings.user_id
       assert stream_settings.blocklist == ["no", "kappa"]
+      assert stream_settings.turn_on_reminder == true
     end
 
     test "update_stream_settings/2 with invalid data returns error changeset" do

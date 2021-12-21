@@ -528,4 +528,36 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       assert %{id => user} == Accounts.get_users_map([id])
     end
   end
+
+  describe "create_eventsub_subscription/2" do
+    setup do
+      %{user: user_fixture()}
+    end
+
+    test "creates a new eventsub_subscription belonging to the the user", %{user: user} do
+      {:ok, record} =
+        Accounts.create_eventsub_subscription(user, %{
+          subscription_id: "12345",
+          type: "stream.online"
+        })
+
+      assert record.type == "stream.online"
+    end
+
+    test "prevent duplicate subscription ids from being saved", %{user: user} do
+      {:ok, record} =
+        Accounts.create_eventsub_subscription(user, %{
+          subscription_id: "12345",
+          type: "stream.online"
+        })
+
+      {status, message} =
+        Accounts.create_eventsub_subscription(user, %{
+          subscription_id: "12345",
+          type: "stream.online"
+        })
+
+      assert status == :error
+    end
+  end
 end

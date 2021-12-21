@@ -266,7 +266,14 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   import Ecto.Query, warn: false
   alias StreamClosedCaptionerPhoenix.Repo
 
-  alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.Accounts
+
+  alias StreamClosedCaptionerPhoenix.Accounts.{
+    User,
+    EventsubSubscription,
+    EventsubSubscriptionQueries
+  }
+
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
   @doc """
@@ -351,6 +358,42 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     |> StreamSettings.update_changeset(attrs)
     |> Repo.update()
     |> maybe_sync_with_twitch()
+    |> manage_eventsub_subscriptions()
+  end
+
+  defp manage_eventsub_subscriptions({:error, changeset}), do: {:error, changeset}
+
+  defp manage_eventsub_subscriptions({:ok, stream_settings}) do
+    %{user: user} = Repo.preload(stream_settings, :user)
+
+    IO.puts(
+      "Managing eventsub subscriptions for #{user.uid}, #{stream_settings.turn_on_reminder}"
+    )
+
+    case stream_settings.turn_on_reminder do
+      true ->
+        with %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe("channel.update", user.uid) do
+          IO.puts("Subscribed to channel.update for #{user.uid}")
+
+          Accounts.create_eventsub_subscription(user, %{
+            type: "channel.update",
+            subscription_id: id
+          })
+        end
+
+      false ->
+        record =
+          EventsubSubscriptionQueries.with_user_id(user.id)
+          |> EventsubSubscriptionQueries.with_type("channel.update")
+          |> Repo.one!()
+
+        with 204 <-
+               Twitch.delete_event_subscription(record.subscription_id) do
+          Accounts.delete_eventsub_subscription(record)
+        end
+    end
+
+    {:ok, stream_settings}
   end
 
   defp maybe_sync_with_twitch({:error, changeset}), do: {:error, changeset}
@@ -377,7 +420,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       end
     end
 
-    {:ok, stream_settings }
+    {:ok, stream_settings}
   end
 
   @doc """

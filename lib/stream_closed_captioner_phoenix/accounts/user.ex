@@ -29,6 +29,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     has_one :bits_balance, StreamClosedCaptionerPhoenix.Bits.BitsBalance
     has_many :bits_balance_debits, StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
     has_many :bits_transactions, StreamClosedCaptionerPhoenix.Bits.BitsTransaction
+    has_many :eventsub_subscriptions, StreamClosedCaptionerPhoenix.Accounts.EventsubSubscription
     has_one :stream_settings, StreamClosedCaptionerPhoenix.Settings.StreamSettings
     has_many :transcripts, StreamClosedCaptionerPhoenix.Transcripts.Transcript
     has_many :transcript_messages, through: [:transcripts, :messages]

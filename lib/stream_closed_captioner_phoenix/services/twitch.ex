@@ -150,6 +150,8 @@ defmodule Twitch do
   end
 
   def event_subscribe("channel.update" = type, broadcaster_id) do
+    IO.puts("Subscribing to channel.update")
+
     Oauth.get_client_access_token()
     |> helix_api_client().eventsub_subscribe(
       "webhook",

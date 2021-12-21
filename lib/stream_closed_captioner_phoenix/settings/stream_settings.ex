@@ -13,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     field(:showcase, :boolean, default: false)
     field(:switch_settings_position, :boolean, default: false)
     field(:text_uppercase, :boolean, default: false)
+    field(:turn_on_reminder, :boolean, default: false)
     belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
 
     timestamps(inserted_at: :created_at)
@@ -32,6 +33,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :showcase,
       :switch_settings_position,
       :text_uppercase,
+      :turn_on_reminder,
       :user_id
     ])
     |> foreign_key_constraint(:user_id, name: "fk_rails_cd3c3eab8f")
@@ -58,6 +60,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :switch_settings_position,
       :showcase,
       :pirate_mode,
+      :turn_on_reminder,
       :caption_delay
     ])
     |> put_change(:language, "en-US")
@@ -86,7 +89,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :pirate_mode,
       :showcase,
       :switch_settings_position,
-      :text_uppercase
+      :text_uppercase,
+      :turn_on_reminder
     ])
     |> validate_required([
       :language

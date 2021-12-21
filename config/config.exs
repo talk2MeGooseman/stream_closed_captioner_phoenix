@@ -76,10 +76,6 @@ config :kaffy,
     StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin
   ]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env()}.exs"
-
 # FunWithFlags configuration
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,
@@ -114,3 +110,8 @@ config :stream_closed_captioner_phoenix, Oban,
   repo: StreamClosedCaptionerPhoenix.Repo,
   plugins: [Oban.Plugins.Pruner],
   queues: [default: 10, events: 10]
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env()}.exs"
+# Place nothing below this line, CODE SHALL NOT PASS
