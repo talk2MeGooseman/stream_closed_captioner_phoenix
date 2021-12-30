@@ -39,17 +39,19 @@ defmodule StreamClosedCaptionerPhoenix.Settings.TranslateLanguage do
 
   @doc false
   defp validate_language_count(changeset) do
-    %{user_id: user_id} = changeset.data
+    with %{user_id: user_id} <- changeset.changes do
+      count =
+        StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
+        |> where(user_id: ^user_id)
+        |> Repo.count()
 
-    count =
-      StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
-      |> where(user_id: ^user_id)
-      |> Repo.count()
-
-    if count >= 3 do
-      add_error(changeset, :user_id, "cannot have more than 3 languages")
+      if count >= 3 do
+        add_error(changeset, :language, "cannot have more than 3 languages")
+      else
+        changeset
+      end
     else
-      changeset
+      _ -> changeset
     end
   end
 end
