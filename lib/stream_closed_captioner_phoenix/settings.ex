@@ -270,7 +270,6 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
   alias StreamClosedCaptionerPhoenix.Accounts.{
     User,
-    EventsubSubscription,
     EventsubSubscriptionQueries
   }
 
@@ -366,15 +365,9 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp manage_eventsub_subscriptions({:ok, stream_settings}) do
     %{user: user} = Repo.preload(stream_settings, :user)
 
-    IO.puts(
-      "Managing eventsub subscriptions for #{user.uid}, #{stream_settings.turn_on_reminder}"
-    )
-
     case stream_settings.turn_on_reminder do
       true ->
         with %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe("channel.update", user.uid) do
-          IO.puts("Subscribed to channel.update for #{user.uid}")
-
           Accounts.create_eventsub_subscription(user, %{
             type: "channel.update",
             subscription_id: id
@@ -382,13 +375,9 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
         end
 
       false ->
-        record =
-          EventsubSubscriptionQueries.with_user_id(user.id)
-          |> EventsubSubscriptionQueries.with_type("channel.update")
-          |> Repo.one!()
+        record = Accounts.fetch_user_eventsub_subscriptions(user)
 
-        with 204 <-
-               Twitch.delete_event_subscription(record.subscription_id) do
+        if(204 == Twitch.delete_event_subscription(record.subscription_id)) do
           Accounts.delete_eventsub_subscription(record)
         end
     end

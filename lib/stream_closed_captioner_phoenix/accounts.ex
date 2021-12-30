@@ -8,6 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   alias StreamClosedCaptionerPhoenix.Accounts.{
     EventsubSubscription,
+    EventsubSubscriptionQueries,
     User,
     UserNotifier,
     UserToken,
@@ -480,5 +481,11 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   def delete_eventsub_subscription(%EventsubSubscription{} = eventsub_subscription) do
     Repo.delete(eventsub_subscription)
+  end
+
+  def fetch_user_eventsub_subscriptions(%User{} = user) do
+    EventsubSubscriptionQueries.with_user_id(user.id)
+    |> EventsubSubscriptionQueries.with_type("channel.update")
+    |> Repo.one!()
   end
 end
