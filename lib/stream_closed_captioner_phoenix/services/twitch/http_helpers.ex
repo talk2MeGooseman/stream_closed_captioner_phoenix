@@ -11,7 +11,8 @@ defmodule Twitch.HttpHelpers do
     do: %{
       method: "webhook",
       callback:
-        "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev/webhooks",
+        Application.get_env(:stream_closed_captioner_phoenix, :eventsub_callback_url) <>
+          "/webhooks",
       secret: eventsub_secret()
     }
 

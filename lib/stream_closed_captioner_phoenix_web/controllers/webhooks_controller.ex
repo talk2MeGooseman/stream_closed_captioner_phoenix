@@ -4,11 +4,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
   @spec create(Plug.Conn.t(), any) :: Plug.Conn.t()
   def create(
         %Plug.Conn{assigns: %{twitch_event_type: "notification"}} = conn,
-        %{"subscription" => %{"type" => "stream.online"}} = params
+        %{
+          "subscription" => %{"type" => "stream.online"},
+          "event" => event
+        }
       ) do
-    # Handling notification events
     IO.puts("========== Stream Online =============")
-    IO.inspect(params)
+
+    StreamClosedCaptionerPhoenix.Jobs.JoinChat.new(event)
+    |> Oban.insert()
 
     resp(conn, 200, "")
   end
@@ -18,14 +22,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
         %{
           "subscription" => %{"type" => type},
           "event" => event
-        } = _params
+        }
       ) do
     IO.puts("========== Webhook Event: #{type} =============")
-    IO.inspect(event)
-
-    StreamClosedCaptionerPhoenix.Jobs.JoinChat.new(event)
-    |> Oban.insert()
-
     resp(conn, 200, "")
   end
 

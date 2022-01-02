@@ -70,6 +70,9 @@ guardian_secret_key = System.get_env("GUARDIAN_SECRET_KEY")
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Guardian,
   secret_key: guardian_secret_key
 
+config :stream_closed_captioner_phoenix,
+  eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

@@ -18,6 +18,8 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
         broadcaster_user_login,
         "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."
       )
+
+      TwitchBot.disconnect(broadcaster_user_login)
     end
   end
 end
