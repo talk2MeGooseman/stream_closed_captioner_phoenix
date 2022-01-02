@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
+defmodule StreamClosedCaptionerPhoenix.Jobs.JoinChat do
   use Oban.Worker, queue: :default
 
   # %{channel: "talk2megooseman"}
@@ -14,10 +14,14 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
       }) do
     with false <-
            StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
-      TwitchBot.say(
-        broadcaster_user_login,
-        "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."
-      )
+      TwitchBot.connect_to(broadcaster_user_login)
+
+      %{
+        "broadcaster_user_id" => broadcaster_user_id,
+        "broadcaster_user_login" => broadcaster_user_login
+      }
+      |> StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(schedule_in: 10)
+      |> Oban.insert()
     end
   end
 end

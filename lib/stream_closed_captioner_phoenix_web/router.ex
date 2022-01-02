@@ -61,7 +61,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
         "https://localhost:4000",
         "https://localhost:8080",
         "http://localhost:8080",
-        "https://h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
+        "https://h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv",
+        "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev"
       ]
     )
   end

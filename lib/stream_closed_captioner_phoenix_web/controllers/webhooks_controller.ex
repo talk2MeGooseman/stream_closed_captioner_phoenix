@@ -15,9 +15,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
 
   def create(
         %Plug.Conn{assigns: %{twitch_event_type: "notification"}} = conn,
-        %{"subscription" => %{"type" => type}} = _params
+        %{
+          "subscription" => %{"type" => type},
+          "event" => event
+        } = _params
       ) do
     IO.puts("========== Webhook Event: #{type} =============")
+    IO.inspect(event)
+
+    StreamClosedCaptionerPhoenix.Jobs.JoinChat.new(event)
+    |> Oban.insert()
 
     resp(conn, 200, "")
   end
