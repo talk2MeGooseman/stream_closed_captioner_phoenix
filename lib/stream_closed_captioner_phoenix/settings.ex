@@ -367,9 +367,9 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
     case stream_settings.turn_on_reminder do
       true ->
-        with %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe("channel.update", user.uid) do
+        with %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe("stream.online", user.uid) do
           Accounts.create_eventsub_subscription(user, %{
-            type: "channel.update",
+            type: "stream.online",
             subscription_id: id
           })
         end

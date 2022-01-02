@@ -39,6 +39,9 @@ config :stream_closed_captioner_phoenix,
   api_key: System.get_env("NOTION_API_KEY"),
   notion_version: System.get_env("NOTION_VERSION")
 
+config :stream_closed_captioner_phoenix,
+  eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix
