@@ -168,17 +168,19 @@
   </div>
 </section>
 <!-- Captions Sections -->
-<%# <div class="alert bg-green-200 text-primary text-left" role="alert">
+<div class="alert bg-primary-light text-primary text-left" role="alert">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="12" y1="16" x2="12" y2="12"></line>
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
-  Stream Closed Captioner now works on Microsoft Edge. If you no longer want to use Google Chrome you can make the switch to Edge and everything should still work fine.
-  <br />
-  - Talk2MeGooseman
-</div> %>
+  <div>
+    Stream Closed Captioner now has a remind me in chat feature. After going live on Twitch, if you forget to turn on Captions. A friendly reminder will be sent to your chat after about 5 minutes. Checkout out in your <a href="/users/captions-settings">Captions Settings</a>.
+    <br />
+    - Talk2MeGooseman
+  </div>
+</div>
 <section class="px-4 pb-12">
   <div class="card shadow dark:bg-gray-800">
     <div class="card-header">
