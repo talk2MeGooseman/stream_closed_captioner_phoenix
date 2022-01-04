@@ -483,9 +483,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     Repo.delete(eventsub_subscription)
   end
 
-  def fetch_user_eventsub_subscriptions(%User{} = user) do
+  def fetch_user_eventsub_subscriptions(%User{} = user, type) do
     EventsubSubscriptionQueries.with_user_id(user.id)
-    |> EventsubSubscriptionQueries.with_type("channel.update")
+    |> EventsubSubscriptionQueries.with_type(type)
     |> Repo.one!()
   end
 end
