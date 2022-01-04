@@ -9,8 +9,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
           "event" => event
         }
       ) do
-    IO.puts("========== Stream Online =============")
-
     StreamClosedCaptionerPhoenix.Jobs.JoinChat.new(event)
     |> Oban.insert()
 
@@ -20,11 +18,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
   def create(
         %Plug.Conn{assigns: %{twitch_event_type: "notification"}} = conn,
         %{
-          "subscription" => %{"type" => type},
-          "event" => event
+          "subscription" => %{"type" => _type},
+          "event" => _event
         }
       ) do
-    IO.puts("========== Webhook Event: #{type} =============")
     resp(conn, 200, "")
   end
 
@@ -32,7 +29,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
         %Plug.Conn{assigns: %{twitch_event_type: "webhook_callback_verification"}} = conn,
         %{"challenge" => challenge} = _params
       ) do
-    IO.puts("========== Webhook Verification =============")
     resp(conn, 200, challenge)
   end
 
@@ -40,7 +36,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
         %Plug.Conn{assigns: %{twitch_event_type: "revocation"}} = conn,
         _params
       ) do
-    IO.puts("========== Webhook Revocation =============")
     resp(conn, 200, "")
   end
 end

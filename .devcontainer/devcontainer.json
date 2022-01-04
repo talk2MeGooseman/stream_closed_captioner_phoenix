@@ -36,7 +36,8 @@
 		"zerokol.vscode-eex-beautify",
 		"eamodio.gitlens",
 		"robbowen.synthwave-vscode",
-		"github.copilot"
+		"github.copilot",
+		"clarkio.twitch-highlighter"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [4000, 4001, 5432],
