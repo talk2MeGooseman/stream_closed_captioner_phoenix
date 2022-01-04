@@ -33,10 +33,12 @@
   <%= error_tag f, :pirate_mode, class: "text-red-700 text-sm mt-1" %>
 </div>
 
+<h3 class="text-l font-semibold text-gray-900 border-b-2">Twitch Only Settings</h3>
+
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :hide_text_on_load, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Hide Captions by Default (Twitch only)</span>
+  <span class="ml-2 cursor-pointer">Hide Captions by Default</span>
   <% end %>
   <%= error_tag f, :hide_text_on_load, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -44,7 +46,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :text_uppercase, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Uppercase Text By Default (Twitch only)</span>
+  <span class="ml-2 cursor-pointer">Uppercase Text By Default</span>
   <% end %>
   <%= error_tag f, :text_uppercase, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -52,7 +54,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :cc_box_size, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Display Captions in Box Size (Twitch only)</span>
+  <span class="ml-2 cursor-pointer">Display Captions in Box Size</span>
   <% end %>
   <%= error_tag f, :cc_box_size, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -60,7 +62,7 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :switch_settings_position, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Display Settings on Left Side (Twitch only)</span>
+  <span class="ml-2 cursor-pointer">Display Settings on Left Side</span>
   <% end %>
   <%= error_tag f, :switch_settings_position, class: "text-red-700 text-sm mt-1" %>
 </div>
@@ -68,8 +70,9 @@
 <div class="mb-6">
   <%= label class: "flex items-center mt-4" do %>
   <%= checkbox f, :turn_on_reminder, class: "form-checkbox bg-green-100" %>
-  <span class="ml-2 cursor-pointer">Receive Chatbot Reminder to Turn Captions if you forgot after going live (Twitch only)</span>
+  <span class="ml-2 cursor-pointer">Receive an in chat reminder to Turn On Captions after an estimated 5 minutes after going live.</span>
   <% end %>
+  <div class="alert bg-primary-light text-primary">It will only send a message if you haven't turned on Captions yet. Look out for message from StreamClosedCaptioner in your chat.</div>
   <%= error_tag f, :turn_on_reminder, class: "text-red-700 text-sm mt-1" %>
 </div>
 

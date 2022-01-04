@@ -12,14 +12,16 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
           "broadcaster_user_login" => broadcaster_user_login
         }
       }) do
-    with false <-
-           StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
+    if !StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
       TwitchBot.say(
         broadcaster_user_login,
         "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."
       )
 
       TwitchBot.disconnect(broadcaster_user_login)
+    else
+      TwitchBot.disconnect(broadcaster_user_login)
+      {:discard, "Channel is active"}
     end
   end
 end
