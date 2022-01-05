@@ -176,7 +176,7 @@
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
   <div>
-    Stream Closed Captioner now has a remind me in chat feature. After going live on Twitch, if you forget to turn on Captions. A friendly reminder will be sent to your chat after about 5 minutes. Checkout out in your <a href="/users/captions-settings">Captions Settings</a>.
+    Stream Closed Captioner now has a remind me in chat feature. After going live on Twitch, if you forget to turn on Captions, a friendly reminder will be sent to your chat after about 5 minutes. Check it out in your <a href="/users/captions-settings">Captions Settings</a>.
     <br />
     - Talk2MeGooseman
   </div>
