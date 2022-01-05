@@ -8,7 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.Release do
   end
 
   def createdb do
-    load_app()
+    repos()
     # Start postgrex and ecto
     IO.puts("Starting dependencies...")
 
@@ -36,7 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.Release do
   end
 
   def migrate do
-    load_app()
+    ensure_started()
 
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
@@ -44,15 +44,17 @@ defmodule StreamClosedCaptionerPhoenix.Release do
   end
 
   def rollback(repo, version) do
-    load_app()
+    ensure_started()
+    repos()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
   end
 
   defp repos do
+    Application.load(@app)
     Application.fetch_env!(@app, :ecto_repos)
   end
 
-  defp load_app do
-    Application.load(@app)
+  defp ensure_started do
+    Application.ensure_all_started(:ssl)
   end
 end
