@@ -185,7 +185,7 @@ defmodule Twitch.Helix do
         ) ::
           list
   def get_eventsub_subscriptions(
-        %{access_token: access_token},
+        %{access_token: access_token} = auth,
         type,
         cursor \\ nil
       ) do
@@ -212,7 +212,7 @@ defmodule Twitch.Helix do
     new_cursor = get_in(data, ["pagination", "cursor"])
 
     if is_binary(new_cursor) && new_cursor != cursor do
-      get_eventsub_subscriptions(access_token, type, cursor) ++
+      get_eventsub_subscriptions(auth, type, new_cursor) ++
         Enum.map(get_in(data, ["data"]), &EventSub.new/1)
     else
       Enum.map(get_in(data, ["data"]), &EventSub.new/1)
