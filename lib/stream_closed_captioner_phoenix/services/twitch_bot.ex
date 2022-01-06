@@ -62,6 +62,7 @@ defmodule TwitchBot do
 
   def handle_cast({:disconnect, channel}, %{pid: pid, channels: channels}) do
     channel = String.downcase(channel)
+
     # Check if the channel is in the list
     if Enum.member?(channels, channel) do
       new_channels = List.delete(channels, channel)

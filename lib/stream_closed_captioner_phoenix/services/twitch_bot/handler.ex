@@ -25,14 +25,4 @@ defmodule TwitchBot.Handler do
   #     _ -> TMI.message(chat, "unrecognized command")
   #   end
   # end
-
-  def handle_message(message, sender, chat) do
-    Logger.debug("Message in #{chat} from #{sender}: #{message}")
-  end
-
-  def handle_join(chat, user) do
-    Logger.debug("!!!!!!!!! #{user} joined #{chat}")
-
-    # Detect if streamclosedcaptioner joined the channel, update the list of joined channels in TwitchBot Gen Server
-  end
 end

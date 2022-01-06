@@ -9,7 +9,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
           "event" => event
         }
       ) do
-    StreamClosedCaptionerPhoenix.Jobs.JoinChat.new(event)
+    StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(event, schedule_in: 300)
     |> Oban.insert()
 
     resp(conn, 200, "")
