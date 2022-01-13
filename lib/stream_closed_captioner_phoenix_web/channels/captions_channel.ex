@@ -65,6 +65,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
+  def handle_in("active", _payload, socket) do
+    user = socket.assigns.current_user
+
+    ActivePresence.update(self(), "active_channels", user.uid, %{
+      last_publish: System.system_time(:second)
+    })
+
+    {:reply, :ok, socket}
+  end
+
   @impl true
   def handle_info(:after_join, socket) do
     track_user(socket.assigns.current_user.uid)

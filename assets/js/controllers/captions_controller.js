@@ -100,6 +100,8 @@ export default class extends ApplicationController {
 
   startCaptions = () => {
     this.speechRecognitionHandler.toggleOn()
+    this.captionsChannel
+      .push("active", {})
   }
 
   initBrowserChannelMessageListener = () => {

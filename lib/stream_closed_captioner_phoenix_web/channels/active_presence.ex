@@ -8,6 +8,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
 
   # alias StreamClosedCaptionerPhoenix.Accounts
 
+  @active_time_out 700
+
   use Phoenix.Presence,
     otp_app: :stream_closed_captioner_phoenix,
     pubsub_server: StreamClosedCaptionerPhoenix.PubSub
@@ -35,7 +37,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
     elapased_time = current_timestamp() - last_publish
 
     cond do
-      elapased_time <= 300 -> [uid | acc]
+      elapased_time <= @active_time_out -> [uid | acc]
       true -> acc
     end
   end
@@ -43,9 +45,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
   defp reduced_user_list(_, acc), do: acc
 
   defp channel_recently_published?(%{metas: metas}) do
-    last_publish = metas |> List.first() |> Map.get(:last_publish, 0)
+    last_publish =
+      metas
+      |> List.first()
+      |> Map.get(:last_publish, 0)
+
     elapased_time = current_timestamp() - last_publish
-    elapased_time <= 300
+    elapased_time <= @active_time_out
   end
 
   defp channel_recently_published?([]), do: false
