@@ -15,6 +15,16 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
     |> where([user], user.id in ^ids)
   end
 
+  def with_provider(query \\ base(), provider) do
+    query
+    |> where([user], user.provider == ^provider)
+  end
+
+  def with_uid(query \\ base(), uid) do
+    query
+    |> where([user], user.uid == ^uid)
+  end
+
   def select_id_user_pair(query \\ base()) do
     query
     |> select([user], {user.id, user})

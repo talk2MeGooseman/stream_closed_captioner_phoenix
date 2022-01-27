@@ -92,6 +92,26 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   """
   def get_user!(id), do: UserQueries.with_id(id) |> Repo.one!()
 
+  @doc """
+  Gets a single user by their provider and uid.
+
+  Return nil if no user is found.
+
+  ## Examples
+
+      iex> get_user_by_provider_uid(12342398)
+      %User{}
+
+      iex> get_user_by_provider_uid(0000)
+      nil
+
+  """
+  def get_user_by_provider_uid(provider \\ "twitch", uid) do
+    UserQueries.with_provider(provider)
+    |> UserQueries.with_uid(uid)
+    |> Repo.one()
+  end
+
   def get_users_map(ids) do
     UserQueries.with_ids(ids)
     |> UserQueries.select_id_user_pair()
