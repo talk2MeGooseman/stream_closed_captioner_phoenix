@@ -129,7 +129,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def user_has_extension_installed?(%User{} = user) do
     try do
       result = Twitch.get_users_active_extensions(user)
-      check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel")
+
+      check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel") ||
+        check_for_extension_in(result, "component")
     rescue
       _ -> true
     end
