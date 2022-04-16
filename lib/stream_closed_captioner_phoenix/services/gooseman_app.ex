@@ -1,33 +1,25 @@
 defmodule GoosemanApp do
   def fetch_supporters() do
-    Neuron.Config.set(url: "https://gooseman-app.azurewebsites.net/graphql/twitch")
+    Neuron.Config.set(url: "https://guzman.codes/api")
 
     query = """
     {
-      helix {
-        me {
-          subscribers {
-            tier
-            user {
-              displayName
-              id
-              profilePictureUrl
-              description
-            }
+      twitch {
+        broadcasterSubscriptions(broadcasterId: "120750024") {
+          user {
+            id
+            profileImageUrl
+            displayName
+            description
           }
+          tier
         }
       }
       patreon {
-        patrons {
-          status
-          totalHistoricalAmountCents
-          user {
-            id
-            fullName
-            imageUrl
-            url
-            about
-          }
+        campaignMembers {
+          fullName
+          currentlyEntitledAmountCents
+          campaignLifetimeSupportCents
         }
       }
     }

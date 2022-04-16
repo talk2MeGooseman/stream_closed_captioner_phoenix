@@ -9,13 +9,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersView do
   @spec filter_patreon_subscribers(list()) :: list()
   def filter_patreon_subscribers(subscribes) do
     Enum.filter(subscribes, fn x ->
-      x["stauts"] != "declined" || x["totalHistoricalAmountCents"] > 0
+      x["campaignLifetimeSupportCents"] > 0
     end)
   end
 
-  def getPoliteStatus(text) do
-    case text do
-      "valid" -> "Active Patron"
+  def getPoliteStatus(support_value) do
+    case support_value > 0 do
+      true -> "Active Patron"
       _ -> "Former Patron"
     end
   end
