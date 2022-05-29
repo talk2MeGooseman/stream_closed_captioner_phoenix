@@ -129,7 +129,7 @@ export default class SpeechRecognitionService {
       }
     }
 
-    return results
+    return results += "."
   }
 
   isFinalSpeechResult(speechArray) {
