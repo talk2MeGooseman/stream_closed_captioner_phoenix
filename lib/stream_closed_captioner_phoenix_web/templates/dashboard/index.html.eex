@@ -176,9 +176,7 @@
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
   <div>
-    Stream Closed Captioner now has a remind me in chat feature. After going live on Twitch, if you forget to turn on Captions, a friendly reminder will be sent to your chat after about 5 minutes. Check it out in your <a href="/users/captions-settings">Captions Settings</a>.
-    <br />
-    - Talk2MeGooseman
+    ATTENTION!!! Twitch broke overlay extensions. If your viewers report seeing a white screen, instruct them to turn off dark mode to solve it till Twitch deploys a fix.
   </div>
 </div>
 <section class="px-4 pb-12">
