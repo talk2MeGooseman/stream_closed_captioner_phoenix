@@ -1,25 +1,5 @@
 export const isBrowserCompatible = () => {
-  try {
-    const isChromium = window.chrome
-    const winNav = window.navigator
-    const vendorName = winNav.vendor
-    const isOpera = typeof window.opr !== "undefined"
-    const isIEedge = winNav.userAgent.indexOf("Edge") > -1
-    const isEdge = winNav.userAgent.indexOf("Edg") > -1
+  if(window.navigator.brave) return false
 
-    const isChrome =
-      isChromium !== null &&
-      typeof isChromium !== "undefined" &&
-      vendorName === "Google Inc." &&
-      isOpera === false &&
-      isIEedge == false
-
-    if (!isChrome && !isEdge) {
-      return false
-    }
-  } catch (error) {
-    return false
-  }
-
-  return true
+  return window.SpeechRecognition || window.webkitSpeechRecognition ? true : false
 }

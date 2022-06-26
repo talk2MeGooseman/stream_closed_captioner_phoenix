@@ -66,7 +66,7 @@ export default class extends ApplicationController {
       this.initBrowserChannelMessageListener()
       this.initOBSChannelListener()
     } else {
-      this.warningTarget.textContent = "Sorry, right now Speech To Text is only supported on Google Chrome browser at the moment. Once other browsers add support for Speech To Text it will be enabled."
+      this.warningTarget.textContent = "Sorry, right now Speech To Text is only supported on Google Chrome, Edge, and Safari browser at the moment. Once other browsers add support for Speech To Text it will be enabled."
     }
   }
 
