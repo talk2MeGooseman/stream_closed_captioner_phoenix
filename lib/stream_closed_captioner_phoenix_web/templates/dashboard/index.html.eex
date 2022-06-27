@@ -176,7 +176,7 @@
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
   </svg>
   <div>
-    ATTENTION!!! Twitch broke overlay extensions. If your viewers report seeing a white screen, instruct them to turn off dark mode to solve it till Twitch deploys a fix.
+    Stream CC now works with Chrome, Edge, Safari, Android Chrome, and iOS Safari browsers. You now have more options on what browser you want to use!
   </div>
 </div>
 <section class="px-4 pb-12">
