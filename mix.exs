@@ -5,7 +5,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
     [
       app: :stream_closed_captioner_phoenix,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -65,7 +65,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Profanity censoring
       {:expletive, "~> 0.1.4"},
       {:fun_with_flags_ui, "~> 0.7.2"},
-      {:fun_with_flags, "~> 1.6.0"},
+      {:fun_with_flags, "~> 1.9.0"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.0"},
       {:hackney, "~> 1.9"},
