@@ -64,6 +64,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:exconstructor, "~> 1.1"},
       # Profanity censoring
       {:expletive, "~> 0.1.4"},
+      {:exsync, "~> 0.2", only: :dev},
       {:fun_with_flags_ui, "~> 0.7.2"},
       {:fun_with_flags, "~> 1.9.0"},
       {:gettext, "~> 0.11"},
@@ -83,7 +84,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.0"},
       {:new_relic_absinthe, "~> 0.0.4"},
-      {:oban, "~> 2.9"},
+      {:oban, "~> 2.11"},
       {:observer_cli, "~> 1.6"},
       {:phoenix_ecto, "~> 4.1"},
       {:phoenix_html, "~> 2.11"},

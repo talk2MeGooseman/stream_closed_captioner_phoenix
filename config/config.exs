@@ -108,7 +108,7 @@ config :phoenix_meta_tags,
 
 config :stream_closed_captioner_phoenix, Oban,
   repo: StreamClosedCaptionerPhoenix.Repo,
-  plugins: [Oban.Plugins.Pruner],
+  plugins: [Oban.Plugins.Pruner, Oban.Plugins.Lifeline, Oban.Plugins.Reindexer],
   queues: [default: 10, events: 10]
 
 # Import environment specific config. This must remain at the bottom
