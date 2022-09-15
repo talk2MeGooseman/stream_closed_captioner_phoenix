@@ -33,7 +33,7 @@ config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.MockExt
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.MockHelix
 config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.MockCognitive
 
-config :stream_closed_captioner_phoenix, Oban, queues: false, plugins: false
+config :stream_closed_captioner_phoenix, Oban, testing: :manual
 
 config :stream_closed_captioner_phoenix,
   eventsub_callback_url: "https://localhost:4000"

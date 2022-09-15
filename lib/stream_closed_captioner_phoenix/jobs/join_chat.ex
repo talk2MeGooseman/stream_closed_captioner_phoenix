@@ -22,7 +22,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.JoinChat do
       |> StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(schedule_in: 300)
       |> Oban.insert()
     else
-      {:discard, "Channel is active"}
+      {:cancel, "Channel is active"}
     end
   end
 end
