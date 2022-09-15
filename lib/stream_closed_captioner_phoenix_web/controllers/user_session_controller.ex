@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
   use StreamClosedCaptionerPhoenixWeb, :controller
-  plug Ueberauth
+  plug(Ueberauth)
 
   # alias Ueberauth.Strategy.Helpers
 

@@ -65,7 +65,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Profanity censoring
       {:expletive, "~> 0.1.4"},
       {:exsync, "~> 0.2", only: :dev},
-      {:fun_with_flags_ui, "~> 0.7.2"},
+      {:fun_with_flags_ui, "~> 0.8.1"},
       {:fun_with_flags, "~> 1.9.0"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.0"},
@@ -76,13 +76,14 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:jason, "~> 1.0"},
       {:joken, "~> 2.3"},
       # Admin Dashboard
-      {:kaffy, "~> 0.9.0"},
-      {:libcluster, "~> 3.0"},
-      {:libcluster_ec2, "~> 0.5"},
+      {:kaffy, "~> 0.9"},
+      {:libcluster, "~> 3.3"},
+      {:libcluster_ec2, "~> 0.7"},
       {:mox, "~> 1.0.0"},
       {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
+      # Graphql Client
       {:neuron, "~> 5.0"},
-      {:new_relic_agent, "~> 1.0"},
+      {:new_relic_agent, "~> 1.27"},
       {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.13"},
       {:observer_cli, "~> 1.6"},
@@ -95,17 +96,18 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix, "~> 1.5.7"},
       {:phx_gen_auth, "~> 0.6", only: [:dev], runtime: false},
       {:plug_cowboy, "~> 2.0"},
+      {:poison, "~> 5.0"},
       {:postgrex, ">= 0.0.0"},
       {:secure_random, "~> 0.5.1"},
-      {:sobelow, "~> 0.8", only: :dev},
+      {:sobelow, "~> 0.11", only: :dev},
       {:sweet_xml, "~> 0.6"},
       {:talk_like_a_x, "~> 0.0.8"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
-      {:timex, "~> 3.6"},
+      {:timex, "~> 3.7"},
       {:tmi, "~> 0.3.0"},
-      {:ueberauth_twitch, "~> 0.0.2"},
-      {:ueberauth, "~> 0.6"}
+      {:ueberauth_twitch, "~> 0.1.0"},
+      {:ueberauth, "~> 0.10"}
     ]
   end
 
