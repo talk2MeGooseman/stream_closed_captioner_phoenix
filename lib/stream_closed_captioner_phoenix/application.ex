@@ -32,7 +32,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          global_ttl: :timer.minutes(1),
          acquire_lock_timeout: 30_000
        ]},
-      TwitchBot,
+      {TMI.Supervisor, bot_config()},
       {Oban, oban_config()}
     ]
 
@@ -52,5 +52,9 @@ defmodule StreamClosedCaptionerPhoenix.Application do
   # Conditionally disable queues or plugins here.
   defp oban_config do
     Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
+  end
+
+  defp bot_config do
+    Application.fetch_env!(:stream_closed_captioner_phoenix, :bot)
   end
 end

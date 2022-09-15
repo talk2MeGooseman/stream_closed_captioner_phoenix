@@ -12,16 +12,26 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
       }) do
     IO.puts("Sending chat reminder for #{broadcaster_user_login}")
 
-    if !StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
-      TwitchBot.say(
-        broadcaster_user_login,
-        "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."
-      )
+    if joined?(broadcaster_user_login) do
+      if !StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
+        TwitchBot.say(
+          broadcaster_user_login,
+          "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."
+        )
 
-      TwitchBot.disconnect(broadcaster_user_login)
+        TwitchBot.part(broadcaster_user_login)
+
+        :ok
+      else
+        TwitchBot.part(broadcaster_user_login)
+        {:cancel, "Channel is active"}
+      end
     else
-      TwitchBot.disconnect(broadcaster_user_login)
-      {:cancel, "Channel is active"}
+      TwitchBot.join(broadcaster_user_login)
+
+      {:snooze, 10}
     end
   end
+
+  def joined?(channel_name), do: Enum.member?(TwitchBot.list_channels(), "talk2megooseman")
 end

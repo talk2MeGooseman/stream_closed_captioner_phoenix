@@ -105,7 +105,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:timex, "~> 3.7"},
-      {:tmi, "~> 0.3.0"},
+      {:tmi, "~> 0.5.3"},
       {:ueberauth_twitch, "~> 0.1.0"},
       {:ueberauth, "~> 0.10"}
     ]

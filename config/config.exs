@@ -111,6 +111,15 @@ config :stream_closed_captioner_phoenix, Oban,
   plugins: [Oban.Plugins.Pruner, Oban.Plugins.Lifeline, Oban.Plugins.Reindexer],
   queues: [default: 10, events: 10]
 
+config :stream_closed_captioner_phoenix,
+  bot: [
+    bot: TwitchBot,
+    user: "StreamClosedCaptioner",
+    pass: System.get_env("TWITCH_CHAT_OAUTH"),
+    channels: [],
+    debug: false
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
