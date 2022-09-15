@@ -41,8 +41,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:bamboo, "~> 1.7.1"},
       {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},
       {:bypass, "~> 2.1.0"},
-      {:cachex, "~> 3.3"},
-      {:cors_plug, "~> 2.0"},
+      {:cachex, "~> 3.4"},
+      {:cors_plug, "~> 3.0"},
       {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.0.0"},
@@ -52,8 +52,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # If using Waffle with S3:
       {:ex_aws, "~> 2.1.2"},
       # Other stuff
-      {:bcrypt_elixir, "~> 2.0"},
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:bcrypt_elixir, "~> 3.0"},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       # Add some ecto helpers
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
