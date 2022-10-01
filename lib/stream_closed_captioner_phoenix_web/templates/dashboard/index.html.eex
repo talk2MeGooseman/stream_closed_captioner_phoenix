@@ -169,14 +169,9 @@
 </section>
 <!-- Captions Sections -->
 <div class="alert bg-primary-light text-primary text-left" role="alert">
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="12" y1="16" x2="12" y2="12"></line>
-    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-  </svg>
+  😀
   <div>
-    Stream CC now works with Chrome, Edge, Safari, Android Chrome, and iOS Safari browsers. You now have more options on what browser you want to use!
+     I will be at TwitchCon 2022 and giving a talk on <a href="https://www.twitchcon.com/san-diego-2022/schedule/building-for-accessibility-and-inclusivity/ " class="text-primary font-bold">"Building for Accessibility and Inclusivity"</a> with <a href="https://twitter.com/AlejoP_47 " class="text-primary font-bold">@AlejoP_47</a> and <a href="https://twitter.com/Snugibun " class="text-primary font-bold">@Snugibun </a> on Oct 9, 2022 @ 4:30 PM PT. Come say hi!
   </div>
 </div>
 <section class="px-4 pb-12">
