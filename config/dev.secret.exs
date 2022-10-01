@@ -27,8 +27,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID"),
   client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
-  redirect_uri:
-    "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev/auth/twitch/callback"
+  redirect_uri: "http://localhost:4000/auth/twitch/callback"
 
 config :goth,
   json: System.get_env("BAMBOO_EMAIL_CREDS")

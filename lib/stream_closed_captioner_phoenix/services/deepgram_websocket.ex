@@ -4,7 +4,8 @@ defmodule DeepgramWebsocket do
   def start_link(opts \\ []) do
     socket_opts = [
       extra_headers: [
-        {"Authorization", "Token <TOKEN HERE>"}
+        {"Authorization",
+         "Token " <> Application.get_env(:stream_closed_captioner_phoenix, :deepgram_token)}
       ]
     ]
 
@@ -18,7 +19,7 @@ defmodule DeepgramWebsocket do
     )
   end
 
-  def handle_frame({type, msg}, state) do
+  def handle_frame({_type, msg}, state) do
     IO.puts("Received Message - #{inspect(msg)}")
     value = StreamClosedCaptionerPhoenix.DeepgramResponse.new(Jason.decode!(msg))
     IO.puts("Parsed Message: #{inspect(value)}")
