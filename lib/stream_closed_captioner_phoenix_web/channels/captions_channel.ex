@@ -6,7 +6,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def join("captions:" <> user_id, _payload, socket) do
     if authorized?(socket, user_id) do
       send(self(), :after_join)
-      {:ok, socket}
+
+      if FunWithFlags.enabled?(:deepgram, for: socket.assigns.current_user) do
+        {:ok, pid} = DeepgramWebsocket.start_link()
+        {:ok, assign(socket, :wss_pid, pid)}
+      else
+        {:ok, socket}
+      end
     else
       {:error, %{reason: "unauthorized"}}
     end
@@ -63,6 +69,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
       {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
     end
+  end
+
+  def handle_in("publishBlob", {:binary, chunk}, socket) do
+    if socket.assigns.wss_pid do
+      WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk})
+    end
+
+    {:noreply, socket}
   end
 
   def handle_in("active", _payload, socket) do
