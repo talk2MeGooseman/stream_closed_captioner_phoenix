@@ -37,7 +37,10 @@
 		"eamodio.gitlens",
 		"robbowen.synthwave-vscode",
 		"github.copilot",
-		"clarkio.twitch-highlighter"
+		"clarkio.twitch-highlighter",
+		"bradlc.vscode-tailwindcss",
+		"sburg.vscode-javascript-booster",
+		"dbaeumer.vscode-eslint"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [4000, 4001, 5432],
