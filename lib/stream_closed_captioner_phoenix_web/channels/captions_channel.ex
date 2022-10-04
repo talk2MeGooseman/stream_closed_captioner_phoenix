@@ -8,7 +8,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       send(self(), :after_join)
 
       if FunWithFlags.enabled?(:deepgram, for: socket.assigns.current_user) do
-        {:ok, pid} = DeepgramWebsocket.start_link()
+        {:ok, pid} = DeepgramWebsocket.start_link(%{user: socket.assigns.current_user})
         {:ok, assign(socket, :wss_pid, pid)}
       else
         {:ok, socket}
@@ -74,6 +74,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_in("publishBlob", {:binary, chunk}, socket) do
     if socket.assigns.wss_pid do
       WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk})
+    else
+      IO.puts("No wss_pid")
     end
 
     {:noreply, socket}
