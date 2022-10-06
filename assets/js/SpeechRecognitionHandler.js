@@ -2,6 +2,7 @@ import debugLogger from "debug"
 
 import SpeechRecognitionService from "./service/SpeechRecognitionService"
 import * as workerTimers from 'worker-timers';
+import { head } from "ramda";
 
 const debug = debugLogger("cc:speech-handler")
 
@@ -35,7 +36,7 @@ export default class SpeechRecognitionHandler {
      * the data was received
      * @type {[SpeechInterval[], Date]}
      */
-    this.interimDataQueue = []
+    this.messageQueue = []
 
     this.interimIntervalId = null
 
@@ -77,9 +78,9 @@ export default class SpeechRecognitionHandler {
    */
   startRecognition = () => {
     debug("startRecognition")
-    this.sendInterimDataWithDelay()
+    this.sendMessageOnDelay()
     this.speechRecogService.start()
-    this.sendInterimDataWithDelay()
+    this.sendMessageOnDelay()
     if (this.eventSubscribers["started"]) {
       this.eventSubscribers["started"]()
     }
@@ -105,7 +106,12 @@ export default class SpeechRecognitionHandler {
    * @param {SpeechInterval} speechData
    */
   onSpeechIntervals(speechData) {
-    this.interimDataQueue.push([speechData, Date.now()])
+    debug("Interim Speech Interval", speechData)
+    this.messageQueue.push({
+      data: speechData,
+      createdOn: Date.now(),
+      topic: "interim",
+    })
   }
 
   /**
@@ -113,36 +119,41 @@ export default class SpeechRecognitionHandler {
    * SpeechRecognitionService
    *
    * @private
-   * @param {string} text
+   * @param {SpeechInterval} speechData
    */
-  onEndIntervals(text) {
-    debug("End Speech Interval", text)
-    if (this.eventSubscribers["final"]) {
-      this.eventSubscribers["final"](text)
-    }
+  onEndIntervals(speechData) {
+    debug("End Speech Interval", speechData)
+    this.messageQueue.push({
+      data: speechData,
+      createdOn: Date.now(),
+      topic: "final",
+    })
   }
 
   /**
    * Publishes the speech data based off the delayTime the user has set
    * @private
    */
-  sendInterimDataWithDelay() {
+  sendMessageOnDelay() {
     this.interimIntervalId = workerTimers.setInterval(() => {
-      const callback = this.eventSubscribers["interim"]
-
-      if (this.interimDataQueue.length === 0 || !callback) {
+      if (this.messageQueue.length === 0) {
         return
       }
 
-      if (Date.now() - this.interimDataQueue[0][1] >= this.delayTime) {
-        const [speechData, timestamp] = this.interimDataQueue.shift()
+      if (this.isMessageReady(head(this.messageQueue))) {
+        const message = this.messageQueue.shift()
+        const callback = this.eventSubscribers[message.topic]
 
-        debug("Delayed: ", (Date.now() - timestamp) / 1000, "---", speechData)
+        debug("Delayed topic: ", message.topic, (Date.now() - message.createdOn) / 1000, "---", message.data)
         if (callback) {
-          callback(speechData)
+          callback(message.data)
         }
       }
     }, 50)
+  }
+
+  isMessageReady(message) {
+    return Date.now() - message.createdOn >= this.delayTime;
   }
 
   /**

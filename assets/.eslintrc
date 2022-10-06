@@ -1,3 +1,10 @@
 {
-  "extends": ["airbnb", "airbnb-babel"]
+  "extends": ["airbnb", "airbnb-babel"],
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-underscore-dangle": "off"
+  }
 }

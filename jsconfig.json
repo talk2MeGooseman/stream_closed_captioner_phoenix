@@ -1,0 +1,9 @@
+{
+  "exclude": [
+    "assets/node_modules",
+    "**/node_modules/*"
+  ],
+  "include": [
+    "assets/js/**/*.js"
+  ]
+}

@@ -5,6 +5,17 @@ import { ApplicationController } from "stimulus-use"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
+/**
+ * @typedef
+ * {{
+ *    ...SpeechInterval,
+ *   twitch: {
+ *    enabled: boolean
+ *   },
+ *   sentOn: string,
+ * }} TwitchCaptionPayload
+ */
+
 export default class extends ApplicationController {
   static targets = [
     "outputOutline",
