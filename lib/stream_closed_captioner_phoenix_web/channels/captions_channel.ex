@@ -19,9 +19,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   @impl true
-  def handle_in("publishFinal", %{"zoom" => %{"enabled" => false}} = payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
 
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "zoom")
@@ -37,6 +34,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
         {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
+
+  def handle_in("publishFinal", payload, socket), do: {:reply, {:ok, payload}, socket}
 
   def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")

@@ -8,9 +8,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias Twitch.Extension.CaptionsPayload
 
   @type message_map :: %{
-          required(:final) => String.t(),
-          required(:interim) => String.t(),
-          required(:session) => String.t()
+          optional(:final) => String.t(),
+          optional(:interim) => String.t(),
+          optional(:session) => String.t()
         }
 
   @spec pipeline_to(

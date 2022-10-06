@@ -21,8 +21,6 @@ defmodule DeepgramWebsocket do
 
   def handle_frame({_type, msg}, state) do
     value = StreamClosedCaptionerPhoenix.DeepgramResponse.new(Jason.decode!(msg))
-    IO.puts("Parsed Message for user #{state.user.id}: #{inspect(value)}")
-
     text = List.first(value.channel.alternatives) |> Map.get(:transcript)
 
     if String.length(text) > 0 do
@@ -39,8 +37,6 @@ defmodule DeepgramWebsocket do
 
       case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, state.user, payload) do
         {:ok, sent_payload} ->
-          dbg("Sent payload: #{inspect(sent_payload)}")
-
           Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
             new_twitch_caption: state.user.uid
           )
