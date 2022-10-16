@@ -5,6 +5,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Settings
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
+  alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
 
   @spec create(Plug.Conn.t(), any) :: Plug.Conn.t()
   def create(
@@ -19,7 +20,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
          %StreamSettings{} = stream_settings <-
            Settings.get_stream_settings_by_user_id!(user.id),
          {:reminder, true} <- {:reminder, stream_settings.turn_on_reminder} do
-      StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(event, schedule_in: 300)
+      SendChatReminder.new(event, schedule_in: 300)
       |> Oban.insert()
     else
       {:reminder, false} ->

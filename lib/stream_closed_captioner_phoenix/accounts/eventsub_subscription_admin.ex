@@ -1,6 +1,12 @@
 defmodule StreamClosedCaptionerPhoenix.Accounts.EventsubSubscriptionAdmin do
   alias StreamClosedCaptionerPhoenix.Accounts
 
+  def search_fields(_schema) do
+    [
+      user: [:email, :username, :uid]
+    ]
+  end
+
   def widgets(_schema, _conn) do
     [
       %{
