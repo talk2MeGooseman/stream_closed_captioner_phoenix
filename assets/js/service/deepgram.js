@@ -5,17 +5,13 @@ let mediaRecorder;
 if (navigator.mediaDevices.getUserMedia) {
   const constraints = { audio: true };
 
-  const onSuccess = function (stream) {
+  const onSuccess = function onSuccess(stream) {
     mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
   };
 
-  const onError = function (err) {
-    console.log(`The following error occurred: ${err}`);
-  };
+  const onError = function onError() { };
 
   navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-} else {
-  console.error('getUserMedia not supported on your browser!');
 }
 
 export const startMediaRecorder = (callback) => {

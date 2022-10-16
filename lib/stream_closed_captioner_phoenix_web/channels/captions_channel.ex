@@ -9,6 +9,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
       if FunWithFlags.enabled?(:deepgram, for: socket.assigns.current_user) do
         {:ok, pid} = DeepgramWebsocket.start_link(%{user: socket.assigns.current_user})
+
         {:ok, assign(socket, :wss_pid, pid)}
       else
         {:ok, socket}
@@ -19,7 +20,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   @impl true
-
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "zoom")
     user = socket.assigns.current_user
@@ -41,10 +41,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
-
-    ActivePresence.update(self(), "active_channels", user.uid, %{
-      last_publish: System.system_time(:second)
-    })
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
@@ -73,8 +69,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_in("publishBlob", {:binary, chunk}, socket) do
     if socket.assigns.wss_pid do
       WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk})
-    else
-      IO.puts("No wss_pid")
     end
 
     {:noreply, socket}

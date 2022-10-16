@@ -20,32 +20,51 @@ defmodule DeepgramWebsocket do
   end
 
   def handle_frame({_type, msg}, state) do
-    value = StreamClosedCaptionerPhoenix.DeepgramResponse.new(Jason.decode!(msg))
-    text = List.first(value.channel.alternatives) |> Map.get(:transcript)
+    # Need to tailor this to the service were sending to
+    NewRelic.start_transaction("Captions", "twitch")
+    deepgram_response = StreamClosedCaptionerPhoenix.DeepgramResponse.new(Jason.decode!(msg))
+    transcript = List.first(deepgram_response.channel.alternatives) |> Map.get(:transcript)
 
-    if String.length(text) > 0 do
+    if String.length(transcript) > 0 do
       payload =
-        if value.is_final do
+        if deepgram_response.is_final do
           %{
-            final: text
+            "final" => transcript,
+            "sentOn" => System.system_time(:second)
           }
         else
           %{
-            interim: text
+            "interim" => transcript,
+            "sentOn" => System.system_time(:second)
           }
         end
 
       case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, state.user, payload) do
         {:ok, sent_payload} ->
-          Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
-            new_twitch_caption: state.user.uid
+          # Still need to broadcast to show what is being transcribed
+          StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
+            "captions:#{state.user.id}",
+            "deepgram",
+            sent_payload
           )
 
+          new_relic_track(:ok, state.user)
+
         {:error, _} ->
-          dbg("Error sending payload")
+          new_relic_track(:error, state.user)
       end
     end
 
     {:ok, state}
+  end
+
+  defp new_relic_track(:ok, user) do
+    NewRelic.add_attributes(twitch_uid: user.uid)
+    NewRelic.stop_transaction()
+  end
+
+  defp new_relic_track(:error, user) do
+    NewRelic.add_attributes(errored: true)
+    new_relic_track(:ok, user)
   end
 end

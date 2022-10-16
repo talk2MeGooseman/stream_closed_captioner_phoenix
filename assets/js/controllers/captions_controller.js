@@ -1,9 +1,9 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
-import { forEach, isEmpty, isNil } from "ramda"
 import { ApplicationController } from "stimulus-use"
 import { startMediaRecorder, stopMediaRecorder, isMediaRecorderActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
+import { isEmpty } from "ramda"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
@@ -103,6 +103,8 @@ export default class extends ApplicationController {
   successfulSocketConnection = ({ captionsChannel }) => {
     this.captionsChannel = captionsChannel
     this.startTarget.disabled = false
+
+    this.captionsChannel.on("deepgram", this.displayCaptions)
   }
 
   initOBSChannelListener = () => {
