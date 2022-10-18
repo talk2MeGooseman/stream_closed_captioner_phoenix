@@ -1,33 +1,42 @@
-import { isNil } from 'ramda';
+import { curry, isNil } from 'ramda';
 
-let mediaRecorder;
-
-if (navigator.mediaDevices.getUserMedia) {
-  const constraints = { audio: true };
-
-  const onSuccess = function onSuccess(stream) {
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-  };
-
-  const onError = function onError() { };
-
-  navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+const audio = {
+  mediaRecorder: null
 }
 
-export const startMediaRecorder = (callback) => {
-  if (isNil(mediaRecorder)) throw new Error('MediaRecorder is not initialized');
+const constraints = { audio: true };
 
-  mediaRecorder.start(1000);
+const onSuccess = function onSuccess(callback, stream) {
+  audio.mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
 
-  mediaRecorder.ondataavailable = function (evt) {
+  if (isNil(audio.mediaRecorder)) throw new Error('MediaRecorder is not initialized');
+
+  audio.mediaRecorder.start(1000);
+
+  audio.mediaRecorder.ondataavailable = function onData(evt) {
     if (evt.data.size > 0) {
       callback(evt.data);
     }
   };
 };
 
-export const stopMediaRecorder = () => {
-  mediaRecorder.stop();
+const curriedOnSuccess = curry(onSuccess);
+
+const onError = function onError() { };
+
+export const startMediaRecorder = (callback) => {
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(
+        curriedOnSuccess(callback),
+        onError,
+      );
+  }
 };
 
-export const isMediaRecorderActive = () => mediaRecorder.state === 'recording';
+export const stopMediaRecorder = () => {
+  audio.mediaRecorder.stop();
+  delete audio.mediaRecorder;
+};
+
+export const isMediaRecorderActive = () => audio.mediaRecorder?.state === 'recording';
