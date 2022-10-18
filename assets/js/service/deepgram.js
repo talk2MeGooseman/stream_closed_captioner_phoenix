@@ -24,7 +24,7 @@ const curriedOnSuccess = curry(onSuccess);
 
 const onError = function onError() { };
 
-export const startMediaRecorder = (callback) => {
+export const startDeepgram = (callback) => {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia(constraints)
       .then(
@@ -34,9 +34,9 @@ export const startMediaRecorder = (callback) => {
   }
 };
 
-export const stopMediaRecorder = () => {
+export const stopDeepgram = () => {
   audio.mediaRecorder.stop();
   delete audio.mediaRecorder;
 };
 
-export const isMediaRecorderActive = () => audio.mediaRecorder?.state === 'recording';
+export const isDeepgramActive = () => audio.mediaRecorder?.state === 'recording';

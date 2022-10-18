@@ -16,6 +16,11 @@
   <script>
     window.userToken = "<%= assigns[:socket_token] %>";
   </script>
+  <script>
+    window.permissions = {
+      isDeepgramEnabled: <%= FunWithFlags.enabled?(:deepgram, for: assigns[:current_user]) %>
+    }
+  </script>
   <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </head>
 

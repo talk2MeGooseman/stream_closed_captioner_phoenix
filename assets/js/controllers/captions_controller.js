@@ -1,7 +1,7 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { ApplicationController } from "stimulus-use"
-import { startMediaRecorder, stopMediaRecorder, isMediaRecorderActive } from "../service/deepgram"
+import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
 import { isEmpty } from "ramda"
 
@@ -113,13 +113,17 @@ export default class extends ApplicationController {
   }
 
   startCaptions = () => {
-    // this.speechRecognitionHandler.toggleOn()
-    if (isMediaRecorderActive()) {
-      stopMediaRecorder()
-      this.recognitionStopped()
+    // Need to check if it's deepgram enabled account and choose flow
+    if (window.permissions.isDeepgramEnabled) {
+      if (isDeepgramActive()) {
+        stopDeepgram()
+        this.recognitionStopped()
+      } else {
+        startDeepgram(this.sendAudioStream)
+        this.recognitionStarted()
+      }
     } else {
-      startMediaRecorder(this.sendAudioStream)
-      this.recognitionStarted()
+      this.speechRecognitionHandler.toggleOn()
     }
 
     this.captionsChannel
