@@ -74,7 +74,7 @@
         <div class="flex flex-row items-center mt-2">
           <span class="flex-auto p-1">
             <label class="block text-xs mb-1" for="port">Port</label>
-            <input class="form-input form-input-sm" id="part" value="4444" data-action="obs#onPortChange">
+            <input class="form-input form-input-sm" id="part" value="4455" data-action="obs#onPortChange">
           </span>
           <span class="flex-auto p-1">
             <label class="block text-xs mb-1" for="password">Password</label>

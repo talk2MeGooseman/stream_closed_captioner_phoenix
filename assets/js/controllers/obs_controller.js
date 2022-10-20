@@ -2,7 +2,8 @@ import debugLogger from "debug"
 
 import { ApplicationController } from "stimulus-use"
 
-import OBSConnector from "../service/obs-connector"
+import OBSWebSocket, { EventSubscription } from 'obs-websocket-js';
+const obs = new OBSWebSocket();
 import { capitalize } from "../utils"
 import { isNil, isEmpty } from "ramda"
 
@@ -19,16 +20,17 @@ const CONNECTION_STATE = {
 
 export default class extends ApplicationController {
   static targets = ["offButton", "onButton", "errorMarker", "errorMessage"]
+  connected = false
 
   connect() {
     this.password = undefined
-    this.port = 4444
-    this.obsConnector = new OBSConnector()
+    this.port = 4455
     this.captionsFinalTextsCache = []
   }
 
-  disconnect() {
-    this.obsConnector.disconnect()
+  async disconnect() {
+    await obs.disconnect()
+    this.connected = false
     this.removeCaptionsEvent()
   }
 
@@ -41,21 +43,25 @@ export default class extends ApplicationController {
   }
 
   async connectToOBS() {
-    console.log("obs")
     if (isNil(this.port) || isEmpty(this.port)) {
       return this.displayErrorMessage("Port is missing.")
     }
 
     try {
-      if (this.obsConnector.connected) {
-        this.obsConnector.disconnect()
+      if (obs.connected) {
+        await obs.disconnect()
+        this.connected = false
         this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
       } else {
         this.updateButtonState(CONNECTION_STATE.CONNECTING)
-        const isConnected = await this.enableOBSConnection()
-        if (isConnected) {
-          this.updateButtonState(CONNECTION_STATE.CONNECTED)
-        }
+        await this.enableOBSConnection()
+
+        this.connected = true
+        this.updateButtonState(CONNECTION_STATE.CONNECTED)
+
+        setInterval(() => {
+          this.sendCaptions('hello world')
+        }, 1000)
       }
     } catch (error) {
       this.updateButtonState(CONNECTION_STATE.ERROR, error)
@@ -103,28 +109,21 @@ export default class extends ApplicationController {
   }
 
   async enableOBSConnection() {
-    if (this.obsConnector.connected) {
+    if (this.connected) {
       return Promise.reject()
     }
 
-    await this.obsConnector.connect({
-      password: this.password,
-      port: this.port,
-    })
-
-    this.obsConnector.on("socket.ready", this.onConnectionReady)
-    this.obsConnector.on("socket.auth", this.onAuthNeeded)
-    this.obsConnector.on("socket.auth-failed", this.onAuthFail)
-    this.obsConnector.on("socket.close", this.onConnectionClose)
-    this.obsConnector.onStreamStopped(this.onStreamStop)
-    this.obsConnector.onSwitchScene(this.onSwitchScene)
+    await obs.connect(
+      `ws://127.0.0.1:${this.port}`,
+      this.password,
+    )
 
     return Promise.resolve(true)
   }
 
   onConnectionReady = () => {
     debug("Connection is Ready")
-    this.obsConnector.getScenes().then(this.onGetScenes)
+    obs.getScenes().then(this.onGetScenes)
   }
 
   onAuthNeeded = () => {
@@ -146,8 +145,8 @@ export default class extends ApplicationController {
   // eslint-disable-next-line no-empty-function
   onConnectionClose = () => { }
 
-  onCaptionsReceived = ({ detail: { interim, final } }) => {
-    if (this.obsConnector.connected) {
+  onCaptionsReceived = async ({ detail: { interim, final } }) => {
+    if (this.connected) {
       const textToSendBuffer = []
 
       if (interim.length > 0) textToSendBuffer.push(capitalize(interim))
@@ -180,8 +179,16 @@ export default class extends ApplicationController {
         textToSendBuffer.unshift(combinedFinalText)
       }
 
-      this.obsConnector.sendCaptions(textToSendBuffer.join(". "))
+      this.sendCaptions(textToSendBuffer.join(". "))
     }
+  }
+
+  sendCaptions = async (text) => {
+    await obs.call('SendStreamCaption', { captionText: text }).then(() => {
+      debug("Captions sent to obs")
+    }).catch((error) => {
+      debug("Error sending captions to obs")
+    });
   }
 
   onGetScenes = (data) => {
