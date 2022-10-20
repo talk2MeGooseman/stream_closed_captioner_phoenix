@@ -170,7 +170,7 @@
 <!-- Captions Sections -->
 <div class="alert bg-primary-light text-primary text-left" role="alert">
   <div>
-     Have a wonderful stream and happy to have met some you at Twitch Con.
+    OBS WebSocket Plugin v5 is required to use this feature, obs-websocket integration. If you have OBS 28 installed, you already have this plugin installed.
   </div>
 </div>
 <section class="px-4 pb-12">
