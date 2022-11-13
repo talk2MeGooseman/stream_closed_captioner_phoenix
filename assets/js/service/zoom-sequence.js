@@ -1,18 +1,20 @@
-setZoomSequence = (url, value = 1) => {
-  const urlObj = new URL(url)
-  let id = urlObj.searchParams.get("id")
+import { isNil } from 'ramda';
 
-  localStorage.setItem(`zoom:${id}`, value)
-}
+export const setZoomSequence = (url, value = 1) => {
+  const urlObj = new URL(url);
+  const id = urlObj.searchParams.get('id');
 
-getZoomSequence = (url) => {
-  const urlObj = new URL(url)
-  let id = urlObj.searchParams.get("id")
+  localStorage.setItem(`zoom:${id}`, value);
+};
 
-  const result = localStorage.getItem(`zoom:${id}`)
+export const getZoomSequence = (url) => {
+  const urlObj = new URL(url);
+  const id = urlObj.searchParams.get('id');
+
+  const result = localStorage.getItem(`zoom:${id}`);
   if (!isNil(result)) {
-    return parseInt(localStorage.getItem(`zoom:${id}`))
+    return parseInt(localStorage.getItem(`zoom:${id}`), 10);
   }
 
-  return 1
-}
+  return 1;
+};

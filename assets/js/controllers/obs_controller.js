@@ -160,8 +160,7 @@ export default class extends ApplicationController {
 
       const leftOverCharacterCount = CAPTIONS_MAX_LENGTH - interim.length
 
-      // perform condition join to avoid extra period at the end if a period already exists for one of the strings in captionsFinalTextsCache
-      let combinedFinalText = this.captionsFinalTextsCache.join(" ")
+      let combinedFinalText = this.captionsFinalTextsCache.join(". ")
 
       if (combinedFinalText.length > leftOverCharacterCount) {
         const amountToRemove = combinedFinalText.length - leftOverCharacterCount
@@ -176,8 +175,7 @@ export default class extends ApplicationController {
         textToSendBuffer.unshift(combinedFinalText)
       }
 
-      // perform condition join to avoid extra period at the end if a period already exists for one of the strings in textToSendBuffer
-      this.sendCaptions(textToSendBuffer.join(" "))
+      this.sendCaptions(textToSendBuffer.join(". "))
     }
   }
 
