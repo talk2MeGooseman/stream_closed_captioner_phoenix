@@ -6,11 +6,12 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.{Profanity, Translations}
   alias Twitch.Extension.CaptionsPayload
+  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
 
   @type message_map :: %{
-          required(:final) => String.t(),
-          required(:interim) => String.t(),
-          required(:session) => String.t()
+          optional(:final) => String.t(),
+          optional(:interim) => String.t(),
+          optional(:session) => String.t()
         }
 
   @spec pipeline_to(
@@ -38,6 +39,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     payload =
       CaptionsPayload.new(message)
+      |> tap(fn _ ->
+        ActivePresence.update(self(), "active_channels", user.uid, %{
+          last_publish: System.system_time(:second)
+        })
+      end)
       |> maybe_censor_for(:interim, user)
       |> maybe_censor_for(:final, user)
       |> Translations.maybe_translate(:final, user)

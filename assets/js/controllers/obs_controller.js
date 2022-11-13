@@ -48,7 +48,7 @@ export default class extends ApplicationController {
     }
 
     try {
-      if (obs.connected) {
+      if (this.connected) {
         await obs.disconnect()
         this.connected = false
         this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
@@ -58,10 +58,6 @@ export default class extends ApplicationController {
 
         this.connected = true
         this.updateButtonState(CONNECTION_STATE.CONNECTED)
-
-        setInterval(() => {
-          this.sendCaptions('hello world')
-        }, 1000)
       }
     } catch (error) {
       this.updateButtonState(CONNECTION_STATE.ERROR, error)
