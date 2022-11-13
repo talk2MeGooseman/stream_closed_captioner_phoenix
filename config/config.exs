@@ -120,6 +120,9 @@ config :stream_closed_captioner_phoenix,
     debug: false
   ]
 
+config :stream_closed_captioner_phoenix,
+  deepgram_token: System.get_env("DEEPGRAM_TOKEN")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

@@ -107,7 +107,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:timex, "~> 3.7"},
       {:tmi, "~> 0.5.3"},
       {:ueberauth_twitch, "~> 0.1.0"},
-      {:ueberauth, "~> 0.10"}
+      {:ueberauth, "~> 0.10"},
+      {:websockex, "~> 0.4.3"}
     ]
   end
 

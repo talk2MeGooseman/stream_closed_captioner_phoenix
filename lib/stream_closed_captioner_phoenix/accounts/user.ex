@@ -207,3 +207,11 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> cast(attrs, [:provider])
   end
 end
+
+defimpl FunWithFlags.Actor, for: StreamClosedCaptionerPhoenix.Accounts.User do
+  def id(%{id: id}) do
+    "user:#{id}"
+  end
+
+  # FunWithFlags.enabled?(:restful_nights, for: alfred)
+end

@@ -1,7 +1,9 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
-import { forEach, isEmpty, isNil } from "ramda"
 import { ApplicationController } from "stimulus-use"
+import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
+import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
+import { isEmpty } from "ramda"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
@@ -30,16 +32,15 @@ export default class extends ApplicationController {
 
   removeEvents = []
   cachedButtonText = ""
+  zoomData = {
+    enabled: false,
+  }
+  twitchData = {
+    enabled: false,
+  }
+
 
   connect() {
-    this.zoomData = {
-      enabled: false,
-    }
-
-    this.twitchData = {
-      enabled: false,
-    }
-
     if (isBrowserCompatible()) {
       import("../channels").then(this.successfulSocketConnection)
 
@@ -102,6 +103,8 @@ export default class extends ApplicationController {
   successfulSocketConnection = ({ captionsChannel }) => {
     this.captionsChannel = captionsChannel
     this.startTarget.disabled = false
+
+    this.captionsChannel.on("deepgram", this.displayCaptions)
   }
 
   initOBSChannelListener = () => {
@@ -110,7 +113,19 @@ export default class extends ApplicationController {
   }
 
   startCaptions = () => {
-    this.speechRecognitionHandler.toggleOn()
+    // Need to check if it's deepgram enabled account and choose flow
+    if (window.permissions.isDeepgramEnabled) {
+      if (isDeepgramActive()) {
+        stopDeepgram()
+        this.recognitionStopped()
+      } else {
+        startDeepgram(this.sendAudioStream)
+        this.recognitionStarted()
+      }
+    } else {
+      this.speechRecognitionHandler.toggleOn()
+    }
+
     this.captionsChannel
       .push("active", {})
   }
@@ -170,8 +185,6 @@ export default class extends ApplicationController {
     this.captionsChannel
       .push("publishInterim", publishData, 5000)
       .receive("ok", (response) => this.displayCaptions(response))
-      .receive("error", (err) => console.log("phoenix error", err))
-      .receive("timeout", () => console.log("timed out pushing"))
   }
 
   receiveFinalMessage = (data) => {
@@ -181,18 +194,16 @@ export default class extends ApplicationController {
       ...data,
       zoom: {
         ...this.zoomData,
-        seq: this.getZoomSequence(this.zoomData.url)
+        seq: getZoomSequence(this.zoomData.url)
       },
     }
 
     this.captionsChannel
       .push("publishFinal", publishData, 5000)
       .receive("ok", (response) => {
-        const seq = this.getZoomSequence(this.zoomData.url) + 1
-        this.setZoomSequence(this.zoomData.url, seq)
+        const seq = getZoomSequence(this.zoomData.url) + 1
+        setZoomSequence(this.zoomData.url, seq)
       })
-      .receive("error", (err) => console.log("phoenix error", err))
-      .receive("timeout", () => console.log("timed out pushing"))
   }
 
   displayCaptions = (captions) => {
@@ -205,22 +216,13 @@ export default class extends ApplicationController {
     this.finalOutputTarget.textContent = captions.final
   }
 
-  setZoomSequence = (url, value = 1) => {
-    const urlObj = new URL(url)
-    let id = urlObj.searchParams.get("id")
+  sendAudioStream = async (data) => {
+    var audioBlob = new Blob([data], {
+      type: "audio/webm"
+    });
+    const arrayBuffer = await audioBlob.arrayBuffer();
 
-    localStorage.setItem(`zoom:${id}`, value)
-  }
-
-  getZoomSequence = (url) => {
-    const urlObj = new URL(url)
-    let id = urlObj.searchParams.get("id")
-
-    const result = localStorage.getItem(`zoom:${id}`)
-    if (!isNil(result)) {
-      return parseInt(localStorage.getItem(`zoom:${id}`))
-    }
-
-    return 1
+    this.captionsChannel
+      .push("publishBlob", arrayBuffer, 5000)
   }
 }

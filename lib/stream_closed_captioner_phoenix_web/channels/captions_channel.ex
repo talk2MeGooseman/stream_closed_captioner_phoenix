@@ -6,17 +6,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def join("captions:" <> user_id, _payload, socket) do
     if authorized?(socket, user_id) do
       send(self(), :after_join)
-      {:ok, socket}
+
+      if FunWithFlags.enabled?(:deepgram, for: socket.assigns.current_user) do
+        {:ok, pid} = DeepgramWebsocket.start_link(%{user: socket.assigns.current_user})
+
+        {:ok, assign(socket, :wss_pid, pid)}
+      else
+        {:ok, socket}
+      end
     else
       {:error, %{reason: "unauthorized"}}
     end
   end
 
   @impl true
-  def handle_in("publishFinal", %{"zoom" => %{"enabled" => false}} = payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
-
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "zoom")
     user = socket.assigns.current_user
@@ -32,14 +35,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
+  def handle_in("publishFinal", payload, socket), do: {:reply, {:ok, payload}, socket}
+
   def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
-
-    ActivePresence.update(self(), "active_channels", user.uid, %{
-      last_publish: System.system_time(:second)
-    })
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
@@ -63,6 +64,22 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
       {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
     end
+  end
+
+  def handle_in("publishBlob", {:binary, chunk}, socket) do
+    if socket.assigns.wss_pid do
+      case WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk}) do
+        :ok ->
+          dbg("Sent chunk to deepgram")
+          {:noreply, socket}
+
+        {:error, _} ->
+          dbg("Error sending chunk to deepgram")
+          {:noreply, socket}
+      end
+    end
+
+    {:noreply, socket}
   end
 
   def handle_in("active", _payload, socket) do
