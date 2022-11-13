@@ -48,7 +48,7 @@ export default class extends ApplicationController {
     }
 
     try {
-      if (obs.connected) {
+      if (this.connected) {
         await obs.disconnect()
         this.connected = false
         this.updateButtonState(CONNECTION_STATE.DISCONNECTED)
@@ -58,10 +58,6 @@ export default class extends ApplicationController {
 
         this.connected = true
         this.updateButtonState(CONNECTION_STATE.CONNECTED)
-
-        setInterval(() => {
-          this.sendCaptions('hello world')
-        }, 1000)
       }
     } catch (error) {
       this.updateButtonState(CONNECTION_STATE.ERROR, error)
@@ -164,7 +160,8 @@ export default class extends ApplicationController {
 
       const leftOverCharacterCount = CAPTIONS_MAX_LENGTH - interim.length
 
-      let combinedFinalText = this.captionsFinalTextsCache.join(". ")
+      // perform condition join to avoid extra period at the end if a period already exists for one of the strings in captionsFinalTextsCache
+      let combinedFinalText = this.captionsFinalTextsCache.join(" ")
 
       if (combinedFinalText.length > leftOverCharacterCount) {
         const amountToRemove = combinedFinalText.length - leftOverCharacterCount
@@ -179,7 +176,8 @@ export default class extends ApplicationController {
         textToSendBuffer.unshift(combinedFinalText)
       }
 
-      this.sendCaptions(textToSendBuffer.join(". "))
+      // perform condition join to avoid extra period at the end if a period already exists for one of the strings in textToSendBuffer
+      this.sendCaptions(textToSendBuffer.join(" "))
     }
   }
 

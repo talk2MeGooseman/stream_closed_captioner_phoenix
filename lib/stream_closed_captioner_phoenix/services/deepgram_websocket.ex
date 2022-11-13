@@ -21,7 +21,7 @@ defmodule DeepgramWebsocket do
 
   def handle_frame({_type, msg}, state) do
     # Need to tailor this to the service were sending to
-    NewRelic.start_transaction("Captions", "twitch")
+    NewRelic.start_transaction("Captions", "deepgram")
     deepgram_response = StreamClosedCaptionerPhoenix.DeepgramResponse.new(Jason.decode!(msg))
     transcript = List.first(deepgram_response.channel.alternatives) |> Map.get(:transcript)
 
@@ -46,6 +46,11 @@ defmodule DeepgramWebsocket do
             "captions:#{state.user.id}",
             "deepgram",
             sent_payload
+          )
+
+          # Send to twitch viewers
+          Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
+            new_twitch_caption: state.user.uid
           )
 
           new_relic_track(:ok, state.user)
