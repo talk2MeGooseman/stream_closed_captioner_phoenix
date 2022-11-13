@@ -170,7 +170,7 @@
 <!-- Captions Sections -->
 <div class="alert bg-primary-light text-primary text-left" role="alert">
   <div>
-    OBS WebSocket Plugin v5 is required to use this feature, obs-websocket integration. If you have OBS 28 installed, you already have this plugin installed.
+    OBS WebSocket intergration now requires OBS WebSocket Plugin v5. If you have OBS 28 installed, you don't need to do anything.
   </div>
 </div>
 <section class="px-4 pb-12">
