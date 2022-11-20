@@ -205,7 +205,7 @@
       </div>
     </div>
     <div id="caption-actions">
-      <div data-controller="captions" data-captions-language-value="<%= @stream_settings.language %>"
+      <div data-controller="captions" data-captions-language-value={ @stream_settings.language }
         data-action="twitch:state@window->captions#onTwitchChange zoom:state@window->captions#onZoomChange">
         <div class="p-4">
           <div class="space-y-2" data-captions-target="outputOutline">

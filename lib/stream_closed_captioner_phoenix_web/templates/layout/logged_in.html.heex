@@ -8,8 +8,8 @@
   <%= csrf_meta_tag() %>
   <%= live_title_tag assigns[:page_title] || "Stream Closed Captioner", suffix: " · Closed Captions" %>
   <%= render_tags_all(assigns[:meta_tags] || %{})%>
-  <link rel="icon" href="<%= Routes.static_path(@conn, "/images/favicon-32x32.png") %>">
-  <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>" />
+  <link rel="icon" href={ Routes.static_path(@conn, "/images/favicon-32x32.png") } />
+  <link phx-track-static rel="stylesheet" href={ Routes.static_path(@conn, "/css/app.css") } />
   <script>
     window.userId = "<%= assigns[:current_user].id %>";
   </script>
@@ -21,7 +21,7 @@
       isDeepgramEnabled: <%= FunWithFlags.enabled?(:deepgram, for: assigns[:current_user]) %>
     }
   </script>
-  <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  <script defer phx-track-static type="text/javascript" src={ Routes.static_path(@conn, "/js/app.js") }></script>
 </head>
 
 <body class="dark:text-white">
