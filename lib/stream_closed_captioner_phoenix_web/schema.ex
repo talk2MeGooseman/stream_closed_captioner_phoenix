@@ -9,6 +9,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     [NewRelic.Absinthe.Middleware | middleware]
   end
 
+  def plugins do
+    [
+      StreamClosedCaptionerPhoenixWeb.Schema.Middleware.AuthorizedIntrospection
+      | Absinthe.Plugin.defaults()
+    ]
+  end
+
   import_types(Schema.AccountsTypes)
   import_types(Schema.Types.Custom.JSON)
   import_types(Schema.Types.Custom.DateTime)

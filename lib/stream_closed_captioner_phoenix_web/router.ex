@@ -79,7 +79,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/api" do
     pipe_through(:graphql)
 
-    forward("/", Absinthe.Plug, schema: StreamClosedCaptionerPhoenixWeb.Schema)
+    forward("/", Absinthe.Plug,
+      schema: StreamClosedCaptionerPhoenixWeb.Schema,
+      analyze_complexity: true,
+      max_complexity: 50
+    )
+
     options("/", Absinthe.Plug, :options)
   end
 
