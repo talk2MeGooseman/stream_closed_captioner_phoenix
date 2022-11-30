@@ -377,7 +377,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       false ->
         record = Accounts.fetch_user_eventsub_subscriptions(user, "stream.online")
 
-        if(204 == Twitch.delete_event_subscription(record.subscription_id)) do
+        if(!is_nil(record) && 204 == Twitch.delete_event_subscription(record.subscription_id)) do
           Accounts.delete_eventsub_subscription(record)
         end
     end

@@ -11,7 +11,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.LiveHelpers do
 
   ## Examples
 
-      <%= live_modal @socket, StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent,
+      <%= live_modal @socket, StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent,
         id: @stream_settings.id || :new,
         action: @live_action,
         stream_settings: @stream_settings,

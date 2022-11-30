@@ -1,4 +1,4 @@
-# # defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLiveTest do
+# # defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
 #   use StreamClosedCaptionerPhoenixWeb.ConnCase
 
 #   import StreamClosedCaptionerPhoenix.Factory

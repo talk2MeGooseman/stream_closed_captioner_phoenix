@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
+defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent do
   use StreamClosedCaptionerPhoenixWeb, :live_component
 
   alias StreamClosedCaptionerPhoenix.Settings
@@ -30,7 +30,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.FormComponent do
       {:ok, _stream_settings} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Stream settings updated successfully")}
+         |> put_flash(:info, "Stream settings updated successfully")
+         |> push_redirect(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

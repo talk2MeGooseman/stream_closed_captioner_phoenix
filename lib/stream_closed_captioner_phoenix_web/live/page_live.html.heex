@@ -124,7 +124,7 @@
         <p class="text-gray-600 mb-8">
           Open up the settings panel to set your native language or your Zoom URL and more...
         </p>
-        <%= link "Configure settings", to: Routes.stream_settings_index_path(@socket, :update), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
+        <%= link "Configure settings", to: Routes.caption_settings_index_path(@socket, :show), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
       </div>
       <div class="w-full sm:w-1/2 p-6">
         <%= img_tag(Routes.static_path(@socket, "/images/settings.png"), alt: "Stream Closed Captioner caption settings page") %>
@@ -256,18 +256,3 @@
     </div>
   </div>
 </section> %>
-
-<!--<form phx-change="suggest" phx-submit="search">
-      <label class="form-label">
-        <div class="form-append">
-          <input class="form-input" type="text" name="q" value="<%= @query %>" placeholder="Live dependency search" list="results" autocomplete="off"/>
-          <button type="submit" class="btn btn-dark" phx-disable-with="Searching...">Go to Hexdocs</button>
-        </div>
-      </label>
-
-      <datalist id="results">
-        <%= for {app, _vsn} <- @results do %>
-          <option value="<%= app %>"><%= app %></option>
-        <% end %>
-      </datalist>
-    </form> -->

@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
+defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
   use StreamClosedCaptionerPhoenixWeb, :live_view
 
   import StreamClosedCaptionerPhoenixWeb.LiveHelpers
@@ -13,9 +13,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsLive.Index do
 
     changeset = Settings.change_stream_settings(current_user.stream_settings)
 
-    socket = assign(socket, :current_user, current_user)
-    socket = assign(socket, :changeset, changeset)
-    socket = assign(socket, :live_socket_id, Map.get(session, "live_socket_id"))
+    socket =
+      assign(socket, :current_user, current_user)
+      |> assign(:changeset, changeset)
+      |> assign(:live_socket_id, Map.get(session, "live_socket_id"))
+
     {:ok, assign(socket, :stream_settings, current_user.stream_settings)}
   end
 

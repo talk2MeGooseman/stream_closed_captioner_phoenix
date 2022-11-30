@@ -152,7 +152,7 @@
             the Twitch Extension, if you're streaming on Twitch</a>
         </li>
         <li class="list-item">
-          <%= link "2. Update your language in your caption settings", to: Routes.stream_settings_index_path(@conn, :update), class: "text-blue-600" %>
+          <%= link "2. Update your language in your caption settings", to: Routes.caption_settings_index_path(@conn, :show), class: "text-blue-600" %>
         </li>
         <li class="list-item">3. When your're ready to start sending captions, click "Click to Start Captions"</li>
         <li class="list-item">4. Allow microphone permissions if prompted next to address bar</li>
@@ -181,7 +181,7 @@
       </h5>
       <div class="flex items-center">
         <span>Selected Language: <%= @stream_settings.language %></span>
-        <%= live_patch to: Routes.stream_settings_index_path(@conn, :update), class: "flex btn btn-outline-primary mx-5" do %>
+        <%= live_patch to: Routes.caption_settings_index_path(@conn, :show), class: "flex btn btn-outline-primary mx-5" do %>
         <svg class="flex-shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"

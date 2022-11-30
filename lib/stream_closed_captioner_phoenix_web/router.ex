@@ -167,16 +167,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     pipe_through([:browser, :require_authenticated_user, :logged_in])
 
     scope "/users/" do
-      get("/stream_settings", StreamSettingsController, :edit)
-      put("/stream_settings", StreamSettingsController, :update)
-
       delete("/register", UserRegistrationController, :delete)
 
       get("/settings", UserSettingsController, :edit)
       put("/settings", UserSettingsController, :update)
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
-      live("/captions-settings", StreamSettingsLive.Index, :update)
+      live("/caption-settings", CaptionSettingsLive.Index, :show)
+
+      # live "/captions_setings", CaptionSettingLive.Index, :index
+      # live "/captions_setings/new", CaptionSettingLive.Index, :new
+      # live "/captions_setings/:id/edit", CaptionSettingLive.Index, :edit
+
+      # live "/captions_setings/:id", CaptionSettingLive.Show, :show
+      # live "/captions_setings/:id/show/edit", CaptionSettingLive.Show, :edit
     end
 
     resources "/transcripts", TranscriptController, except: [:create, :new] do
