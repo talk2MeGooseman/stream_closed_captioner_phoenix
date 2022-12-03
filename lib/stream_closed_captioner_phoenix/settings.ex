@@ -377,7 +377,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       false ->
         record = Accounts.fetch_user_eventsub_subscriptions(user, "stream.online")
 
-        if(!is_nil(record) && 204 == Twitch.delete_event_subscription(record.subscription_id)) do
+        if !is_nil(record) && 204 == Twitch.delete_event_subscription(record.subscription_id) do
           Accounts.delete_eventsub_subscription(record)
         end
     end
@@ -391,7 +391,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     # Check if they have an associated Twitch account
     %{user: user} = Repo.preload(stream_settings, :user)
 
-    if(user.provider == "twitch" && is_binary(user.uid)) do
+    if user.provider == "twitch" && is_binary(user.uid) do
       # Filter fields
       # Format to camelcase
       settings = %{

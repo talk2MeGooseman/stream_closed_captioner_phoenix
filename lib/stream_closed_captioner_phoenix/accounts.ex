@@ -508,6 +508,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   def fetch_user_eventsub_subscriptions(%User{} = user, type) do
     EventsubSubscriptionQueries.with_user_id(user.id)
     |> EventsubSubscriptionQueries.with_type(type)
-    |> Repo.one!()
+    |> Repo.one()
   end
 end
