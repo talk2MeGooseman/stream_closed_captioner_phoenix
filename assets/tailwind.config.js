@@ -2,7 +2,7 @@ module.exports = {
   darkMode: 'class',
   purge: {
     enabled: process.env.MIX_ENV === 'prod',
-    content: ['../lib/**/*.eex', '../lib/**/*.leex', '../lib/stream_closed_captioner_phoenix_web/live/page_live.html.leex'],
+    content: ['../lib/**/*.eex', '../lib/**/*.heex', '../lib/stream_closed_captioner_phoenix_web/live/page_live.html.heex'],
     options: {
       safelist: ['dark'],
     },
