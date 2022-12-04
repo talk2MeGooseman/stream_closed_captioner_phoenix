@@ -11,7 +11,6 @@ defmodule Azure.Cognitive do
   @impl Azure.CognitiveProvider
 
   @trace :translate
-  @spec translate(any, maybe_improper_list, binary) :: Azure.Cognitive.Translations.t()
   def translate(from_language \\ "en", to_languages, text)
       when is_list(to_languages) and is_binary(text) do
     language_tuple_list =
@@ -43,6 +42,8 @@ defmodule Azure.Cognitive do
           text: text
         }
       ])
+
+    NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
     [translations] =
       "https://api.cognitive.microsofttranslator.com/translate"
