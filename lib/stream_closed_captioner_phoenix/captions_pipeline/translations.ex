@@ -31,16 +31,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     to_languages =
       Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys() |> Enum.sort()
 
-    # Hash spoken text and languages to make unique bucket, encode to reduce size of key
-    key = :crypto.hash(:md5, text <> to_string(to_languages)) |> Base.encode32()
-
-    {_, translations} =
-      Cachex.fetch(:translation_cache, key, fn _key ->
-        translations = Azure.perform_translations(from_language, to_languages, text)
-        {:commit, translations}
-      end)
-
-    Cachex.expire(:my_cache, key, :timer.minutes(60))
+    translations = Azure.perform_translations(from_language, to_languages, text)
 
     translations
   end
