@@ -7,6 +7,8 @@ defmodule Azure.Cognitive do
   @behaviour Azure.CognitiveProvider
 
   @impl Azure.CognitiveProvider
+
+  @trace :translate
   def translate(from_language \\ "en", to_languages, text)
       when is_list(to_languages) and is_binary(text) do
     language_tuple_list =
