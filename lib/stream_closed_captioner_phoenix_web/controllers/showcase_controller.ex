@@ -28,5 +28,5 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     acc
   end
 
-  defp current_timestamp, do: System.system_time(:seconds)
+  defp current_timestamp, do: System.system_time(:second)
 end

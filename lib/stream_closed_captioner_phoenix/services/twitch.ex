@@ -71,6 +71,45 @@ defmodule Twitch do
     |> helix_api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)
   end
 
+  @doc """
+  Get the live streams for a list of user ids
+
+  Twitch API only allows 100 user ids per request, so we chunk the list
+  and make multiple requests.
+
+  # Examples
+      iex(18)> Twitch.get_live_streams(["123", "456"])
+      [
+        %Twitch.Helix.Stream{
+          game_id: "509658",
+          game_name: "Just Chatting",
+          id: "123",
+          language: "en",
+          started_at: "2020-05-01T00:00:00Z",
+          thumbnail_url: "https://static-cdn.jtvnw.net/previews-ttv/live_user_123-{width}x{height}.jpg",
+          title: "Just chatting",
+          type: "live",
+          user_id: "123",
+          user_login: "123",
+          user_name: "123",
+          viewer_count: 123
+        },
+        %Twitch.Helix.Stream{
+          game_id: "509658",
+          game_name: "Just Chatting",
+          id: "456",
+          language: "en",
+          started_at: "2020-05-01T00:00:00Z",
+          thumbnail_url: "https://static-cdn.jtvnw.net/previews-ttv/live_user_456-{width}x{height}.jpg",
+          title: "Just chatting",
+          type: "live",
+          user_id: "456",
+          user_login: "456",
+          user_name: "456",
+          viewer_count: 456
+        }
+      ]
+  """
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
   def get_live_streams([]), do: []
 
@@ -81,7 +120,7 @@ defmodule Twitch do
       Oauth.get_client_access_token()
       |> helix_api_client().get_streams(uids)
     end)
-    |> Enum.dedup()
+    |> Enum.dedup_by(fn stream -> stream.user_name end)
     |> Enum.sort_by(& &1.viewer_count, :desc)
   end
 
