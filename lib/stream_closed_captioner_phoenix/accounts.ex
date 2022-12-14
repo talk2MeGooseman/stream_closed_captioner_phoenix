@@ -52,6 +52,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       nil
 
   """
+  def get_user_by_email(nil), do: nil
+
   def get_user_by_email(email) when is_binary(email) do
     String.downcase(email)
     |> UserQueries.with_email()
