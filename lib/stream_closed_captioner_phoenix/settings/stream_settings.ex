@@ -14,6 +14,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     field(:switch_settings_position, :boolean, default: false)
     field(:text_uppercase, :boolean, default: false)
     field(:turn_on_reminder, :boolean, default: false)
+    field(:auto_off_captions, :boolean, default: false)
     belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
 
     timestamps(inserted_at: :created_at)
@@ -23,6 +24,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   def changeset(stream_settings, attrs) do
     stream_settings
     |> cast(attrs, [
+      :auto_off_captions,
       :blocklist,
       :caption_delay,
       :cc_box_size,
@@ -80,6 +82,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   def update_changeset(stream_settings, attrs) do
     stream_settings
     |> cast(attrs, [
+      :auto_off_captions,
       :blocklist,
       :caption_delay,
       :cc_box_size,

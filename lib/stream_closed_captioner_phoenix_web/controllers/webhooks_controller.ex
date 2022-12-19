@@ -3,9 +3,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
   alias StreamClosedCaptionerPhoenix.Settings
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
-  alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
 
   @spec create(Plug.Conn.t(), any) :: Plug.Conn.t()
   def create(
@@ -22,6 +22,30 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
          {:reminder, true} <- {:reminder, stream_settings.turn_on_reminder} do
       SendChatReminder.new(event, schedule_in: 300)
       |> Oban.insert()
+    else
+      {:reminder, false} ->
+        Twitch.delete_event_subscription(id)
+
+      _ ->
+        :ok
+    end
+
+    resp(conn, 200, "")
+  end
+
+  def create(
+        %Plug.Conn{assigns: %{twitch_event_type: "notification"}} = conn,
+        %{
+          "subscription" => %{"type" => "stream.offline", "id" => id},
+          "event" => event
+        }
+      ) do
+    with %User{} = user <-
+           Accounts.get_user_by_provider_uid(Map.get(event, "broadcaster_user_id")),
+         %StreamSettings{} = stream_settings <-
+           Settings.get_stream_settings_by_user_id!(user.id),
+         {:auto_off, true} <- {:auto_off, stream_settings.auto_off_captions} do
+      # Send message to frontend to turn off captions
     else
       {:reminder, false} ->
         Twitch.delete_event_subscription(id)

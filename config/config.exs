@@ -123,6 +123,9 @@ config :stream_closed_captioner_phoenix,
 config :stream_closed_captioner_phoenix,
   deepgram_token: System.get_env("DEEPGRAM_TOKEN")
 
+# Configure the Repo to use advisory locks for locking migrations while running
+config StreamClosedCaptionerPhoenix.Repo, migration_lock: :pg_advisory_lock
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

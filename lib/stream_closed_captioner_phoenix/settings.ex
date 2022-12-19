@@ -365,24 +365,41 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp manage_eventsub_subscriptions({:ok, stream_settings}) do
     %{user: user} = Repo.preload(stream_settings, :user)
 
-    case stream_settings.turn_on_reminder do
-      true ->
-        with %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe("stream.online", user.uid) do
-          Accounts.create_eventsub_subscription(user, %{
-            type: "stream.online",
-            subscription_id: id
-          })
-        end
+    enable_or_disable_eventsub_subscriptions(
+      user,
+      "stream.online",
+      stream_settings.turn_on_reminder
+    )
 
-      false ->
-        record = Accounts.fetch_user_eventsub_subscriptions(user, "stream.online")
-
-        if !is_nil(record) && 204 == Twitch.delete_event_subscription(record.subscription_id) do
-          Accounts.delete_eventsub_subscription(record)
-        end
-    end
+    enable_or_disable_eventsub_subscriptions(
+      user,
+      "stream.offline",
+      stream_settings.auto_off_captions
+    )
 
     {:ok, stream_settings}
+  end
+
+  @spec enable_or_disable_eventsub_subscriptions(User.t(), String.t(), boolean()) ::
+          {:ok, EventsubSubscription.t()} | {:error, Ecto.Changeset.t()}
+  defp enable_or_disable_eventsub_subscriptions(user, subscription_name, status)
+       when status == true do
+    with nil <- Accounts.fetch_user_eventsub_subscriptions(user, subscription_name),
+         %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe(subscription_name, user.uid) do
+      Accounts.create_eventsub_subscription(user, %{
+        type: subscription_name,
+        subscription_id: id
+      })
+    end
+  end
+
+  defp enable_or_disable_eventsub_subscriptions(user, subscription_name, status)
+       when status == false do
+    record = Accounts.fetch_user_eventsub_subscriptions(user, subscription_name)
+
+    if !is_nil(record) && 204 == Twitch.delete_event_subscription(record.subscription_id) do
+      Accounts.delete_eventsub_subscription(record)
+    end
   end
 
   defp maybe_sync_with_twitch({:error, changeset}), do: {:error, changeset}

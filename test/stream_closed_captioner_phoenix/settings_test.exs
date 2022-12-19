@@ -9,6 +9,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
     @update_attrs %{
+      auto_off_captions: true,
       caption_delay: 43,
       cc_box_size: false,
       filter_profanity: false,
@@ -77,6 +78,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.text_uppercase == true
       assert stream_settings.user_id == user.id
       assert stream_settings.turn_on_reminder == false
+      assert stream_settings.auto_off_captions == false
     end
 
     test "create_stream_settings/1 will not create more than one stream settings per user" do
@@ -123,6 +125,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.user_id == stream_settings.user_id
       assert stream_settings.blocklist == ["no", "kappa"]
       assert stream_settings.turn_on_reminder == true
+      assert stream_settings.auto_off_captions == true
     end
 
     test "update_stream_settings/2 with invalid data returns error changeset" do

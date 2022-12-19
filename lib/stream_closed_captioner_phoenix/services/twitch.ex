@@ -183,25 +183,11 @@ defmodule Twitch do
     |> helix_api_client().send_extension_chat_message(channel_id, message)
   end
 
-  def event_subscribe("stream.online" = type, broadcaster_id) do
+  def event_subscribe(type, broadcaster_id) do
     Oauth.get_client_access_token()
     |> helix_api_client().eventsub_subscribe("webhook", type, "1", %{
       broadcaster_user_id: broadcaster_id
     })
-  end
-
-  def event_subscribe("channel.update" = type, broadcaster_id) do
-    IO.puts("Subscribing to channel.update")
-
-    Oauth.get_client_access_token()
-    |> helix_api_client().eventsub_subscribe(
-      "webhook",
-      type,
-      "1",
-      %{
-        broadcaster_user_id: broadcaster_id
-      }
-    )
   end
 
   def event_subscribe("extension.bits_transaction.create" = type) do
