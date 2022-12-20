@@ -67,16 +67,16 @@ export default class SpeechRecognitionHandler {
    */
   toggleOn = () => {
     if (this.speechRecogService.speechToTextActive) {
-      this.stopRecognition()
+      this.stop()
     } else {
-      this.startRecognition()
+      this.start()
     }
   }
 
   /**
-   * @private
+   * Start the speech recognition service
    */
-  startRecognition = () => {
+  start = () => {
     debug("startRecognition")
     this.sendMessageOnDelay()
     this.speechRecogService.start()
@@ -87,9 +87,11 @@ export default class SpeechRecognitionHandler {
   }
 
   /**
-   * @private
+   * Stop the speech recognition service
    */
-  stopRecognition = () => {
+  stop = () => {
+    if (!this.speechRecogService.speechToTextActive) return;
+
     this.speechRecogService.stop()
     this.stopSendInterimDataInterval()
     debug("stopRecognition")

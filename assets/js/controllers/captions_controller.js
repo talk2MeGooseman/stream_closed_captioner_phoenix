@@ -3,7 +3,6 @@ import { isBrowserCompatible } from "../utils"
 import { ApplicationController } from "stimulus-use"
 import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
-import { isEmpty } from "ramda"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
@@ -38,6 +37,8 @@ export default class extends ApplicationController {
   twitchData = {
     enabled: false,
   }
+  /** @type {?SpeechRecognitionHandler} */
+  speechRecognitionHandler = null
 
 
   connect() {
@@ -105,6 +106,7 @@ export default class extends ApplicationController {
     this.startTarget.disabled = false
 
     this.captionsChannel.on("deepgram", this.displayCaptions)
+    this.captionsChannel.on("stream.offline", () => this.speechRecognitionHandler.stop())
   }
 
   initOBSChannelListener = () => {

@@ -2,7 +2,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.EventsubSubscriptionQueries do
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts.EventsubSubscription
-  alias StreamClosedCaptionerPhoenix.Repo
 
   def all(query \\ base()), do: query
 
@@ -14,6 +13,11 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.EventsubSubscriptionQueries do
   def with_id(query \\ base(), id) do
     query
     |> where([eventsub_subscription], eventsub_subscription.id == ^id)
+  end
+
+  def with_subscription_id(query \\ base(), subscription_id) do
+    query
+    |> where([eventsub_subscription], eventsub_subscription.subscription_id == ^subscription_id)
   end
 
   def with_type(query \\ base(), type) do
