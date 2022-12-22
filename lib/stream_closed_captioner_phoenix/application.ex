@@ -32,7 +32,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          global_ttl: :timer.minutes(1),
          acquire_lock_timeout: 30_000
        ]},
-      {TMI.Supervisor, bot_config()},
+      # {TMI.Supervisor, bot_config()},
       {Oban, oban_config()}
     ]
 
