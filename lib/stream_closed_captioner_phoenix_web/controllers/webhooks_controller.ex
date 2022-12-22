@@ -21,8 +21,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
          %StreamSettings{} = stream_settings <-
            Settings.get_stream_settings_by_user_id!(user.id),
          {:reminder, true} <- {:reminder, stream_settings.turn_on_reminder} do
-      SendChatReminder.new(event, schedule_in: 300)
-      |> Oban.insert()
+      if FunWithFlags.enabled?(:chat_reminder, for: user) do
+        SendChatReminder.new(event, schedule_in: 300)
+        |> Oban.insert()
+      end
     else
       {:reminder, false} ->
         Twitch.delete_event_subscription(id)
