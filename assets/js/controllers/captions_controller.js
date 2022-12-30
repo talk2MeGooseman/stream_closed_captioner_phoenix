@@ -3,6 +3,7 @@ import { isBrowserCompatible } from "../utils"
 import { ApplicationController } from "stimulus-use"
 import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
+import { Channel } from "phoenix"
 
 const TURN_OFF_TXT = "Click to Stop Captions"
 
@@ -43,7 +44,11 @@ export default class extends ApplicationController {
 
   connect() {
     if (isBrowserCompatible()) {
-      import("../channels").then(this.successfulSocketConnection)
+      /**
+       * @type {Promise<{ captionsChannel: Channel }>}
+       */
+      const channel = import("../channels")
+      channel.then(this.successfulSocketConnection)
 
       // Need to open websocket channel
       // createSpeechChannel()
@@ -101,6 +106,10 @@ export default class extends ApplicationController {
     }
   }
 
+  /**
+   * Receive phoenix Channel
+   * @param {{ captionsChannel: Channel}} param0 
+   */
   successfulSocketConnection = ({ captionsChannel }) => {
     this.captionsChannel = captionsChannel
     this.startTarget.disabled = false
