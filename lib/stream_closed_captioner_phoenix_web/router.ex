@@ -28,13 +28,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:redirect_if_not_admin)
   end
 
-  pipeline :mounted_apps do
-    plug(:accepts, ["html"])
-    plug(:put_secure_browser_headers)
-  end
-
   scope path: "/feature-flags" do
-    pipe_through([:mounted_apps, :admin_protected])
+    pipe_through([:browser, :admin_protected])
     forward("/", FunWithFlags.UI.Router, namespace: "feature-flags")
   end
 
