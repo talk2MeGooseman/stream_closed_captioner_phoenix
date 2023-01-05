@@ -15,7 +15,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardController do
       stream_settings: current_user.stream_settings,
       translation_active: Bits.get_user_active_debit(current_user.id),
       bits_balance: current_user.bits_balance.balance,
-      translate_languages: Settings.get_formatted_translate_languages_by_user(current_user.id)
+      translate_languages: Settings.get_formatted_translate_languages_by_user(current_user.id),
+      announcement: StreamClosedCaptionerPhoenix.Announcement |> Repo.first()
     )
   end
 end

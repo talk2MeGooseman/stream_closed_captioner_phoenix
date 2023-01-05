@@ -168,19 +168,13 @@
   </div>
 </section>
 <!-- Captions Sections -->
+<%= if @announcement.display do %>
 <div class="alert bg-primary-light text-primary text-left" role="alert">
   <div>
-    Merry Christmas and Happy New Year!
-    <br/><br/>
-    New Feature Alert! Check out the new auto-off feature in your Caption Settings. When you go offline on Twitch, your captions will automatically turn off.
-    This will help you save credits and prevent you from accidentally leaving captions on when you're not streaming.
-    <a href="https://youtube.com/shorts/ixcD3anDdqs?feature=share" target="_blank">Check out this YT Reel for more details</a>
-    <br/><br/>
-    Also reminders are not working at the moment. StreamClosedCaptioner account got banned for doing to good of a job reminding you all.
-    <br/><br/>
-    - Talk2MeGooseman
+    <%= raw @announcement.message %>
   </div>
 </div>
+<% end %>
 <section class="px-4 pb-12">
   <div class="card shadow dark:bg-gray-800">
     <div class="card-header">
