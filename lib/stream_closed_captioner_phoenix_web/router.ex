@@ -34,7 +34,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope path: "/feature-flags" do
-    pipe_through(:mounted_apps)
+    pipe_through([:mounted_apps, :admin_protected])
     forward("/", FunWithFlags.UI.Router, namespace: "feature-flags")
   end
 
@@ -174,13 +174,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
       live("/caption-settings", CaptionSettingsLive.Index, :show)
-
-      # live "/captions_setings", CaptionSettingLive.Index, :index
-      # live "/captions_setings/new", CaptionSettingLive.Index, :new
-      # live "/captions_setings/:id/edit", CaptionSettingLive.Index, :edit
-
-      # live "/captions_setings/:id", CaptionSettingLive.Show, :show
-      # live "/captions_setings/:id/show/edit", CaptionSettingLive.Show, :edit
     end
 
     resources "/transcripts", TranscriptController, except: [:create, :new] do
