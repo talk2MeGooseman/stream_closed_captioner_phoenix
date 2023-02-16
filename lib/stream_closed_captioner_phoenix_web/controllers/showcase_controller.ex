@@ -18,9 +18,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     last_publish = metas |> List.first() |> Map.get(:last_publish, 0)
     elapased_time = current_timestamp() - last_publish
 
-    cond do
-      elapased_time <= 300 -> [uid | acc]
-      true -> acc
+    if elapased_time <= 300 do
+      [uid | acc]
+    else
+      acc
     end
   end
 

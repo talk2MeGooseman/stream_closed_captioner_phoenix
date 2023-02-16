@@ -120,9 +120,9 @@ defmodule Twitch do
       Oauth.get_client_access_token()
       |> helix_api_client().get_streams(uids)
     end)
+    |> Enum.sort_by(& &1.user_id, :desc)
     |> Enum.dedup_by(fn stream -> stream.user_id end)
     |> Enum.sort_by(& &1.viewer_count, :desc)
-    |> dbg()
   end
 
   @spec get_extension_transactons() :: list
