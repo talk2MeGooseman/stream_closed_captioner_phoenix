@@ -50,7 +50,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:waffle, "~> 1.1.1"},
       {:waffle_ecto, "~> 0.0.9"},
       # If using Waffle with S3:
-      {:ex_aws, "~> 2.1.2"},
+      {:ex_aws, "~> 2.4"},
       # Other stuff
       {:bcrypt_elixir, "~> 3.0"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
@@ -66,7 +66,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:expletive, "~> 0.1.4"},
       {:exsync, "~> 0.2", only: :dev},
       {:fun_with_flags_ui, "~> 0.8.1"},
-      {:fun_with_flags, "~> 1.9.0"},
+      {:fun_with_flags, "~> 1.10"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.0"},
       {:hackney, "~> 1.9"},
@@ -102,7 +102,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:sweet_xml, "~> 0.6"},
       {:talk_like_a_x, "~> 0.0.8"},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 0.5"},
+      {:telemetry_poller, "~> 1.0"},
       {:timex, "~> 3.7"},
       {:tmi, "~> 0.5.3"},
       {:ueberauth_twitch, "~> 0.1.0"},
