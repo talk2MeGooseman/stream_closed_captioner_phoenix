@@ -41,7 +41,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
     at: "/",
     from: :stream_closed_captioner_phoenix,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: StreamClosedCaptionerPhoenixWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

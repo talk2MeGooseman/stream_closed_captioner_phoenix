@@ -28,7 +28,7 @@
   <section class="min-h-screen bg-gray-50" x-data="{ sideBar: false }">
     <nav
       class="fixed top-0 left-0 z-20 h-full pb-10 overflow-x-hidden overflow-y-auto transition origin-left transform bg-gray-900 dark:bg-gray-800 w-60 md:translate-x-0"
-      :class="{ '-translate-x-full' : !sideBar, 'translate-x-0' : sideBar }" @click.away="sideBar = false">
+      x-bind:class="{ '-translate-x-full' : !sideBar, 'translate-x-0' : sideBar }" @click.away="sideBar = false">
       <a href="/" class="flex items-center px-4 py-5">
         <%= img_tag(Routes.static_path(@conn, "/images/cc100x100.png"), alt: "Stream Closed Captioner Logo", class:
         "w-20 rounded") %>

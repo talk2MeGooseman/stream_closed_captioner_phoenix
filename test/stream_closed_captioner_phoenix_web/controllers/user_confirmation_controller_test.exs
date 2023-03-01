@@ -27,7 +27,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your email is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
       assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "confirm"
     end
 
@@ -38,7 +38,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "If your email is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
       assert Repo.all(Accounts.UserToken) == []
     end
   end
@@ -52,14 +52,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
 
       conn = get(conn, Routes.user_confirmation_path(conn, :confirm, token))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :info) =~ "Account confirmed successfully"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully"
       refute get_session(conn, :user_token)
       assert Repo.all(Accounts.UserToken) == []
 
       # When not logged in
       conn = get(conn, Routes.user_confirmation_path(conn, :confirm, token))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Account confirmation link is invalid or it has expired"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Account confirmation link is invalid or it has expired"
 
       # When logged in
       conn =
@@ -68,13 +68,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
         |> get(Routes.user_confirmation_path(conn, :confirm, token))
 
       assert redirected_to(conn) == "/"
-      # refute get_flash(conn, :error)
+      # refute Phoenix.Flash.get(conn.assigns.flash, :error)
     end
 
     test "does not confirm email with invalid token", %{conn: conn, user: _user} do
       conn = get(conn, Routes.user_confirmation_path(conn, :confirm, "oops"))
       assert redirected_to(conn) == "/"
-      assert get_flash(conn, :error) =~ "Account confirmation link is invalid or it has expired"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Account confirmation link is invalid or it has expired"
     end
   end
 end

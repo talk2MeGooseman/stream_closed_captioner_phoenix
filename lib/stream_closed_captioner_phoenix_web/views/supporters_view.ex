@@ -13,7 +13,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersView do
     end)
   end
 
-  def getPoliteStatus(support_value) do
+  def get_polite_status(support_value) do
     case support_value > 0 do
       true -> "Active Patron"
       _ -> "Former Patron"

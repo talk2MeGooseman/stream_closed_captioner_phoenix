@@ -7,7 +7,7 @@
       <div class="grid grid-cols-3">
         <div class="col-span-1">
           <div class="avatar avatar-lg">
-            <img class="" src={ subscriber["user"]["profileImageUrl"] }" />
+            <img class="" src={ subscriber["user"]["profileImageUrl"] } />
           </div>
         </div>
         <div class="col-span-2">
@@ -31,7 +31,7 @@
         </div>
         <div class="col-span-2">
           <div class="font-semibold text-gray-900"><%= patron["fullName"] %></div>
-          <span class="capitalize"><%= getPoliteStatus(patron["currentlyEntitledAmountCents"]) %></span>
+          <span class="capitalize"><%= get_polite_status(patron["currentlyEntitledAmountCents"]) %></span>
         </div>
       </div>
     </div>

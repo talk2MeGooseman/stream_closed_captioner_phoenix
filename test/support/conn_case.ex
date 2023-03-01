@@ -19,6 +19,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ConnCase do
 
   using do
     quote do
+      use StreamClosedCaptionerPhoenixWeb, :verified_routes
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
@@ -32,11 +33,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(StreamClosedCaptionerPhoenix.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(StreamClosedCaptionerPhoenix.Repo, {:shared, self()})
-    end
+    StreamClosedCaptionerPhoenix.DataCase.setup_sandbox(tags)
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end

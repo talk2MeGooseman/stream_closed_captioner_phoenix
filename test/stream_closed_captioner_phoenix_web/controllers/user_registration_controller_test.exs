@@ -55,7 +55,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
       new_conn = delete(conn, Routes.user_registration_path(conn, :delete))
 
       assert redirected_to(new_conn) =~ "/"
-      assert get_flash(new_conn, :info) =~ "Account successfully deleted."
+      assert Phoenix.Flash.get(new_conn.assigns.flash, :info) =~ "Account successfully deleted."
     end
   end
 end

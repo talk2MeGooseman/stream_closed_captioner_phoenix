@@ -16,6 +16,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   below. Instead, define any helper function in modules
   and import those modules here.
   """
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def controller do
     quote do
@@ -25,6 +26,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import Plug.Conn
       import StreamClosedCaptionerPhoenixWeb.Gettext
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
     end
   end
 
@@ -49,7 +51,15 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, "live.html"}
+        layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, :live}
+
+      unquote(view_helpers())
+    end
+  end
+
+  def component do
+    quote do
+      use Phoenix.Component
 
       unquote(view_helpers())
     end
@@ -95,6 +105,16 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import StreamClosedCaptionerPhoenixWeb.ErrorHelpers
       import StreamClosedCaptionerPhoenixWeb.Gettext
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: StreamClosedCaptionerPhoenixWeb.Endpoint,
+        router: StreamClosedCaptionerPhoenixWeb.Router,
+        statics: StreamClosedCaptionerPhoenixWeb.static_paths()
     end
   end
 

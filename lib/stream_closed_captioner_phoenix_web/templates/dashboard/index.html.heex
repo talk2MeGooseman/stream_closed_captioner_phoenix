@@ -129,7 +129,7 @@
       <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
         <div x-spread="trigger" class="p-3 flex justify-between items-center bg-green-100" role="button" aria-controls="translation-toggle" aria-expanded="false">
           Click here to toggle viewing translated captions
-          <svg :class="{ 'rotate-180': open }" class="transition transform h-4 w-4 flex-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          <svg x-bind:class="{ 'rotate-180': open }" class="transition transform h-4 w-4 flex-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
         <div x-spread="collapse" x-cloak class="" id="translation-toggle">
           <ul data-translations-target="translationsList" class="list">
