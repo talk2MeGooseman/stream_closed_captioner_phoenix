@@ -22,7 +22,7 @@
             <span class="sr-only">Close Menu</span>
           </button>
           <%= if @current_user do %>
-          <%= link to: Routes.dashboard_path(@conn, :index), class: "w-full btn btn-icon btn-link dark:text-blue-500" do %>
+          <%= link to: ~p"/dashboard", class: "w-full btn btn-icon btn-link dark:text-blue-500" do %>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
             <path
               d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -30,14 +30,14 @@
           Dashboard
           <% end %>
           <% end %>
-          <%= link to: Routes.showcase_path(@conn, :index), class: "w-full btn btn-icon btn-link dark:text-blue-500" do %>
+          <%= link to: ~p"/showcase", class: "w-full btn btn-icon btn-link dark:text-blue-500" do %>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
             <path
               d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
           </svg>
           Showcase
           <% end %>
-          <%= link to: Routes.announcements_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+          <%= link to: ~p"/announcements", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
           <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />
             <path
@@ -45,7 +45,7 @@
           </svg>
           Announcements
           <% end %>
-          <%= link to: Routes.supporters_path(@conn, :index), class: "w-full btn btn-icon btn-link dark:text-blue-500", target: "_blank" do %>
+          <%= link to: ~p"/supporters", class: "w-full btn btn-icon btn-link dark:text-blue-500", target: "_blank" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
           </svg>
@@ -67,7 +67,7 @@
       </a>
       <div class="hidden space-x-1 md:inline-flex">
         <%= if @current_user do %>
-        <%= link to: Routes.dashboard_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+        <%= link to: ~p"/dashboard", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
           <path
             d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -75,14 +75,14 @@
         Dashboard
         <% end %>
         <% end %>
-        <%= link to: Routes.showcase_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+        <%= link to: ~p"/showcase", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mr-2">
           <path
             d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
         </svg>
         Showcase
         <% end %>
-        <%= link to: Routes.announcements_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+        <%= link to: ~p"/announcements", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />
           <path
@@ -90,7 +90,7 @@
         </svg>
         Announcements
         <% end %>
-        <%= link to: Routes.supporters_path(@conn, :index), class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
+        <%= link to: ~p"/supporters", class: "btn btn-sm btn-icon btn-link dark:text-blue-500" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
         </svg>
@@ -121,7 +121,7 @@
       <%= render "_user_dropdown.html", assigns %>
       <% else %>
       <div class="flex items-center space-x-3">
-        <%= link "Login", to: Routes.user_session_path(@conn, :new), class: "btn btn-sm btn-link dark:text-blue-500" %>
+        <%= link "Login", to: ~p"/users/log_in", class: "btn btn-sm btn-link dark:text-blue-500" %>
         <%= link "Connect with Twitch", to: "/auth/twitch", class: "btn btn-sm btn-primary" %>
       </div>
       <% end %>

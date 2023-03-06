@@ -1,5 +1,5 @@
 <h1>Edit Message</h1>
 
-<%= render "form.html", Map.put(assigns, :action, Routes.transcript_message_path(@conn, :update, @message.transcript_id, @message)) %>
+<%= render "form.html", Map.put(assigns, :action, ~p"/transcripts/#{@message.transcript_id}") %>
 
-<span><%= link "Back", to: Routes.transcript_message_path(@conn, :show, @message.transcript_id, @message) %></span>
+<span><%= link "Back", to: ~p"/transcripts/#{@message.transcript_id}" %></span>

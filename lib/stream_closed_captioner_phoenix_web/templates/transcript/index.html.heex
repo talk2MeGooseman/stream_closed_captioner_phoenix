@@ -18,9 +18,9 @@
       <td><%= transcript.session %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.transcript_path(@conn, :show, transcript) %></span>
-        <span><%= link "Edit", to: Routes.transcript_path(@conn, :edit, transcript) %></span>
-        <span><%= link "Delete", to: Routes.transcript_path(@conn, :delete, transcript), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span><%= link "Show", to: ~p"/transcripts/#{transcript}" %></span>
+        <span><%= link "Edit", to: ~p"/transcripts/#{transcript}/edit" %></span>
+        <span><%= link "Delete", to: ~p"/transcripts/#{transcript}", method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>

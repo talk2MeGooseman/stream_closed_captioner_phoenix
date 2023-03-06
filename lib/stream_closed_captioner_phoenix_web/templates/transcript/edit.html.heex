@@ -1,5 +1,5 @@
 <h1>Edit Transcript</h1>
 
-<%= render "form.html", Map.put(assigns, :action, Routes.transcript_path(@conn, :update, @transcript)) %>
+<%= render "form.html", Map.put(assigns, :action, ~p"/transcripts/#{@transcript}") %>
 
-<span><%= link "Back", to: Routes.transcript_path(@conn, :index) %></span>
+<span><%= link "Back", to: ~p"/transcripts" %></span>

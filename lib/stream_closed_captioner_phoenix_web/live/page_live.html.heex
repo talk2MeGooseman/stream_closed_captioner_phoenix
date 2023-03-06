@@ -7,7 +7,7 @@
       Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse.
     </p>
     <div class="mb-4 space-x-0 md:space-x-2 md:mb-8">
-      <%= link to: Routes.user_registration_path(@socket, :new), class: "inline-flex items-center justify-center w-full mb-2 btn btn-primary btn-lg sm:w-auto sm:mb-0" do %>
+      <%= link to: ~p"/users/register", class: "inline-flex items-center justify-center w-full mb-2 btn btn-primary btn-lg sm:w-auto sm:mb-0" do %>
       Get Started
       <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd"
@@ -34,7 +34,7 @@
       </h2>
       <p class="mb-6 text-lg text-center sm:text-left md:text-xl text-gray-300">Make your streams more accessiable to
         the hard of hearing, all you have to do is create an account and you get all these awesome features.</p>
-      <%= link "Create an Account", to: Routes.user_registration_path(@socket, :new), class: "w-full btn btn-primary btn-lg sm:w-auto" %>
+      <%= link "Create an Account", to: ~p"/users/register", class: "w-full btn btn-primary btn-lg sm:w-auto" %>
     </div>
     <div class="flex flex-col flex-grow space-y-5">
       <div class="flex items-start">
@@ -111,7 +111,7 @@
             You can easily sign up using your Twitch account to get started on your channel, or sign up with e-mail if
             you want to just use it for Zoom.
           </p>
-          <%= link "Sign up today", to: Routes.user_registration_path(@socket, :new), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
+          <%= link "Sign up today", to: ~p"/users/register", class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
         </div>
       </div>
     </div>

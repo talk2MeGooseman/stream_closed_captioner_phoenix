@@ -16,9 +16,9 @@
       <td><%= message.text %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.transcript_message_path(@conn, :show, message.transcript_id, message) %></span>
-        <span><%= link "Edit", to: Routes.transcript_message_path(@conn, :edit, message.transcript_id, message) %></span>
-        <span><%= link "Delete", to: Routes.transcript_message_path(@conn, :delete, message.transcript_id, message), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span><%= link "Show", to: ~p"/transcripts/#{message.transcript_id}" %></span>
+        <span><%= link "Edit", to: ~p"/transcripts/#{message.transcript_id}/edit" %></span>
+        <span><%= link "Delete", to: ~p"/transcripts/#{message.transcript_id}", method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
 <% end %>

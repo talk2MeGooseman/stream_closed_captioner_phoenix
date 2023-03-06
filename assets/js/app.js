@@ -14,7 +14,7 @@
 import 'phoenix_html';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
-import { InitToast } from './init_toast.js';
+import { InitToast } from './init_toast';
 import topbar from '../vendor/topbar';
 
 import './stimulus';

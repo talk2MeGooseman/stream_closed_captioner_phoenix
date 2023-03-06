@@ -16,7 +16,7 @@
       <td><%= bits_balance_debit.amount %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.bits_balance_debit_path(@conn, :show, bits_balance_debit) %></span>
+        <span><%= link "Show", to: ~p"/bits_balance_debits/#{bits_balance_debit}" %></span>
         <span><%= link "Edit", to: Routes.bits_balance_debit_path(@conn, :edit, bits_balance_debit) %></span>
         <span><%= link "Delete", to: Routes.bits_balance_debit_path(@conn, :delete, bits_balance_debit), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>

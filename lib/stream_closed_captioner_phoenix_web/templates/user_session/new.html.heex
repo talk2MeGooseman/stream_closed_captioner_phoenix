@@ -31,7 +31,7 @@
         Continue with Twitch
       </a>
     </div>
-    <%= form_for @conn, Routes.user_session_path(@conn, :create), [as: :user, class: "space-y-4"], fn f -> %>
+    <%= form_for @conn, ~p"/users/log_in", [as: :user, class: "space-y-4"], fn f -> %>
 
     <%= if @error_message do %>
     <div class="alert alert-danger">
@@ -57,8 +57,8 @@
     <%= submit "Continue with email", class: "w-full py-3 btn btn-primary" %>
     <% end %>
     <div class="my-2 text-center">
-      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "text-sm text-gray-700 underline hover:text-purple-700" %>
-      <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "text-sm text-gray-700 underline hover:text-purple-700" %>
+      <%= link "Register", to: ~p"/users/register", class: "text-sm text-gray-700 underline hover:text-purple-700" %>
+      <%= link "Forgot your password?", to: ~p"/users/reset_password", class: "text-sm text-gray-700 underline hover:text-purple-700" %>
     </div>
   </div>
 </section>

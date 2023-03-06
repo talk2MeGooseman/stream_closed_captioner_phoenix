@@ -19,5 +19,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: Routes.transcript_path(@conn, :edit, @transcript) %></span>
-<span><%= link "Back", to: Routes.transcript_path(@conn, :index) %></span>
+<span><%= link "Edit", to: ~p"/transcripts/#{@transcript}/edit" %></span>
+<span><%= link "Back", to: ~p"/transcripts" %></span>

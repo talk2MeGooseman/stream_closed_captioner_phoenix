@@ -1,6 +1,11 @@
-import { Application } from "stimulus"
-import { definitionsFromContext } from "stimulus/webpack-helpers"
+import { Application } from 'stimulus';
+import * as Controllers from './controllers';
 
-const application = Application.start()
-const context = require.context("./controllers", true, /\.js$/)
-application.load(definitionsFromContext(context))
+window.Stimulus = Application.start();
+window.Stimulus.register('captions', Controllers.CaptionsController);
+window.Stimulus.register('darkmode', Controllers.DarkmodeController);
+window.Stimulus.register('dropdown', Controllers.DropdownController);
+window.Stimulus.register('obs', Controllers.ObsController);
+window.Stimulus.register('translations', Controllers.TranslationController);
+window.Stimulus.register('twitch', Controllers.TwitchController);
+window.Stimulus.register('zoom', Controllers.ZoomController);
