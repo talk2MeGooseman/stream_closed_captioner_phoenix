@@ -29,7 +29,9 @@ COPY lib/stream_closed_captioner_phoenix_web/views/ lib/stream_closed_captioner_
 
 COPY priv priv
 COPY assets assets
-RUN npm run --prefix ./assets deploy
+
+# compile assets
+RUN mix assets.deploy
 RUN mix phx.digest
 
 # compile and build release

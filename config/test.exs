@@ -11,6 +11,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   database: "stream_closed_captioner_phoenix_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
   # !!! From now on, migrations should only be done from Ecto !!!
@@ -20,11 +21,12 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  http: [port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "aaaaaaaa",
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
   adapter: Bamboo.TestAdapter
@@ -37,3 +39,5 @@ config :stream_closed_captioner_phoenix, Oban, testing: :manual
 
 config :stream_closed_captioner_phoenix,
   eventsub_callback_url: "https://localhost:4000"
+
+config :phoenix, :plug_init_mode, :runtime

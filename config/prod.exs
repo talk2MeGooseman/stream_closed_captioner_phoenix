@@ -10,7 +10,6 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
@@ -91,8 +90,11 @@ live_signing_salt =
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   server: true,
-  http: [port: String.to_integer(System.get_env("PORT") || "4000")],
-  url: [host: System.get_env("HOST"), port: 443],
+  http: [
+    ip: {0, 0, 0, 0, 0, 0, 0, 0},
+    port: String.to_integer(System.get_env("PORT") || "4000")
+  ],
+  url: [host: System.get_env("HOST"), port: 443, scheme: "https"],
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_signing_salt]
 

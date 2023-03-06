@@ -26,6 +26,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:dev), do: ["lib"]
   defp elixirc_paths(_), do: ["lib"]
   # Specifies your project dependencies.
   #
@@ -108,7 +109,10 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:tmi, "~> 0.5.3"},
       {:ueberauth_twitch, "~> 0.1.0"},
       {:ueberauth, "~> 0.10"},
-      {:websockex, "~> 0.4.3"}
+      {:websockex, "~> 0.4.3"},
+      # UI Build stuff
+      {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -120,9 +124,18 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
+      setup: [
+        "deps.get",
+        "ecto.setup",
+        "cmd npm install --prefix assets",
+        "assets.setup",
+        "assets.build"
+      ],
       "ecto.setup": ["ecto.create", "ecto.load", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       security: ["sobelow"],
       lint: ["credo"],

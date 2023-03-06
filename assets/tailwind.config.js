@@ -1,28 +1,37 @@
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   darkMode: 'class',
   purge: {
-    enabled: process.env.MIX_ENV === 'prod',
-    content: ['../lib/**/*.eex', '../lib/**/*.heex', '../lib/stream_closed_captioner_phoenix_web/live/page_live.html.heex'],
+    content: ['./js/**/*.js',
+      '../lib/*_web.ex',
+      '../lib/*_web/**/*.*ex'
+    ],
     options: {
       safelist: ['dark'],
-    },
+    }
   },
   plugins: [
-    require("nightwind"),
+    require('nightwind'),
     require('@tailwindcss/aspect-ratio'),
     require('kutty'),
     require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    plugin(({ addVariant }) => addVariant('phx-no-feedback', ['.phx-no-feedback&', '.phx-no-feedback &'])),
+    plugin(({ addVariant }) => addVariant('phx-click-loading', ['.phx-click-loading&', '.phx-click-loading &'])),
+    plugin(({ addVariant }) => addVariant('phx-submit-loading', ['.phx-submit-loading&', '.phx-submit-loading &'])),
+    plugin(({ addVariant }) => addVariant('phx-change-loading', ['.phx-change-loading&', '.phx-change-loading &'])),
   ],
   theme: {
     nightwind: {
       colors: {
-        white: "gray.800",
+        white: 'gray.800',
         red: {
-          100: "red.100",
+          100: 'red.100',
         },
         yellow: {
-          100: "yellow.100",
-        }
+          100: 'yellow.100',
+        },
       },
     },
   },

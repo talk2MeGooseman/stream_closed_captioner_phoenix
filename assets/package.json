@@ -3,8 +3,6 @@
   "description": " ",
   "license": "MIT",
   "scripts": {
-    "deploy": "webpack --mode production",
-    "watch": "webpack --mode development --watch",
     "lint": "eslint --color --ext .js,.json,.md,.ts,.tsx js/",
     "lint:fix": "npm run eslint -- --fix"
   },
@@ -16,7 +14,7 @@
     "eventemitter3": "^4.0.7",
     "graphql": "^15.5.1",
     "graphql-request": "^3.4.0",
-    "kutty": "^0.5.1",
+    "kutty": "^0.6.0",
     "nightwind": "^1.1.12",
     "nprogress": "^0.2.0",
     "obs-websocket-js": "^5.0.2",

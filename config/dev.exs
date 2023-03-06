@@ -8,6 +8,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   hostname: "localhost",
   show_sensitive_data_on_connection_error: false,
   pool_size: 10,
+  stacktrace: true,
   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
   # !!! From now on, migrations should only be done from Ecto !!!
@@ -18,20 +19,15 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
-# with webpack to recompile .js and .css sources.
+# with esbuild to bundle .js and .css sources.
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
   http: [port: 4000, protocol_options: [idle_timeout: 5_000_000]],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -64,10 +60,12 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/stream_closed_captioner_phoenix_web/(live|views)/.*(ex)$",
-      ~r"lib/stream_closed_captioner_phoenix_web/templates/.*(eex)$"
+      ~r"lib/stream_closed_captioner_phoenix_web/(live|views|components|controllers|templates)/.*(ex|heex)$"
     ]
   ]
+
+# Enable dev routes for dashboard and mailbox
+config :sample_app, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
