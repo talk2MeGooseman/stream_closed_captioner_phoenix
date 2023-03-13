@@ -31,8 +31,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     to_languages =
       Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys() |> Enum.sort()
 
-    translations = Azure.perform_translations(from_language, to_languages, text)
-
-    translations
+    Azure.perform_translations(from_language, to_languages, text)
   end
 end

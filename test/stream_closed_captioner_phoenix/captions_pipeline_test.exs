@@ -33,14 +33,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when user has enough bits, activates translations and debits amount" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
 
-      Twitch.MockExtension
-      |> expect(:send_pubsub_message_for, fn _creds, _channel, _message ->
-        {:ok, %HTTPoison.Response{status_code: 204}}
-      end)
-
       Azure.MockCognitive
       |> expect(:translate, fn _from_language, _to_languages, _text ->
-        Azure.Cognitive.Translations.new(%{translations: [%{text: "Hola", to: "es"}]})
+        Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})
       end)
 
       result =

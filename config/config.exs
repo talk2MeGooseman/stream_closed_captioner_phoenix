@@ -123,6 +123,12 @@ config :stream_closed_captioner_phoenix,
 config :stream_closed_captioner_phoenix,
   deepgram_token: System.get_env("DEEPGRAM_TOKEN")
 
+config :stream_closed_captioner_phoenix,
+  twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET")
+
+config :stream_closed_captioner_phoenix,
+  twitch_client_id: System.get_env("TWITCH_CLIENT_ID")
+
 # Configure the Repo to use advisory locks for locking migrations while running
 config StreamClosedCaptionerPhoenix.Repo, migration_lock: :pg_advisory_lock
 

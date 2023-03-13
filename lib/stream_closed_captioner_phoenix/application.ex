@@ -56,7 +56,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
     Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
   end
 
-  defp bot_config do
-    Application.fetch_env!(:stream_closed_captioner_phoenix, :bot)
-  end
+  # defp bot_config do
+  #   Application.fetch_env!(:stream_closed_captioner_phoenix, :bot)
+  # end
 end

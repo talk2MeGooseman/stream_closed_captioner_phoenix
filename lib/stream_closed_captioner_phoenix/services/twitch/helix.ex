@@ -2,9 +2,9 @@ defmodule Twitch.Helix do
   import Helpers
 
   alias NewRelic.Instrumented.HTTPoison
-  alias Twitch.HttpHelpers
   alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel, EventSub}
+  alias Twitch.HttpHelpers
 
   @behaviour Twitch.HelixProvider
 
@@ -154,6 +154,7 @@ defmodule Twitch.Helix do
     |> Jason.decode!()
   end
 
+  @impl HelixProvider
   def eventsub_subscribe(
         %{access_token: access_token},
         "webhook",
@@ -178,12 +179,7 @@ defmodule Twitch.Helix do
     |> Jason.decode!()
   end
 
-  @spec get_eventsub_subscriptions(
-          %{:access_token => binary, optional(any) => any},
-          String.t(),
-          String.t() | nil
-        ) ::
-          list
+  @impl HelixProvider
   def get_eventsub_subscriptions(
         %{access_token: access_token} = auth,
         type,
@@ -191,16 +187,18 @@ defmodule Twitch.Helix do
       ) do
     headers = HttpHelpers.auth_request_headers(access_token)
 
-    params = %{
-      enabled: true,
-      type: type
-    }
-
     params =
       if cursor do
-        Enum.into(params, %{after: cursor})
+        %{
+          enabled: true,
+          type: type,
+          after: cursor
+        }
       else
-        params
+        %{
+          enabled: true,
+          type: type
+        }
       end
 
     data =
@@ -219,6 +217,7 @@ defmodule Twitch.Helix do
     end
   end
 
+  @impl HelixProvider
   def delete_eventsub_subscription(
         %{access_token: access_token},
         id

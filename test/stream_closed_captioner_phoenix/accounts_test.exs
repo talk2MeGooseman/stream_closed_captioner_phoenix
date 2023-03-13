@@ -545,13 +545,13 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "prevent duplicate subscription ids from being saved", %{user: user} do
-      {:ok, record} =
+      {:ok, _record} =
         Accounts.create_eventsub_subscription(user, %{
           subscription_id: "12345",
           type: "stream.online"
         })
 
-      {status, message} =
+      {status, _message} =
         Accounts.create_eventsub_subscription(user, %{
           subscription_id: "12345",
           type: "stream.online"

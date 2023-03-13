@@ -17,7 +17,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ModalComponent do
             <%= live_patch raw("&times;"), to: @return_to, class: "text-gray-500 hover:text-gray-600 font-bold text-lg" %>
           </div>
           <div class="relative flex-auto p-4">
-            <%= live_component @socket, @component, @opts %>
+            <%= live_component @component, @opts %>
           </div>
         </div>
       </div>

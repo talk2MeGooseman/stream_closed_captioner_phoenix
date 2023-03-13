@@ -17,11 +17,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.LiveHelpers do
         stream_settings: @stream_settings,
         return_to: Routes.stream_settings_index_path(@socket, :index) %>
   """
-  def live_modal(socket, component, opts) do
+  def live_modal(component, opts) do
     path = Keyword.fetch!(opts, :return_to)
     title = Keyword.fetch!(opts, :title)
     modal_opts = [id: :modal, return_to: path, title: title, component: component, opts: opts]
-    live_component(socket, StreamClosedCaptionerPhoenixWeb.ModalComponent, modal_opts)
+    live_component(StreamClosedCaptionerPhoenixWeb.ModalComponent, modal_opts)
   end
 
   def session_current_user(session) do

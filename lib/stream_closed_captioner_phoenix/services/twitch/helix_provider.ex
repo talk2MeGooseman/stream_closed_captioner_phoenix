@@ -31,4 +31,27 @@ defmodule Twitch.HelixProvider do
               atom(),
               String.t()
             ) :: {:ok, HTTPoison.Response.t()}
+
+  @callback eventsub_subscribe(
+              Credentials.t(),
+              String.t(),
+              String.t(),
+              String.t(),
+              String.t()
+            ) :: {:ok, HTTPoison.Response.t()}
+
+  @callback get_eventsub_subscriptions(
+              %{:access_token => binary, optional(any) => any},
+              String.t(),
+              String.t() | nil
+            ) ::
+              list
+
+  @callback delete_eventsub_subscription(
+              %{
+                :access_token => binary,
+                optional(any) => any
+              },
+              String.t()
+            ) :: Integer.t()
 end

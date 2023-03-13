@@ -1,5 +1,5 @@
 <div>
-<.form let={f} for={@changeset} id="caption_settings-form" class="block" phx-target={@myself} phx-change="validate" phx-submit="save">
+<.form :let={f} for={@changeset} id="caption_settings-form" class="block" phx-target={@myself} phx-change="validate" phx-submit="save">
 
 <div class="mb-6">
   <%= label f, "Caption Delay (in seconds)", class: "block text-sm mb-1 mt-4" %>

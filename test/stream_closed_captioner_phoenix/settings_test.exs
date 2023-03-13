@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.SettingsTest do
   import StreamClosedCaptionerPhoenix.Factory
+  import Mox
 
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
@@ -109,6 +110,14 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
     test "update_stream_settings/2 with valid data updates the stream_settings but not the user" do
       stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
+
+      Twitch.MockHelix
+      |> expect(:eventsub_subscribe, fn _, "webhook", "stream.online", "1", _ ->
+        %{"data" => [%{"id" => "anything"}]}
+      end)
+      |> expect(:eventsub_subscribe, fn _, "webhook", "stream.offline", "1", _ ->
+        %{"data" => [%{"id" => "anything"}]}
+      end)
 
       assert {:ok, %StreamSettings{} = stream_settings} =
                Settings.update_stream_settings(stream_settings, @update_attrs)

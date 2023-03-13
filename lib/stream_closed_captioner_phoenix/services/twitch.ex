@@ -191,6 +191,7 @@ defmodule Twitch do
     })
   end
 
+  @spec event_subscribe(String.t()) :: any
   def event_subscribe("extension.bits_transaction.create" = type) do
     Oauth.get_client_access_token()
     |> helix_api_client().eventsub_subscribe(
@@ -211,6 +212,8 @@ defmodule Twitch do
 
   @spec delete_event_subscription(String.t()) :: any
   def delete_event_subscription(id) do
+    dbg()
+
     Oauth.get_client_access_token()
     |> helix_api_client().delete_eventsub_subscription(id)
   end

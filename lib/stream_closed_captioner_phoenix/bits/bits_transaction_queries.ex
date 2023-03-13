@@ -2,7 +2,6 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsTransactionQueries do
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Bits.BitsTransaction
-  alias StreamClosedCaptionerPhoenix.Repo
 
   def all(query \\ base()), do: query
 

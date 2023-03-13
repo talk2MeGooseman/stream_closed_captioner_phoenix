@@ -4,7 +4,6 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries do
   @seconds_in_hours 3600
 
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
-  alias StreamClosedCaptionerPhoenix.Repo
 
   def all(query \\ base()), do: query
 

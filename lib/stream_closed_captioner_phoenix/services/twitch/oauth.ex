@@ -56,7 +56,7 @@ defmodule Twitch.Oauth do
 
   defp get_credentials,
     do: %Credentials{
-      client_id: System.get_env("TWITCH_CLIENT_ID"),
-      client_secret: System.get_env("TWITCH_CLIENT_SECRET")
+      client_id: Application.get_env(:stream_closed_captioner_phoenix, :twitch_client_id),
+      client_secret: Application.get_env(:stream_closed_captioner_phoenix, :twitch_client_secret)
     }
 end

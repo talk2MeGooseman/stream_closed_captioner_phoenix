@@ -17,7 +17,9 @@ defmodule Twitch.HttpHelpers do
     }
 
   def eventsub_secret, do: System.get_env("TWITCH_EVENTSUB_SECRET") || ""
-  def client_secret, do: System.get_env("TWITCH_CLIENT_SECRET") || ""
+
+  def client_secret,
+    do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_client_secret) || ""
 
   def token_secret, do: System.get_env("TWITCH_TOKEN_SECRET") || ""
   defp auth_header(token), do: [{"Authorization", "Bearer " <> token}]

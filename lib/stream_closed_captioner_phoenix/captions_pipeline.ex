@@ -2,10 +2,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   require Logger
 
   alias Azure.Cognitive.Translations
+  alias Twitch.Extension.CaptionsPayload
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.{Profanity, Translations}
-  alias Twitch.Extension.CaptionsPayload
   alias StreamClosedCaptionerPhoenixWeb.ActivePresence
 
   @type message_map :: %{
