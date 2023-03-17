@@ -33,28 +33,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
   end
 
   defp reduced_user_list({uid, %{metas: metas}}, acc) when is_binary(uid) do
-    last_publish = metas |> List.first() |> Map.get(:last_publish, 0)
-    elapased_time = current_timestamp() - last_publish
+    elapased_time = current_timestamp() - get_last_publish(metas)
 
-    cond do
-      elapased_time <= @active_time_out -> [uid | acc]
-      true -> acc
+    if currently_active(elapased_time) do
+      [uid | acc]
+    else
+      acc
     end
   end
 
   defp reduced_user_list(_, acc), do: acc
 
   defp channel_recently_published?(%{metas: metas}) do
-    last_publish =
-      metas
-      |> List.first()
-      |> Map.get(:last_publish, 0)
-
-    elapased_time = current_timestamp() - last_publish
-    elapased_time <= @active_time_out
+    elapased_time = current_timestamp() - get_last_publish(metas)
+    currently_active(elapased_time)
   end
 
   defp channel_recently_published?([]), do: false
 
   defp current_timestamp, do: System.system_time(:second)
+
+  defp get_last_publish(metas), do: metas |> List.first() |> Map.get(:last_publish, current_timestamp())
+
+  defp currently_active(elapsed_time), do: elapsed_time <= @active_time_out
 end
