@@ -1,8 +1,8 @@
 <main role="main" class="">
-  <p id="alert-success" class="text-white bg-green-700 alert toast" role="alert" phx-click="lv:clear-flash"
+  <p id="alert-success" class="text-white bg-green-700 alert toast hidden" role="alert" phx-click="lv:clear-flash"
     phx-hook="InitToast" phx-value-key="info"><%= Phoenix.Flash.get(@flash, :info) %></p>
 
-  <p id="alert-error" class="text-white bg-red-700 alert toast" role="alert" phx-click="lv:clear-flash"
+  <p id="alert-error" class="text-white bg-red-700 alert toast hidden" role="alert" phx-click="lv:clear-flash"
     phx-hook="InitToast" phx-value-key="error"><%= Phoenix.Flash.get(@flash, :error) %></p>
 
   <%= @inner_content %>

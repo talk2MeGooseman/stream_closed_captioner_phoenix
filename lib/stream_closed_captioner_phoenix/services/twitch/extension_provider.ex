@@ -1,5 +1,5 @@
 defmodule Twitch.ExtensionProvider do
-  alias Twitch.Extension.{Channel, Credentials}
+  alias Twitch.Extension.Credentials
 
   @callback send_pubsub_message_for(
               Credentials.t(),

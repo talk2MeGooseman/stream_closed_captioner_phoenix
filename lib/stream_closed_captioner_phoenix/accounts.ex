@@ -513,7 +513,6 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Repo.one()
   end
 
-  @shortdoc "Returns true if a eventsub subscription exists with the given subscription_id exists in the database."
   @spec eventsub_subscription_id_exists?(String.t()) :: boolean
   def eventsub_subscription_id_exists?(subscription_id) do
     EventsubSubscriptionQueries.with_subscription_id(subscription_id)

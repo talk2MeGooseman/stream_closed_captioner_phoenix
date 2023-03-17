@@ -268,10 +268,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
   alias StreamClosedCaptionerPhoenix.Accounts
 
-  alias StreamClosedCaptionerPhoenix.Accounts.{
-    User,
-    EventsubSubscriptionQueries
-  }
+  alias StreamClosedCaptionerPhoenix.Accounts.User
 
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 

@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   use Absinthe.Schema
 
-  alias StreamClosedCaptionerPhoenixWeb.{Schema, Resolvers}
+  alias StreamClosedCaptionerPhoenixWeb.{Resolvers, Schema}
 
   def middleware(middleware, _field, _object) do
     [NewRelic.Absinthe.Middleware | middleware]
