@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.ActivePresenceTest do
-	use StreamClosedCaptionerPhoenixWeb.ChannelCase, async: true
+  use StreamClosedCaptionerPhoenixWeb.ChannelCase, async: true
 
-	alias StreamClosedCaptionerPhoenixWeb.ActivePresence
+  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
 
   setup do
     on_exit(fn ->
