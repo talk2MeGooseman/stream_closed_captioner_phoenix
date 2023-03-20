@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenix.Accounts.EventsubSubscription
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
   alias StreamClosedCaptionerPhoenix.Settings
@@ -16,12 +17,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
       ) do
     with %User{} = user <-
            Accounts.get_user_by_provider_uid(Map.get(event, "broadcaster_user_id")),
-         true <-
-           Accounts.eventsub_subscription_id_exists?(id),
+         %EventsubSubscription{type: "stream.online"} <-
+           Accounts.eventsub_subscription_id(id),
          %StreamSettings{} = stream_settings <-
            Settings.get_stream_settings_by_user_id!(user.id),
          {:reminder, true} <- {:reminder, stream_settings.turn_on_reminder} do
       if FunWithFlags.enabled?(:chat_reminder, for: user) do
+        dbg("Sending chat reminder to #{user.username}")
+
         SendChatReminder.new(event, schedule_in: 300)
         |> Oban.insert()
       end
@@ -45,8 +48,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
       ) do
     with %User{} = user <-
            Accounts.get_user_by_provider_uid(Map.get(event, "broadcaster_user_id")),
-         true <-
-           Accounts.eventsub_subscription_id_exists?(id),
+         %EventsubSubscription{type: "stream.offline"} <-
+           Accounts.eventsub_subscription_id(id),
          %StreamSettings{} = stream_settings <-
            Settings.get_stream_settings_by_user_id!(user.id),
          {:auto_off, true} <- {:auto_off, stream_settings.auto_off_captions} do
@@ -60,6 +63,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksController do
         Twitch.delete_event_subscription(id)
 
       _ ->
+        dbg("Ignoring stream.offline")
         :ok
     end
 

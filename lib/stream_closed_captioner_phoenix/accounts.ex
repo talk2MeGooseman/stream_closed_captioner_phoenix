@@ -513,6 +513,12 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Repo.one()
   end
 
+  @spec eventsub_subscription_id(String.t()) :: EventsubSubscription.t() | nil
+  def eventsub_subscription_id(subscription_id) do
+    EventsubSubscriptionQueries.with_subscription_id(subscription_id)
+    |> Repo.one()
+  end
+
   @spec eventsub_subscription_id_exists?(String.t()) :: boolean
   def eventsub_subscription_id_exists?(subscription_id) do
     EventsubSubscriptionQueries.with_subscription_id(subscription_id)
