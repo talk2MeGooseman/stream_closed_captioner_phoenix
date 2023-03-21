@@ -3,6 +3,7 @@
   "description": " ",
   "license": "MIT",
   "scripts": {
+    "deploy": "cd .. && mix assets.deploy && rm -f _build/esbuild",
     "lint": "eslint --color --ext .js,.json,.md,.ts,.tsx js/",
     "lint:fix": "npm run eslint -- --fix"
   },
