@@ -8,66 +8,112 @@
     </p>
     <div class="mb-4 space-x-0 md:space-x-2 md:mb-8">
       <%= link to: ~p"/users/register", class: "inline-flex items-center justify-center w-full mb-2 btn btn-primary btn-lg sm:w-auto sm:mb-0" do %>
-      Get Started
-      <svg class="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd"
-          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-          clip-rule="evenodd" />
-      </svg>
+        Get Started
+        <svg
+          class="w-4 h-4 ml-1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
       <% end %>
     </div>
   </div>
 
   <div class="aspect-w-16 aspect-h-9">
-    <iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""
-      frameborder="0" src="https://www.youtube.com/embed/eBtWOZcpUzQ"
-      title="Stream Closed Captioner Introduction Video"></iframe>
+    <iframe
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen=""
+      frameborder="0"
+      src="https://www.youtube.com/embed/eBtWOZcpUzQ"
+      title="Stream Closed Captioner Introduction Video"
+    >
+    </iframe>
   </div>
 </section>
 
 <section class="px-4 py-20 mx-auto text-white bg-gray-900">
-  <div
-    class="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-y-32 gap-x-10 lg:gap-x-24 max-w-5xl mx-auto px-4">
+  <div class="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-y-32 gap-x-10 lg:gap-x-24 max-w-5xl mx-auto px-4">
     <div>
       <h2 class="mb-3 text-3xl font-extrabold leading-tight tracking-tight text-center sm:text-left md:text-4xl">
         Start Using it Today
       </h2>
-      <p class="mb-6 text-lg text-center sm:text-left md:text-xl text-gray-300">Make your streams more accessiable to
-        the hard of hearing, all you have to do is create an account and you get all these awesome features.</p>
-      <%= link "Create an Account", to: ~p"/users/register", class: "w-full btn btn-primary btn-lg sm:w-auto" %>
+      <p class="mb-6 text-lg text-center sm:text-left md:text-xl text-gray-300">
+        Make your streams more accessiable to
+        the hard of hearing, all you have to do is create an account and you get all these awesome features.
+      </p>
+      <%= link("Create an Account",
+        to: ~p"/users/register",
+        class: "w-full btn btn-primary btn-lg sm:w-auto"
+      ) %>
     </div>
     <div class="flex flex-col flex-grow space-y-5">
       <div class="flex items-start">
-        <svg viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5 mt-1 mr-2 text-primary">
-          <path fill-rule="evenodd"
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
+        >
+          <path
+            fill-rule="evenodd"
             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"></path>
+            clip-rule="evenodd"
+          >
+          </path>
         </svg>
         <p class="text-lg text-gray-300">Closed Captions for your Twitch Channel</p>
       </div>
       <div class="flex items-start">
-        <svg viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5 mt-1 mr-2 text-primary">
-          <path fill-rule="evenodd"
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
+        >
+          <path
+            fill-rule="evenodd"
             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"></path>
+            clip-rule="evenodd"
+          >
+          </path>
         </svg>
         <p class="text-lg text-gray-300">Closed Captions for your Zoom Meeting</p>
       </div>
       <div class="flex items-start">
-        <svg viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5 mt-1 mr-2 text-primary">
-          <path fill-rule="evenodd"
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
+        >
+          <path
+            fill-rule="evenodd"
             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"></path>
+            clip-rule="evenodd"
+          >
+          </path>
         </svg>
         <p class="text-lg text-gray-300">Easy to Use Twitch Viewer Settings</p>
       </div>
       <div class="flex items-start">
-        <svg viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5 mt-1 mr-2 text-primary">
-          <path fill-rule="evenodd"
+        <svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
+        >
+          <path
+            fill-rule="evenodd"
             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"></path>
+            clip-rule="evenodd"
+          >
+          </path>
         </svg>
-        <p class="text-lg text-gray-300">Add Captions to your Twitch VODs using OBS WebSocket for OBS Studio</p>
+        <p class="text-lg text-gray-300">
+          Add Captions to your Twitch VODs using OBS WebSocket for OBS Studio
+        </p>
       </div>
     </div>
   </div>
@@ -90,17 +136,26 @@
         <p class="text-gray-600 mb-8">
           Choose to activate it as a video overlay or panel extension for your channel, it also works on mobile.
         </p>
-        <a target="_blank" href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-          class="w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800">Click to install</a>
+        <a
+          target="_blank"
+          href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
+          class="w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
+        >
+          Click to install
+        </a>
       </div>
       <div class="w-full sm:w-1/2 p-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"), alt: "Image of the Twitch extension installation page") %>
+        <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"),
+          alt: "Image of the Twitch extension installation page"
+        ) %>
       </div>
     </div>
     <!-- Step 2 --->
     <div class="flex flex-wrap flex-col-reverse sm:flex-row">
       <div class="w-full sm:w-1/2 p-6 mt-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/register.png"), alt: "Stream Closed Captioner registration page") %>
+        <%= img_tag(Routes.static_path(@socket, "/images/register.png"),
+          alt: "Stream Closed Captioner registration page"
+        ) %>
       </div>
       <div class="w-full sm:w-1/2 p-6 mt-6">
         <div class="align-middle">
@@ -111,7 +166,10 @@
             You can easily sign up using your Twitch account to get started on your channel, or sign up with e-mail if
             you want to just use it for Zoom.
           </p>
-          <%= link "Sign up today", to: ~p"/users/register", class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
+          <%= link("Sign up today",
+            to: ~p"/users/register",
+            class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
+          ) %>
         </div>
       </div>
     </div>
@@ -124,16 +182,23 @@
         <p class="text-gray-600 mb-8">
           Open up the settings panel to set your native language or your Zoom URL and more...
         </p>
-        <%= link "Configure settings", to: Routes.caption_settings_index_path(@socket, :show), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
+        <%= link("Configure settings",
+          to: Routes.caption_settings_index_path(@socket, :show),
+          class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
+        ) %>
       </div>
       <div class="w-full sm:w-1/2 p-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/settings.png"), alt: "Stream Closed Captioner caption settings page") %>
+        <%= img_tag(Routes.static_path(@socket, "/images/settings.png"),
+          alt: "Stream Closed Captioner caption settings page"
+        ) %>
       </div>
     </div>
     <!-- Step 4 --->
     <div class="flex flex-wrap flex-col-reverse sm:flex-row">
       <div class="w-full sm:w-1/2 p-6 mt-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/captions-start.png"), alt: "Stream Closed Captioner dashboard page focused on the start captions button") %>
+        <%= img_tag(Routes.static_path(@socket, "/images/captions-start.png"),
+          alt: "Stream Closed Captioner dashboard page focused on the start captions button"
+        ) %>
       </div>
       <div class="w-full sm:w-1/2 p-6 mt-6">
         <div class="align-middle">
@@ -143,116 +208,12 @@
           <p class="text-gray-600 mb-8">
             Click a single button to start Closed Captioning on your Twitch channel or Zoom meeting.
           </p>
-          <%= link "Start using it today!", to: Routes.dashboard_path(@socket, :index), class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800" %>
+          <%= link("Start using it today!",
+            to: Routes.dashboard_path(@socket, :index),
+            class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
+          ) %>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<%# <section class="bg-white border-b py-8">
-  <div class="container mx-auto flex flex-wrap pt-4 pb-12">
-    <h2 class="w-full my-2 text-5xl font-black leading-tight text-center text-gray-800">
-      Adding to your Twitch stream is easy!
-    </h2>
-    <div class="w-full mb-4">
-      <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
-    </div>
-
-    <div class="w-full md:w-1/4 p-6 flex flex-col flex-grow flex-shrink">
-      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
-          <p class="w-full text-gray-600 text-xs md:text-sm px-6 mt-6">
-            Step 1
-          </p>
-          <div class="w-full font-bold text-xl text-gray-800 px-6">
-            Install the Extension on your Twitch channel.
-          </div>
-          <p class="text-gray-600 text-base px-6 mb-5">
-            You can activate it as a video overlay or panel extension for your channel.
-          </p>
-        </a>
-      </div>
-      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-        <div class="flex items-center justify-start">
-          <button
-            class="mx-auto lg:mx-0 hover:underline gradient2 text-gray-800 font-extrabold rounded my-6 py-4 px-8 shadow-lg">
-            Install
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full md:w-1/4 p-6 flex flex-col flex-grow flex-shrink">
-      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
-          <p class="w-full text-gray-600 text-xs md:text-sm px-6 mt-6">
-            Step 2
-          </p>
-          <div class="w-full font-bold text-xl text-gray-800 px-6">
-            Sign up for an account.
-          </div>
-          <p class="text-gray-600 text-base px-6 mb-5">
-            Sign in with your Twitch account so Stream Closed Captioner knows which channel to use.
-          </p>
-        </a>
-      </div>
-      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-        <div class="flex items-center justify-center">
-          <button
-            class="mx-auto lg:mx-0 hover:underline gradient2 text-gray-800 font-extrabold rounded my-6 py-4 px-8 shadow-lg">
-            Sign Up
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full md:w-1/4 p-6 flex flex-col flex-grow flex-shrink">
-      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
-          <p class="w-full text-gray-600 text-xs md:text-sm px-6 mt-6">
-            Step 3
-          </p>
-          <div class="w-full font-bold text-xl text-gray-800 px-6">
-            Get your setting just right.
-          </div>
-          <p class=" text-gray-600 text-base px-6 mb-5">
-            You can control whether captions hide or show when a viewer enters your stream and more.
-          </p>
-        </a>
-      </div>
-      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-        <div class="flex items-center justify-end">
-          <button
-            class="mx-auto lg:mx-0 hover:underline gradient2 text-gray-800 font-extrabold rounded my-6 py-4 px-8 shadow-lg">
-            Go to Settings
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full md:w-1/4 p-6 flex flex-col flex-grow flex-shrink">
-      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
-        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
-          <p class="w-full text-gray-600 text-xs md:text-sm px-6 mt-6">
-            Step 4
-          </p>
-          <div class="w-full font-bold text-xl text-gray-800 px-6">
-            Get your setting just right.
-          </div>
-          <p class=" text-gray-600 text-base px-6 mb-5">
-            You can control whether captions hide or show when a viewer enters your stream and more.
-          </p>
-        </a>
-      </div>
-      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
-        <div class="flex items-center justify-end">
-          <button
-            class="mx-auto lg:mx-0 hover:underline gradient2 text-gray-800 font-extrabold rounded my-6 py-4 px-8 shadow-lg">
-            Go to Settings
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section> %>

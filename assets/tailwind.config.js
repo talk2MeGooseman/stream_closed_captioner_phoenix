@@ -23,6 +23,13 @@ module.exports = {
     plugin(({ addVariant }) => addVariant('phx-change-loading', ['.phx-change-loading&', '.phx-change-loading &'])),
   ],
   theme: {
+    extend: {
+      colors: {
+        green: colors.emerald,
+        yellow: colors.amber,
+        purple: colors.violet,
+      }
+    },
     nightwind: {
       colors: {
         white: 'gray.800',

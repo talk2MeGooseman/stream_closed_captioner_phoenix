@@ -1,7 +1,8 @@
 FROM elixir:1.14.0-alpine AS build
 
 # install build dependencies
-RUN apk add --no-cache build-base npm git python3
+RUN apt-get update -y && apt-get install -y build-essential git npm wget \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
 WORKDIR /app
