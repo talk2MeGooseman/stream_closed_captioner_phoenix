@@ -1,6 +1,6 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
-import { ApplicationController } from "stimulus-use"
+import { Controller } from '@hotwired/stimulus'
 import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
 import { Channel } from "phoenix"
@@ -18,7 +18,7 @@ const TURN_OFF_TXT = "Click to Stop Captions"
  * }} TwitchCaptionPayload
  */
 
-export default class extends ApplicationController {
+export default class extends Controller {
   static targets = [
     "outputOutline",
     "realOutput",
@@ -93,6 +93,7 @@ export default class extends ApplicationController {
   }
 
   onZoomChange({ detail: { enabled, url } }) {
+    console.log("zoom change", { enabled, url })
     this.zoomData = {
       ...this.zoomData,
       enabled,
@@ -108,7 +109,7 @@ export default class extends ApplicationController {
 
   /**
    * Receive phoenix Channel
-   * @param {{ captionsChannel: Channel}} param0 
+   * @param {{ captionsChannel: Channel}} param0
    */
   successfulSocketConnection = ({ captionsChannel }) => {
     this.captionsChannel = captionsChannel
@@ -218,7 +219,7 @@ export default class extends ApplicationController {
   }
 
   displayCaptions = (captions) => {
-    this.dispatch("payload", captions)
+    this.dispatch("payload", { detail: { ...captions } })
 
     this.outputOutlineTarget.classList.add("hidden")
     this.realOutputTarget.classList.remove("hidden")

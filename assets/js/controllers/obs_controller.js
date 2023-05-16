@@ -1,6 +1,6 @@
 import debugLogger from "debug"
 
-import { ApplicationController } from "stimulus-use"
+import { Controller } from '@hotwired/stimulus'
 
 import OBSWebSocket, { EventSubscription } from 'obs-websocket-js';
 const obs = new OBSWebSocket();
@@ -18,7 +18,7 @@ const CONNECTION_STATE = {
   ERROR: "Error",
 }
 
-export default class extends ApplicationController {
+export default class extends Controller {
   static targets = ["offButton", "onButton", "errorMarker", "errorMessage"]
   connected = false
 
@@ -141,8 +141,9 @@ export default class extends ApplicationController {
   // eslint-disable-next-line no-empty-function
   onConnectionClose = () => { }
 
-  onCaptionsReceived = async ({ detail: { interim, final } }) => {
+  onCaptionsReceived = ({ detail: { interim, final } }) => {
     if (this.connected) {
+      console.log({ interim, final })
       const textToSendBuffer = []
 
       if (interim.length > 0) textToSendBuffer.push(capitalize(interim))

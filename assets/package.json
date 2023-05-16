@@ -8,6 +8,7 @@
     "lint:fix": "npm run eslint -- --fix"
   },
   "dependencies": {
+    "@hotwired/stimulus": "^3.2.1",
     "alpinejs": "^2.7.3",
     "debug": "^4.3.1",
     "eventemitter3": "^4.0.7",
@@ -22,8 +23,7 @@
     "phoenix_live_view": "file:../deps/phoenix_live_view",
     "ramda": "^0.27.1",
     "sha.js": "^2.4.11",
-    "stimulus": "^2.0.0",
-    "stimulus-use": "^0.23.0",
+    "stimulus-use": "^0.52.0",
     "uuid": "^9.0.0",
     "worker-timers": "^7.0.29"
   },
