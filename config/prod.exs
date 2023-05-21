@@ -54,9 +54,11 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 # and configuration from environment variables.
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
-  adapter: Bamboo.GmailAdapter,
-  sub: "erik.guzman@guzman.codes",
-  sandbox: false
+  adapter: Bamboo.SendGridAdapter,
+  api_key: {:system, "SENDGRID_API_KEY"},
+  hackney_opts: [
+    recv_timeout: :timer.minutes(1)
+  ]
 
 config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
@@ -102,9 +104,6 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID"),
   client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
   redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
-
-config :goth,
-  json: System.get_env("BAMBOO_EMAIL_CREDS")
 
 config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
 

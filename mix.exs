@@ -40,7 +40,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe_cache, git: "https://github.com/IvanIvanoff/absinthe_cache", branch: "master"},
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
-      {:bamboo_gmail, "~> 0.2.0", only: [:prod, :dev]},
       {:bypass, "~> 2.1.0"},
       {:cachex, "~> 3.4"},
       {:cors_plug, "~> 3.0"},
