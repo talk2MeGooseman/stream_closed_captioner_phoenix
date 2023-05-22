@@ -16,11 +16,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
     websocket: [
       check_origin: [
         "//localhost:4000",
-        "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv",
         "//localhost:8080",
-        "//stream-cc.gooseman.codes",
+        "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv",
         "//talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev",
-        "//talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.preview.app.github.dev"
+        "//talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.preview.app.github.dev",
+        "//#{System.get_env("HOST")}"
       ]
     ],
     longpoll: false
