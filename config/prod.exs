@@ -106,16 +106,15 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 
 config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
 
-k8s_selector = System.get_env("LIBCLUSTER_KUBERNETES_SELECTOR")
-k8s_name = System.get_env("LIBCLUSTER_KUBERNETES_NODE_BASENAME")
-
 config :libcluster,
   topologies: [
-    k8s_example: [
-      strategy: Cluster.Strategy.Kubernetes,
+    tags_example: [
+      strategy: Elixir.ClusterEC2.Strategy.Tags,
       config: [
-        kubernetes_selector: k8s_selector,
-        kubernetes_node_basename: k8s_name
+        ec2_tagname: System.get_env("LIBCLUSTER_EC2_TAGNAME"),
+        app_prefix: "stream-cc-web",
+        ip_type: :private,
+        show_debug: false
       ]
     ]
   ]
