@@ -2,8 +2,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
   alias StreamClosedCaptionerPhoenix.Repo
+  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
   def with_id(query \\ base(), id) do
     query

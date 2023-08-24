@@ -169,6 +169,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
       live("/caption-settings", CaptionSettingsLive.Index, :show)
+      live "/credit-history", CreditHistoryLive
     end
 
     resources "/transcripts", TranscriptController, except: [:create, :new] do
