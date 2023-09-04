@@ -73,31 +73,33 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   # !!! From now on, migrations should only be done from Ecto !!!
   migration_source: "ecto_schema_migrations"
 
-secret_key_base =
-  System.get_env("SECRET_KEY_BASE") ||
-    raise """
-    environment variable SECRET_KEY_BASE is missing.
-    You can generate one by calling: mix phx.gen.secret
-    """
+if config_env() == :prod do
+  secret_key_base =
+    System.get_env("SECRET_KEY_BASE") ||
+      raise """
+      environment variable SECRET_KEY_BASE is missing.
+      You can generate one by calling: mix phx.gen.secret
+      """
 
-live_signing_salt =
-  System.get_env("LIVE_SIGNING_SALT") ||
-    raise """
-    environment variable LIVE_SIGNING_SALT is missing.
-    You can generate one by calling: mix phx.gen.secret 32
-    """
+  live_signing_salt =
+    System.get_env("LIVE_SIGNING_SALT") ||
+      raise """
+      environment variable LIVE_SIGNING_SALT is missing.
+      You can generate one by calling: mix phx.gen.secret 32
+      """
 
-config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  # force_ssl: [rewrite_on: [:x_forwarded_proto]]
-  server: true,
-  http: [
-    ip: {0, 0, 0, 0, 0, 0, 0, 0},
-    port: String.to_integer(System.get_env("PORT") || "4000")
-  ],
-  # url: [host: System.get_env("HOST"), port: 443, scheme: "https"],
-  url: [host: System.get_env("HOST")],
-  secret_key_base: secret_key_base,
-  live_view: [signing_salt: live_signing_salt]
+  config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
+    # force_ssl: [rewrite_on: [:x_forwarded_proto]]
+    server: true,
+    http: [
+      ip: {0, 0, 0, 0, 0, 0, 0, 0},
+      port: String.to_integer(System.get_env("PORT") || "4000")
+    ],
+    # url: [host: System.get_env("HOST"), port: 443, scheme: "https"],
+    url: [host: System.get_env("HOST")],
+    secret_key_base: secret_key_base,
+    live_view: [signing_salt: live_signing_salt]
+end
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID"),
