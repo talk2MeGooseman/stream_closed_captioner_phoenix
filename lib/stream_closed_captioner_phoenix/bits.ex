@@ -16,6 +16,19 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   alias StreamClosedCaptionerPhoenix.Repo
 
+  def bits_transactions_and_debits_for_user(user_id, offset, limit) do
+    records =
+      BitsTransactionQueries.get_bits_transactions_and_debits_for_user(user_id)
+      |> limit(^limit)
+      |> offset(^offset)
+      |> Repo.all()
+
+    total_records =
+      Repo.count(BitsTransactionQueries.get_bits_transactions_and_debits_for_user(user_id))
+
+    %{records: records, total_records: total_records}
+  end
+
   def activate_translations_for(%User{} = user) do
     Ecto.Multi.new()
     |> Ecto.Multi.run(:bits_balance_check, bits_balance_check(user))
