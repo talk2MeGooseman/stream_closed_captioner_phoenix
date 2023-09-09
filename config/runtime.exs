@@ -52,12 +52,12 @@ if config_env() == :prod do
   ecto_ipv6? = System.get_env("ECTO_IPV6") == "true"
 
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-    url: database_url,
+    username: System.get_env("RDS_USERNAME"),
+    password: System.get_env("RDS_PASSWORD"),
+    database: System.get_env("RDS_DB_NAME"),
+    hostname: System.get_env("RDS_HOSTNAME"),
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     ssl: true,
-    port: 5432,
-    # IMPORTANT: Or it won't find the DB server
-    # socket_options: if(ecto_ipv6?, do: [:inet6], else: []),
     # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
     # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
     # !!! From now on, migrations should only be done from Ecto !!!
