@@ -60,6 +60,8 @@ COPY lib lib
 
 COPY assets assets
 
+COPY config/profanity/english.txt config/profanity/english.txt
+
 # compile assets
 RUN mix assets.deploy
 
