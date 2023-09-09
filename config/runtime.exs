@@ -57,8 +57,12 @@ if config_env() == :prod do
     client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
     redirect_uri: System.get_env("TWITCH_REDIRECT_URI")
 
-  config :goth,
-    json: System.get_env("BAMBOO_EMAIL_CREDS")
+  config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
+    adapter: Bamboo.SendGridAdapter,
+    api_key: {:system, "SENDGRID_API_KEY"},
+    hackney_opts: [
+      recv_timeout: :timer.minutes(1)
+    ]
 
   config :joken, default_signer: System.get_env("TWITCH_TOKEN_SECRET")
 
