@@ -45,7 +45,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:cors_plug, "~> 3.0"},
       {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3.0"},
-      {:floki, ">= 0.0.0"},
+      {:floki, ">= 0.30.0"},
+      {:flop, "~> 0.22.1"},
+      {:flop_phoenix, "~> 0.21.1"},
       # Waffle for file upload
       {:waffle, "~> 1.1.1"},
       {:waffle_ecto, "~> 0.0.9"},
@@ -76,7 +78,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:jason, "~> 1.0"},
       {:joken, "~> 2.3"},
       # Admin Dashboard
-      {:kaffy, "~> 0.9.4"},
+      {:kaffy, "0.10.0-rc.2"},
       {:libcluster, "~> 3.3"},
       {:libcluster_ec2, "~> 0.7"},
       {:mox, "~> 1.0.0"},
@@ -87,14 +89,14 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.13"},
       {:observer_cli, "~> 1.6"},
-      {:phoenix_ecto, "~> 4.3"},
+      {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
-      {:phoenix, "~> 1.7.0"},
-      {:phoenix_live_view, "~> 0.19.0"},
-      {:phoenix_live_dashboard, "~> 0.8.1"},
+      {:phoenix_live_dashboard, "~> 0.8.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 0.19.0"},
+      {:phoenix_view, "~> 2.0.2"},
+      {:phoenix, "~> 1.7.7"},
       {:phoenix_meta_tags, "~> 0.1.9"},
-      {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 5.0"},
       {:postgrex, ">= 0.0.0"},
@@ -111,7 +113,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:websockex, "~> 0.4.3"},
       # UI Build stuff
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev}
     ]
   end
 

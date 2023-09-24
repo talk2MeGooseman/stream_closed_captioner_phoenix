@@ -176,6 +176,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
   def put_session_layout(conn, _opts) do
     conn
     |> put_layout(false)
-    |> put_root_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, :session})
+    |> put_root_layout({StreamClosedCaptionerPhoenixWeb.Layouts, :session})
   end
 end

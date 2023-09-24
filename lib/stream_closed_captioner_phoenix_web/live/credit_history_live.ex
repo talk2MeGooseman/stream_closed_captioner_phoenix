@@ -3,16 +3,54 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
   use Phoenix.LiveView
   import StreamClosedCaptionerPhoenixWeb.LiveHelpers
 
-  alias StreamClosedCaptionerPhoenix.Bits.BitsTransactionQueries
+  alias StreamClosedCaptionerPhoenix.Bits
 
   def render(assigns) do
+    assigns =
+      with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
+        assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
+      end
+
     ~H"""
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <ul class="list">
-        <%= for entry <- @list do %>
-          <li class="list-item"><%= entry.action %></li>
-        <% end %>
-      </ul>
+    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
+      <table class="mt-11 w-[40rem] sm:w-full">
+        <thead class="text-left text-[0.8125rem] leading-6 text-zinc-500">
+          <tr>
+            <th class="p-0 pb-4 pr-6 font-normal">Action</th>
+            <th class="p-0 pb-4 pr-6 font-normal">Amount</th>
+            <th class="p-0 pb-4 pr-6 font-normal">Date</th>
+          </tr>
+        </thead>
+        <tbody
+          id="transactions"
+          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
+          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
+        >
+          <tr :for={row <- @rows} id={row[:id]} class="group">
+            <td class="relative p-0">
+              <div class="block py-4 pr-6">
+                <span>
+                  <%= row[:action] %>
+                </span>
+              </div>
+            </td>
+            <td class="relative p-0">
+              <div class="block py-4 pr-6">
+                <span>
+                  <%= row[:amount] %>
+                </span>
+              </div>
+            </td>
+            <td class="relative p-0">
+              <div class="block py-4 pr-6">
+                <span>
+                  <%= convert_timestamp_to_human_readable(row[:time]) %>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     """
   end
@@ -20,12 +58,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
   def mount(_params, session, socket) do
     current_user = session_current_user(session)
 
-    list = BitsTransactionQueries.get_bits_transactions_and_debits_for_user(current_user.id)
+    result = Bits.bits_transactions_and_debits_for_user(current_user.id, 0, 50)
 
-    {:ok, assign(socket, :list, list)}
+    {:ok, assign(socket, :rows, result.records) |> assign(:temperature, 0)}
   end
 
-  # def handle_event("inc_temperature", _params, socket) do
-  #   {:ok, update(socket, :temperature, &(&1 + 1))}
-  # end
+  def handle_event("load_more", _value, socket) do
+    {:ok, update(socket, :temperature, &(&1 + 1))}
+  end
+
+  def convert_timestamp_to_human_readable(timestamp) do
+    Timex.to_datetime(timestamp, "Etc/UTC")
+    |> Timex.format!("{UNIX}")
+  end
 end

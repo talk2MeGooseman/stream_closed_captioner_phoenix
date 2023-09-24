@@ -1,4 +1,4 @@
-defmodule StreamClosedCaptionerPhoenixWeb.LayoutViewTest do
+defmodule StreamClosedCaptionerPhoenixWeb.LayoutsTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
   # When testing helpers, you may want to import Phoenix.HTML and

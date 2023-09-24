@@ -6,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   This can be used in your application as:
 
       use StreamClosedCaptionerPhoenixWeb, :controller
-      use StreamClosedCaptionerPhoenixWeb, :view
+      use StreamClosedCaptionerPhoenixWeb, :html
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -20,40 +20,40 @@ defmodule StreamClosedCaptionerPhoenixWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: StreamClosedCaptionerPhoenixWeb
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: StreamClosedCaptionerPhoenixWeb.Layouts]
 
       use PhoenixMetaTags.TagController
+
       import Plug.Conn
-      import StreamClosedCaptionerPhoenixWeb.Gettext
+
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
       unquote(verified_routes())
     end
   end
 
-  def view do
+  def html do
     quote do
-      use Phoenix.View,
-        root: "lib/stream_closed_captioner_phoenix_web/templates",
-        namespace: StreamClosedCaptionerPhoenixWeb,
-        pattern: "**/*"
+      use Phoenix.Component
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
-        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
+        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1, get_csrf_token: 0]
 
       use PhoenixMetaTags.TagView
 
       # Include shared imports and aliases for views
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {StreamClosedCaptionerPhoenixWeb.LayoutView, :live}
+        layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :app}
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
@@ -61,7 +61,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     quote do
       use Phoenix.Component
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
@@ -69,13 +69,13 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     quote do
       use Phoenix.LiveComponent
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
   def router do
     quote do
-      use Phoenix.Router
+      use Phoenix.Router, helpers: true
 
       import Plug.Conn
       import Phoenix.Controller
@@ -86,11 +86,10 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import StreamClosedCaptionerPhoenixWeb.Gettext
     end
   end
 
-  defp view_helpers do
+  defp html_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
@@ -99,12 +98,21 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import Phoenix.LiveView.Helpers
       import StreamClosedCaptionerPhoenixWeb.LiveHelpers
 
+      # Core UI components and translation
+      import StreamClosedCaptionerPhoenixWeb.CoreComponents
+      use StreamClosedCaptionerPhoenixWeb.ComponentLibrary
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
       import StreamClosedCaptionerPhoenixWeb.ErrorHelpers
       import StreamClosedCaptionerPhoenixWeb.Gettext
+
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
+
       unquote(verified_routes())
     end
   end

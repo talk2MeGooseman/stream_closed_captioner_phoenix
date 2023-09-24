@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%= csrf_meta_tag() %>
+    <%= live_title_tag(assigns[:page_title] || "Stream Closed Captioner",
+      suffix: " · Closed Captions"
+    ) %>
+    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+    <link rel="icon" href={~p"/images/favicon-32x32.png"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script>
+      window.userId = "<%= assigns[:current_user].id %>";
+    </script>
+    <script>
+      window.userToken = "<%= assigns[:socket_token] %>";
+    </script>
+    <script>
+      window.permissions = {
+        isDeepgramEnabled: <%= FunWithFlags.enabled?(:deepgram, for: assigns[:current_user]) %>
+      }
+    </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+
+  <body class="dark:text-white">
+    <section class="min-h-screen bg-gray-50" x-data="{ sideBar: false }">
+      <nav
+        class="fixed top-0 left-0 z-20 h-full pb-10 overflow-x-hidden overflow-y-auto transition origin-left transform bg-gray-900 dark:bg-gray-800 w-60 md:translate-x-0"
+        x-bind:class="{ '-translate-x-full' : !sideBar, 'translate-x-0' : sideBar }"
+        @click.away="sideBar = false"
+      >
+        <a href="/" class="flex items-center px-4 py-5">
+          <%= img_tag(Routes.static_path(@conn, "/images/cc100x100.png"),
+            alt: "Stream Closed Captioner Logo",
+            class: "w-20 rounded"
+          ) %>
+        </a>
+        <a
+          href="https://twitter.com/talk2megooseman"
+          target="_blank"
+          class="block px-4 text-white text-sm italic nightwind-prevent"
+        >
+          by
+          Talk2MeGooseman
+        </a>
+        <nav class="text-sm font-medium text-gray-500" aria-label="Main Navigation">
+          <%= live_patch to: Routes.dashboard_path(@conn, :index), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
+            <svg
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            <span>Dashboard</span>
+          <% end %>
+          <a
+            class=" flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+            href="/announcements"
+          >
+            <svg
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />
+              <path d="M4 9a1 1 0 011-1 7 7 0 017 7 1 1 0 11-2 0 5 5 0 00-5-5 1 1 0 01-1-1zM3 15a2 2 0 114 0 2 2 0 01-4 0z" />
+            </svg>
+            <span>Annoucements</span>
+          </a>
+          <a
+            class=" flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+            href="/supporters"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Supporters</span>
+          </a>
+          <a
+            target="_blank"
+            class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+            href="https://patreon.com/talk2megooseman"
+          >
+            <%= img_tag(Routes.static_path(@conn, "/images/patreon.svg"),
+              alt: "Patreon Logo",
+              class:
+                "shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+            ) %>
+            <span>Become a Supporter</span>
+          </a>
+          <a
+            class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+            href="/showcase"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+            >
+              <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+            </svg>
+            <span>Showcase</span>
+          </a>
+          <a
+            class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+            href="https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61"
+            target="blank"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            <span>Help / FAQ</span>
+          </a>
+          <%= live_patch to: Routes.caption_settings_index_path(@conn, :show), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
+            <svg
+              class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Caption Settings</span>
+          <% end %>
+        </nav>
+      </nav>
+      <div class="ml-0 transition md:ml-60">
+        <header class="flex items-center justify-between w-full px-4 h-14">
+          <button class="block btn btn-light-secondary md:hidden" @click.stop="sideBar = true">
+            <span class="sr-only">Menu</span>
+            <svg
+              class="w-4 h-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <div class="hidden -ml-3 form-icon md:block w-96"></div>
+          <div class="flex items-center">
+            <div data-controller="darkmode">
+              <button
+                data-action="click->darkmode#toggle"
+                type="button"
+                name="darkmode"
+                aria-label="Toggle dark mode off and on"
+              >
+                <svg
+                  data-darkmode-target="darkmodeOff"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <svg
+                  data-darkmode-target="darkmodeOn"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 hidden"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            <%= _user_dropdown(assigns) %>
+          </div>
+        </header>
+        <div class="p-4">
+          <!-- Add content here, remove div below -->
+          <%= @inner_content %>
+        </div>
+        <%= _footer(assigns) %>
+      </div>
+      <!-- Sidebar Backdrop -->
+      <div
+        class="fixed inset-0 z-10 w-screen h-screen bg-black/25 md:hidden"
+        x-show.transition="sideBar"
+        x-cloak
+      >
+      </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/kutty@latest/dist/kutty.min.js">
+    </script>
+    <script
+      data-goatcounter="https://guzman.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    >
+    </script>
+  </body>
+</html>

@@ -19,9 +19,9 @@ defmodule StreamClosedCaptionerPhoenix.Emails do
     new_email()
     |> from(@from)
     # Set default layout
-    |> put_html_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.html"})
+    |> put_html_layout({StreamClosedCaptionerPhoenixWeb.Layouts, "email.html"})
     # Set default text layout
-    |> put_text_layout({StreamClosedCaptionerPhoenixWeb.LayoutView, "email.text"})
+    |> put_text_layout({StreamClosedCaptionerPhoenixWeb.Layouts, "email.text"})
   end
 
   defp premail(email) do

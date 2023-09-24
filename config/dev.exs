@@ -65,7 +65,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :sample_app, dev_routes: true
+config :stream_closed_captioner_phoenix, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

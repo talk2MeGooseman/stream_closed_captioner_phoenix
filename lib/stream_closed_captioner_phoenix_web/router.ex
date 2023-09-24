@@ -9,7 +9,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:accepts, ["html"])
     plug(:fetch_session)
     plug(:fetch_live_flash)
-    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.LayoutView, :root})
+    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.Layouts, :root})
     plug(:protect_from_forgery)
 
     plug(:put_secure_browser_headers)
@@ -20,7 +20,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   pipeline :logged_in do
-    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.LayoutView, :logged_in})
+    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.Layouts, :logged_in})
   end
 
   pipeline :admin_protected do
@@ -169,11 +169,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
       live("/caption-settings", CaptionSettingsLive.Index, :show)
-      live "/credit-history", CreditHistoryLive
-    end
-
-    resources "/transcripts", TranscriptController, except: [:create, :new] do
-      resources("/messages", MessageController, except: [:new, :create, :index])
+      live("/credit-history", CreditHistoryLive)
     end
 
     resources("/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show])
