@@ -33,6 +33,7 @@ defmodule Azure.Cognitive do
     headers = [
       {"Content-Type", "application/json"},
       {"Ocp-Apim-Subscription-Key", System.get_env("COGNITIVE_SERVICE_KEY")},
+      {"Ocp-Apim-Subscription-Region", "westus2"},
       {"X-ClientTraceId", UUID.generate()}
     ]
 
