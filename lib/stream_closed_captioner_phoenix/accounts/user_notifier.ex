@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserNotifier do
 
     new_email(
       to: to,
-      from: "no-reply@gooseman.codes",
+      from: "erik.guzman@guzman.codes",
       subject: subject,
       text_body: body
     )

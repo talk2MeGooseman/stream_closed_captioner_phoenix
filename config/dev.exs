@@ -77,10 +77,14 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-# config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
-#   adapter: Bamboo.GmailAdapter,
-#   sub: "erik.guzman@guzman.codes",
-#   sandbox: false
+config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
+  adapter: Bamboo.SendGridAdapter,
+  api_key: {:system, "SENDGRID_API_KEY"},
+  hackney_opts: [
+    recv_timeout: :timer.minutes(1)
+  ],
+  sub: "erik.guzman@guzman.codes",
+  sandbox: false
 
 config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
