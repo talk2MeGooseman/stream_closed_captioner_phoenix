@@ -15,7 +15,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
   url: [host: "localhost"],
   secret_key_base: "paFgnDds8p/UdoZgGKLX7GV8aP4Yx2yZqUDAGqkicvUoO8yYQZ7gM0oXS0jM7Yg/",
   render_errors: [
-    view: StreamClosedCaptionerPhoenixWeb.ErrorView,
+    view: StreamClosedCaptionerPhoenixWeb.ErrorHTML,
     accepts: ~w(html json),
     layout: false
   ],
