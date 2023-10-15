@@ -60,6 +60,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
         "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev"
       ]
     )
+
+    plug(Vigil)
   end
 
   if Mix.env() == :dev do
