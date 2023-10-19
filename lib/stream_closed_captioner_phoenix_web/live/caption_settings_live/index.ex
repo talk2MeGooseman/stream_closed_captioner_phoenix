@@ -9,16 +9,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
   def mount(_params, session, socket) do
     current_user =
       session_current_user(session)
-      |> Repo.preload(:stream_settings)
+      |> Repo.preload([:stream_settings, :translate_languages])
 
-    changeset = Settings.change_stream_settings(current_user.stream_settings)
+    language =
+      if Enum.empty?(current_user.translate_languages) do
+        %Settings.TranslateLanguage{}
+      else
+        Enum.at(current_user.translate_languages, 0)
+      end
 
     socket =
       assign(socket, :current_user, current_user)
-      |> assign(:changeset, changeset)
+      |> assign(:changeset, Settings.change_stream_settings(current_user.stream_settings))
+      |> assign(
+        :language_changeset,
+        Settings.change_translate_language(language)
+      )
+      |> assign(:translatable_language, Settings.translateable_language_list())
       |> assign(:live_socket_id, Map.get(session, "live_socket_id"))
+      |> assign(:stream_settings, current_user.stream_settings)
+      |> assign(:selected_language, language)
 
-    {:ok, assign(socket, :stream_settings, current_user.stream_settings)}
+    {:ok, socket}
   end
 
   @impl true
@@ -83,6 +95,54 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
          socket
          |> assign(:stream_settings, stream_settings)
          |> put_flash(:info, "Blocklist word added successfully.")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
+
+  def handle_event(
+        "add",
+        %{"translate_language" => new_selected_language},
+        %{assigns: %{selected_language: %{id: nil}}} = socket
+      ) do
+    case Settings.create_translate_language(
+           socket.assigns.current_user,
+           new_selected_language
+         ) do
+      {:ok, selected_language} ->
+        {:noreply,
+         socket
+         |> assign(:selected_language, selected_language)
+         |> assign(
+           :language_changeset,
+           Settings.change_translate_language(selected_language)
+         )
+         |> put_flash(:info, "Updated translation language.")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
+
+  def handle_event(
+        "add",
+        %{"translate_language" => new_selected_language},
+        %{assigns: %{selected_language: %{id: id}}} = socket
+      ) do
+    case Settings.update_translate_language(
+           socket.assigns.selected_language,
+           new_selected_language
+         ) do
+      {:ok, selected_language} ->
+        {:noreply,
+         socket
+         |> assign(:selected_language, selected_language)
+         |> assign(
+           :language_changeset,
+           Settings.change_translate_language(selected_language)
+         )
+         |> put_flash(:info, "Updated translation language.")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}

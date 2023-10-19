@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   @moduledoc """
   The Settings context.
   """
-  @default_languages ["de", "es", "fr", "en"]
+  @default_languages []
 
   @translatable_languages %{
     "af" => "Afrikaans",

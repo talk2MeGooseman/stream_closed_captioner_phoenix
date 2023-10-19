@@ -101,7 +101,7 @@
                 <%= _switch_off(assigns) %>
               </div>
               <div class="hidden" data-obs-target="onButton">
-                <%= _switch_on(assigns)  %>
+                <%= _switch_on(assigns) %>
               </div>
             </div>
           </div>
@@ -184,9 +184,17 @@
         </div>
         <div class="flex-1 p-2">
           <h5 class="text-sm font-bold text-gray-900">
-            <%= Map.values(@translate_languages) |> Enum.join(", ") %>
+            <%= if Enum.empty?(@translate_languages) do %>
+              <%= live_patch to: ~p"/users/caption-settings", class: "text-red-500 mx-5" do %>
+                You must select a translation language in your Caption Settings to activate translations
+              <% end %>
+            <% else %>
+              <%= Map.values(@translate_languages) |> Enum.join(", ") %>
+            <% end %>
           </h5>
-          <p class="text-sm font-medium leading-none text-gray-600">Translatable Languages</p>
+          <p class="text-sm font-medium leading-none text-gray-600">
+            Selected Translation Language
+          </p>
         </div>
         <div class="flex-1 p-2">
           <p class="text-sm font-medium leading-none text-gray-600">

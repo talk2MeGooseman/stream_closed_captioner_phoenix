@@ -13,14 +13,24 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
         %{payload | translations: translations}
 
       nil ->
-        case Bits.activate_translations_for(user) do
-          {:ok, _} ->
-            %Translations{translations: translations} = get_translations(user, text)
-            %{payload | translations: translations}
+        to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
 
-          _ ->
-            payload
+        if Enum.empty?(to_languages) do
+          payload
+        else
+          activate_translations_for(user, payload, text)
         end
+    end
+  end
+
+  defp activate_translations_for(%User{} = user, payload, text) do
+    case Bits.activate_translations_for(user) do
+      {:ok, _} ->
+        translations = get_translations(user, text)
+        %{payload | translations: translations}
+
+      _ ->
+        payload
     end
   end
 
