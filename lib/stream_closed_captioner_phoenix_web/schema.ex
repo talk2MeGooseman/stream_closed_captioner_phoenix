@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema do
-  import AbsintheCache, only: [cache_resolve: 1, cache_resolve: 2]
+  import AbsintheCache, only: [cache_resolve: 2]
 
   use Absinthe.Schema
 
@@ -25,39 +25,41 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   @desc "Information of a channel"
   object :channel_info do
-    field :uid, :string
+    field(:uid, :string)
 
     field :bits_balance, :bits_balance do
-      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: 300, max_ttl_offset: 10)
+      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: :timer.minutes(5))
     end
 
     field :translations, :translations do
-      cache_resolve(&Resolvers.Settings.get_translations_info/3, ttl: 300, max_ttl_offset: 10)
+      cache_resolve(&Resolvers.Settings.get_translations_info/3,
+        ttl: :timer.minutes(5)
+      )
     end
   end
 
   @desc "Users bits balance"
   object :bits_balance do
-    field :balance, :integer
+    field(:balance, :integer)
   end
 
   @desc "Translations information"
   object :translations do
-    field :languages, :json
-    field :activated, :boolean
-    field :created_at, :datetime
+    field(:languages, :json)
+    field(:activated, :boolean)
+    field(:created_at, :datetime)
   end
 
   @desc "Information the a Twitch transaction"
   object :twitch_transaction do
-    field :message, :json
+    field(:message, :json)
   end
 
   @desc "Twitch Captions"
   object :twitch_caption do
-    field :interim, :string
-    field :final, :string
-    field :translations, :json
+    field(:interim, :string)
+    field(:final, :string)
+    field(:translations, :json)
   end
 
   query do
@@ -68,7 +70,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :channel_info, :channel_info do
       arg(:id, non_null(:id))
 
-      cache_resolve(&Resolvers.AccountsOauth.get_channel_info/3, ttl: 300, max_ttl_offset: 10)
+      resolve(&Resolvers.AccountsOauth.get_channel_info/3)
     end
   end
 
