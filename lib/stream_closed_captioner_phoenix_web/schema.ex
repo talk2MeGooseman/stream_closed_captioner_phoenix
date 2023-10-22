@@ -28,12 +28,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field(:uid, :string)
 
     field :bits_balance, :bits_balance do
-      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: :timer.minutes(5))
+      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: :timer.minutes(1))
     end
 
     field :translations, :translations do
       cache_resolve(&Resolvers.Settings.get_translations_info/3,
-        ttl: :timer.minutes(5)
+        ttl: :timer.minutes(1)
       )
     end
   end

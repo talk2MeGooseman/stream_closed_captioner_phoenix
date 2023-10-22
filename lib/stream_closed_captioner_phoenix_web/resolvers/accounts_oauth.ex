@@ -4,6 +4,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.AccountsOauth do
       }) do
     id = Map.get(decoded_token, "channel_id")
 
+    # TODO: Cache the user query using cachex
     case StreamClosedCaptionerPhoenix.AccountsOauth.get_user_for_provider("twitch", id) do
       nil ->
         {:error, "Channel #{id} not found"}
