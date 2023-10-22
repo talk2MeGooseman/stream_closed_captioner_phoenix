@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
-    active_users = StreamClosedCaptionerPhoenixWeb.ActivePresence.list("active_channels")
+    active_users = StreamClosedCaptionerPhoenixWeb.UserTracker.list("active_channels")
 
     channel_ids = Enum.reduce(active_users, [], fn data, acc -> reduced_user_list(data, acc) end)
 

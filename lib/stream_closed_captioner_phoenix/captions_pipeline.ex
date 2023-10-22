@@ -6,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.{Profanity, Translations}
-  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
+  alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
   @type message_map :: %{
           optional(:final) => String.t(),
@@ -40,7 +40,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     payload =
       CaptionsPayload.new(message)
       |> tap(fn _ ->
-        ActivePresence.update(self(), "active_channels", user.uid, %{
+        UserTracker.update(self(), "active_channels", user.uid, %{
           last_publish: System.system_time(:second)
         })
       end)

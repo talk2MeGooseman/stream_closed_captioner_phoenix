@@ -132,6 +132,12 @@ config :stream_closed_captioner_phoenix,
 # Configure the Repo to use advisory locks for locking migrations while running
 config StreamClosedCaptionerPhoenix.Repo, migration_lock: :pg_advisory_lock
 
+# config :stream_closed_captioner_phoenix, :pubsub_redis,
+#   name: StreamClosedCaptionerPhoenix.PubSub,
+#   adapter: Phoenix.PubSub.Redis,
+#   host: System.get_env("REDIS"),
+#   node_name: System.get_env("NODE") || "stream_closed_captioner_phoenix"
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.14.41",

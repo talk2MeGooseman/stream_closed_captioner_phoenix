@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   use StreamClosedCaptionerPhoenixWeb, :channel
-  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
+  alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
   @impl true
   def join("captions:" <> user_id, _payload, socket) do
@@ -85,7 +85,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_in("active", _payload, socket) do
     user = socket.assigns.current_user
 
-    ActivePresence.update(self(), "active_channels", user.uid, %{
+    UserTracker.update(self(), "active_channels", user.uid, %{
       last_publish: System.system_time(:second)
     })
 
@@ -100,7 +100,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   defp track_user(uid) when is_binary(uid) do
     if String.length(uid) > 0 do
-      ActivePresence.track(self(), "active_channels", uid, %{})
+      UserTracker.track(self(), "active_channels", uid, %{})
     end
   end
 

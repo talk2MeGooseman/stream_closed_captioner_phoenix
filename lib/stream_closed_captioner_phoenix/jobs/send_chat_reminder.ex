@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
       :cancel
       dbg("Job cancelled due to errors: #{inspect(errors)}")
     else
-      if !StreamClosedCaptionerPhoenixWeb.ActivePresence.is_channel_active?(broadcaster_user_id) do
+      if !StreamClosedCaptionerPhoenixWeb.UserTracker.is_channel_active?(broadcaster_user_id) do
         dbg("Sending chat reminder to #{broadcaster_user_login}")
 
         Twitch.send_extension_chat_message(

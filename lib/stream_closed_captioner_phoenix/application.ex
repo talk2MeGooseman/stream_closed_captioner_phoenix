@@ -23,7 +23,11 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       StreamClosedCaptionerPhoenixWeb.Endpoint,
       # Start a worker by calling: StreamClosedCaptionerPhoenix.Worker.start_link(arg)
       # {StreamClosedCaptionerPhoenix.Worker, arg}
-      StreamClosedCaptionerPhoenixWeb.ActivePresence,
+      {StreamClosedCaptionerPhoenixWeb.UserTracker,
+       [
+         name: StreamClosedCaptionerPhoenixWeb.UserTracker,
+         pubsub_server: StreamClosedCaptionerPhoenix.PubSub
+       ]},
       StreamClosedCaptionerPhoenix.TranslationCache,
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
       {ConCache,
@@ -54,6 +58,10 @@ defmodule StreamClosedCaptionerPhoenix.Application do
   # Conditionally disable queues or plugins here.
   defp oban_config do
     Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
+  end
+
+  defp redis_pubsub_config do
+    Application.fetch_env!(:stream_closed_captioner_phoenix, :pubsub_redis)
   end
 
   # defp bot_config do

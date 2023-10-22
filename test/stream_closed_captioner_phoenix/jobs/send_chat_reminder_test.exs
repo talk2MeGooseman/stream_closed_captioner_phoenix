@@ -4,11 +4,11 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminderTest do
   use Oban.Testing, repo: StreamClosedCaptionerPhoenix.Repo
 
   alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
-  alias StreamClosedCaptionerPhoenixWeb.ActivePresence
+  alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
   setup do
     on_exit(fn ->
-      for pid <- ActivePresence.fetchers_pids() do
+      for pid <- UserTracker.fetchers_pids() do
         ref = Process.monitor(pid)
         assert_receive {:DOWN, ^ref, _, _, _}, 1000
       end
@@ -36,7 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminderTest do
   end
 
   test "it does not send a chat message to the broadcaster if the channel is active" do
-    ActivePresence.track(self(), "active_channels", "123", %{})
+    UserTracker.track(self(), "active_channels", "123", %{})
 
     # Enqueue a job
     assert :ok =
