@@ -58,10 +58,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
 
   def is_channel_active?(channel_id) do
     StreamClosedCaptionerPhoenixWeb.UserTracker.get_by_key("active_channels", channel_id)
+    |> List.first()
     |> channel_recently_published?()
   end
 
-  defp reduced_user_list({uid, %{metadata: metadata}}, acc) when is_binary(uid) do
+  defp reduced_user_list({uid, metadata}, acc) when is_binary(uid) do
     elapased_time = current_timestamp() - get_last_publish(metadata)
 
     if currently_active(elapased_time) do
@@ -73,7 +74,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
 
   defp reduced_user_list(_, acc), do: acc
 
-  defp channel_recently_published?(%{metadata: metadata}) do
+  defp channel_recently_published?({uid, metadata}) do
     elapased_time = current_timestamp() - get_last_publish(metadata)
     currently_active(elapased_time)
   end
