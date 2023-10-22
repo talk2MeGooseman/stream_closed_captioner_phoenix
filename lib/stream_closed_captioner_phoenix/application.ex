@@ -38,6 +38,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          acquire_lock_timeout: 30_000
        ]},
       # {TMI.Supervisor, bot_config()},
+      NewRelicOban.Telemetry.Oban,
       {Oban, oban_config()}
     ]
 

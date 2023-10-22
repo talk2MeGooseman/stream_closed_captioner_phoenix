@@ -89,6 +89,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:new_relic_agent, "~> 1.27"},
       {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.13"},
+      {:new_relic_oban, "~> 0.0.1"},
       {:observer_cli, "~> 1.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
