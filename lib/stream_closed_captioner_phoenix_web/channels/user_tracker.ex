@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
   @behaviour Phoenix.Tracker
 
-  @active_time_out 700
+  @active_time_out 300
 
   def child_spec(opts) do
     %{
@@ -61,8 +61,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
     |> channel_recently_published?()
   end
 
-  defp reduced_user_list({uid, %{metas: metas}}, acc) when is_binary(uid) do
-    elapased_time = current_timestamp() - get_last_publish(metas)
+  defp reduced_user_list({uid, %{metadata: metadata}}, acc) when is_binary(uid) do
+    elapased_time = current_timestamp() - get_last_publish(metadata)
 
     if currently_active(elapased_time) do
       [uid | acc]
@@ -73,8 +73,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
 
   defp reduced_user_list(_, acc), do: acc
 
-  defp channel_recently_published?(%{metas: metas}) do
-    elapased_time = current_timestamp() - get_last_publish(metas)
+  defp channel_recently_published?(%{metadata: metadata}) do
+    elapased_time = current_timestamp() - get_last_publish(metadata)
     currently_active(elapased_time)
   end
 
@@ -82,8 +82,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
 
   defp current_timestamp, do: System.system_time(:second)
 
-  defp get_last_publish(metas),
-    do: metas |> List.first() |> Map.get(:last_publish, current_timestamp())
+  defp get_last_publish(metadata),
+    do: Map.get(metadata, :last_publish, current_timestamp())
 
   defp currently_active(elapsed_time), do: elapsed_time <= @active_time_out
 end
