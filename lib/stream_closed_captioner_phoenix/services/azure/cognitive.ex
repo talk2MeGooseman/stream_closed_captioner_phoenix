@@ -47,7 +47,7 @@ defmodule Azure.Cognitive do
     NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
     [translations] =
-      "https://guzman.codes/azure_proxy/translate"
+      "https://api.cognitive.microsofttranslator.com/translate"
       |> encode_url_and_params(params)
       |> HTTPoison.post!(body, headers)
       |> Map.fetch!(:body)
