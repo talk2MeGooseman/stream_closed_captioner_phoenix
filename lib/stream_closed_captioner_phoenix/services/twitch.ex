@@ -2,6 +2,9 @@ defmodule Twitch do
   @moduledoc """
   Service to communicate to Twitch via Helix of Extension APIs
   """
+  use Nebulex.Caching
+
+  alias StreamClosedCaptionerPhoenix.Cache
 
   @extension_id "h1ekceo16erc49snp0sine3k9ccbh9"
 
@@ -113,6 +116,11 @@ defmodule Twitch do
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
   def get_live_streams([]), do: []
 
+  @decorate cacheable(
+              cache: Cache,
+              key: "twitch:live_streams",
+              ttl: 300_000
+            )
   def get_live_streams(user_ids) do
     chunked_user_ids = Enum.chunk_every(user_ids, 80)
 

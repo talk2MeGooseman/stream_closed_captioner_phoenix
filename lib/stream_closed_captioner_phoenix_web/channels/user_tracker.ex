@@ -86,7 +86,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
   defp current_timestamp, do: System.system_time(:second)
 
   defp get_last_publish(metadata),
-    do: Map.get(metadata, :last_publish, current_timestamp())
+    do: Map.get(metadata, :last_publish, 0)
 
   defp currently_active(elapsed_time), do: elapsed_time <= @active_time_out
 end
