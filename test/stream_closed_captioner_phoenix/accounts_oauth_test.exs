@@ -5,6 +5,12 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
 
   alias StreamClosedCaptionerPhoenix.AccountsOauth
 
+  setup do
+    StreamClosedCaptionerPhoenix.Cache.delete_all()
+
+    :ok
+  end
+
   describe "find_or_register_user_with_oauth/2" do
     test "when no current user, creates a new user with settings" do
       attrs = %{

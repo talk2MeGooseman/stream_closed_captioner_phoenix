@@ -1,8 +1,11 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
+  use Nebulex.Caching
+
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
   @doc """
@@ -19,6 +22,10 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
       nil
 
   """
+  @decorate cacheable(
+              cache: Cache,
+              key: {User, uid}
+            )
   def get_user_for_provider(provider, uid) do
     User
     |> where(uid: ^uid)

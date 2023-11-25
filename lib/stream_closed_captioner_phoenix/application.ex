@@ -13,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
     children = [
       # start libcluster
       {Cluster.Supervisor, [topologies, [name: StreamClosedCaptionerPhoenix.ClusterSupervisor]]},
+      {StreamClosedCaptionerPhoenix.Cache, []},
       # Start the Ecto repository
       StreamClosedCaptionerPhoenix.Repo,
       # Start the Telemetry supervisor
@@ -28,7 +29,6 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          name: StreamClosedCaptionerPhoenixWeb.UserTracker,
          pubsub_server: StreamClosedCaptionerPhoenix.PubSub
        ]},
-      StreamClosedCaptionerPhoenix.TranslationCache,
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
       {ConCache,
        [

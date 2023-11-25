@@ -1,10 +1,11 @@
 defmodule Twitch.Jwt do
-  alias Twitch.Extension.{Token, Credentials}
+  alias Twitch.Extension.Credentials
+  alias Twitch.Extension.Token
 
   def get_credentials,
     do: %Credentials{
       client_id: System.get_env("TWITCH_CLIENT_ID") || "",
-      token_secret: System.get_env("TWITCH_TOKEN_SECRET") || ""
+      token_secret: Application.get_env(:stream_closed_captioner_phoenix, :twitch_token_secret)
     }
 
   def verify_and_validate(token) do

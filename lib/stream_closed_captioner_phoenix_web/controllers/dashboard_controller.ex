@@ -1,6 +1,8 @@
 defmodule StreamClosedCaptionerPhoenixWeb.DashboardController do
   use StreamClosedCaptionerPhoenixWeb, :controller
-  alias StreamClosedCaptionerPhoenix.{Repo, Bits, Settings}
+  alias StreamClosedCaptionerPhoenix.Bits
+  alias StreamClosedCaptionerPhoenix.Repo
+  alias StreamClosedCaptionerPhoenix.Settings
 
   def index(conn, _params) do
     current_user =

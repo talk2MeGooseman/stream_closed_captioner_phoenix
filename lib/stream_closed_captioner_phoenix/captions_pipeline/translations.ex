@@ -1,8 +1,9 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
-  alias StreamClosedCaptionerPhoenix.{Bits, Repo, Settings}
+  alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+  alias StreamClosedCaptionerPhoenix.Settings
 
   def maybe_translate(payload, key, %User{} = user) do
     text = Map.get(payload, key)
@@ -35,8 +36,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   end
 
   defp get_translations(%User{} = user, text) do
-    user = Repo.preload(user, :stream_settings)
-    from_language = user.stream_settings.language
+    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+
+    from_language = stream_settings.language
     # Sort so keys are always in same order for consistent hashing
     to_languages =
       Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys() |> Enum.sort()

@@ -2,6 +2,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   @moduledoc """
   The Settings context.
   """
+  use Nebulex.Caching
+
   @default_languages []
 
   @translatable_languages %{
@@ -264,12 +266,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   end
 
   import Ecto.Query, warn: false
-  alias StreamClosedCaptionerPhoenix.Repo
-
   alias StreamClosedCaptionerPhoenix.Accounts
-
   alias StreamClosedCaptionerPhoenix.Accounts.User
-
+  alias StreamClosedCaptionerPhoenix.Cache
+  alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
   @doc """
@@ -315,8 +315,30 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       ** (Ecto.NoResultsError)
 
   """
-  def get_stream_settings_by_user_id!(id),
-    do: Repo.get_by!(StreamSettings, user_id: id)
+  def get_stream_settings_by_user_id!(user_id),
+    do: Repo.get_by!(StreamSettings, user_id: user_id)
+
+  @doc """
+  Gets a single stream_setting by user id.
+
+  ## Examples
+
+      iex> get_stream_settings_by_user_id(123)
+      {:ok, %StreamSettings{}}
+
+      iex> get_stream_settings_by_user_id(456)
+      {:error, nil}
+  """
+  @decorate cacheable(
+              cache: Cache,
+              key: {StreamSettings, user_id}
+            )
+  def get_stream_settings_by_user_id(user_id) do
+    case Repo.get_by(StreamSettings, user_id: user_id) do
+      nil -> {:error, nil}
+      stream_settings -> {:ok, stream_settings}
+    end
+  end
 
   @doc """
   Creates a stream_settings.
@@ -349,6 +371,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_put(
+              cache: Cache,
+              key: {StreamSettings, stream_settings.user_id}
+            )
   def update_stream_settings(%StreamSettings{} = stream_settings, attrs) do
     stream_settings
     |> StreamSettings.update_changeset(attrs)
@@ -510,6 +536,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       iex> get_translate_languages_by_user(456)
       [%TranslateLanguage{}]
   """
+  @decorate cacheable(
+              cache: Cache,
+              key: {TranslateLanguage, user_id}
+            )
   def get_translate_languages_by_user(user_id),
     do: TranslateLanguage |> where(user_id: ^user_id) |> Repo.all()
 
@@ -542,6 +572,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {TranslateLanguage, user.id}
+            )
   def create_translate_language(%User{} = user, attrs \\ %{}) do
     user
     |> Ecto.build_assoc(:translate_languages)
@@ -561,6 +595,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {TranslateLanguage, translate_language.user_id}
+            )
   def update_translate_language(%TranslateLanguage{} = translate_language, attrs) do
     translate_language
     |> TranslateLanguage.update_changeset(attrs)
@@ -579,6 +617,10 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {TranslateLanguage, translate_language.user_id}
+            )
   def delete_translate_language(%TranslateLanguage{} = translate_language) do
     Repo.delete(translate_language)
   end
@@ -626,6 +668,6 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def translateable_language_list,
     do:
       @translatable_languages
-      |> Enum.sort()
       |> Enum.map(fn {v1, v2} -> {v2, v1} end)
+      |> Enum.sort()
 end

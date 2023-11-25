@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Bits do
-  alias StreamClosedCaptionerPhoenix.{Accounts, Repo, Bits}
+  alias StreamClosedCaptionerPhoenix.{Accounts, Bits, Repo}
 
   def bits_balance(%Accounts.User{} = user, _args, _resolution) do
     user = Repo.preload(user, :bits_balance)

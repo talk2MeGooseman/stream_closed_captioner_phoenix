@@ -2,8 +2,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   @moduledoc """
   The Accounts context.
   """
+  use Nebulex.Caching
 
   import Ecto.Query, warn: false
+  alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
   alias StreamClosedCaptionerPhoenix.Accounts.{
@@ -186,6 +188,10 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {User, user.uid}
+            )
   def delete_user(%User{} = user) do
     Repo.delete(user)
   end

@@ -30,8 +30,37 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                 }}
     end
 
+    test "when user has enough bits, but hasnt selected a translate language, it wont translate" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 500),
+          translate_languages: []
+        )
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "disf12f3"
+        })
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                delay: 0,
+                final: "Hello",
+                interim: "",
+                translations: nil
+              }} == result
+
+      assert %{balance: 500} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
+    end
+
     test "when user has enough bits, activates translations and debits amount" do
-      user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 500),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
 
       Azure.MockCognitive
       |> expect(:translate, fn _from_language, _to_languages, _text ->
@@ -45,16 +74,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
           "session" => "disf12f3"
         })
 
-      assert result ==
-               {:ok,
-                %Twitch.Extension.CaptionsPayload{
-                  delay: 0,
-                  final: "Hello",
-                  interim: "",
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                delay: 0,
+                final: "Hello",
+                interim: "",
+                translations: %Azure.Cognitive.Translations{
                   translations: %{
                     "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
                   }
-                }}
+                }
+              }} == result
 
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end

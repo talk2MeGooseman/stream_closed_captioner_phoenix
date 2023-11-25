@@ -3,17 +3,16 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   The Bits context.
   """
 
+  use Nebulex.Caching
+
   import Ecto.Query, warn: false
 
   alias StreamClosedCaptionerPhoenix.Accounts.User
-
-  alias StreamClosedCaptionerPhoenix.Bits.{
-    BitsBalanceDebit,
-    BitsBalanceDebitQueries,
-    BitsBalanceQueries,
-    BitsTransactionQueries
-  }
-
+  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries
+  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceQueries
+  alias StreamClosedCaptionerPhoenix.Bits.BitsTransactionQueries
+  alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
   def bits_transactions_and_debits_for_user(user_id, offset, limit) do
@@ -131,6 +130,11 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       nil
 
   """
+  @decorate cacheable(
+              cache: Cache,
+              key: {BitsBalanceDebit, user_id},
+              opts: [ttl: 60_000]
+            )
   def get_user_active_debit(user_id) do
     BitsBalanceDebitQueries.with_user_id(user_id)
     |> BitsBalanceDebitQueries.less_than_one_day_ago()
@@ -197,6 +201,26 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   def get_bits_balance!(%User{} = user) do
     BitsBalanceQueries.with_user_id(user.id)
     |> Repo.one!()
+  end
+
+  @doc """
+  Gets a single bits_balance by user_id.
+
+  ## Examples
+
+      iex> get_bits_balance_by_user_id(123)
+      {:ok, %BitsBalance{}
+
+      iex> get_bits_balance_by_user_id(456)
+      {:error, nil}
+  """
+  def get_bits_balance_by_user_id(user_id) do
+    BitsBalanceQueries.with_user_id(user_id)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, nil}
+      bits_balance -> {:ok, bits_balance}
+    end
   end
 
   @doc """

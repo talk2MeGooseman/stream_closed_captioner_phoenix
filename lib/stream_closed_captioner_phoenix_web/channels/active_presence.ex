@@ -53,7 +53,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
 
   defp current_timestamp, do: System.system_time(:second)
 
-  defp get_last_publish(metas), do: metas |> List.first() |> Map.get(:last_publish, current_timestamp())
+  defp get_last_publish(metas),
+    do: metas |> List.first() |> Map.get(:last_publish, current_timestamp())
 
   defp currently_active(elapsed_time), do: elapsed_time <= @active_time_out
 end

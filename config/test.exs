@@ -47,3 +47,6 @@ config :stream_closed_captioner_phoenix,
   twitch_client_id: "client_id"
 
 config :phoenix, :plug_init_mode, :runtime
+
+config :stream_closed_captioner_phoenix,
+  twitch_token_secret: "HELLOmfTIWyWI1I8hrtEsTZSlzDXqyQThIm/Ytc3D1o="

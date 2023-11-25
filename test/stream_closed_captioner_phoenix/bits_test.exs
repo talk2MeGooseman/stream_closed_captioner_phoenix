@@ -126,6 +126,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert Bits.get_bits_balance!(bits_balance.user).id == bits_balance.id
     end
 
+    test "get_bits_balance_by_user_id/1 returns the bits_balance with given user" do
+      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil), balance: 100)
+      {:ok, result} = Bits.get_bits_balance_by_user_id(bits_balance.user_id)
+      assert result.id == bits_balance.id
+      assert result.balance == bits_balance.balance
+    end
+
     test "create_bits_balance/1 with valid data creates a bits_balance" do
       user = insert(:user, bits_balance: nil)
       assert {:ok, %BitsBalance{} = bits_balance} = Bits.create_bits_balance(user)

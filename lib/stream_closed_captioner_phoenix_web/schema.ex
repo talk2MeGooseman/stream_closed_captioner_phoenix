@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema do
-  import AbsintheCache, only: [cache_resolve: 2]
+  # import AbsintheCache, only: [cache_resolve: 2]
 
   use Absinthe.Schema
 
@@ -28,13 +28,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field(:uid, :string)
 
     field :bits_balance, :bits_balance do
-      cache_resolve(&Resolvers.Bits.bits_balance/3, ttl: :timer.minutes(1))
+      resolve(&Resolvers.Bits.bits_balance/3)
     end
 
     field :translations, :translations do
-      cache_resolve(&Resolvers.Settings.get_translations_info/3,
-        ttl: :timer.minutes(1)
-      )
+      resolve(&Resolvers.Settings.get_translations_info/3)
     end
   end
 

@@ -2,11 +2,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   require Logger
 
   alias Azure.Cognitive.Translations
-  alias Twitch.Extension.CaptionsPayload
   alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
+  alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations
   alias StreamClosedCaptionerPhoenix.Repo
-  alias StreamClosedCaptionerPhoenix.CaptionsPipeline.{Profanity, Translations}
+  alias StreamClosedCaptionerPhoenix.Settings
+  alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
   alias StreamClosedCaptionerPhoenixWeb.UserTracker
+  alias Twitch.Extension.CaptionsPayload
 
   @type message_map :: %{
           optional(:final) => String.t(),
@@ -22,20 +25,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           {:error, String.t()}
           | {:ok, CaptionsPayload.t()}
   def pipeline_to(:default, %User{} = user, message) do
-    user = Repo.preload(user, :stream_settings)
+    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
 
     payload =
       CaptionsPayload.new(message)
-      |> maybe_censor_for(:interim, user)
-      |> maybe_censor_for(:final, user)
-      |> maybe_pirate_mode_for(:interim, user)
-      |> maybe_pirate_mode_for(:final, user)
+      |> maybe_censor_for(:interim, stream_settings)
+      |> maybe_censor_for(:final, stream_settings)
+      |> maybe_pirate_mode_for(:interim, stream_settings)
+      |> maybe_pirate_mode_for(:final, stream_settings)
 
     {:ok, payload}
   end
 
   def pipeline_to(:twitch, %User{} = user, message) do
-    user = Repo.preload(user, :stream_settings)
+    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
 
     payload =
       CaptionsPayload.new(message)
@@ -44,17 +47,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           last_publish: System.system_time(:second)
         })
       end)
-      |> maybe_censor_for(:interim, user)
-      |> maybe_censor_for(:final, user)
+      |> maybe_censor_for(:interim, stream_settings)
+      |> maybe_censor_for(:final, stream_settings)
       |> Translations.maybe_translate(:final, user)
-      |> maybe_pirate_mode_for(:interim, user)
-      |> maybe_pirate_mode_for(:final, user)
+      |> maybe_pirate_mode_for(:interim, stream_settings)
+      |> maybe_pirate_mode_for(:final, stream_settings)
 
     {:ok, payload}
   end
 
   def pipeline_to(:zoom, %User{} = user, message) do
-    user = Repo.preload(user, :stream_settings)
+    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
 
     params = %Zoom.Params{
       seq: get_in(message, ["zoom", "seq"]),
@@ -63,8 +66,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     payload =
       CaptionsPayload.new(message)
-      |> maybe_censor_for(:final, user)
-      |> maybe_pirate_mode_for(:final, user)
+      |> maybe_censor_for(:final, stream_settings)
+      |> maybe_pirate_mode_for(:final, stream_settings)
 
     zoom_text = Map.get(payload, :final)
     url = get_in(message, ["zoom", "url"])
@@ -83,16 +86,16 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  defp maybe_censor_for(payload, key, %User{} = user) do
+  defp maybe_censor_for(payload, key, %StreamSettings{} = stream_settings) do
     Map.put(
       payload,
       key,
-      Profanity.maybe_censor(user.stream_settings, Map.get(payload, key))
+      Profanity.maybe_censor(stream_settings, Map.get(payload, key))
     )
   end
 
-  defp maybe_pirate_mode_for(payload, key, %User{} = user) do
-    if user.stream_settings.pirate_mode do
+  defp maybe_pirate_mode_for(payload, key, %StreamSettings{} = stream_settings) do
+    if stream_settings.pirate_mode do
       {:ok, text} = TalkLikeAX.translate(Map.get(payload, key))
 
       Map.put(

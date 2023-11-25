@@ -51,6 +51,14 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                stream_settings
     end
 
+    test "get_stream_settings_by_user_id/1 returns the stream_settings with given id" do
+      user = insert(:user)
+
+      {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+
+      assert user.stream_settings == stream_settings
+    end
+
     test "create_stream_settings/1 with valid data creates a stream_settings" do
       user = insert(:user, stream_settings: nil)
 
@@ -135,6 +143,31 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert stream_settings.blocklist == ["no", "kappa"]
       assert stream_settings.turn_on_reminder == true
       assert stream_settings.auto_off_captions == true
+    end
+
+    test "updating stream settings updates the stream settings cache" do
+      user = insert(:user)
+
+      {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+
+      assert user.stream_settings == stream_settings
+      assert stream_settings.language == "en-US"
+
+      Twitch.MockHelix
+      |> expect(:eventsub_subscribe, fn _, "webhook", "stream.online", "1", _ ->
+        %{"data" => [%{"id" => "anything"}]}
+      end)
+      |> expect(:eventsub_subscribe, fn _, "webhook", "stream.offline", "1", _ ->
+        %{"data" => [%{"id" => "anything"}]}
+      end)
+
+      assert {:ok, _} =
+               Settings.update_stream_settings(stream_settings, %{
+                 language: "some updated language"
+               })
+
+      {:ok, new_stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+      assert new_stream_settings.language == "some updated language"
     end
 
     test "update_stream_settings/2 with invalid data returns error changeset" do

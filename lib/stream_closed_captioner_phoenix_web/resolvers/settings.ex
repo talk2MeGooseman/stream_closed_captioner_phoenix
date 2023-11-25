@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Settings do
-  alias StreamClosedCaptionerPhoenix.{Accounts, Settings}
+  alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenix.Settings
 
   def get_translations_info(%Accounts.User{} = user, _, _resolution) do
     debit = StreamClosedCaptionerPhoenix.Bits.get_user_active_debit(user.id)

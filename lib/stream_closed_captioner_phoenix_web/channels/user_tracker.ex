@@ -74,12 +74,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
 
   defp reduced_user_list(_, acc), do: acc
 
-  defp channel_recently_published?({uid, metadata}) do
+  defp channel_recently_published?({_uid, metadata}) do
     elapased_time = current_timestamp() - get_last_publish(metadata)
     currently_active(elapased_time)
   end
 
   defp channel_recently_published?([]), do: false
+
+  defp channel_recently_published?(nil), do: false
 
   defp current_timestamp, do: System.system_time(:second)
 

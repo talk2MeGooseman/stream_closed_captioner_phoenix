@@ -7,6 +7,20 @@
 # General application configuration
 import Config
 
+config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
+  # When using :shards as backend
+  # backend: :shards,
+  # GC interval for pushing new generation: 12 hrs
+  gc_interval: :timer.hours(12),
+  # Max 1 million entries in cache
+  max_size: 1_000_000,
+  # Max 2 GB of memory
+  allocated_memory: 2_000_000_000,
+  # GC min timeout: 10 sec
+  gc_cleanup_min_timeout: :timer.seconds(10),
+  # GC max timeout: 10 min
+  gc_cleanup_max_timeout: :timer.minutes(10)
+
 config :stream_closed_captioner_phoenix,
   ecto_repos: [StreamClosedCaptionerPhoenix.Repo]
 
@@ -132,12 +146,6 @@ config :stream_closed_captioner_phoenix,
 # Configure the Repo to use advisory locks for locking migrations while running
 config StreamClosedCaptionerPhoenix.Repo, migration_lock: :pg_advisory_lock
 
-# config :stream_closed_captioner_phoenix, :pubsub_redis,
-#   name: StreamClosedCaptionerPhoenix.PubSub,
-#   adapter: Phoenix.PubSub.Redis,
-#   host: System.get_env("REDIS"),
-#   node_name: System.get_env("NODE") || "stream_closed_captioner_phoenix"
-
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.14.41",
@@ -159,6 +167,9 @@ config :tailwind,
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
+
+config :stream_closed_captioner_phoenix,
+  twitch_token_secret: System.get_env("TWITCH_TOKEN_SECRET") || ""
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
