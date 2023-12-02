@@ -3,9 +3,9 @@ defmodule Azure.Cognitive do
 
   use NewRelic.Tracer
 
-  alias NewRelic.Instrumented.HTTPoison
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
+  alias NewRelic.Instrumented.HTTPoison
   @behaviour Azure.CognitiveProvider
 
   @impl Azure.CognitiveProvider
@@ -31,7 +31,7 @@ defmodule Azure.Cognitive do
     ]
 
     headers = [
-      {"Content-Type", "application/json"},
+      {"Content-Type", "application/json; charset=UTF-8"},
       {"Ocp-Apim-Subscription-Key", System.get_env("COGNITIVE_SERVICE_KEY")},
       {"Ocp-Apim-Subscription-Region", "westus2"},
       {"X-ClientTraceId", UUID.generate()}
