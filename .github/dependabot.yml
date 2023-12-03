@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
-    target-branch: main
+    target-branch: master
     labels:
       - "dependencies"
       - "mix"
@@ -14,7 +14,7 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
-    target-branch: main
+    target-branch: master
     labels:
       - "dependencies"
       - "npm"

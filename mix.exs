@@ -38,6 +38,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_cache, git: "https://github.com/IvanIvanoff/absinthe_cache", branch: "master"},
+      # Disable GQL introspection
       {:vigil, "~> 0.4.4"},
       # Bamboo for Emailing
       {:bamboo, "~> 1.7.1"},
