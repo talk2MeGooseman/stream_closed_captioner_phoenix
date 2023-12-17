@@ -132,6 +132,6 @@ export default class SpeechRecognitionService {
 
   static isFinalSpeechResult(speechArray) {
     const [speechResult] = speechArray;
-    return speechResult.isFinal === true;
+    return speechResult.isFinal;
   }
 }

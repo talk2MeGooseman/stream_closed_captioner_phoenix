@@ -1,0 +1,31 @@
+<div id="app" class="w-100" style="display:flex;flex-direction:column;height:100vh;">
+  <div class="d-flex flex-grow-1">
+    <div class="d-flex flex-grow-1 position-relative">
+      <div
+        class="transcript d-flex flex-grow-1 align-items-start"
+        style="color:#ffffff;background-color:rgba(0, 0, 0, 1);font-family:'Cousine';font-size:4em;font-style:normal;font-weight:normal;line-height:1.2em;letter-spacing:0em;text-transform:uppercase;padding:0.25em 0.25em 0.25em 0.25em ;text-shadow:0.05em 0.05em 0px rgba(0,0,0,1);cursor:default;"
+      >
+        <span class="transcript-scroller w-100 mx-0 h-100">
+          <span class="transcript-scroller-child">
+            <span>
+              <%= @final %>
+            </span>
+            <!---->
+          </span>
+        </span>
+        <!----> <!----> <!---->
+      </div>
+
+      <div style="position:absolute;width:100%;max-width:500px;top:0;right:0;bottom:0;overflow-y:auto;pointer-events:none;">
+        <div
+          class="d-flex flex-column align-items-end pt-3"
+          style="height:100%;pointer-events:none;"
+        >
+          <div class="flex-grow-1"></div>
+          <!----> <!---->
+        </div>
+      </div>
+    </div>
+    <!---->
+  </div>
+</div>

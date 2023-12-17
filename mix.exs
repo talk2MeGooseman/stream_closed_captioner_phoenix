@@ -142,7 +142,12 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      "assets.deploy": [
+        "tailwind default --minify",
+        "tailwind transcript --minify",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       security: ["sobelow"],
       lint: ["credo"],

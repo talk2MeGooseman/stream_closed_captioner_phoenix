@@ -27,6 +27,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:zoom, user, payload) do
       {:ok, sent_payload} ->
         NewRelic.stop_transaction()
+
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+          self(),
+          "transcript:1",
+          "new_msg",
+          payload
+        )
+
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->
@@ -48,6 +56,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
           new_twitch_caption: user.uid
         )
 
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+          self(),
+          "transcript:1",
+          "new_msg",
+          payload
+        )
+
         new_relic_track(:ok, user, sent_on_time)
         {:reply, {:ok, sent_payload}, socket}
 
@@ -61,8 +76,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     user = socket.assigns.current_user
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
-      {:ok, sent_payload} -> {:reply, {:ok, sent_payload}, socket}
-      {:error, _} -> {:reply, {:error, "Issue sending captions."}, socket}
+      {:ok, sent_payload} ->
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+          self(),
+          "transcript:1",
+          "new_msg",
+          payload
+        )
+
+        {:reply, {:ok, sent_payload}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
 

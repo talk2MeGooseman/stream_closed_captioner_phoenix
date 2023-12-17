@@ -1,0 +1,135 @@
+:root {
+  --blue: #007bff;
+  --indigo: #6610f2;
+  --purple: #6f42c1;
+  --pink: #e83e8c;
+  --red: #dc3545;
+  --orange: #fd7e14;
+  --yellow: #ffc107;
+  --green: #28a745;
+  --teal: #20c997;
+  --cyan: #17a2b8;
+  --white: #fff;
+  --gray: #6c757d;
+  --gray-dark: #343a40;
+  --primary: #007bff;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --light: #f8f9fa;
+  --dark: #343a40;
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+:host,
+:root {
+  --rem: 16;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #000;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.flex-grow-1 {
+  -ms-flex-positive: 1 !important;
+  flex-grow: 1 !important;
+}
+
+.position-relative {
+  position: relative !important;
+}
+
+.transcript {
+  background-color: rgba(0, 0, 0, 0);
+  flex-grow: 1;
+  width: 100%;
+  line-height: 5rem;
+  color: #fff;
+  margin: 0 auto;
+  text-transform: uppercase;
+  font-size: 4em;
+  font-family: 'Cousine', monopsace;
+  word-break: break-word;
+  white-space: pre-wrap;
+  transition: background-color 200ms;
+}
+
+.align-items-start {
+  align-items: flex-start !important;
+}
+
+.transcript-scroller {
+  overflow-y: scroll;
+  position: relative;
+  scrollbar-width: none
+}
+
+.transcript-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.ml-0,
+.mx-0 {
+  margin-left: 0 !important;
+}
+
+.mr-0,
+.mx-0 {
+  margin-right: 0 !important;
+}
+
+.h-100 {
+  height: 100% !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.transcript-scroller-child {
+  position: absolute;
+  bottom: 0;
+  max-height: 100%;
+  min-width: 5px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
