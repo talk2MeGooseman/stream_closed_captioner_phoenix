@@ -43,9 +43,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  def handle_in("publishFinal", payload, socket), do: {:reply, {:ok, payload}, socket}
-
-  def handle_in("publishInterim", %{"twitch" => %{"enabled" => true}} = payload, socket) do
+  def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
@@ -60,7 +58,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
           self(),
           "transcript:1",
           "new_msg",
-          payload
+          sent_payload
         )
 
         new_relic_track(:ok, user, sent_on_time)
@@ -68,25 +66,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
       {:error, _} ->
         new_relic_track(:error, user, sent_on_time)
-        {:reply, {:error, "Issue sending captions."}, socket}
-    end
-  end
-
-  def handle_in("publishInterim", payload, socket) do
-    user = socket.assigns.current_user
-
-    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
-      {:ok, sent_payload} ->
-        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-          self(),
-          "transcript:1",
-          "new_msg",
-          payload
-        )
-
-        {:reply, {:ok, sent_payload}, socket}
-
-      {:error, _} ->
         {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
@@ -115,6 +94,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     })
 
     {:reply, :ok, socket}
+  end
+
+  def handle_in(publish_state, payload, socket) when publish_state != "active" do
+    user = socket.assigns.current_user
+
+    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
+      {:ok, sent_payload} ->
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+          self(),
+          "transcript:1",
+          "new_msg",
+          payload
+        )
+
+        {:reply, {:ok, sent_payload}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, "Issue sending captions."}, socket}
+    end
   end
 
   @impl true

@@ -8,7 +8,8 @@
         <span class="transcript-scroller w-100 mx-0 h-100">
           <span class="transcript-scroller-child">
             <span>
-              <%= @final %>
+              <%= Enum.join(@final_list, ". ") %>
+              <%= @interim %>
             </span>
             <!---->
           </span>

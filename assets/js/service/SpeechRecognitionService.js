@@ -1,19 +1,37 @@
+import { isEmpty, join, path, pipe, prop, head, map } from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
 import * as workerTimers from 'worker-timers';
+import debugLogger from "debug"
 
-const INTERVAL_TIMER = 500;
+const debug = debugLogger("cc:recognition-service")
+
+/**
+ * Return true is the transcript received is the finalized speech
+ * recognition result.
+ *
+ * @param {[{ isFinal: boolean }]} speechArray
+ * @returns {boolean}
+ */
+const isFinalSpeechResult = pipe(head, prop('isFinal'));
+
+/**
+ * Convert the results of the speech recognition into a String
+ * @param {SpeechRecognitionResultList} speechArray
+ * @returns {string}
+ */
+const parseSpeechResults = pipe(
+  map(path([0, 'transcript'])),
+  join('')
+);
 
 export default class SpeechRecognitionService {
   constructor() {
-    this.onSpeechIntervalCallback = null;
-    this.onRecognitionEndCallback = null;
+    this.onSpeechInterimCallback = null;
+    this.onSpeechFinalCallback = null;
 
     this.recognitionService = this.initSpeechRecognition();
 
     this.speechToTextActive = false;
-    this.finalSpeechBuffer = '';
-    this.lastSentFinalSpeechBuffer = '';
-    this.interimSpeechBuffer = '';
     this.sessionId = uuidv4();
     this._pause = false;
 
@@ -33,43 +51,32 @@ export default class SpeechRecognitionService {
   }
 
   onRecognitionResult(event) {
-    if (event.results === '' || this._pause) return;
+    if (isEmpty(event.results) || this._pause) return;
 
-    this.interimSpeechBuffer = SpeechRecognitionService.parseSpeechResults(event.results);
-
-    if (SpeechRecognitionService.isFinalSpeechResult(event.results)) {
-      this.finalSpeechBuffer = this.interimSpeechBuffer;
-      this.interimSpeechBuffer = '';
+    if (isFinalSpeechResult(event.results)) {
+      let finalText = parseSpeechResults(event.results);
+      this.publishFinalText(finalText)
+    } else {
+      let interimText = parseSpeechResults(event.results);
+      this.publishInterimText(interimText)
     }
   }
 
   onRecognitionEnd() {
-    if (!this._pause || this.finalSpeechBuffer.length > 0) {
-      if (this.onRecognitionEndCallback && (this.lastFinal != this.speechData.final)) {
-        this.lastFinal = this.speechData.final;
-        this.onRecognitionEndCallback(this.speechData);
-      }
-    }
-
     if (this.speechToTextActive) {
       this.recognitionService.start();
-    } else {
-      this.finalSpeechBuffer = '';
-      this.lastSentFinalSpeechBuffer = '';
     }
   }
 
   start() {
     this.recognitionService.start();
     this.speechToTextActive = true;
-    this.startSpeechInterval();
     this.sessionId = uuidv4();
   }
 
   stop() {
     this.recognitionService.abort();
     this.speechToTextActive = false;
-    workerTimers.clearInterval(this.intervalId);
   }
 
   pause(value) {
@@ -82,56 +89,33 @@ export default class SpeechRecognitionService {
 
   destroy() {
     this.stop();
-    this.onRecognitionEndCallback = null;
-    this.onSpeechIntervalCallback = null;
+    this.onSpeechFinalCallback = null;
+    this.onSpeechInterimCallback = null;
   }
 
   setLanguage(lang) {
     this.recognitionService.lang = lang;
   }
 
-  startSpeechInterval() {
-    // eslint-disable-next-line complexity
-    this.intervalId = workerTimers.setInterval(() => {
-      if (
-        this.interimSpeechBuffer.length === 0
-        && this.finalSpeechBuffer === this.lastSentFinalSpeechBuffer
-      ) { return; }
-
-      this.lastSentFinalSpeechBuffer = this.finalSpeechBuffer;
-
-      if (this.onSpeechIntervalCallback) {
-        this.onSpeechIntervalCallback(this.speechData);
-      }
-    }, INTERVAL_TIMER);
-  }
-
-  get speechData() {
-    return {
-      session: this.sessionId,
-      interim: this.interimSpeechBuffer,
-      final: this.finalSpeechBuffer,
-    };
-  }
-
-  /**
-   * Parse speech results from speech recognition service
-   * @param {SpeechRecognitionResultList} speechArray
-   * @returns
-   */
-  static parseSpeechResults(speechArray) {
-    const results = [];
-
-    // map over result list and append transcript to results array
-    for (let i = 0; i < speechArray.length; i++) {
-      results.push(speechArray[i][0].transcript);
+  publishInterimText(text) {
+    if (this.onSpeechInterimCallback) {
+      debug("Publish Interim Text", { text })
+      this.onSpeechInterimCallback({
+        session: this.sessionId,
+        interim: text,
+        final: ''
+      });
     }
-
-    return results.join('');
   }
 
-  static isFinalSpeechResult(speechArray) {
-    const [speechResult] = speechArray;
-    return speechResult.isFinal;
+  publishFinalText(text) {
+    if (this.onSpeechFinalCallback) {
+      debug("Publish Final Text", { text })
+      this.onSpeechFinalCallback({
+        session: this.sessionId,
+        interim: '',
+        final: text
+      })
+    }
   }
 }

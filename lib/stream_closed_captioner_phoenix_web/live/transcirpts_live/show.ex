@@ -9,24 +9,30 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscirptsLive.Show do
     {:ok,
      socket
      |> assign(:interim, "")
-     |> assign(:final, "")}
+     |> assign(:final_list, [])}
   end
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    {:noreply, assign(socket, :page_title, page_title(socket.assigns.live_action))}
+  end
+
+  def handle_info(%{payload: %{"interim" => interim_text, "final" => ""}}, socket) do
+    {:noreply, assign(socket, :interim, interim_text)}
+  end
+
+  def handle_info(%{payload: %{"interim" => _, "final" => final_text}}, socket) do
+    new_final_list = socket.assigns.final_list ++ [final_text]
+
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))}
+     |> assign(:interim, "")
+     |> assign(:final_list, new_final_list)}
   end
 
-  def handle_info(%{payload: %{"interim" => interim, "final" => final}}, socket) do
-    {:noreply,
-     socket |> assign(:interim, interim) |> assign(:final, socket.assigns.final <> final)}
-  end
-
-  def handle_info(msg, socket) do
+  def handle_info(_msg, socket) do
     {:noreply, socket}
   end
 
-  defp page_title(:show), do: "Live Transcirpts"
+  defp page_title(:show), do: "Live Transcription"
 end

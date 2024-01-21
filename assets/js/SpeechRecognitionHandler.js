@@ -24,10 +24,10 @@ export default class SpeechRecognitionHandler {
     this.eventSubscribers = {}
     this.speechRecogService = new SpeechRecognitionService()
 
-    this.speechRecogService.onSpeechIntervalCallback = this.onSpeechIntervals.bind(
+    this.speechRecogService.onSpeechInterimCallback = this.onSpeechIntervals.bind(
       this
     )
-    this.speechRecogService.onRecognitionEndCallback = this.onEndIntervals.bind(
+    this.speechRecogService.onSpeechFinalCallback = this.onEndIntervals.bind(
       this
     )
 
@@ -151,7 +151,7 @@ export default class SpeechRecognitionHandler {
           callback(message.data)
         }
       }
-    }, 50)
+    }, 0)
   }
 
   isMessageReady(message) {

@@ -188,6 +188,7 @@ export default class extends Controller {
   }
 
   receiveInterimMessage = (data) => {
+    console.log('interim', data)
     const publishData = {
       ...data,
       sentOn: (new Date()).toISOString(),
@@ -200,22 +201,33 @@ export default class extends Controller {
   }
 
   receiveFinalMessage = (data) => {
-    if (!this.zoomData.enabled) return
+    console.log('final', data)
+    if (this.zoomData.enabled) {
+      const publishData = {
+        ...data,
+        zoom: {
+          ...this.zoomData,
+          seq: getZoomSequence(this.zoomData.url)
+        },
+      }
 
-    const publishData = {
-      ...data,
-      zoom: {
-        ...this.zoomData,
-        seq: getZoomSequence(this.zoomData.url)
-      },
+      this.captionsChannel
+        .push("publishFinal", publishData, 5000)
+        .receive("ok", (response) => {
+          const seq = getZoomSequence(this.zoomData.url) + 1
+          setZoomSequence(this.zoomData.url, seq)
+        })
+    } else {
+      const publishData = {
+        ...data,
+        sentOn: (new Date()).toISOString(),
+        twitch: this.twitchData,
+      }
+
+      this.captionsChannel
+        .push("publishFinal", publishData, 5000)
+        .receive("ok", (response) => this.displayCaptions(response))
     }
-
-    this.captionsChannel
-      .push("publishFinal", publishData, 5000)
-      .receive("ok", (response) => {
-        const seq = getZoomSequence(this.zoomData.url) + 1
-        setZoomSequence(this.zoomData.url, seq)
-      })
   }
 
   displayCaptions = (captions) => {
