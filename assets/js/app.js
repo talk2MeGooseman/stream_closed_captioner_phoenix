@@ -24,6 +24,23 @@ import './tailwind';
 const Hooks = {};
 Hooks.InitToast = InitToast;
 
+Hooks.CaptionObserver = {
+  mounted() {
+    const container = document.querySelector('#scrollerEndMarker');
+
+    let options = { root: this.el, rootMargin: '0px 0px 100px 0px' }
+
+    let observer = new IntersectionObserver(
+      (entries) => {
+        console.log('entries', entries)
+        container.scrollIntoView({ behavior: 'smooth' });
+        console.log('scrolling to end of chat...')
+      }
+      , options);
+    observer.observe(container);
+  }
+}
+
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute('content');

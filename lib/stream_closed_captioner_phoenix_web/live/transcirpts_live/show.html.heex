@@ -6,17 +6,19 @@
         class="transcript d-flex flex-grow-1 align-items-start"
         style={@transcript_styles}
       >
-        <span class="transcript-scroller w-100 mx-5 h-100">
+        <span id="transcript-scoller" class="transcript-scroller w-100 mx-5 h-100" phx-hook="CaptionObserver">
           <span class="transcript-scroller-child">
            <!-- TODO: Support a setting to allow the user to apply this class -->
             <span class="d-block w-100">
               <%= Enum.join(@final_list, ". ") %>
             </span>
             <!-- Add logic apply interim text color -->
-            <span style="color: ">
+            <span style="color: " id="interim-container">
               <%= @interim %>
             </span>
             <!---->
+            <br />
+            <span id="scrollerEndMarker"/>
           </span>
         </span>
         <!----> <!----> <!---->
