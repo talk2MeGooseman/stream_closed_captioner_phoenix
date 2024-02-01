@@ -1,14 +1,19 @@
 <div id="app" class="w-100" style="display:flex;flex-direction:column;height:100vh;">
   <div class="d-flex flex-grow-1">
     <div class="d-flex flex-grow-1 position-relative">
+      <!-- style="color:#ffffff;background-color:rgba(0, 0, 0, 1);font-family:'Cousine';font-size:4em;font-style:normal;font-weight:normal;line-height:1.2em;letter-spacing:0em;text-transform:uppercase;padding:0.25em 0.25em 0.25em 0.25em ;text-shadow:0.05em 0.05em 0px rgba(0,0,0,1);cursor:default;" -->
       <div
         class="transcript d-flex flex-grow-1 align-items-start"
-        style="color:#ffffff;background-color:rgba(0, 0, 0, 1);font-family:'Cousine';font-size:4em;font-style:normal;font-weight:normal;line-height:1.2em;letter-spacing:0em;text-transform:uppercase;padding:0.25em 0.25em 0.25em 0.25em ;text-shadow:0.05em 0.05em 0px rgba(0,0,0,1);cursor:default;"
+        style={@transcript_styles}
       >
-        <span class="transcript-scroller w-100 mx-0 h-100">
+        <span class="transcript-scroller w-100 mx-5 h-100">
           <span class="transcript-scroller-child">
-            <span>
+           <!-- TODO: Support a setting to allow the user to apply this class -->
+            <span class="d-block w-100">
               <%= Enum.join(@final_list, ". ") %>
+            </span>
+            <!-- Add logic apply interim text color -->
+            <span style="color: ">
               <%= @interim %>
             </span>
             <!---->

@@ -6,8 +6,48 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscirptsLive.Show do
     if connected?(socket),
       do: StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("transcript:1")
 
+    custom_styles = %{
+      text: %{
+        alignment: %{
+          # left, middle, right
+          horizontal: "full",
+          # top, middle, bottom, lowerThird
+          vertical: "full",
+          # em
+          padding: "0.25"
+        }
+      },
+      shadow: %{
+        color: "#000000",
+        opacity: "100",
+        blurRadius: "0",
+        offsetX: "0.05",
+        offsetY: "0.05"
+      },
+      background: %{
+        color: "#000000",
+        opacity: "100"
+      }
+    }
+
+    transcript_styles =
+      Enum.map(
+        %{
+          "color" => "#ffffff",
+          "font-family" => "Cousine",
+          "font-style" => "regular",
+          "font-size" => "4" <> "em",
+          "line-height" => "1.2" <> "em",
+          "letter-spacing" => "0" <> "em",
+          # uppercase or "capitalize" or "initial"
+          "text-transform" => "uppercase"
+        },
+        fn {k, v} -> k <> ": " <> v <> ";" end
+      )
+
     {:ok,
      socket
+     |> assign(:transcript_styles, transcript_styles)
      |> assign(:interim, "")
      |> assign(:final_list, [])}
   end

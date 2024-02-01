@@ -61,6 +61,10 @@ body {
   background-color: #000;
 }
 
+.d-block {
+  display: block !important;
+}
+
 .d-flex {
   display: flex !important;
 }
@@ -85,7 +89,7 @@ body {
   font-size: 4em;
   font-family: 'Cousine', monopsace;
   word-break: break-word;
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
   transition: background-color 200ms;
 }
 
@@ -113,6 +117,32 @@ body {
   margin-right: 0 !important;
 }
 
+.mx-1 {
+  margin-left: 1rem !important;
+  margin-right: 1rem !important;
+}
+
+.mx-2 {
+  margin-left: 2rem !important;
+  margin-right: 2rem !important;
+}
+
+.mx-3 {
+  margin-left: 3rem !important;
+  margin-right: 3rem !important;
+}
+
+.mx-4 {
+  margin-left: 4rem !important;
+  margin-right: 4rem !important;
+}
+
+.mx-5 {
+  margin-left: 5rem !important;
+  margin-right: 5rem !important;
+}
+
+
 .h-100 {
   height: 100% !important;
 }
@@ -126,6 +156,10 @@ body {
   bottom: 0;
   max-height: 100%;
   min-width: 5px;
+}
+
+.pt-3 {
+  padding-top: 1rem !important;
 }
 
 *,
