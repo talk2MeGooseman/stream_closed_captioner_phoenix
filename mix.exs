@@ -80,7 +80,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:jason, "~> 1.0"},
       {:joken, "~> 2.3"},
       # Admin Dashboard
-      {:kaffy, "0.10.0-rc.2"},
+      {:kaffy, "0.10.2"},
       {:libcluster, "~> 3.3"},
       {:libcluster_ec2, "~> 0.7"},
       {:mox, "~> 1.0.0"},
