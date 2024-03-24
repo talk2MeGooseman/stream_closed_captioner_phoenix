@@ -83,7 +83,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:kaffy, "0.10.0-rc.2"},
       {:libcluster, "~> 3.3"},
       {:libcluster_ec2, "~> 0.7"},
-      {:mox, "~> 1.0.0"},
+      {:mox, "~> 1.1.0"},
       {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
       # Cache
       {:nebulex, "~> 2.5"},
