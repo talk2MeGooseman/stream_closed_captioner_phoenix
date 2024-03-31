@@ -14,7 +14,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
     if Enum.any?(errors) do
       :cancel
     else
-      if !StreamClosedCaptionerPhoenixWeb.UserTracker.is_channel_active?(broadcaster_user_id) do
+      if !StreamClosedCaptionerPhoenixWeb.UserTracker.channel_active?(broadcaster_user_id) do
         Twitch.send_extension_chat_message(
           broadcaster_user_id,
           "Hey @#{broadcaster_user_login}, here is your friendly reminder to turn on Stream Closed Captioner."

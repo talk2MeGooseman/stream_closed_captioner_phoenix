@@ -6,6 +6,10 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminderTest do
   alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
   alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
+  setup do
+    UserTracker.untrack(self(), "active_channels", "123")
+  end
+
   test "it sends a chat message to the broadcaster if the channel is not active" do
     Twitch.MockHelix
     |> expect(:send_extension_chat_message, fn _creds, "123", message ->
@@ -27,7 +31,9 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminderTest do
   end
 
   test "it does not send a chat message to the broadcaster if the channel is active" do
-    UserTracker.track(self(), "active_channels", "123", %{})
+    UserTracker.track(self(), "active_channels", "123", %{
+      last_publish: System.system_time(:second)
+    })
 
     # Enqueue a job
     assert :ok =

@@ -27,7 +27,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ActivePresence do
     |> Enum.reduce([], &reduced_user_list/2)
   end
 
-  def is_channel_active?(channel_id) do
+  def channel_active?(channel_id) do
     StreamClosedCaptionerPhoenixWeb.ActivePresence.get_by_key("active_channels", channel_id)
     |> channel_recently_published?()
   end
