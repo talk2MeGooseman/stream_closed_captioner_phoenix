@@ -69,7 +69,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Profanity censoring
       {:expletive, "~> 0.1.4"},
       {:exsync, "~> 0.2", only: :dev},
-      {:fun_with_flags_ui, "~> 0.8.1"},
+      {:fun_with_flags_ui, "~> 1.0.0"},
       {:fun_with_flags, "~> 1.10"},
       {:gettext, "~> 0.11"},
       {:guardian, "~> 2.0"},
