@@ -3,8 +3,7 @@ import { isBrowserCompatible } from "../utils"
 
 import { ApplicationController } from "stimulus-use"
 
-// const debug = debugLogger("cc:obs-controller")
-const debug = console.log
+const debug = debugLogger("cc:obs-controller")
 
 export default class extends ApplicationController {
   static targets = ["translationStatus", "bitsBalance", "displayTranslations", "translationsList"]

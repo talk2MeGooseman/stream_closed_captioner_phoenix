@@ -4,8 +4,7 @@ import { ApplicationController } from "stimulus-use"
 
 import { isNil, isEmpty } from "ramda"
 
-// const debug = debugLogger("cc:obs-controller")
-const debug = console.log
+const debug = debugLogger("cc:obs-controller")
 
 export default class extends ApplicationController {
   static targets = ["offButton", "onButton", "errorMarker", "errorMessage"]
@@ -23,7 +22,6 @@ export default class extends ApplicationController {
   }
 
   enable = () => {
-    console.log("zoom")
     this.clearErrorMessage()
 
     if (this.enabled) {

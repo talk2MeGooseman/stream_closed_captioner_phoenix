@@ -50,7 +50,7 @@ export default class SpeechRecognitionHandler {
    */
   onEvent = (event, callback) => {
     if (!EVENT_TYPES.includes(event)) {
-      console.log("Invalid event provided for subscription")
+      debug("Invalid event provided for subscription")
       return
     }
     this.eventSubscribers[event] = callback

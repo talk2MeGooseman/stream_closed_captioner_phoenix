@@ -6,8 +6,8 @@ export const captionsChannel = socket.channel(`captions:${window.userId}`, {});
 captionsChannel
   .join()
   .receive('ok', (resp) => {
-    console.log('Joined successfully', resp);
+    console.debug('Joined successfully');
   })
   .receive('error', (resp) => {
-    console.log('Unable to join', resp);
+    console.debug('Unable to join');
   });

@@ -4,7 +4,9 @@ import { Controller } from '@hotwired/stimulus'
 import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
 import { Channel } from "phoenix"
+import debugLogger from "debug"
 
+const debug = debugLogger("cc:caption-controller")
 const TURN_OFF_TXT = "Click to Stop Captions"
 
 /**
@@ -93,7 +95,7 @@ export default class extends Controller {
   }
 
   onZoomChange({ detail: { enabled, url } }) {
-    console.log("zoom change", { enabled, url })
+    debug("zoom change", { enabled, url })
     this.zoomData = {
       ...this.zoomData,
       enabled,
@@ -188,7 +190,7 @@ export default class extends Controller {
   }
 
   receiveInterimMessage = (data) => {
-    console.log('interim', data)
+    debug('interim', data)
     const publishData = {
       ...data,
       sentOn: (new Date()).toISOString(),
@@ -201,7 +203,7 @@ export default class extends Controller {
   }
 
   receiveFinalMessage = (data) => {
-    console.log('final', data)
+    debug('final', data)
     if (this.zoomData.enabled) {
       const publishData = {
         ...data,

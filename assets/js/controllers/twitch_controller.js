@@ -7,8 +7,7 @@ import { appClient } from "../service/app-client"
 import { GET_ME } from "../utils/graphql"
 import * as workerTimers from 'worker-timers';
 
-// const debug = debugLogger("cc:obs-controller")
-const debug = console.log
+const debug = debugLogger("cc:obs-controller")
 
 export default class extends ApplicationController {
   static targets = ["offSwitch", "onSwitch", "errorMarker", "errorMessage"]

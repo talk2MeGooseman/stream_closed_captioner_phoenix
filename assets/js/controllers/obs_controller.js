@@ -143,7 +143,7 @@ export default class extends Controller {
 
   onCaptionsReceived = ({ detail: { interim, final } }) => {
     if (this.connected) {
-      console.log({ interim, final })
+      debug({ interim, final })
       const textToSendBuffer = []
 
       if (interim.length > 0) textToSendBuffer.push(capitalize(interim))
