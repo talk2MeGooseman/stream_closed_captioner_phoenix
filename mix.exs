@@ -110,7 +110,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:sobelow, "~> 0.11", only: :dev},
       {:sweet_xml, "~> 0.6"},
       {:talk_like_a_x, "~> 0.0.8"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:timex, "~> 3.7"},
       {:tmi, "~> 0.5.3"},
