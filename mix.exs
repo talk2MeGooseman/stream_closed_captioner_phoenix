@@ -144,7 +144,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": [
         "tailwind default --minify",
-        "tailwind transcript --minify",
+        # "tailwind transcript --minify",
         "esbuild default --minify",
         "phx.digest"
       ],
