@@ -13,7 +13,6 @@ defmodule StreamClosedCaptionerPhoenix.Application do
     children = [
       # start libcluster
       {Cluster.Supervisor, [topologies, [name: StreamClosedCaptionerPhoenix.ClusterSupervisor]]},
-      {StreamClosedCaptionerPhoenix.Cache, []},
       # Start the Ecto repository
       StreamClosedCaptionerPhoenix.Repo,
       # Start the Telemetry supervisor
@@ -30,6 +29,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
          pubsub_server: StreamClosedCaptionerPhoenix.PubSub
        ]},
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
+      {StreamClosedCaptionerPhoenix.Cache, []},
       {ConCache,
        [
          name: :graphql_cache,
@@ -61,9 +61,9 @@ defmodule StreamClosedCaptionerPhoenix.Application do
     Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
   end
 
-  defp redis_pubsub_config do
-    Application.fetch_env!(:stream_closed_captioner_phoenix, :pubsub_redis)
-  end
+  # defp redis_pubsub_config do
+  #   Application.fetch_env!(:stream_closed_captioner_phoenix, :pubsub_redis)
+  # end
 
   # defp bot_config do
   #   Application.fetch_env!(:stream_closed_captioner_phoenix, :bot)

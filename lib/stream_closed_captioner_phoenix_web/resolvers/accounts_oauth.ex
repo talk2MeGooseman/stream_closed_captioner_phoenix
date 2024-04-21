@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.AccountsOauth do
-  def get_channel_info(_, %{id: id}, %{
+  def get_channel_info(_, %{id: _id}, %{
         context: %{decoded_token: decoded_token}
       }) do
     id = Map.get(decoded_token, "channel_id")

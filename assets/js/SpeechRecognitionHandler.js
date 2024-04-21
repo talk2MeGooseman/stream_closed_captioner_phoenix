@@ -151,7 +151,7 @@ export default class SpeechRecognitionHandler {
           callback(message.data)
         }
       }
-    }, 0)
+    }, 50)
   }
 
   isMessageReady(message) {

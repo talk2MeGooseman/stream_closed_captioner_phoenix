@@ -5,7 +5,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations
-  alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenix.Settings
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
   alias StreamClosedCaptionerPhoenixWeb.UserTracker

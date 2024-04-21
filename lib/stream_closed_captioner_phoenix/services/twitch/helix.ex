@@ -10,7 +10,7 @@ defmodule Twitch.Helix do
 
   @impl HelixProvider
   def get_streams(
-        credentials = %{access_token: access_token},
+        %{access_token: access_token} = credentials,
         user_ids,
         cursor \\ nil
       ) do

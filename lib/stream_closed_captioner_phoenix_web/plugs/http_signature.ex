@@ -32,8 +32,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
 
   @spec verify(Plug.Conn.t(), binary) :: boolean
   def verify(conn, body) do
-    message = getHmacMessage(conn, body)
-    hmac = "sha256=" <> getHmac(message)
+    message = get_hmac_message(conn, body)
+    hmac = "sha256=" <> get_hmac(message)
     [signature] = Plug.Conn.get_req_header(conn, @twitch_message_signature)
     Plug.Crypto.secure_compare(signature, hmac)
   end
@@ -41,14 +41,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
   @doc """
   Build the message used to get the HMAC.
   """
-  def getHmacMessage(conn, body) do
+  def get_hmac_message(conn, body) do
     [message_id] = Plug.Conn.get_req_header(conn, @twitch_message_id)
     [message_timestamp] = Plug.Conn.get_req_header(conn, @twitch_message_timestamp)
 
     message_id <> message_timestamp <> body
   end
 
-  def getHmac(message),
+  def get_hmac(message),
     do:
       :crypto.mac(:hmac, :sha256, Twitch.HttpHelpers.eventsub_secret(), message)
       |> Base.encode16(case: :lower)

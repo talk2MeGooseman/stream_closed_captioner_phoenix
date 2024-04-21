@@ -61,7 +61,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Telemetry do
       summary("phoenix.channel_handled_in.duration",
         unit: {:native, :millisecond},
         tags: [:event]
-      )
+      ),
+
+      # Nebulex Stats Metrics
+      last_value("my_app.cache.stats.hits", tags: [:cache]),
+      last_value("my_app.cache.stats.misses", tags: [:cache]),
+      last_value("my_app.cache.stats.writes", tags: [:cache]),
+      last_value("my_app.cache.stats.updates", tags: [:cache]),
+      last_value("my_app.cache.stats.evictions", tags: [:cache]),
+      last_value("my_app.cache.stats.expirations", tags: [:cache])
     ]
   end
 
@@ -69,7 +77,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {StreamClosedCaptionerPhoenixWeb, :count_users, []}
+      # {StreamClosedCaptionerPhoenixWeb, :dispatch_stats, []}
     ]
   end
 end

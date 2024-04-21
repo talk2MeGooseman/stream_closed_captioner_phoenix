@@ -74,11 +74,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     if socket.assigns.wss_pid do
       case WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk}) do
         :ok ->
-          dbg("Sent chunk to deepgram")
           {:noreply, socket}
 
         {:error, _} ->
-          dbg("Error sending chunk to deepgram")
           {:noreply, socket}
       end
     end

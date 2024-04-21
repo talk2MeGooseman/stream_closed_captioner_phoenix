@@ -220,8 +220,6 @@ defmodule Twitch do
 
   @spec delete_event_subscription(String.t()) :: any
   def delete_event_subscription(id) do
-    dbg()
-
     Oauth.get_client_access_token()
     |> helix_api_client().delete_eventsub_subscription(id)
   end

@@ -22,12 +22,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
   end
 
   def handle_diff(diff, state) do
-    for {topic, {joins, leaves}} <- diff do
-      for {key, meta} <- joins do
+    for {_topic, {joins, leaves}} <- diff do
+      for {_key, _meta} <- joins do
         # IO.puts("#{topic} presence join: key \"#{key}\" with meta #{inspect(meta)}")
       end
 
-      for {key, meta} <- leaves do
+      for {_key, _meta} <- leaves do
         # IO.puts("#{topic} presence leave: key \"#{key}\" with meta #{inspect(meta)}")
       end
     end

@@ -6,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscirptsLive.Show do
     if connected?(socket),
       do: StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("transcript:1")
 
-    custom_styles = %{
+    _custom_styles = %{
       text: %{
         alignment: %{
           # left, middle, right
@@ -53,10 +53,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.TranscirptsLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id}, _, socket) do
+  def handle_params(%{"id" => _id}, _, socket) do
     {:noreply, assign(socket, :page_title, page_title(socket.assigns.live_action))}
   end
 
+  @impl true
   def handle_info(%{payload: %{"interim" => interim_text, "final" => ""}}, socket) do
     {:noreply, assign(socket, :interim, interim_text)}
   end

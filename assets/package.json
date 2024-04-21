@@ -15,6 +15,7 @@
     "graphql": "^15.5.1",
     "graphql-request": "^3.4.0",
     "kutty": "^0.6.0",
+    "lodash.throttle": "^4.1.1",
     "nightwind": "^1.1.13",
     "nprogress": "^0.2.0",
     "obs-websocket-js": "^5.0.2",

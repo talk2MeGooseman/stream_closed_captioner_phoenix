@@ -1,8 +1,9 @@
 import { isEmpty, join, path, pipe, prop, head, map } from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
+import throttle from 'lodash/throttle';
 import * as workerTimers from 'worker-timers';
 import debugLogger from "debug"
-
+const INTERVAL_THROTTLE = 500;
 const debug = debugLogger("cc:recognition-service")
 
 /**
@@ -37,6 +38,8 @@ export default class SpeechRecognitionService {
 
     this.recognitionService.onresult = (event) => this.onRecognitionResult(event);
     this.recognitionService.onend = () => this.onRecognitionEnd();
+
+    this.throttledPublishInterim = throttle(this.publishInterimText, INTERVAL_THROTTLE)
   }
 
   initSpeechRecognition() {
@@ -55,10 +58,11 @@ export default class SpeechRecognitionService {
 
     if (isFinalSpeechResult(event.results)) {
       let finalText = parseSpeechResults(event.results);
+      this.throttledPublishInterim.cancel();
       this.publishFinalText(finalText)
     } else {
       let interimText = parseSpeechResults(event.results);
-      this.publishInterimText(interimText)
+      this.throttledPublishInterim(interimText)
     }
   }
 
