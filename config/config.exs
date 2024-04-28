@@ -8,7 +8,6 @@
 import Config
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
-  stats: true,
   # When using :shards as backend
   # backend: :shards,
   # GC interval for pushing new generation: 12 hrs
