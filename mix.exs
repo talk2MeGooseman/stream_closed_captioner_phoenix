@@ -84,7 +84,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:libcluster, "~> 3.3"},
       {:libcluster_ec2, "~> 0.7"},
       {:mox, "~> 1.0.0"},
-      {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
       # Cache
       {:nebulex, "~> 2.5"},
       {:decorator, "~> 1.4"},
