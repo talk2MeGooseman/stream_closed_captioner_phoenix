@@ -28,12 +28,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} ->
         NewRelic.stop_transaction()
 
-        # StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-        #   self(),
-        #   "transcript:1",
-        #   "new_msg",
-        #   payload
-        # )
+        if FunWithFlags.enabled?(:caption_source, for: socket.assigns.current_user) do
+          StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+            self(),
+            "transcript:1",
+            "new_msg",
+            payload
+          )
+        end
 
         {:reply, {:ok, sent_payload}, socket}
 
@@ -54,14 +56,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
           new_twitch_caption: user.uid
         )
 
-        # if FunWithFlags.enabled?(:caption_source, for: socket.assigns.current_user) do
-        #   StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-        #     self(),
-        #     "transcript:1",
-        #     "new_msg",
-        #     sent_payload
-        #   )
-        # end
+        if FunWithFlags.enabled?(:caption_source, for: socket.assigns.current_user) do
+          StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+            self(),
+            "transcript:1",
+            "new_msg",
+            sent_payload
+          )
+        end
 
         new_relic_track(:ok, user, sent_on_time)
         {:reply, {:ok, sent_payload}, socket}
@@ -96,24 +98,24 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     {:reply, :ok, socket}
   end
 
-  # def handle_in(publish_state, payload, socket) when publish_state != "active" do
-  #   user = socket.assigns.current_user
+  def handle_in(publish_state, payload, socket) when publish_state != "active" do
+    user = socket.assigns.current_user
 
-  #   case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
-  #     {:ok, sent_payload} ->
-  #       StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-  #         self(),
-  #         "transcript:1",
-  #         "new_msg",
-  #         payload
-  #       )
+    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
+      {:ok, sent_payload} ->
+        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
+          self(),
+          "transcript:1",
+          "new_msg",
+          payload
+        )
 
-  #       {:reply, {:ok, sent_payload}, socket}
+        {:reply, {:ok, sent_payload}, socket}
 
-  #     {:error, _} ->
-  #       {:reply, {:error, "Issue sending captions."}, socket}
-  #   end
-  # end
+      {:error, _} ->
+        {:reply, {:error, "Issue sending captions."}, socket}
+    end
+  end
 
   @impl true
   def handle_info(:after_join, socket) do
