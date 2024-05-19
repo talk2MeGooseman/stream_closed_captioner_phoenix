@@ -4,6 +4,14 @@
 # # remember to add this file to your .gitignore.
 import Config
 
+config :absinthe_security, AbsintheSecurity.Phase.IntrospectionCheck,
+  enable_introspection: System.get_env("GRAPHQL_ENABLE_INTROSPECTION") || true
+config :absinthe_security, AbsintheSecurity.Phase.FieldSuggestionsCheck,
+  enable_field_suggestions: System.get_env("GRAPHQL_ENABLE_FIELD_SUGGESTIONS") || true
+config :absinthe_security, AbsintheSecurity.Phase.MaxAliasesCheck, max_alias_count: 0
+config :absinthe_security, AbsintheSecurity.Phase.MaxDepthCheck, max_depth_count: 10
+config :absinthe_security, AbsintheSecurity.Phase.MaxDirectivesCheck, max_directive_count: 0
+
 if config_env() == :prod do
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint, server: true
 

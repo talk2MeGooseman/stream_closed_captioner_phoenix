@@ -30,13 +30,6 @@ defmodule StreamClosedCaptionerPhoenix.Application do
        ]},
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
       {StreamClosedCaptionerPhoenix.Cache, []},
-      {ConCache,
-       [
-         name: :graphql_cache,
-         ttl_check_interval: :timer.seconds(30),
-         global_ttl: :timer.minutes(1),
-         acquire_lock_timeout: 30_000
-       ]},
       # {TMI.Supervisor, bot_config()},
       NewRelicOban.Telemetry.Oban,
       {Oban, oban_config()}

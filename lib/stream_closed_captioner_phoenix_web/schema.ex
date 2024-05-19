@@ -1,6 +1,4 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema do
-  # import AbsintheCache, only: [cache_resolve: 2]
-
   use Absinthe.Schema
 
   alias StreamClosedCaptionerPhoenixWeb.{Resolvers, Schema}

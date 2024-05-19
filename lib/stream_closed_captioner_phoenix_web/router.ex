@@ -64,8 +64,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
         "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev"
       ]
     )
-
-    plug(Vigil)
   end
 
   if Mix.env() == :dev do
@@ -80,10 +78,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/api" do
     pipe_through(:graphql)
 
-    forward("/", Absinthe.Plug,
-      schema: StreamClosedCaptionerPhoenixWeb.Schema,
-      analyze_complexity: true,
-      max_complexity: 50
+    forward(
+      "/",
+      Absinthe.Plug,
+      StreamClosedCaptionerPhoenixWeb.GqlConfig.configuration()
     )
 
     options("/", Absinthe.Plug, :options)
