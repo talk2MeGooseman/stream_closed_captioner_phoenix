@@ -59,3 +59,8 @@ config :stream_closed_captioner_phoenix,
 
 config :stream_closed_captioner_phoenix,
   twitch_client_id: "TWITCHCLIENTID"
+
+config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
+  client_id: "client_id",
+  client_secret: "client_secret",
+  redirect_uri: "http://localhost:4000/auth/twitch/callback"

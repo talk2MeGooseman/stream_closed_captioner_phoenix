@@ -1,10 +1,16 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
-  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
+  use StreamClosedCaptionerPhoenixWeb.ConnCase
+  use Plug.Test
 
   import StreamClosedCaptionerPhoenix.AccountsFixtures
+  import Ueberauth.Strategy.Helpers
+
+  defmodule Creds do
+    defstruct access_token: "success_token", refresh_token: "success"
+  end
 
   setup do
-    %{user: user_fixture()}
+    {:ok, user: user_fixture()}
   end
 
   describe "GET /users/log_in" do
@@ -19,6 +25,40 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
     test "redirects if already logged in", %{conn: conn, user: user} do
       conn = conn |> log_in_user(user) |> get(Routes.user_session_path(conn, :new))
       assert redirected_to(conn) == "/dashboard"
+    end
+  end
+
+  describe "GET /auth/twitch/callback" do
+    test "redirect users when Twitch user doesnt have an email", %{
+      conn: conn
+    } do
+      conn =
+        conn
+        |> assign(:flash, %{})
+        |> assign(:current_user, nil)
+        |> assign(:ueberauth_auth, %{
+          extra: %{
+            raw_info: %{
+              user: %{
+                "data" => [
+                  %{
+                    "id" => "1047413243",
+                    "login" => "bobypla",
+                    "profile_image_url" =>
+                      "https://static-cdn.jtvnw.net/jtv_user_pictures/ae6bd976-5906-4410-a4d9-784132e1b25c-profile_image-300x300.jpeg",
+                    "description" => "Gosto de jogar jogos para passar o tempo."
+                  }
+                ]
+              }
+            }
+          },
+          credentials: %Creds{}
+        })
+
+      StreamClosedCaptionerPhoenixWeb.UserSessionController.callback(
+        conn,
+        %{}
+      )
     end
   end
 
@@ -50,7 +90,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
     test "logs the user in with return to", %{conn: conn, user: user} do
       conn =
         conn
-        |> init_test_session(user_return_to: "/foo/bar")
+        |> Phoenix.ConnTest.init_test_session(user_return_to: "/foo/bar")
         |> post(Routes.user_session_path(conn, :create), %{
           "user" => %{
             "email" => user.email,

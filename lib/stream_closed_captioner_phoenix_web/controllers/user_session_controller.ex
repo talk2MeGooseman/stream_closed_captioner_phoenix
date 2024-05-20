@@ -47,6 +47,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionController do
         |> put_flash(:info, "Successfully authenticated.")
         |> UserAuth.log_in_user(user, %{"remember_me" => "true"})
 
+      {:error, :user, _user_changeset, _} ->
+        conn
+        |> put_flash(
+          :error,
+          "Could not sign up with Twitch. Ensure you setup your account with an email."
+        )
+        |> redirect(to: "/")
+
       {:error, reason} ->
         conn
         |> put_flash(:error, reason)
