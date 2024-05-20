@@ -60,7 +60,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     params = %Zoom.Params{
       seq: get_in(message, ["zoom", "seq"]),
-      lang: user.stream_settings.language
+      lang: stream_settings.language
     }
 
     payload =
