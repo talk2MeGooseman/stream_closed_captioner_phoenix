@@ -28,10 +28,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     payload =
       CaptionsPayload.new(message)
-      |> maybe_censor_for(:interim, stream_settings)
-      |> maybe_censor_for(:final, stream_settings)
-      |> maybe_pirate_mode_for(:interim, stream_settings)
-      |> maybe_pirate_mode_for(:final, stream_settings)
+      |> apply_censoring(stream_settings)
+      |> apply_pirate_mode(stream_settings)
 
     {:ok, payload}
   end
@@ -46,11 +44,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           last_publish: System.system_time(:second)
         })
       end)
-      |> maybe_censor_for(:interim, stream_settings)
-      |> maybe_censor_for(:final, stream_settings)
+      |> apply_censoring(stream_settings)
       |> Translations.maybe_translate(:final, user)
-      |> maybe_pirate_mode_for(:interim, stream_settings)
-      |> maybe_pirate_mode_for(:final, stream_settings)
+      |> apply_pirate_mode(stream_settings)
 
     {:ok, payload}
   end
@@ -65,7 +61,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     payload =
       CaptionsPayload.new(message)
-      |> maybe_censor_for(:final, stream_settings)
+      |> maybe_additional_censoring_for(:final, stream_settings)
       |> maybe_pirate_mode_for(:final, stream_settings)
 
     zoom_text = Map.get(payload, :final)
@@ -85,12 +81,48 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  defp maybe_censor_for(payload, key, %StreamSettings{} = stream_settings) do
-    Map.put(
+  defp apply_censoring(payload, %StreamSettings{} = stream_settings) do
+    payload
+    |> apply_users_blocklist_for(:interim, stream_settings)
+    |> apply_users_blocklist_for(:final, stream_settings)
+    |> maybe_additional_censoring_for(:interim, stream_settings)
+    |> maybe_additional_censoring_for(:final, stream_settings)
+  end
+
+  @spec apply_users_blocklist_for(
+          CaptionsPayload.t(),
+          :interim | :final,
+          StreamSettings.t()
+        ) :: CaptionsPayload.t()
+  defp apply_users_blocklist_for(payload, key, stream_settings) do
+    update_in(
       payload,
-      key,
-      Profanity.maybe_censor(stream_settings, Map.get(payload, key))
+      [Access.key(key)],
+      fn text -> Profanity.censor_from_blocklist(stream_settings, text) end
     )
+  end
+
+  @spec maybe_additional_censoring_for(
+          CaptionsPayload.t(),
+          :interim | :final,
+          StreamSettings.t()
+        ) :: CaptionsPayload.t()
+  defp maybe_additional_censoring_for(payload, key, stream_settings) do
+    update_in(
+      payload,
+      [Access.key(key)],
+      fn text -> Profanity.maybe_additional_censoring(stream_settings, text) end
+    )
+  end
+
+  @spec apply_pirate_mode(
+          CaptionsPayload.t(),
+          StreamSettings.t()
+        ) :: CaptionsPayload.t()
+  defp apply_pirate_mode(payload, %StreamSettings{} = stream_settings) do
+    payload
+    |> maybe_pirate_mode_for(:interim, stream_settings)
+    |> maybe_pirate_mode_for(:final, stream_settings)
   end
 
   defp maybe_pirate_mode_for(payload, key, %StreamSettings{} = stream_settings) do
