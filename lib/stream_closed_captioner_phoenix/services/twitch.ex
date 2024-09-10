@@ -116,11 +116,11 @@ defmodule Twitch do
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
   def get_live_streams([]), do: []
 
-  @decorate cacheable(
-              cache: Cache,
-              key: "twitch:live_streams",
-              ttl: 300_000
-            )
+  # @decorate cacheable(
+  #             cache: Cache,
+  #             key: "twitch:live_streams",
+  #             ttl: 300_000
+  #           )
   def get_live_streams(user_ids) do
     chunked_user_ids = Enum.chunk_every(user_ids, 80)
 
