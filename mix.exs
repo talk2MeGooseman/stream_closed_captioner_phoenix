@@ -35,7 +35,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
     [
       # Absinthe for GraphQL
       {:absinthe, "~> 1.7"},
-      {:absinthe_phoenix, "~> 2.0"},
+      {:absinthe_phoenix, "2.0.3"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
       # Bamboo for Emailing
@@ -45,9 +45,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:cors_plug, "~> 3.0"},
       {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3.0"},
-      {:floki, ">= 0.30.0"},
-      {:flop, "~> 0.22.1"},
-      {:flop_phoenix, "~> 0.21.1"},
+      {:floki, "~> 0.37"},
+      {:flop, "~> 0.24"},
+      {:flop_phoenix, "0.22.4"},
       # Waffle for file upload
       {:waffle, "~> 1.1.1"},
       {:waffle_ecto, "~> 0.0.9"},
@@ -59,8 +59,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Add some ecto helpers
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
-      {:ecto_psql_extras, "~> 0.2"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_psql_extras, "~> 0.8"},
+      {:ecto_sql, "~> 3.12"},
       {:ex_machina, "~> 2.7.0"},
       # Generate struct from maps
       {:exconstructor, "~> 1.1"},
@@ -96,15 +96,15 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:observer_cli, "~> 1.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
-      {:phoenix_live_dashboard, "~> 0.8.0"},
+      {:phoenix_live_dashboard, "0.8.5"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.19.0"},
+      {:phoenix_live_view, "0.20.0"},
       {:phoenix_view, "~> 2.0.2"},
       {:phoenix, "~> 1.7.7"},
       {:phoenix_meta_tags, "~> 0.1.9"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 5.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, ">= 0.18.0"},
       {:secure_random, "~> 0.5.1"},
       {:sobelow, "~> 0.11", only: :dev},
       {:sweet_xml, "~> 0.6"},

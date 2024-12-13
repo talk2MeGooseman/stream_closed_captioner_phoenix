@@ -6,8 +6,10 @@ import Config
 
 config :absinthe_security, AbsintheSecurity.Phase.IntrospectionCheck,
   enable_introspection: System.get_env("GRAPHQL_ENABLE_INTROSPECTION") || true
+
 config :absinthe_security, AbsintheSecurity.Phase.FieldSuggestionsCheck,
   enable_field_suggestions: System.get_env("GRAPHQL_ENABLE_FIELD_SUGGESTIONS") || true
+
 config :absinthe_security, AbsintheSecurity.Phase.MaxAliasesCheck, max_alias_count: 0
 config :absinthe_security, AbsintheSecurity.Phase.MaxDepthCheck, max_depth_count: 10
 config :absinthe_security, AbsintheSecurity.Phase.MaxDirectivesCheck, max_directive_count: 0
@@ -19,17 +21,22 @@ if config_env() == :prod do
   config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
   config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
 
+  database_url =
+    System.get_env("DATABASE_URL") ||
+      raise """
+      environment variable DATABASE_URL is missing.
+      For example: ecto://USER:PASS@HOST/DATABASE
+      """
+
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-    username: System.get_env("RDS_USERNAME"),
-    password: System.get_env("RDS_PASSWORD"),
-    database: System.get_env("RDS_DB_NAME"),
-    hostname: System.get_env("RDS_HOSTNAME"),
+    url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    ssl: true,
+    ssl: [cacerts: :public_key.cacerts_get()],
     # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
     # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
     # !!! From now on, migrations should only be done from Ecto !!!
-    migration_source: "ecto_schema_migrations"
+    migration_source: "ecto_schema_migrations",
+    migration_lock: :pg_advisory_lock
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
