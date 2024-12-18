@@ -7,13 +7,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     if authorized?(socket, user_id) do
       send(self(), :after_join)
 
-      if FunWithFlags.enabled?(:deepgram, for: socket.assigns.current_user) do
-        {:ok, pid} = DeepgramWebsocket.start_link(%{user: socket.assigns.current_user})
-
-        {:ok, assign(socket, :wss_pid, pid)}
-      else
-        {:ok, socket}
-      end
+      {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end

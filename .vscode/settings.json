@@ -12,5 +12,8 @@
     }
   ],
   "elixirLinter.useStrict": true,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "Captioner"
+  ]
 }
