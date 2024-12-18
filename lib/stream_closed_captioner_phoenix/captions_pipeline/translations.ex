@@ -8,19 +8,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   def maybe_translate(payload, key, %User{} = user) do
     text = Map.get(payload, key)
 
-    case Bits.get_user_active_debit(user.id) do
-      %BitsBalanceDebit{} ->
-        %Translations{translations: translations} = get_translations(user, text)
-        %{payload | translations: translations}
+    if Bits.user_active_debit_exists?(user.id) do
+      %Translations{translations: translations} = get_translations(user, text)
+      %{payload | translations: translations}
+    else
+      to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
 
-      nil ->
-        to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
-
-        if Enum.empty?(to_languages) do
-          payload
-        else
-          activate_translations_for(user, payload, text)
-        end
+      if Enum.empty?(to_languages) do
+        payload
+      else
+        activate_translations_for(user, payload, text)
+      end
     end
   end
 

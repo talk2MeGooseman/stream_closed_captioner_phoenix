@@ -7,8 +7,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardController do
   def index(conn, _params) do
     current_user =
       conn.assigns.current_user
-      |> Repo.preload(:stream_settings)
-      |> Repo.preload(:bits_balance)
+      |> Repo.preload([:stream_settings, :bits_balance])
 
     twitch_enabled = current_user.provider === "twitch" && is_binary(current_user.uid)
 

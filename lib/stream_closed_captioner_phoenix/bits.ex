@@ -41,10 +41,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   defp bits_balance_check(user) do
     fn _repo, _ ->
-      user = Repo.preload(user, :bits_balance, force: true)
+      bits_balance = get_bits_balance_for_user(user)
 
-      if user.bits_balance.balance >= 500 do
-        {:ok, user.bits_balance}
+      if bits_balance.balance >= 500 do
+        {:ok, bits_balance}
       else
         {:error, :insufficent_balance}
       end
@@ -115,6 +115,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   def get_users_bits_balance_debit!(%{id: user_id}, id) do
     BitsBalanceDebitQueries.with_user_id(user_id)
     |> BitsBalanceDebitQueries.with_id(id)
+    |> limit(1)
     |> Repo.one!()
   end
 
@@ -130,15 +131,22 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       nil
 
   """
-  @decorate cacheable(
-              cache: Cache,
-              key: {BitsBalanceDebit, user_id},
-              opts: [ttl: 60_000]
-            )
   def get_user_active_debit(user_id) do
     BitsBalanceDebitQueries.with_user_id(user_id)
     |> BitsBalanceDebitQueries.less_than_one_day_ago()
+    |> limit(1)
     |> Repo.one()
+  end
+
+  @decorate cacheable(
+              cache: Cache,
+              key: {BitsBalanceDebit, user_id},
+              opts: [ttl: :timer.minutes(5)]
+            )
+  def user_active_debit_exists?(user_id) do
+    BitsBalanceDebitQueries.with_user_id(user_id)
+    |> BitsBalanceDebitQueries.less_than_one_day_ago()
+    |> Repo.exists?()
   end
 
   @doc """
@@ -195,11 +203,24 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_balance!(id) when is_integer(id) do
     BitsBalanceQueries.with_id(id)
+    |> limit(1)
     |> Repo.one!()
+  end
+
+  @decorate cacheable(
+              cache: Cache,
+              key: {BitsBalance, user.id},
+              opts: [ttl: :timer.minutes(2)]
+            )
+  def get_bits_balance_for_user(%User{} = user) do
+    BitsBalanceQueries.with_user_id(user.id)
+    |> limit(1)
+    |> Repo.one()
   end
 
   def get_bits_balance!(%User{} = user) do
     BitsBalanceQueries.with_user_id(user.id)
+    |> limit(1)
     |> Repo.one!()
   end
 
@@ -216,6 +237,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_balance_by_user_id(user_id) do
     BitsBalanceQueries.with_user_id(user_id)
+    |> limit(1)
     |> Repo.one()
     |> case do
       nil -> {:error, nil}
@@ -254,6 +276,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {BitsBalance, bits_balance.user_id}
+            )
   def update_bits_balance(%BitsBalance{} = bits_balance, attrs) do
     bits_balance
     |> BitsBalance.update_changeset(attrs)
@@ -321,6 +347,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_transaction!(id) when is_integer(id) do
     BitsTransactionQueries.with_id(id)
+    |> limit(1)
     |> Repo.one!()
   end
 
@@ -343,6 +370,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   def get_bits_transaction_by(transaction_id) when is_binary(transaction_id) do
     BitsTransactionQueries.with_transaction_id(transaction_id)
+    |> limit(1)
     |> Repo.one()
   end
 

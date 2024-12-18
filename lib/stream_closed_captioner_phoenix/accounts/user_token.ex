@@ -47,7 +47,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserToken do
       from token in token_and_context_query(token, "session"),
         join: user in assoc(token, :user),
         where: token.inserted_at > ago(@session_validity_in_days, "day"),
-        select: user
+        select: user,
+        limit: 1
 
     {:ok, query}
   end

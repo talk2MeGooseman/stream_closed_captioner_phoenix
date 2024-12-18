@@ -8,6 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
   def with_id(query \\ base(), id) do
     query
     |> where([user], user.id == ^id)
+    |> limit(1)
   end
 
   def with_ids(query \\ base(), ids) do
@@ -23,11 +24,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserQueries do
   def with_uid(query \\ base(), uid) do
     query
     |> where([user], user.uid == ^uid)
+    |> limit(1)
   end
 
   def select_id_user_pair(query \\ base()) do
     query
     |> select([user], {user.id, user})
+    |> limit(1)
   end
 
   def with_email(query \\ base(), email) do
