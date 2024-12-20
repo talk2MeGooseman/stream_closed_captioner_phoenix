@@ -1,10 +1,10 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Bits do
-  alias StreamClosedCaptionerPhoenix.{Accounts, Bits, Repo}
+  alias StreamClosedCaptionerPhoenix.{Accounts, Bits}
 
   def bits_balance(%Accounts.User{} = user, _args, _resolution) do
-    user = Repo.preload(user, :bits_balance)
+    bits_balance = Bits.get_bits_balance_for_user(user)
 
-    case user.bits_balance do
+    case bits_balance do
       nil ->
         {:error, "Bits balance not found"}
 
