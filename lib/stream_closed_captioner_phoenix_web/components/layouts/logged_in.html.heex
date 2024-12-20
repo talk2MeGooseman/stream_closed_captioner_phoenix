@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <%= csrf_meta_tag() %>
-    <%= live_title_tag(assigns[:page_title] || "Stream Closed Captioner",
-      suffix: " · Closed Captions"
-    ) %>
+    <.live_title suffix=" · Closed Captions">
+      <%= assigns[:page_title] || "Stream Closed Captioner" %>
+    </.live_title>
     <%= render_tags_all(assigns[:meta_tags] || %{}) %>
     <link rel="icon" href={~p"/images/favicon-32x32.png"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
@@ -48,7 +48,10 @@
           Talk2MeGooseman
         </a>
         <nav class="text-sm font-medium text-gray-500" aria-label="Main Navigation">
-          <.link navigate={Routes.dashboard_path(@conn, :index)} class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200">
+          <.link
+            navigate={Routes.dashboard_path(@conn, :index)}
+            class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+          >
             <svg
               class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
               xmlns="http://www.w3.org/2000/svg"
@@ -99,8 +102,7 @@
           >
             <%= img_tag(Routes.static_path(@conn, "/images/patreon.svg"),
               alt: "Patreon Logo",
-              class:
-                "shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
+              class: "shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
             ) %>
             <span>Become a Supporter</span>
           </a>
@@ -139,7 +141,10 @@
             </svg>
             <span>Help / FAQ</span>
           </a>
-          <%= live_patch to: Routes.caption_settings_index_path(@conn, :show), class: "flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200" do %>
+          <.link
+            navigate={Routes.caption_settings_index_path(@conn, :show)}
+            class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
+          >
             <svg
               class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
               xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +158,7 @@
               />
             </svg>
             <span>Caption Settings</span>
-          <% end %>
+          </.link>
         </nav>
       </nav>
       <div class="ml-0 transition md:ml-60">

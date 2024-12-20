@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   require Logger
+  use NewRelic.Tracer
 
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
@@ -34,6 +35,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     {:ok, payload}
   end
 
+  @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
     {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
 

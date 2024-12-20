@@ -89,7 +89,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:decorator, "~> 1.4"},
       # Graphql Client
       {:neuron, "~> 5.0"},
-      {:new_relic_agent, "~> 1.27"},
+      {:new_relic_agent, "~> 1.30"},
       {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.13"},
       {:new_relic_oban, "~> 0.0.1"},
