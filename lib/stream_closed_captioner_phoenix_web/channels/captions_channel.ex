@@ -1,5 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   use StreamClosedCaptionerPhoenixWeb, :channel
+  use NewRelic.Tracer
   alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
   @impl true
@@ -39,6 +40,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
+  @trace :handle_in
   def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")

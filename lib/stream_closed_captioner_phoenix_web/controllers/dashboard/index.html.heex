@@ -185,9 +185,9 @@
         <div class="flex-1 p-2">
           <h5 class="text-sm font-bold text-gray-900">
             <%= if Enum.empty?(@translate_languages) do %>
-              <%= live_patch to: ~p"/users/caption-settings", class: "text-red-500 mx-5" do %>
+              <.link navigate={~p"/users/caption-settings"} class="text-red-500 mx-5">
                 You must select a translation language in your Caption Settings to activate translations
-              <% end %>
+              </.link>
             <% else %>
               <%= Map.values(@translate_languages) |> Enum.join(", ") %>
             <% end %>
@@ -299,7 +299,7 @@
       </h5>
       <div class="flex items-center">
         <span>Selected Language: <%= @stream_settings.language %></span>
-        <%= live_patch to: ~p"/users/caption-settings", class: "flex btn btn-outline-primary mx-5" do %>
+        <.link navigate={~p"/users/caption-settings"} class="flex btn btn-outline-primary mx-5">
           <svg
             class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
             xmlns="http://www.w3.org/2000/svg"
@@ -313,7 +313,7 @@
             />
           </svg>
           <span>Caption Settings</span>
-        <% end %>
+        </.link>
         <a href="https://www.notion.so/talk2megooseman/Stream-Closed-Captioner-Help-Center-2a5fd6d0977d4f13b08963a1b332ef61">
           <span class="flex flex-row">
             <svg

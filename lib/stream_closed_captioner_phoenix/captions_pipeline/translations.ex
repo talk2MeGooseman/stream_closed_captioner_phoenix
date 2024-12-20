@@ -1,10 +1,12 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
+  use NewRelic.Tracer
+
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Bits
-  alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
   alias StreamClosedCaptionerPhoenix.Settings
 
+  @trace :maybe_translate
   def maybe_translate(payload, key, %User{} = user) do
     text = Map.get(payload, key)
 
