@@ -15,8 +15,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
       %{payload | translations: translations}
     else
       to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
+      bits_balance = Bits.get_bits_balance_for_user(user)
 
-      if Enum.empty?(to_languages) do
+      if Enum.empty?(to_languages) || bits_balance.balance < 500 do
         payload
       else
         activate_translations_for(user, payload, text)
