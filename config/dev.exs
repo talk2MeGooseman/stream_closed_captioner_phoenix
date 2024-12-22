@@ -1,37 +1,32 @@
 import Config
 
 # Configure your database
-config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-  username: "postgres",
-  password: "",
-  database: "stream-cc-development",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: false,
-  pool_size: 10,
-  stacktrace: true,
-  # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
-  # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
-  # !!! From now on, migrations should only be done from Ecto !!!
-  migration_source: "ecto_schema_migrations"
-
-# database_url =
-#   System.get_env("DATABASE_URL") ||
-#     raise """
-#     environment variable DATABASE_URL is missing.
-#     For example: ecto://USER:PASS@HOST/DATABASE
-#     """
-
 # config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-#   url: database_url,
-#   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-#   ssl: [cacerts: :public_key.cacerts_get()],
+#   username: "postgres",
+#   password: "",
+#   database: "stream-cc-development",
+#   hostname: "localhost",
 #   show_sensitive_data_on_connection_error: false,
+#   pool_size: 10,
 #   stacktrace: true,
 #   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
 #   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
 #   # !!! From now on, migrations should only be done from Ecto !!!
-#   migration_source: "ecto_schema_migrations",
-#   migration_lock: :pg_advisory_lock
+#   migration_source: "ecto_schema_migrations"
+
+database_url = System.get_env("DATABASE_URL")
+
+config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
+  url: database_url,
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  ssl: [cacerts: :public_key.cacerts_get()],
+  show_sensitive_data_on_connection_error: false,
+  stacktrace: true,
+  # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+  # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+  # !!! From now on, migrations should only be done from Ecto !!!
+  migration_source: "ecto_schema_migrations",
+  migration_lock: :pg_advisory_lock
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
