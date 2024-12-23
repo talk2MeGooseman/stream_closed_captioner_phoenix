@@ -98,7 +98,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "0.8.5"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "0.20.0"},
+      {:phoenix_live_view, "0.20.17"},
       {:phoenix_view, "~> 2.0.2"},
       {:phoenix, "~> 1.7.7"},
       {:phoenix_meta_tags, "~> 0.1.9"},
