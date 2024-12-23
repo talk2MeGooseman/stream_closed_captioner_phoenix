@@ -148,6 +148,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
         "phx.digest"
       ],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      "test.ci": ["ecto.create --quiet", "ecto.load", "ecto.migrate --quiet", "test"],
       security: ["sobelow"],
       lint: ["credo"],
       start: ["phx.server"],
