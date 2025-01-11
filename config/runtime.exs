@@ -19,17 +19,31 @@ if config_env() == :prod do
   config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
   config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
 
-  config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-    username: System.get_env("RDS_USERNAME"),
-    password: System.get_env("RDS_PASSWORD"),
-    database: System.get_env("RDS_DB_NAME"),
-    hostname: System.get_env("RDS_HOSTNAME"),
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    ssl: true,
-    # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
-    # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
-    # !!! From now on, migrations should only be done from Ecto !!!
-    migration_source: "ecto_schema_migrations"
+
+  if System.get_env("USE_SSL") == "true" do
+    config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
+      username: System.get_env("RDS_USERNAME"),
+      password: System.get_env("RDS_PASSWORD"),
+      database: System.get_env("RDS_DB_NAME"),
+      hostname: System.get_env("RDS_HOSTNAME"),
+      pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+      ssl: true,
+      # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+      # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+      # !!! From now on, migrations should only be done from Ecto !!!
+      migration_source: "ecto_schema_migrations"
+  else
+    config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
+      username: System.get_env("RDS_USERNAME"),
+      password: System.get_env("RDS_PASSWORD"),
+      database: System.get_env("RDS_DB_NAME"),
+      hostname: System.get_env("RDS_HOSTNAME"),
+      pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+      # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+      # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+      # !!! From now on, migrations should only be done from Ecto !!!
+      migration_source: "ecto_schema_migrations"
+  end
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
