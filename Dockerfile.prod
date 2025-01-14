@@ -1,4 +1,4 @@
-FROM elixir:1.14.0-alpine AS build
+FROM hexpm/elixir:1.14.0-erlang-25.0-alpine-3.18.0 AS build
 
 # install build dependencies
 RUN apt-get update -y && apt-get install -y build-essential git npm wget \
