@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
       # Bamboo for Emailing
-      {:bamboo, "~> 1.7.1"},
+      {:bamboo, "~> 2.4.0"},
       {:bypass, "~> 2.1.0"},
       {:cachex, "~> 3.4"},
       {:cors_plug, "~> 3.0"},
