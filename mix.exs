@@ -55,7 +55,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ex_aws, "~> 2.4"},
       # Other stuff
       {:bcrypt_elixir, "~> 3.0"},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.11", only: [:dev, :test], runtime: false},
       # Add some ecto helpers
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
