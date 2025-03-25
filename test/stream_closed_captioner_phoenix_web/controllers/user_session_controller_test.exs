@@ -1,9 +1,6 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase
-  use Plug.Test
-
   import StreamClosedCaptionerPhoenix.AccountsFixtures
-  import Ueberauth.Strategy.Helpers
 
   defmodule Creds do
     defstruct access_token: "success_token", refresh_token: "success"

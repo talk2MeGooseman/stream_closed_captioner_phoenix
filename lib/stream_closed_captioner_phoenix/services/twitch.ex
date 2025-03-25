@@ -4,8 +4,6 @@ defmodule Twitch do
   """
   use Nebulex.Caching
 
-  alias StreamClosedCaptionerPhoenix.Cache
-
   @extension_id "h1ekceo16erc49snp0sine3k9ccbh9"
 
   require Logger

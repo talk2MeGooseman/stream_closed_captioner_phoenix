@@ -207,6 +207,12 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     |> Repo.one!()
   end
 
+  def get_bits_balance!(%User{} = user) do
+    BitsBalanceQueries.with_user_id(user.id)
+    |> limit(1)
+    |> Repo.one!()
+  end
+
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalance, user.id},
@@ -216,12 +222,6 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     BitsBalanceQueries.with_user_id(user.id)
     |> limit(1)
     |> Repo.one()
-  end
-
-  def get_bits_balance!(%User{} = user) do
-    BitsBalanceQueries.with_user_id(user.id)
-    |> limit(1)
-    |> Repo.one!()
   end
 
   @doc """

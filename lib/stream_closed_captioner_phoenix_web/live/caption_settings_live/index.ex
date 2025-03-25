@@ -128,7 +128,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
   def handle_event(
         "add",
         %{"translate_language" => new_selected_language},
-        %{assigns: %{selected_language: %{id: id}}} = socket
+        %{assigns: %{selected_language: %{id: _id}}} = socket
       ) do
     case Settings.update_translate_language(
            socket.assigns.selected_language,

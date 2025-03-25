@@ -1,8 +1,6 @@
 defmodule Azure do
   use Nebulex.Caching
 
-  alias StreamClosedCaptionerPhoenix.Cache
-
   def api_client,
     do: Application.get_env(:stream_closed_captioner_phoenix, :azure_cognitive_client)
 
