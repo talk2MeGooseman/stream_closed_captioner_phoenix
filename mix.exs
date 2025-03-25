@@ -147,7 +147,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
         "esbuild default --minify",
         "phx.digest"
       ],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ecto.create --quiet", "ecto.load --skip-if-loaded", "ecto.migrate --quiet", "test"],
       security: ["sobelow"],
       lint: ["credo"],
       start: ["phx.server"],
