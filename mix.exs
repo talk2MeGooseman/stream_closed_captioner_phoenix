@@ -58,7 +58,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ecto_sql, "~> 3.4"},
       {:ex_machina, "~> 2.7.0"},
       # Generate struct from maps
-      {:exconstructor, "~> 1.1"},
+      {:exconstructor, "~> 1.2"},
       # Profanity censoring
       {:expletive, "~> 0.1.4"},
       {:exsync, "~> 0.2", only: :dev},
