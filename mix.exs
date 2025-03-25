@@ -112,7 +112,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ueberauth, "~> 0.10"},
       {:websockex, "~> 0.4.3"},
       # UI Build stuff
-      {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.9.0", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev}
     ]
   end
