@@ -1,7 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-  use Waffle.Ecto.Schema
 
   @derive {Inspect, except: [:password, :encrypted_password]}
   @derive {Jason.Encoder,

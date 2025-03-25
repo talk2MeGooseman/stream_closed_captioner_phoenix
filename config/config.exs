@@ -69,19 +69,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.AuthAcc
   module: StreamClosedCaptionerPhoenix.Guardian,
   error_handler: StreamClosedCaptionerPhoenixWeb.AuthErrorHandler
 
-config :waffle,
-  # or Waffle.Storage.Local
-  storage: Waffle.Storage.S3,
-  # if using S3
-  bucket: System.get_env("AWS_BUCKET_NAME")
-
-# If using S3:
-config :ex_aws,
-  json_codec: Jason,
-  access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
-  secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
-  region: System.get_env("AWS_REGION")
-
 config :kaffy,
   otp_app: :stream_closed_captioner_phoenix,
   ecto_repo: StreamClosedCaptionerPhoenix.Repo,
