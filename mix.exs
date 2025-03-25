@@ -48,11 +48,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:floki, ">= 0.30.0"},
       {:flop, "~> 0.22.1"},
       {:flop_phoenix, "~> 0.21.1"},
-      # Waffle for file upload
-      {:waffle, "~> 1.1.1"},
-      {:waffle_ecto, "~> 0.0.9"},
-      # If using Waffle with S3:
-      {:ex_aws, "~> 2.4"},
       # Other stuff
       {:bcrypt_elixir, "~> 3.0"},
       {:credo, "~> 1.7.11", only: [:dev, :test], runtime: false},
