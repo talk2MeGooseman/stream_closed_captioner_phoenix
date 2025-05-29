@@ -198,10 +198,28 @@
         </div>
         <div class="flex-1 p-2">
           <p class="text-sm font-medium leading-none text-gray-600">
-            500 credits are required for to activate translations
-            for 24 hours
+            <%= if @current_user.azure_service_key do %>
+              Using your own Azure service key
+            <% else %>
+              500 credits are required for to activate translations
+              for 24 hours
+            <% end %>
           </p>
         </div>
+        <%= if @current_user.azure_service_key do %>
+        <div class="flex-1 p-2">
+          <%= form_for %{}, "/toggle-translation", [method: :post], fn _f -> %>
+            <%= submit(
+              if @stream_settings.translation_enabled do
+                "Disable Translations"
+              else
+                "Enable Translations"
+              end,
+              class: "btn btn-sm " <> if(@stream_settings.translation_enabled, do: "btn-secondary", else: "btn-primary")
+            ) %>
+          <% end %>
+        </div>
+        <% end %>
       </div>
       <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
         <div
