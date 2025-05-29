@@ -198,7 +198,7 @@
         </div>
         <div class="flex-1 p-2">
           <p class="text-sm font-medium leading-none text-gray-600">
-            <%= if @current_user.azure_service_key do %>
+            <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
               Using your own Azure service key
             <% else %>
               500 credits are required for to activate translations
@@ -206,7 +206,7 @@
             <% end %>
           </p>
         </div>
-        <%= if @current_user.azure_service_key do %>
+        <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
         <div class="flex-1 p-2">
           <%= form_for %{}, "/toggle-translation", [method: :post], fn _f -> %>
             <%= submit(

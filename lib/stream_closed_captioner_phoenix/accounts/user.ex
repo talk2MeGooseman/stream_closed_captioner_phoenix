@@ -210,7 +210,17 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   def azure_key_changeset(user, attrs) do
     user
     |> cast(attrs, [:azure_service_key])
-    |> validate_length(:azure_service_key, min: 10, max: 256)
+    |> validate_azure_key()
+  end
+
+  defp validate_azure_key(changeset) do
+    case get_change(changeset, :azure_service_key) do
+      nil -> changeset
+      "" -> changeset  # Allow clearing the key
+      key when is_binary(key) and byte_size(key) >= 10 and byte_size(key) <= 256 -> changeset
+      key when is_binary(key) -> add_error(changeset, :azure_service_key, "should be between 10 and 256 characters")
+      _ -> add_error(changeset, :azure_service_key, "must be a valid string")
+    end
   end
 end
 

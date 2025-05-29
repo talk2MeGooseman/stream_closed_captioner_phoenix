@@ -11,7 +11,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     text = Map.get(payload, key)
 
     # If user has their own Azure key and translation is enabled, use it directly
-    if user.azure_service_key && user_translation_enabled?(user) do
+    if has_user_azure_key?(user) && user_translation_enabled?(user) do
       %Translations{translations: translations} = get_translations_with_user_key(user, text)
       %{payload | translations: translations}
     else
@@ -71,4 +71,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
       _ -> false
     end
   end
+
+  defp has_user_azure_key?(%User{azure_service_key: key}) when is_binary(key) and byte_size(key) > 0, do: true
+  defp has_user_azure_key?(_), do: false
 end
