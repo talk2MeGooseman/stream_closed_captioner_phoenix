@@ -8,6 +8,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
 
   schema "users" do
     field :access_token, :string
+    field :azure_service_key, :string
     field :description, :string
     field :email, :string
     field :encrypted_password, :string
@@ -204,6 +205,12 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   def provider_changeset(user, attrs) do
     user
     |> cast(attrs, [:provider])
+  end
+
+  def azure_key_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:azure_service_key])
+    |> validate_length(:azure_service_key, min: 10, max: 256)
   end
 end
 

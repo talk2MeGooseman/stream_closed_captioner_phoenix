@@ -13,6 +13,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     field(:showcase, :boolean, default: false)
     field(:switch_settings_position, :boolean, default: false)
     field(:text_uppercase, :boolean, default: false)
+    field(:translation_enabled, :boolean, default: false)
     field(:turn_on_reminder, :boolean, default: false)
     field(:auto_off_captions, :boolean, default: false)
     belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
@@ -35,6 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :showcase,
       :switch_settings_position,
       :text_uppercase,
+      :translation_enabled,
       :turn_on_reminder,
       :user_id
     ])
@@ -62,6 +64,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :switch_settings_position,
       :showcase,
       :pirate_mode,
+      :translation_enabled,
       :turn_on_reminder,
       :caption_delay
     ])
@@ -93,6 +96,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :showcase,
       :switch_settings_position,
       :text_uppercase,
+      :translation_enabled,
       :turn_on_reminder
     ])
     |> validate_required([

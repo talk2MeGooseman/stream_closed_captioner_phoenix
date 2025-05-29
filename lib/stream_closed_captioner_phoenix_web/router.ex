@@ -184,5 +184,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     resources("/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show])
     resources("/dashboard", DashboardController, only: [:index])
+    
+    post("/toggle-translation", DashboardController, :toggle_translation)
   end
 end
