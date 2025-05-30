@@ -25,27 +25,24 @@
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg",
 				"saratravi.elixir-formatter",
 				"jakebecker.elixir-ls",
 				"adamzapasnik.elixir-test-explorer",
-				"hookyqr.beautify",
 				"streetsidesoftware.code-spell-checker",
 				"samuel-pordeus.elixir-test",
 				"iampeterbanjo.elixirlinter",
 				"benvp.vscode-hex-pm-intellisense",
-				"zerokol.vscode-eex-beautify",
 				"eamodio.gitlens",
 				"robbowen.synthwave-vscode",
 				"github.copilot",
-				"clarkio.twitch-highlighter",
 				"bradlc.vscode-tailwindcss",
 				"sburg.vscode-javascript-booster",
 				"dbaeumer.vscode-eslint",
 				"donjayamanne.git-extension-pack",
-				"GitHub.copilot-labs",
-				"phoenixframework.phoenix"
+				"phoenixframework.phoenix",
+				"GitHub.copilot-chat",
+				"msaraiva.surface",
+				"johnpapa.vscode-cloak"
 			],
 		}
 	},
@@ -56,6 +53,26 @@
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"features": {
-		"ghcr.io/devcontainers/features/python:1": {}
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "18.5.0",
+			"pnpmVersion": "none",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"configureZshAsDefaultShell": true,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
+			"upgradePackages": true,
+			"username": "automatic",
+			"userUid": "automatic",
+			"userGid": "automatic"
+		},
+		"ghcr.io/itsmechlark/features/doppler:2": {}
 	}
 }
