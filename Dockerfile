@@ -24,6 +24,13 @@ FROM ${BUILDER_IMAGE} as builder
 RUN apt-get update -y && apt-get install -y build-essential git npm  \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
+# Cleanup after installing build dependencies
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Add a non-root user in the builder stage
+RUN useradd -ms /bin/bash builder
+USER builder
+
 # prepare build dir
 WORKDIR /app
 
@@ -34,7 +41,7 @@ RUN mix local.hex --force && \
 # set build ENV
 ENV MIX_ENV="prod"
 
-# install mix dependencies
+# Copy mix files before installing dependencies
 COPY mix.exs mix.lock ./
 RUN mix deps.get --only $MIX_ENV
 RUN mkdir config
@@ -79,7 +86,7 @@ RUN mix release
 FROM ${RUNNER_IMAGE}
 
 RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales \
-  && apt-get clean && rm -f /var/lib/apt/lists/*_*
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
