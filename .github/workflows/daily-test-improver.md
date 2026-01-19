@@ -18,7 +18,7 @@ permissions:
 network: defaults
 
 safe-outputs:
-  github-token: ${{ secrets.GH_AW_GITHUB_TOKEN }}
+  github-token: ${{ secrets.AGENT_LEGACY_ACCES_TOKEN }}
   create-discussion: # needed to create planning discussion
     title-prefix: "${{ github.workflow }}"
     category: "ideas"
