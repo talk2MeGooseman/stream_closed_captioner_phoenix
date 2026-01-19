@@ -8,13 +8,13 @@ description: |
 on:
   schedule: daily
   workflow_dispatch:
-  stop-after: +1mo # workflow will no longer trigger after 1 month
+  stop-after: +1mo # workflow will no longer trddigger after 1 month
 
 timeout-minutes: 30
 
 permissions:
   all: read
-  id-token: write  # for auth in some actions
+  id-token: read  # for auth in some actions
 
 network: defaults
 
@@ -32,7 +32,6 @@ safe-outputs:
 
 tools:
   web-fetch:
-  web-search:
   bash:
   github:
     toolsets: [all]
@@ -135,25 +134,25 @@ To decide which phase to perform:
    a. Repository is now test-ready. Review `coverage-steps/action.yml` and `coverage-steps.log` to understand setup. If coverage steps failed then create fix PR and exit.
 
    b. Locate and read the coverage report. Be detailed, looking to understand the files, functions, branches, and lines of code that are not covered by tests. Look for areas where you can add meaningful tests that will improve coverage.
-   
+
    c. Read the plan in the discussion mentioned earlier, along with comments.
-   
+
    d. Check the most recent pull request with title starting with "${{ github.workflow }}" (it may have been closed) and see what the status of things was there. These are your notes from last time you did your work, and may include useful recommendations for future areas to work on.
 
    e. Check for existing open pull requests (especially yours with "${{ github.workflow }}" prefix). Avoid duplicate work.
-   
+
    f. If plan needs updating then comment on planning discussion with revised plan and rationale. Consider maintainer feedback.
-  
+
    g. Based on all of the above, select an area of relatively low coverage to work on that appears tractable for further test additions. Ensure that you have a good understanding of the code and the testing requirements before proceeding.
 
 2. **Work towards your selected goal**. For the test coverage improvement goal you selected, do the following:
 
    a. Create a new branch starting with "test/".
-   
+
    b. Write new tests to improve coverage. Ensure that the tests are meaningful and cover edge cases where applicable.
 
    c. Build the tests if necessary and remove any build errors.
-   
+
    d. Run the new tests to ensure they pass.
 
    e. Re-run the test suite collecting coverage information. Check that overall coverage has improved. Document measurement attempts even if unsuccessful. If no improvement then iterate, revert, or try different approach.
@@ -161,7 +160,7 @@ To decide which phase to perform:
 3. **Finalizing changes**
 
    a. Apply any automatic code formatting used in the repo. If necessary check CI files to understand what code formatting is used.
-   
+
    b. Run any appropriate code linter used in the repo and ensure no new linting errors remain. If necessary check CI files to understand what code linting is used.
 
 4. **Results and learnings**
@@ -171,7 +170,7 @@ To decide which phase to perform:
       **Critical:** Exclude coverage reports and tool-generated files from PR. Double-check added files and remove any that don't belong.
 
       Include a description of the improvements with evidence of impact. In the description, explain:
-      
+
       - **Goal and rationale:** Coverage area chosen and why it matters
       - **Approach:** Testing strategy, methodology, and implementation steps
       - **Impact measurement:** How coverage was tested and results achieved
