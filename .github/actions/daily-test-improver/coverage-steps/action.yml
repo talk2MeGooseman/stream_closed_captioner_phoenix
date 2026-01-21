@@ -1,0 +1,112 @@
+name: 'Generate Test Coverage'
+description: 'Build project, run tests with coverage, and upload coverage reports'
+
+runs:
+  using: "composite"
+  steps:
+    # Step 1: Install Elixir/Erlang dependencies
+    - name: Install Elixir dependencies
+      shell: bash
+      run: |
+        echo "=== Installing Elixir dependencies ===" | tee -a coverage-steps.log
+        mix local.hex --force 2>&1 | tee -a coverage-steps.log
+        mix local.rebar --force 2>&1 | tee -a coverage-steps.log
+        mix deps.get 2>&1 | tee -a coverage-steps.log
+        echo "Dependencies installed successfully" | tee -a coverage-steps.log
+    
+    # Step 2: Setup database for testing
+    # Note: Tests run with ecto.create/migrate in the test alias, but we'll ensure DB is ready
+    - name: Setup test database
+      shell: bash
+      run: |
+        echo "=== Setting up test database ===" | tee -a coverage-steps.log
+        MIX_ENV=test mix ecto.create --quiet 2>&1 | tee -a coverage-steps.log || echo "Database already exists" | tee -a coverage-steps.log
+        MIX_ENV=test mix ecto.load --skip-if-loaded 2>&1 | tee -a coverage-steps.log || true
+        MIX_ENV=test mix ecto.migrate --quiet 2>&1 | tee -a coverage-steps.log
+        echo "Test database ready" | tee -a coverage-steps.log
+    
+    # Step 3: Install Node.js dependencies (needed for asset compilation)
+    - name: Install Node.js dependencies
+      shell: bash
+      run: |
+        echo "=== Installing Node.js dependencies ===" | tee -a coverage-steps.log
+        npm install --prefix assets 2>&1 | tee -a coverage-steps.log
+        echo "Node.js dependencies installed" | tee -a coverage-steps.log
+    
+    # Step 4: Setup and build assets (required for LiveView tests)
+    - name: Build assets
+      shell: bash
+      run: |
+        echo "=== Building assets ===" | tee -a coverage-steps.log
+        mix assets.setup 2>&1 | tee -a coverage-steps.log
+        mix assets.build 2>&1 | tee -a coverage-steps.log
+        echo "Assets built successfully" | tee -a coverage-steps.log
+    
+    # Step 5: Compile the project
+    - name: Compile project
+      shell: bash
+      run: |
+        echo "=== Compiling project ===" | tee -a coverage-steps.log
+        MIX_ENV=test mix compile --warnings-as-errors 2>&1 | tee -a coverage-steps.log
+        echo "Project compiled successfully" | tee -a coverage-steps.log
+    
+    # Step 6: Run tests with coverage
+    # Coverage will be generated using mix test --cover
+    # The built-in cover tool generates coverage in cover/ directory
+    - name: Run tests with coverage
+      shell: bash
+      run: |
+        echo "=== Running tests with coverage ===" | tee -a coverage-steps.log
+        MIX_ENV=test mix test --cover 2>&1 | tee -a coverage-steps.log
+        echo "Tests completed with coverage" | tee -a coverage-steps.log
+    
+    # Step 7: Generate HTML coverage report
+    # Since excoveralls is not yet installed, we'll use Elixir's built-in cover tool
+    # The coverage data is in cover/ directory
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        echo "=== Generating coverage report ===" | tee -a coverage-steps.log
+        # Create a simple coverage summary script
+        cat > generate_coverage_summary.exs << 'EOSCRIPT'
+        # Read coverage results and generate a summary
+        cover_dir = "cover"
+        
+        if File.exists?(cover_dir) do
+          IO.puts("Coverage data found in #{cover_dir}/")
+          
+          # List coverage files
+          cover_files = File.ls!(cover_dir)
+          IO.puts("Coverage files generated: #{length(cover_files)} files")
+          
+          # Try to find and read coverage summary
+          html_files = Enum.filter(cover_files, &String.ends_with?(&1, ".html"))
+          IO.puts("HTML coverage files: #{inspect(html_files)}")
+        else
+          IO.puts("No coverage directory found")
+        end
+        EOSCRIPT
+        
+        mix run generate_coverage_summary.exs 2>&1 | tee -a coverage-steps.log
+        
+        # List coverage files for verification
+        if [ -d "cover" ]; then
+          echo "Coverage files generated:" | tee -a coverage-steps.log
+          ls -lh cover/ 2>&1 | tee -a coverage-steps.log
+        else
+          echo "WARNING: No cover directory found" | tee -a coverage-steps.log
+        fi
+        
+        echo "Coverage report generation completed" | tee -a coverage-steps.log
+    
+    # Step 8: Upload coverage artifact
+    # Uploads the cover/ directory containing HTML coverage reports
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: |
+          cover/
+          coverage-steps.log
+        retention-days: 30
+        if-no-files-found: warn
