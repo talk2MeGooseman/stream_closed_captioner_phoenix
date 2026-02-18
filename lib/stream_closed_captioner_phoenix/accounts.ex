@@ -346,6 +346,21 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     end
   end
 
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user azure service key.
+  """
+  def change_user_azure_key(user, attrs \\ %{}) do
+    User.azure_key_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user azure service key.
+  """
+  def update_user_azure_key(user, attrs) do
+    changeset = User.azure_key_changeset(user, attrs)
+    Repo.update(changeset)
+  end
+
   ## Session
 
   @doc """

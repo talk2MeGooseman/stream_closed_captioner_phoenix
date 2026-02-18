@@ -13,6 +13,14 @@ defmodule Azure.Cognitive do
   @trace :translate
   def translate(from_language \\ "en", to_languages, text)
       when is_list(to_languages) and is_binary(text) do
+    translate(from_language, to_languages, text, nil)
+  end
+
+  @impl Azure.CognitiveProvider
+
+  @trace :translate
+  def translate(from_language, to_languages, text, user_key)
+      when is_list(to_languages) and is_binary(text) do
     language_tuple_list =
       Enum.flat_map(to_languages, fn lang ->
         [code | _] = String.split(from_language, "-")
@@ -30,9 +38,11 @@ defmodule Azure.Cognitive do
       {:from, from_language} | language_tuple_list
     ]
 
+    api_key = user_key || System.get_env("COGNITIVE_SERVICE_KEY")
+
     headers = [
       {"Content-Type", "application/json; charset=UTF-8"},
-      {"Ocp-Apim-Subscription-Key", System.get_env("COGNITIVE_SERVICE_KEY")},
+      {"Ocp-Apim-Subscription-Key", api_key},
       {"Ocp-Apim-Subscription-Region", "westus2"},
       {"X-ClientTraceId", UUID.generate()}
     ]

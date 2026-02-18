@@ -9,4 +9,10 @@ defmodule Azure do
   def perform_translations(from_language, to_languages, text) do
     api_client().translate(from_language, to_languages, text)
   end
+
+  @spec perform_translations(String.t(), [String.t()], String.t(), String.t() | nil) ::
+          Azure.Cognitive.Translations.t()
+  def perform_translations(from_language, to_languages, text, user_key) do
+    api_client().translate(from_language, to_languages, text, user_key)
+  end
 end
