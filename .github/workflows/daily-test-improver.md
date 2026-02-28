@@ -15,6 +15,8 @@ on:
   slash_command:
     name: test-assist
   reaction: "eyes"
+imports:
+  - shared/elixir-setup.md
 
 timeout-minutes: 30
 
