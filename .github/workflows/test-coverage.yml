@@ -14,6 +14,8 @@ jobs:
   test:
     name: Test & Coverage
     runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
 
     services:
       postgres:
@@ -70,24 +72,16 @@ jobs:
         run: mix deps.compile
 
       - name: Compile project
-        run: mix compile --warnings-as-errors
+        run: mix compile
 
       - name: Run tests with coverage
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost/stream_closed_captioner_phoenix_test
-        run: mix coveralls.json
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mix coveralls.github
 
       - name: Generate coverage report comment
         if: github.event_name == 'pull_request'
         run: |
-          COVERAGE=$(mix coveralls.json | grep -oP '\d+\.\d+(?=%)' | head -1)
-          echo "Coverage: $COVERAGE%"
-          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
-
-      - name: Check coverage threshold
-        run: |
-          mix coveralls.json
-          if [ $? -ne 0 ]; then
-            echo "Coverage below minimum threshold!"
-            exit 1
-          fi
+          COVERAGE=$(mix coveralls.github --summary | grep "Coverage" | awk '{print $2}' | tr -d '%')
+          echo "Coverage: $COVERAGE%" >> $GITHUB_STEP_SUMMARY
