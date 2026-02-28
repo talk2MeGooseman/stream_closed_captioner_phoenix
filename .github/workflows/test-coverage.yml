@@ -82,7 +82,6 @@ jobs:
         run: mix coveralls
 
       - name: Generate coverage report comment
-        if: github.event_name == 'pull_request'
         run: |
-          COVERAGE=$(mix coveralls.github --summary | grep "Coverage" | awk '{print $2}' | tr -d '%')
+          COVERAGE=$(mix coveralls | grep "Coverage" | awk '{print $2}' | tr -d '%')
           echo "Coverage: $COVERAGE%" >> $GITHUB_STEP_SUMMARY
