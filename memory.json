@@ -1,0 +1,57 @@
+{
+  "last_run": "2025-07-17T00:00:00Z",
+  "run_id": "22528035393",
+  "commands": {
+    "test": "mix test",
+    "coverage": "mix coveralls",
+    "coverage_html": "mix coveralls.html",
+    "lint": "mix credo",
+    "security": "mix sobelow",
+    "format": "mix format",
+    "format_check": "mix format --check-formatted"
+  },
+  "ci_notes": "CI requires PostgreSQL 15; uses DATABASE_URL=postgres://postgres:postgres@localhost/stream_closed_captioner_phoenix_test. Tests cannot run in workflow without DB service. Elixir 1.16.0 / OTP 26.0.",
+  "testing_framework": "ExUnit with ExMachina factories, Mox for external mocks (Azure.MockCognitive, Twitch.MockHelix, Twitch.MockExtension), DataCase for DB, ConnCase for controllers, ChannelCase for channels",
+  "tasks_run": {
+    "task1": "2025-07-17",
+    "task2": "2025-07-17",
+    "task3": "2025-07-17",
+    "task7": "2025-07-17"
+  },
+  "testing_backlog": [
+    {
+      "priority": 1,
+      "title": "CaptionsPipeline.Translations - missing branch coverage",
+      "detail": "Tests for: (a) user with active debit skips balance check, (b) insufficient balance with languages. PR submitted: test-assist/captions-pipeline-translations-coverage",
+      "status": "PR_SUBMITTED"
+    },
+    {
+      "priority": 2,
+      "title": "CaptionsChannel handle_in tests",
+      "detail": "captions_channel_test.exs exists but all tests are commented out. Revive: default pipeline, twitch pipeline, zoom pipeline, 'active' event.",
+      "status": "pending"
+    },
+    {
+      "priority": 3,
+      "title": "pipeline_to(:default) and pipeline_to(:zoom) branches",
+      "detail": "captions_pipeline_test.exs only tests :twitch pipeline. Default and zoom paths are untested.",
+      "status": "pending"
+    },
+    {
+      "priority": 4,
+      "title": "services/twitch.ex",
+      "detail": "Large Twitch API service, no tests. Thin wrappers over behavior mocks; moderate test value. get_live_streams has non-trivial chunk/sort/dedup logic.",
+      "status": "pending"
+    }
+  ],
+  "maintainer_priorities": "None noted yet - no maintainer comments on test-related issues.",
+  "completed_prs": [
+    {
+      "branch": "test-assist/captions-pipeline-translations-coverage",
+      "description": "Added 2 tests for untested branches in CaptionsPipeline.Translations.maybe_translate/3: (1) active debit skips balance check, (2) insufficient balance with languages returns payload unchanged.",
+      "run_id": "22528035393"
+    }
+  ],
+  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner.",
+  "monthly_activity_issue": null
+}
