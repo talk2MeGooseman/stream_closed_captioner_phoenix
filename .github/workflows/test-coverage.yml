@@ -78,7 +78,8 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost/stream_closed_captioner_phoenix_test
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mix coveralls.github
+          MIX_ENV: test
+        run: mix coveralls
 
       - name: Generate coverage report comment
         if: github.event_name == 'pull_request'

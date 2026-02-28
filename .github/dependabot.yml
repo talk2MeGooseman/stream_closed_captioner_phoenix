@@ -18,3 +18,10 @@ updates:
     labels:
       - "dependencies"
       - "npm"
+  - package-ecosystem: github-actions
+    schedule:
+      interval: monthly
+    target-branch: master
+    labels:
+      - "dependencies"
+      - "dependabot"

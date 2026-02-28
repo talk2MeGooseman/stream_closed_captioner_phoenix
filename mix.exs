@@ -10,7 +10,15 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       compilers: [] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -43,6 +51,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:bypass, "~> 2.1.0"},
       {:cachex, "~> 3.4"},
       {:cors_plug, "~> 3.0"},
+      {:excoveralls, "~> 0.18", only: :test},
       {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3.0"},
       {:floki, ">= 0.30.0"},
