@@ -1,5 +1,5 @@
 function isChromium() {
-  if (navigator.userAgentData.brands) {
+  if (navigator.userAgentData?.brands) {
     const hasGoogleChromeBrand = navigator.userAgentData.brands.find(
       (b) => b.brand === 'Google Chrome'
     );
@@ -37,7 +37,7 @@ const isChromeiOS = () => {
 };
 
 export const isBrowserCompatible = () => {
-  return (!('webkitSpeechRecognition' in window) ||
+  return (('webkitSpeechRecognition' in window) ||
     navigator.userAgent.indexOf('Opera') !== -1 ||
     isChromium() ||
     isEdge() ||
