@@ -183,10 +183,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                 delay: 0,
                 final: "Hello",
                 interim: "",
-                translations: %Azure.Cognitive.Translations{
-                  translations: %{
-                    "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
-                  }
+                translations: %{
+                  "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
                 }
               }} == result
 
