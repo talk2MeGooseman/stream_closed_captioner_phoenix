@@ -87,6 +87,36 @@ When you use this component, you should:
 2. Compile the project with: `mix compile`
 3. Wait for PostgreSQL to be fully healthy before running database commands
 
+## Testing New Features or Changes
+
+**IMPORTANT**: When developing new tests or features, you MUST run tests to verify your changes:
+
+1. **After writing new tests**: Run `mix test` to ensure the new tests pass and don't break existing tests
+2. **After implementing features**: Run the relevant test suite to verify functionality
+3. **Before finalizing changes**: Run the full test suite with `mix test --trace` to catch any issues
+4. **Check code quality**: Run `mix format` to format code and `mix credo` for static analysis
+
+### Testing Workflow
+
+```bash
+# 1. Install/update dependencies
+mix deps.get
+
+# 2. Compile the project
+mix compile
+
+# 3. Run tests
+mix test
+
+# 4. Check formatting
+mix format
+
+# 5. Run static analysis
+mix credo
+```
+
+If tests fail, review the error output, fix the issues, and re-run the tests. Do not proceed without passing tests.
+
 ## Common Commands
 
 Once the environment is set up, you can run:
