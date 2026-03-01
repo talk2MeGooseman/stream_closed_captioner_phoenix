@@ -79,28 +79,13 @@ PostgreSQL is available at:
 
 Connection string: `postgres://postgres:postgres@localhost:5432/stream_closed_captioner_phoenix_test`
 
-## Required Actions
+## Setup Instructions
 
-Before using this component, ensure your workflow has these setup actions:
+When you use this component, you should:
 
-```yaml
-steps:
-  - uses: actions/checkout@v4
-  - uses: erlef/setup-beam@v1
-    with:
-      otp-version: "26"
-      elixir-version: "1.16"
-  - uses: actions/cache@v3
-    with:
-      path: deps
-      key: ${{ runner.os }}-deps-${{ hashFiles('**/mix.lock') }}
-  - uses: actions/cache@v3
-    with:
-      path: _build
-      key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
-  - run: mix deps.get
-  - run: mix compile
-```
+1. Install dependencies with: `mix deps.get`
+2. Compile the project with: `mix compile`
+3. Wait for PostgreSQL to be fully healthy before running database commands
 
 ## Common Commands
 
