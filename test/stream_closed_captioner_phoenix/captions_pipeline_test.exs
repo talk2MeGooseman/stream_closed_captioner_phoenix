@@ -9,6 +9,71 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline
 
+  describe "pipeline_to(:default)" do
+    test "it passes text through unchanged with default stream settings" do
+      user = insert(:user)
+
+      result =
+        CaptionsPipeline.pipeline_to(:default, user, %{
+          "interim" => "Hello",
+          "final" => "World",
+          "session" => "abc123"
+        })
+
+      assert result ==
+               {:ok,
+                %Twitch.Extension.CaptionsPayload{
+                  delay: 0,
+                  final: "World",
+                  interim: "Hello",
+                  translations: nil
+                }}
+    end
+
+    test "when pirate mode is active, translates both interim and final" do
+      user = insert(:user, stream_settings: build(:stream_settings, pirate_mode: true))
+
+      result =
+        CaptionsPipeline.pipeline_to(:default, user, %{
+          "interim" => "Hello",
+          "final" => "Friend",
+          "session" => "abc123"
+        })
+
+      assert result ==
+               {:ok,
+                %Twitch.Extension.CaptionsPayload{
+                  delay: 0,
+                  final: "Matey",
+                  interim: "Ahoy",
+                  translations: nil
+                }}
+    end
+
+    test "when profanity filter is active with blocklist words, it filters those words" do
+      user =
+        insert(:user,
+          stream_settings: build(:stream_settings, filter_profanity: true, blocklist: ["poopy"])
+        )
+
+      result =
+        CaptionsPipeline.pipeline_to(:default, user, %{
+          "interim" => "Hello poopy head",
+          "final" => "Friend",
+          "session" => "abc123"
+        })
+
+      assert result ==
+               {:ok,
+                %Twitch.Extension.CaptionsPayload{
+                  delay: 0,
+                  interim: "Hello ***** head",
+                  final: "Friend",
+                  translations: nil
+                }}
+    end
+  end
+
   describe "CaptionsPipeline" do
     test "it successfully sends regular sentence to Twitch" do
       user = insert(:user)
