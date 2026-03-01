@@ -131,5 +131,65 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                   translations: nil
                 }}
     end
+
+    test "when user has languages but insufficient bits balance, it won't translate" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 499),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "disf12f3"
+        })
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                delay: 0,
+                final: "Hello",
+                interim: "",
+                translations: nil
+              }} == result
+
+      assert %{balance: 499} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
+    end
+
+    test "when user already has an active translation debit, translates without debiting balance" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 0),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      insert(:bits_balance_debit, user: user)
+
+      Azure.MockCognitive
+      |> expect(:translate, fn _from_language, _to_languages, _text ->
+        Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})
+      end)
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "disf12f3"
+        })
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                delay: 0,
+                final: "Hello",
+                interim: "",
+                translations: %{
+                  "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
+                }
+              }} == result
+
+      # Balance should NOT be debited – the active debit record means translation was already paid
+      assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
+    end
   end
 end
