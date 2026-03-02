@@ -24,6 +24,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         ) ::
           {:error, String.t()}
           | {:ok, CaptionsPayload.t()}
+  @trace :pipeline_to
   def pipeline_to(:default, %User{} = user, message) do
     {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
 
