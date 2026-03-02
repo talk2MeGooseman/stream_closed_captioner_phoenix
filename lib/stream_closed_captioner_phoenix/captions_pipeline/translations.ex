@@ -13,12 +13,12 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     # If user has their own Azure key and translation is enabled, use it directly
     if has_user_azure_key?(user) && user_translation_enabled?(user) do
       %Translations{translations: translations} = get_translations_with_user_key(user, text)
-      %{payload | translations: translations}
+      Map.put(payload, :translations, translations)
     else
       # Use original bits-based translation logic
       if Bits.user_active_debit_exists?(user.id) do
         %Translations{translations: translations} = get_translations(user, text)
-        %{payload | translations: translations}
+        Map.put(payload, :translations, translations)
       else
         to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
         bits_balance = Bits.get_bits_balance_for_user(user)
@@ -36,7 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     case Bits.activate_translations_for(user) do
       {:ok, _} ->
         translations = get_translations(user, text)
-        %{payload | translations: translations}
+        Map.put(payload, :translations, translations)
 
       _ ->
         payload

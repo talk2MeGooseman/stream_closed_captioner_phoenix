@@ -6,7 +6,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardControllerToggleTest do
   describe "toggle_translation/2" do
     setup do
       user = insert(:user)
-      stream_settings = insert(:stream_settings, user_id: user.id, translation_enabled: false)
+      # Update the pre-created stream_settings instead of inserting a new one
+      {:ok, stream_settings} = StreamClosedCaptionerPhoenix.Settings.update_stream_settings(
+        user.stream_settings, 
+        %{translation_enabled: false}
+      )
       
       %{user: user, stream_settings: stream_settings}
     end

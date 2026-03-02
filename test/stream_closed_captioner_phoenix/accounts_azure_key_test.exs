@@ -27,7 +27,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsAzureKeyTest do
     test "accepts empty azure service key to clear it" do
       user = insert(:user, azure_service_key: "existing-key")
       assert {:ok, updated_user} = Accounts.update_user_azure_key(user, %{azure_service_key: ""})
-      assert updated_user.azure_service_key == ""
+      assert updated_user.azure_service_key == nil
     end
   end
 end
