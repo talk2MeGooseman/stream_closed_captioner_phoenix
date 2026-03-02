@@ -89,9 +89,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
     ~H"""
     <div :if={@meta.total_count != 0} class="flex flex-col items-center my-4 space-y-4">
       <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        Showing <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.current_offset + 1 %></span>
-        <span :if={@meta.total_pages != 1}>to <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.next_offset || @meta.total_count %></span></span>
-        of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span> Entries
+        Showing
+        <span class="font-semibold text-gray-900 dark:text-white">
+          <%= @meta.current_offset + 1 %>
+        </span>
+        <span :if={@meta.total_pages != 1}>
+          to
+          <span class="font-semibold text-gray-900 dark:text-white">
+            <%= @meta.next_offset || @meta.total_count %>
+          </span>
+        </span>
+        of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span>
+        Entries
       </div>
       <Flop.Phoenix.pagination :if={@meta.total_pages != 1} meta={@meta} path={@path} opts={@opts} />
     </div>

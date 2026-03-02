@@ -1,6 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsAzureKeyTest do
   use StreamClosedCaptionerPhoenix.DataCase, async: true
-  
+
   import StreamClosedCaptionerPhoenix.Factory
   alias StreamClosedCaptionerPhoenix.Accounts
 
@@ -14,13 +14,19 @@ defmodule StreamClosedCaptionerPhoenix.AccountsAzureKeyTest do
   describe "update_user_azure_key/2" do
     test "updates the azure service key" do
       user = insert(:user)
-      assert {:ok, updated_user} = Accounts.update_user_azure_key(user, %{azure_service_key: "test-key-123"})
+
+      assert {:ok, updated_user} =
+               Accounts.update_user_azure_key(user, %{azure_service_key: "test-key-123"})
+
       assert updated_user.azure_service_key == "test-key-123"
     end
 
     test "validates azure service key length" do
       user = insert(:user)
-      assert {:error, changeset} = Accounts.update_user_azure_key(user, %{azure_service_key: "short"})
+
+      assert {:error, changeset} =
+               Accounts.update_user_azure_key(user, %{azure_service_key: "short"})
+
       assert "should be between 10 and 256 characters" in errors_on(changeset).azure_service_key
     end
 

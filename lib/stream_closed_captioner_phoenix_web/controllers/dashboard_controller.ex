@@ -25,8 +25,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardController do
   def toggle_translation(conn, _params) do
     current_user = conn.assigns.current_user
     {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(current_user.id)
-    
-    case Settings.update_stream_settings(stream_settings, %{translation_enabled: !stream_settings.translation_enabled}) do
+
+    case Settings.update_stream_settings(stream_settings, %{
+           translation_enabled: !stream_settings.translation_enabled
+         }) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Translation setting updated successfully.")

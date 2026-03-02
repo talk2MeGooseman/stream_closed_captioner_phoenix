@@ -207,18 +207,23 @@
           </p>
         </div>
         <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
-        <div class="flex-1 p-2">
-          <%= form_for %{}, "/toggle-translation", [method: :post], fn _f -> %>
-            <%= submit(
-              if @stream_settings.translation_enabled do
-                "Disable Translations"
-              else
-                "Enable Translations"
-              end,
-              class: "btn btn-sm " <> if(@stream_settings.translation_enabled, do: "btn-secondary", else: "btn-primary")
-            ) %>
-          <% end %>
-        </div>
+          <div class="flex-1 p-2">
+            <%= form_for %{}, "/toggle-translation", [method: :post], fn _f -> %>
+              <%= submit(
+                if @stream_settings.translation_enabled do
+                  "Disable Translations"
+                else
+                  "Enable Translations"
+                end,
+                class:
+                  "btn btn-sm " <>
+                    if(@stream_settings.translation_enabled,
+                      do: "btn-secondary",
+                      else: "btn-primary"
+                    )
+              ) %>
+            <% end %>
+          </div>
         <% end %>
       </div>
       <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">

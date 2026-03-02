@@ -103,7 +103,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/" do
     pipe_through(:browser)
 
-    forward("/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck)
+    forward("/monitoring", HeartCheck.Plug,
+      heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
+    )
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
@@ -184,7 +186,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     resources("/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show])
     resources("/dashboard", DashboardController, only: [:index])
-    
+
     post("/toggle-translation", DashboardController, :toggle_translation)
   end
 end

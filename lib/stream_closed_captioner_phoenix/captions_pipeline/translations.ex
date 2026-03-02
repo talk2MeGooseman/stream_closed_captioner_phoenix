@@ -72,6 +72,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     end
   end
 
-  defp has_user_azure_key?(%User{azure_service_key: key}) when is_binary(key) and byte_size(key) > 0, do: true
+  defp has_user_azure_key?(%User{azure_service_key: key})
+       when is_binary(key) and byte_size(key) > 0,
+       do: true
+
   defp has_user_azure_key?(_), do: false
 end
