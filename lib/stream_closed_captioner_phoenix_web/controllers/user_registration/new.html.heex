@@ -3,8 +3,17 @@
     <h1 class="text-4xl font-semibold text-center text-gray-900">Sign Up</h1>
     <div class="pb-6 space-y-2 border-b border-gray-200">
       <a href="/auth/twitch" class="w-full py-3 btn btn-icon btn-primary">
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-          x="0px" y="0px" viewBox="0 0 2400 2800" style="enable-background:new 0 0 2400 2800;" xml:space="preserve">
+        <svg
+          version="1.1"
+          id="Layer_1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          x="0px"
+          y="0px"
+          viewBox="0 0 2400 2800"
+          style="enable-background:new 0 0 2400 2800;"
+          xml:space="preserve"
+        >
           <style type="text/css">
             .st0 {
               fill: #FFFFFF;
@@ -16,12 +25,17 @@
           </style>
           <title>Twitch Glitch</title>
           <g>
-            <polygon class="st0"
-              points="2200,1300 1800,1700 1400,1700 1050,2050 1050,1700 600,1700 600,200 2200,200 	" />
+            <polygon
+              class="st0"
+              points="2200,1300 1800,1700 1400,1700 1050,2050 1050,1700 600,1700 600,200 2200,200 	"
+            />
             <g>
               <g id="Layer_1-2">
-                <path class="st1" d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600
-				V1300z" />
+                <path
+                  class="st1"
+                  d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600
+				V1300z"
+                />
                 <rect x="1700" y="550" class="st1" width="200" height="600" />
                 <rect x="1150" y="550" class="st1" width="200" height="600" />
               </g>
@@ -32,38 +46,37 @@
       </a>
     </div>
     <%= form_for @changeset, ~p"/users/register", [class: "space-y-4"], fn f -> %>
-    <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <small>Oops, something went wrong! Please check the errors below.</small>
-    </div>
-    <% end %>
+      <%= if @changeset.action do %>
+        <div class="alert alert-danger">
+          <small>Oops, something went wrong! Please check the errors below.</small>
+        </div>
+      <% end %>
 
-    <%= label class: "block" do %>
-    <span class="block mb-1 text-xs font-medium text-gray-700">Your Email</span>
-    <%= text_input f, :email, required: true, class: "form-input" %>
-    <%= error_tag f, :email %>
-    <% end %>
+      <%= label class: "block" do %>
+        <span class="block mb-1 text-xs font-medium text-gray-700">Your Email</span>
+        <%= text_input(f, :email, required: true, class: "form-input") %>
+        <%= error_tag(f, :email) %>
+      <% end %>
 
-    <%= label class: "block" do %>
-    <span class="block mb-1 text-xs font-medium text-gray-700">Create a Password</span>
-    <%= password_input f, :password, required: true, class: "form-input" %>
-    <%= error_tag f, :password %>
-    <% end %>
+      <%= label class: "block" do %>
+        <span class="block mb-1 text-xs font-medium text-gray-700">Create a Password</span>
+        <%= password_input(f, :password, required: true, class: "form-input") %>
+        <%= error_tag(f, :password) %>
+      <% end %>
 
-    <%= submit "Sign Up", class: "w-full btn btn-primary btn-lg" %>
+      <%= submit("Sign Up", class: "w-full btn btn-primary btn-lg") %>
     <% end %>
 
     <div class="mt-3 text-center text-gray-600">
       <%= link to: ~p"/users/log_in", class: "btn btn-link btn-sm dark:text-blue-500" do %>
-      <small>Already have an account?</small>
+        <small>Already have an account?</small>
       <% end %>
     </div>
 
     <p class="my-8 text-xs font-medium text-center text-gray-700">
       By clicking "Sign Up" you agree to our
       <a href="/terms" class="text-purple-700 hover:text-purple-900">Terms of Service</a>
-      and
-      <a href="/privacy" class="text-purple-700 hover:text-purple-900">Privacy Policy</a>.
+      and <a href="/privacy" class="text-purple-700 hover:text-purple-900">Privacy Policy</a>.
     </p>
   </div>
 </section>

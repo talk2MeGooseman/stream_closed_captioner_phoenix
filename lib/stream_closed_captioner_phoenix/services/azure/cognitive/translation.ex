@@ -13,7 +13,7 @@ defmodule Azure.Cognitive.Translation do
 
   def new(data, args \\ []) do
     res = super(data, args)
-    name = StreamClosedCaptionerPhoenix.Settings.translatable_languages[data["to"]]
-    %{res | name: name }
+    name = StreamClosedCaptionerPhoenix.Settings.translatable_languages()[data["to"]]
+    %{res | name: name}
   end
 end

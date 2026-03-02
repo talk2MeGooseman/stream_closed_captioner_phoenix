@@ -1,81 +1,126 @@
 <div class="px-0 mx-auto max-w-7xl sm:px-4">
-  <div
-    class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
+  <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
     <h1 class="mb-4 text-lg font-semibold text-left text-gray-900">Account Settings</h1>
     <%= form_for @email_changeset, ~p"/users/settings", fn f -> %>
-    <%= if @email_changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-    <% end %>
+      <%= if @email_changeset.action do %>
+        <div class="alert alert-danger">
+          <p>Oops, something went wrong! Please check the errors below.</p>
+        </div>
+      <% end %>
 
-    <div class="mb-6">
-      <%= label f, :email, class: "form-label" %>
-      <%= text_input f, :email, required: true, class: "form-input" %>
-      <%= error_tag f, :email %>
-    </div>
+      <div class="mb-6">
+        <%= label(f, :email, class: "form-label") %>
+        <%= text_input(f, :email, required: true, class: "form-input") %>
+        <%= error_tag(f, :email) %>
+      </div>
 
-    <div class="mb-6">
-      <%= label f, :current_password, for: "current_password_for_email" %>
-      <%= password_input f, :current_password, required: true, name: "current_password", id: "current_password_for_email", class: "form-input" %>
-      <%= error_tag f, :current_password %>
-    </div>
+      <div class="mb-6">
+        <%= label(f, :current_password, for: "current_password_for_email") %>
+        <%= password_input(f, :current_password,
+          required: true,
+          name: "current_password",
+          id: "current_password_for_email",
+          class: "form-input"
+        ) %>
+        <%= error_tag(f, :current_password) %>
+      </div>
 
-    <%= hidden_input(f, :action, value: "update_email", name: "action" ) %>
-    <div class="mt-8 mb-2">
-      <%= submit "Change e-mail", class: "btn btn-primary btn-sm" %>
-    </div>
+      <%= hidden_input(f, :action, value: "update_email", name: "action") %>
+      <div class="mt-8 mb-2">
+        <%= submit("Change e-mail", class: "btn btn-primary btn-sm") %>
+      </div>
     <% end %>
 
     <section>
       <h4 class="text-2xl">Change password</h4>
       <%= form_for @password_changeset, ~p"/users/settings", fn f -> %>
-      <%= if @password_changeset.action do %>
-      <div class="alert alert-danger">
-        <p>Oops, something went wrong! Please check the errors below.</p>
-      </div>
-      <% end %>
+        <%= if @password_changeset.action do %>
+          <div class="alert alert-danger">
+            <p>Oops, something went wrong! Please check the errors below.</p>
+          </div>
+        <% end %>
 
-      <div class="mb-6">
-        <%= label f, :password, "New password", class: "form-label" %>
-        <%= password_input f, :password, required: true, class: "form-input" %>
-        <%= error_tag f, :password %>
-      </div>
+        <div class="mb-6">
+          <%= label(f, :password, "New password", class: "form-label") %>
+          <%= password_input(f, :password, required: true, class: "form-input") %>
+          <%= error_tag(f, :password) %>
+        </div>
 
-      <div class="mb-6">
-        <%= label f, :password_confirmation, "Confirm new password", class: "form-label" %>
-        <%= password_input f, :password_confirmation, required: true, class: "form-input" %>
-        <%= error_tag f, :password_confirmation %>
-      </div>
+        <div class="mb-6">
+          <%= label(f, :password_confirmation, "Confirm new password", class: "form-label") %>
+          <%= password_input(f, :password_confirmation, required: true, class: "form-input") %>
+          <%= error_tag(f, :password_confirmation) %>
+        </div>
 
-      <div class="mb-6">
-        <%= label f, :current_password, for: "current_password_for_password", class: "form-label" %>
-        <%= password_input f, :current_password, required: true, name: "current_password", id: "current_password_for_password", class: "form-input" %>
-        <%= error_tag f, :current_password %>
-      </div>
+        <div class="mb-6">
+          <%= label(f, :current_password,
+            for: "current_password_for_password",
+            class: "form-label"
+          ) %>
+          <%= password_input(f, :current_password,
+            required: true,
+            name: "current_password",
+            id: "current_password_for_password",
+            class: "form-input"
+          ) %>
+          <%= error_tag(f, :current_password) %>
+        </div>
 
-      <div class="mt-8 mb-2">
-        <%= hidden_input(f, :action, value: "update_password", name: "action" ) %>
-        <%= submit "Change password", class: "btn btn-primary btn-sm" %>
-      </div>
+        <div class="mt-8 mb-2">
+          <%= hidden_input(f, :action, value: "update_password", name: "action") %>
+          <%= submit("Change password", class: "btn btn-primary btn-sm") %>
+        </div>
       <% end %>
     </section>
 
     <section>
       <h4 class="text-2xl">Connected Accounts</h4>
       <%= if @current_user.provider == "twitch" do %>
-      <%= form_for @provider_changeset, ~p"/users/settings", fn f -> %>
-      <div class="flex flex-row flex-initial">
-        <%= hidden_input(f, :action, value: "remove_provider", name: "action" ) %>
-        <%= submit "Disconnect your Twitch account", class: "btn btn-primary btn-sm" %>
-      </div>
-      <% end %>
+        <%= form_for @provider_changeset, ~p"/users/settings", fn f -> %>
+          <div class="flex flex-row flex-initial">
+            <%= hidden_input(f, :action, value: "remove_provider", name: "action") %>
+            <%= submit("Disconnect your Twitch account", class: "btn btn-primary btn-sm") %>
+          </div>
+        <% end %>
       <% else %>
-      <%= link "Connect your Twitch Account", to: "/auth/twitch", class: "btn btn-sm btn-link" %>
+        <%= link("Connect your Twitch Account", to: "/auth/twitch", class: "btn btn-sm btn-link") %>
       <% end %>
     </section>
+
     <section class="mt-10">
-      <%= link "Click here to delete account", to: ~p"/users/register", method: :delete, data: [confirm: "Are you sure you want to delete your account?"] %>
+      <h4 class="text-2xl">Azure Translation Service</h4>
+      <p class="text-sm mb-4">
+        Enter your own Azure Cognitive Services key to enable translations without using credits.
+      </p>
+      <%= form_for @azure_key_changeset, ~p"/users/settings", fn f -> %>
+        <%= if @azure_key_changeset.action do %>
+          <div class="alert alert-danger">
+            <p>Oops, something went wrong! Please check the errors below.</p>
+          </div>
+        <% end %>
+
+        <div class="mb-6">
+          <%= label(f, :azure_service_key, "Azure Service Key", class: "form-label") %>
+          <%= text_input(f, :azure_service_key,
+            class: "form-input",
+            placeholder: "Enter your Azure Cognitive Services subscription key"
+          ) %>
+          <%= error_tag(f, :azure_service_key) %>
+        </div>
+
+        <div class="mt-8 mb-2">
+          <%= hidden_input(f, :action, value: "update_azure_key", name: "action") %>
+          <%= submit("Save Azure Key", class: "btn btn-primary btn-sm") %>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="mt-10">
+      <%= link("Click here to delete account",
+        to: ~p"/users/register",
+        method: :delete,
+        data: [confirm: "Are you sure you want to delete your account?"]
+      ) %>
     </section>
   </div>
 </div>
