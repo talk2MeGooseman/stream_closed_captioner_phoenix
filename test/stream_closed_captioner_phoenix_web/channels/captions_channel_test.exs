@@ -1,10 +1,14 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
-  use StreamClosedCaptionerPhoenixWeb.ChannelCase, async: true
+  # async: false required because channel process makes DB calls through the pipeline
+  use StreamClosedCaptionerPhoenixWeb.ChannelCase
 
   import StreamClosedCaptionerPhoenix.Factory
 
   setup do
-    [stream_settings, _] = insert_pair(:stream_settings, user: fn -> build(:user) end)
+    # Use stream_settings: nil on the user to prevent a duplicate stream_settings
+    # record (the user factory builds one by default; we need exactly one per user
+    # so that Settings.get_stream_settings_by_user_id/1 returns a single result).
+    stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
 
     {:ok, _, socket} =
       StreamClosedCaptionerPhoenixWeb.UserSocket
@@ -14,13 +18,54 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
         "captions:#{stream_settings.user.id}"
       )
 
-    %{socket: socket}
+    %{socket: socket, user: stream_settings.user}
   end
 
-  # test "ping replies with status ok", %{socket: socket} do
-  #   ref =
-  #     push(socket, "publish", %{"interim" => "hello", "final" => "goodbye", "session" => "123"})
+  test "authorized user joins their own channel", %{socket: socket} do
+    assert socket
+  end
 
-  #   assert_reply ref, :ok, %{"hello" => "there"}
-  # end
+  test "unauthorized user cannot join another user's channel", %{user: authorized_user} do
+    intruder = insert(:user, stream_settings: nil)
+
+    assert {:error, %{reason: "unauthorized"}} =
+             StreamClosedCaptionerPhoenixWeb.UserSocket
+             |> socket("user_id", %{current_user: intruder})
+             |> subscribe_and_join(
+               StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+               "captions:#{authorized_user.id}"
+             )
+  end
+
+  test "pushes 'active' and replies :ok", %{socket: socket} do
+    ref = push(socket, "active", %{})
+    assert_reply ref, :ok
+  end
+
+  test "publishFinal without zoom or twitch routes to default pipeline and replies :ok", %{
+    socket: socket
+  } do
+    ref =
+      push(socket, "publishFinal", %{
+        "interim" => "hello",
+        "final" => "world",
+        "session" => "abc"
+      })
+
+    assert_reply ref, :ok, %{final: "world", interim: "hello"}
+  end
+
+  test "publishFinal with twitch enabled routes to twitch pipeline and replies :ok", %{
+    socket: socket
+  } do
+    ref =
+      push(socket, "publishFinal", %{
+        "interim" => "hello",
+        "final" => "world",
+        "session" => "abc",
+        "twitch" => %{"enabled" => true}
+      })
+
+    assert_reply ref, :ok, %{final: "world", interim: "hello"}
+  end
 end
