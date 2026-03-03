@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-03-01T00:00:00Z",
-  "run_id": "22536444145",
+  "last_run": "2026-03-03T08:05:00Z",
+  "run_id": "22613231346",
   "commands": {
     "test": "mix test",
     "coverage": "mix coveralls",
@@ -15,9 +15,11 @@
   "tasks_run": {
     "task1": "2025-07-17",
     "task2": "2025-07-17",
-    "task3": "2026-03-01",
+    "task3": "2026-03-03",
     "task4": "2026-03-01",
-    "task7": "2026-03-01"
+    "task5": "2026-03-03",
+    "task6": "never",
+    "task7": "2026-03-03"
   },
   "testing_backlog": [
     {
@@ -31,8 +33,10 @@
     {
       "priority": 2,
       "title": "CaptionsChannel handle_in tests",
-      "detail": "captions_channel_test.exs exists but all tests are commented out. Revive: default pipeline, twitch pipeline, zoom pipeline, 'active' event.",
-      "status": "pending"
+      "detail": "captions_channel_test.exs had all tests commented out. Revived with 5 tests: join auth, active event, default pipeline, twitch pipeline.",
+      "status": "PR_SUBMITTED",
+      "pr_branch": "test-assist/captions-channel-tests",
+      "pr_number": null
     },
     {
       "priority": 3,
@@ -61,12 +65,18 @@
       "pr_number": null,
       "description": "Added 3 tests for pipeline_to(:default): passthrough, pirate mode, profanity filter.",
       "run_id": "22536444145"
+    },
+    {
+      "branch": "test-assist/captions-channel-tests",
+      "pr_number": null,
+      "description": "Revived captions_channel_test.exs with 5 tests: join auth, unauthorized join, active event, default pipeline, twitch pipeline.",
+      "run_id": "22613231346"
     }
   ],
-  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior.",
+  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)).",
   "monthly_activity_issue": {
-    "issue_number": null,
+    "issue_number": 242,
     "month": "2026-03",
-    "note": "Created in this run as [Test Improver] Monthly Activity 2026-03. Previous issue #240 (incorrectly titled 2025-07) was closed."
+    "note": "Created in 2026-03-01 run. Both previous Suggested Actions items checked off [x] by maintainer in this run."
   }
 }
