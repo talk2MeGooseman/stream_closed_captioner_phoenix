@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-03-03T08:05:00Z",
-  "run_id": "22613231346",
+  "last_run": "2026-03-08T00:00:00Z",
+  "run_id": "22827313517",
   "commands": {
     "test": "mix test",
     "coverage": "mix coveralls",
@@ -15,38 +15,23 @@
   "tasks_run": {
     "task1": "2025-07-17",
     "task2": "2025-07-17",
-    "task3": "2026-03-03",
+    "task3": "2026-03-08",
     "task4": "2026-03-01",
     "task5": "2026-03-03",
-    "task6": "never",
-    "task7": "2026-03-03"
+    "task6": "2026-03-08",
+    "task7": "2026-03-08"
   },
   "testing_backlog": [
     {
       "priority": 1,
-      "title": "CaptionsPipeline.Translations - missing branch coverage",
-      "detail": "Tests for: (a) user with active debit skips balance check, (b) insufficient balance with languages.",
+      "title": "CaptionSettingsLive.Index - LiveView event handler tests",
+      "detail": "stream_settings_live_test.exs was fully commented out. Revived with 7 tests: mount render, add/remove blocklist words, add/update translate language, form component save.",
       "status": "PR_SUBMITTED",
-      "pr_branch": "test-assist/captions-pipeline-translations-coverage",
-      "pr_number": 239
-    },
-    {
-      "priority": 2,
-      "title": "CaptionsChannel handle_in tests",
-      "detail": "captions_channel_test.exs had all tests commented out. Revived with 5 tests: join auth, active event, default pipeline, twitch pipeline.",
-      "status": "PR_SUBMITTED",
-      "pr_branch": "test-assist/captions-channel-tests",
+      "pr_branch": "test-assist/caption-settings-live-tests",
       "pr_number": null
     },
     {
-      "priority": 3,
-      "title": "pipeline_to(:default) branches",
-      "detail": "Added 3 tests: passthrough, pirate mode, profanity blocklist. pipeline_to(:zoom) still untested - requires Bypass/new mock for HTTPoison.",
-      "status": "PR_SUBMITTED",
-      "pr_branch": "test-assist/captions-pipeline-default-zoom-coverage"
-    },
-    {
-      "priority": 4,
+      "priority": 2,
       "title": "services/twitch.ex",
       "detail": "Large Twitch API service, no tests. Thin wrappers over behavior mocks; moderate test value. get_live_streams has non-trivial chunk/sort/dedup logic.",
       "status": "pending"
@@ -58,25 +43,35 @@
       "branch": "test-assist/captions-pipeline-translations-coverage",
       "pr_number": 239,
       "description": "Added 2 tests for untested branches in CaptionsPipeline.Translations.maybe_translate/3.",
-      "run_id": "22528035393"
+      "run_id": "22528035393",
+      "status": "MERGED"
     },
     {
       "branch": "test-assist/captions-pipeline-default-zoom-coverage",
-      "pr_number": null,
+      "pr_number": 241,
       "description": "Added 3 tests for pipeline_to(:default): passthrough, pirate mode, profanity filter.",
-      "run_id": "22536444145"
+      "run_id": "22536444145",
+      "status": "MERGED"
     },
     {
       "branch": "test-assist/captions-channel-tests",
-      "pr_number": null,
+      "pr_number": 243,
       "description": "Revived captions_channel_test.exs with 5 tests: join auth, unauthorized join, active event, default pipeline, twitch pipeline.",
-      "run_id": "22613231346"
+      "run_id": "22613231346",
+      "status": "MERGED"
+    },
+    {
+      "branch": "test-assist/caption-settings-live-tests",
+      "pr_number": null,
+      "description": "Revived stream_settings_live_test.exs with 7 LiveView tests for CaptionSettingsLive.Index event handlers.",
+      "run_id": "22827313517",
+      "status": "SUBMITTED"
     }
   ],
-  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)).",
+  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)). CaptionSettingsLive: update_stream_settings safe in tests (test users have provider=nil, no eventsub records, no Twitch calls triggered). render_hook(view, event_name, params) cleanly triggers handle_event without DOM selector issues.",
   "monthly_activity_issue": {
     "issue_number": 242,
     "month": "2026-03",
-    "note": "Created in 2026-03-01 run. Both previous Suggested Actions items checked off [x] by maintainer in this run."
+    "note": "PR #243 merged (checked off by maintainer). New PR for caption settings live tests submitted 2026-03-08."
   }
 }
