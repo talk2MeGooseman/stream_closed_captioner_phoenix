@@ -19,7 +19,7 @@ defmodule Azure.Cognitive do
 
   @impl Azure.CognitiveProvider
 
-  @trace :translate
+  # Note: @trace not used due to rescue clause (NewRelic warning)
   def translate(from_language, to_languages, text, user_key)
       when is_list(to_languages) and is_binary(text) do
     language_tuple_list =
@@ -76,12 +76,12 @@ defmodule Azure.Cognitive do
 
         Translations.new(%{"translations" => []})
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, error} ->
         # Scrub any potential key data from error messages
-        safe_reason = scrub_sensitive_data(reason)
+        safe_error = scrub_sensitive_data(inspect(error))
 
         Logger.error("Azure translation API error",
-          reason: safe_reason,
+          error: safe_error,
           user_provided_key: !is_nil(user_key)
         )
 
