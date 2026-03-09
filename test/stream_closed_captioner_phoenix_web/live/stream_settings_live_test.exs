@@ -85,15 +85,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   end
 
   describe "form component - save settings" do
-    test "saves caption settings via the form", %{conn: conn} do
+    test "saves caption settings via the form", %{conn: conn, user: user} do
       {:ok, view, _html} = live(conn, "/users/caption-settings")
 
-      html =
-        view
-        |> form("#caption_settings-form", stream_settings: %{pirate_mode: true})
-        |> render_submit()
+      view
+      |> form("#caption_settings-form", stream_settings: %{pirate_mode: true})
+      |> render_submit()
 
-      assert html =~ "Stream settings updated successfully"
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.pirate_mode == true
     end
   end
 end
