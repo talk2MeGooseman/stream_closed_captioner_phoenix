@@ -9,7 +9,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
 
   describe "mount" do
     test "renders the caption settings page", %{conn: conn} do
-      {:ok, _view, html} = live(conn, "/caption-settings")
+      {:ok, _view, html} = live(conn, "/users/caption-settings")
 
       assert html =~ "Caption Settings"
       assert html =~ "Captions Blocklist Words"
@@ -19,7 +19,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
 
   describe "blocklist word management" do
     test "adds a word to the blocklist", %{conn: conn, user: user} do
-      {:ok, view, _html} = live(conn, "/caption-settings")
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
 
       html = render_hook(view, "add", %{"stream_settings" => %{"blocklist_word" => "badword"}})
 
@@ -31,7 +31,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
     end
 
     test "ignores an empty blocklist word submission", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/caption-settings")
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
 
       html = render_hook(view, "add", %{"stream_settings" => %{"blocklist_word" => ""}})
 
@@ -43,7 +43,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
       stream_settings = Settings.get_stream_settings_by_user_id!(user.id)
       {:ok, _} = Settings.update_stream_settings(stream_settings, %{blocklist: ["badword"]})
 
-      {:ok, view, html} = live(conn, "/caption-settings")
+      {:ok, view, html} = live(conn, "/users/caption-settings")
       assert html =~ "badword"
 
       html = render_hook(view, "remove_blocklist_word", %{"word" => "badword"})
@@ -58,7 +58,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
 
   describe "translation language management" do
     test "creates a translation language when none is set", %{conn: conn, user: user} do
-      {:ok, view, _html} = live(conn, "/caption-settings")
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
 
       html = render_hook(view, "add", %{"translate_language" => %{"language" => "es"}})
 
@@ -72,7 +72,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
     test "updates an existing translation language", %{conn: conn, user: user} do
       {:ok, _lang} = Settings.create_translate_language(user, %{"language" => "es"})
 
-      {:ok, view, _html} = live(conn, "/caption-settings")
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
 
       html = render_hook(view, "add", %{"translate_language" => %{"language" => "fr"}})
 
@@ -85,15 +85,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   end
 
   describe "form component - save settings" do
-    test "saves caption settings via the form", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/caption-settings")
+    test "saves caption settings via the form", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
 
-      html =
-        view
-        |> form("#caption_settings-form", stream_settings: %{pirate_mode: true})
-        |> render_submit()
+      view
+      |> form("#caption_settings-form", stream_settings: %{pirate_mode: true})
+      |> render_submit()
 
-      assert html =~ "Stream settings updated successfully"
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.pirate_mode == true
     end
   end
 end

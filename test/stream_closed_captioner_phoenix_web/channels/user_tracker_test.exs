@@ -1,19 +1,12 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserTrackerTest do
-  use StreamClosedCaptionerPhoenixWeb.ChannelCase, async: true
+  use StreamClosedCaptionerPhoenixWeb.ChannelCase
 
   alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
-  # setup do
-  #   on_exit(fn ->
-  #     for pid <- UserTracker.fetchers_pids() do
-  #       ref = Process.monitor(pid)
-  #       assert_receive {:DOWN, ^ref, _, _, _}, 1000
-  #     end
-  #   end)
-  # end
-
   setup do
-    UserTracker.untrack(self(), "active_channels", "123")
+    test_pid = self()
+    on_exit(fn -> UserTracker.untrack(test_pid, "active_channels", "123") end)
+    :ok
   end
 
   test "recently_active_channels/0 return empty list when no channels are active" do
