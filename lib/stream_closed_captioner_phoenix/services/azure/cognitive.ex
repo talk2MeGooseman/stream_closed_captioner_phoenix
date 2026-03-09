@@ -1,4 +1,5 @@
 defmodule Azure.Cognitive do
+  require Logger
   import Helpers
 
   use NewRelic.Tracer
@@ -56,13 +57,53 @@ defmodule Azure.Cognitive do
 
     NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
-    [translations] =
+    url =
       "https://guzman.codes/azure_proxy/translate"
       |> encode_url_and_params(params)
-      |> HTTPoison.post!(body, headers)
-      |> Map.fetch!(:body)
-      |> Jason.decode!()
 
-    Translations.new(translations)
+    # SECURITY: Use post (not post!) to handle errors without exposing keys
+    case HTTPoison.post(url, body, headers) do
+      {:ok, %{status_code: 200, body: response_body}} ->
+        [translations] = Jason.decode!(response_body)
+        Translations.new(translations)
+
+      {:ok, %{status_code: status_code}} ->
+        # Log error without exposing sensitive data
+        Logger.warning("Azure translation API returned error status",
+          status_code: status_code,
+          user_provided_key: !is_nil(user_key)
+        )
+
+        Translations.new(%{"translations" => []})
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        # Scrub any potential key data from error messages
+        safe_reason = scrub_sensitive_data(reason)
+
+        Logger.error("Azure translation API error",
+          reason: safe_reason,
+          user_provided_key: !is_nil(user_key)
+        )
+
+        Translations.new(%{"translations" => []})
+    end
+  rescue
+    exception ->
+      # CRITICAL: Scrub exception to prevent key leakage in error tracking
+      Logger.error("Translation exception occurred",
+        exception_type: exception.__struct__,
+        user_provided_key: !is_nil(user_key)
+      )
+
+      Translations.new(%{"translations" => []})
   end
+
+  # Scrub potential API keys from error messages
+  defp scrub_sensitive_data(data) when is_binary(data) do
+    data
+    |> String.replace(~r/[a-f0-9]{32,}/, "[REDACTED_KEY]")
+    |> String.replace(~r/Ocp-Apim-Subscription-Key[^,\}]+/, "Ocp-Apim-Subscription-Key: [REDACTED]")
+  end
+
+  defp scrub_sensitive_data(data), do: inspect(data)
 end

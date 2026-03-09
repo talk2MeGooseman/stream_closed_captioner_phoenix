@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Inspect, except: [:password, :encrypted_password]}
+  @derive {Inspect, except: [:password, :encrypted_password, :azure_service_key, :access_token, :refresh_token]}
   @derive {Jason.Encoder,
            only: [:email, :provider, :uid, :username, :login, :profile_image_url, :description]}
 
