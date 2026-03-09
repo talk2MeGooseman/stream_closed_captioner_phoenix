@@ -108,4 +108,14 @@ if config_env() == :prod do
 
   config :stream_closed_captioner_phoenix,
     eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
+
+  # Encryption key for sensitive fields (REQUIRED)
+  encryption_key =
+    System.get_env("ENCRYPTION_KEY") ||
+      raise """
+      environment variable ENCRYPTION_KEY is missing.
+      Generate a key with: elixir -e "IO.puts(:crypto.strong_rand_bytes(32) |> Base.encode64())"
+      """
+
+  config :stream_closed_captioner_phoenix, encryption_key: encryption_key
 end

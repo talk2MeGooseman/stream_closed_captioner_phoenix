@@ -62,7 +62,21 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     to_languages =
       Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys() |> Enum.sort()
 
-    Azure.perform_translations(from_language, to_languages, text, user.azure_service_key)
+    result = Azure.perform_translations(from_language, to_languages, text, user.azure_service_key)
+    
+    # Log Azure key usage for audit trail
+    StreamClosedCaptionerPhoenix.Audit.log_azure_key_action(
+      user.id,
+      "azure_key_used",
+      %{
+        from_language: from_language,
+        to_languages: to_languages,
+        text_length: String.length(text),
+        timestamp: DateTime.utc_now()
+      }
+    )
+    
+    result
   end
 
   defp user_translation_enabled?(%User{} = user) do

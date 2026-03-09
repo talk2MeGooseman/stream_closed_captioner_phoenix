@@ -41,6 +41,10 @@ config :stream_closed_captioner_phoenix,
 config :stream_closed_captioner_phoenix,
   eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
 
+# Encryption key for sensitive fields (development)
+config :stream_closed_captioner_phoenix,
+  encryption_key: System.get_env("ENCRYPTION_KEY") || "G1U89ys/OtWZKgTn3mV98WyTPb8ssKn7mp380/N6jfE="
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix
