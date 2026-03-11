@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-03-08T00:00:00Z",
-  "run_id": "22827313517",
+  "last_run": "2026-03-11T20:20:00Z",
+  "run_id": "22971694140",
   "commands": {
     "test": "mix test",
     "coverage": "mix coveralls",
@@ -14,27 +14,31 @@
   "testing_framework": "ExUnit with ExMachina factories, Mox for external mocks (Azure.MockCognitive, Twitch.MockHelix, Twitch.MockExtension), DataCase for DB, ConnCase for controllers, ChannelCase for channels",
   "tasks_run": {
     "task1": "2025-07-17",
-    "task2": "2025-07-17",
-    "task3": "2026-03-08",
+    "task2": "2026-03-11",
+    "task3": "2026-03-11",
     "task4": "2026-03-01",
     "task5": "2026-03-03",
     "task6": "2026-03-08",
-    "task7": "2026-03-08"
+    "task7": "2026-03-11"
   },
   "testing_backlog": [
     {
       "priority": 1,
-      "title": "CaptionSettingsLive.Index - LiveView event handler tests",
-      "detail": "stream_settings_live_test.exs was fully commented out. Revived with 7 tests: mount render, add/remove blocklist words, add/update translate language, form component save.",
-      "status": "PR_SUBMITTED",
-      "pr_branch": "test-assist/caption-settings-live-tests",
-      "pr_number": null
+      "title": "pipeline_to(:zoom) - untested",
+      "detail": "No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; needs Bypass or new behavior mock.",
+      "status": "pending"
     },
     {
       "priority": 2,
-      "title": "services/twitch.ex",
-      "detail": "Large Twitch API service, no tests. Thin wrappers over behavior mocks; moderate test value. get_live_streams has non-trivial chunk/sort/dedup logic.",
+      "title": "Stream settings validation edge cases",
+      "detail": "Ecto changeset edge cases: invalid languages, extreme values.",
       "status": "pending"
+    },
+    {
+      "priority": 3,
+      "title": "Twitch.get_live_streams/1 - blocked",
+      "detail": "Non-trivial chunk/sort/dedup logic but blocked by hardcoded OAuth HTTP in Twitch.Oauth.get_client_access_token/0 (uses HTTPoison.post! directly, no behavior). Would need production refactor.",
+      "status": "blocked"
     }
   ],
   "maintainer_priorities": "None noted yet - no maintainer comments on test-related issues.",
@@ -62,16 +66,23 @@
     },
     {
       "branch": "test-assist/caption-settings-live-tests",
-      "pr_number": null,
+      "pr_number": 244,
       "description": "Revived stream_settings_live_test.exs with 7 LiveView tests for CaptionSettingsLive.Index event handlers.",
       "run_id": "22827313517",
+      "status": "MERGED"
+    },
+    {
+      "branch": "test-assist/twitch-send-pubsub-message-tests",
+      "pr_number": null,
+      "description": "6 unit tests for Twitch.send_pubsub_message/2: nil channel_id guard, 204/400/500/502 responses, HTTPoison.Error. Uses existing Twitch.MockExtension Mox infra.",
+      "run_id": "22971694140",
       "status": "SUBMITTED"
     }
   ],
-  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)). CaptionSettingsLive: update_stream_settings safe in tests (test users have provider=nil, no eventsub records, no Twitch calls triggered). render_hook(view, event_name, params) cleanly triggers handle_event without DOM selector issues.",
+  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)). CaptionSettingsLive: update_stream_settings safe in tests (test users have provider=nil, no eventsub records, no Twitch calls triggered). render_hook(view, event_name, params) cleanly triggers handle_event without DOM selector issues. Twitch.get_live_streams untestable without refactor - Twitch.Oauth.get_client_access_token/0 uses HTTPoison.post! directly (no behavior mock). send_pubsub_message/2 uses ext_api_client() which returns Twitch.MockExtension in test env - fully testable.",
   "monthly_activity_issue": {
     "issue_number": 242,
     "month": "2026-03",
-    "note": "PR #243 merged (checked off by maintainer). New PR for caption settings live tests submitted 2026-03-08."
+    "note": "PR #244 merged. New PR for twitch-send-pubsub-message-tests submitted 2026-03-11."
   }
 }
