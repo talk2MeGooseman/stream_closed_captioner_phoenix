@@ -7,7 +7,7 @@
   <div class="relative px-4 py-20 mx-auto max-w-7xl">
     <div class="flex flex-col items-center text-center">
       <span class="inline-block px-4 py-1 mb-6 text-sm font-semibold tracking-wider text-indigo-300 uppercase bg-indigo-900 bg-opacity-60 rounded-full border border-indigo-700">
-        Free for Twitch Streamers &amp; Zoom Users
+        Free for Twitch Streamers
       </span>
       <h1 class="mb-6 text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
         Stream Closed
@@ -42,7 +42,7 @@
 </section>
 
 <!-- Video Demo Section -->
-<section class="py-16 bg-gray-900">
+<section class="py-16 bg-gray-900 dark:bg-black">
   <div class="max-w-4xl px-4 mx-auto">
     <h2 class="mb-8 text-2xl font-bold text-center text-white">See it in action</h2>
     <div class="overflow-hidden rounded-2xl shadow-2xl aspect-w-16 aspect-h-9 ring-1 ring-white/10">
@@ -119,7 +119,7 @@
 
 <!-- Getting Started Steps -->
 <section class="py-20 bg-gray-50 dark:bg-gray-800">
-  <div class="max-w-5xl px-4 mx-auto">
+  <div class="max-w-3xl px-4 mx-auto">
     <div class="mb-14 text-center">
       <h2 class="mb-4 text-4xl font-extrabold text-gray-900 dark:text-white">
         Up and running in 4 steps
@@ -127,105 +127,89 @@
       <p class="text-lg text-gray-600 dark:text-gray-400">Getting started takes less than 5 minutes.</p>
     </div>
 
-    <div class="space-y-12">
-      <!-- Step 1 -->
-      <div class="flex flex-col items-start gap-8 sm:flex-row sm:items-center">
-        <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 text-2xl font-black text-white bg-indigo-600 rounded-2xl shadow-lg">
-          1
-        </div>
-        <div class="flex-1">
-          <h3 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Install the Twitch Extension
-          </h3>
-          <p class="mb-4 text-gray-600 dark:text-gray-400">
-            Add it as a video overlay or panel to your Twitch channel. Works on desktop and mobile viewers.
-          </p>
-          <a
-            target="_blank"
-            href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors"
-          >
-            Install on Twitch
-            <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
-        </div>
-        <div class="hidden sm:block w-px h-24 bg-gray-200 dark:bg-gray-700 self-start mt-7"></div>
-        <div class="flex-shrink-0 w-full sm:w-64">
-          <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"),
-            alt: "Twitch extension installation page",
-            class: "w-full rounded-xl shadow-md"
-          ) %>
-        </div>
-      </div>
+    <!-- Vertical timeline -->
+    <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-6 top-6 bottom-6 w-0.5 bg-indigo-200 dark:bg-indigo-800 hidden sm:block"></div>
 
-      <!-- Step 2 -->
-      <div class="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center">
-        <div class="flex-shrink-0 w-full sm:w-64">
-          <%= img_tag(Routes.static_path(@socket, "/images/register.png"),
-            alt: "Stream Closed Captioner registration page",
-            class: "w-full rounded-xl shadow-md"
-          ) %>
+      <div class="space-y-8">
+        <!-- Step 1 -->
+        <div class="relative flex gap-6">
+          <div class="flex-shrink-0 relative z-10 flex items-center justify-center w-12 h-12 text-lg font-black text-white bg-indigo-600 rounded-full shadow-lg ring-4 ring-gray-50 dark:ring-gray-800">
+            1
+          </div>
+          <div class="flex-1 pt-1 pb-2">
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              Install the Twitch Extension
+            </h3>
+            <p class="mb-3 text-gray-600 dark:text-gray-400">
+              Add it as a video overlay or panel on your Twitch channel.
+            </p>
+            <a
+              target="_blank"
+              href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
+              class="inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 transition-colors dark:text-indigo-300 dark:bg-indigo-900/50 dark:hover:bg-indigo-900/80"
+            >
+              Install on Twitch
+              <svg class="w-4 h-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
         </div>
-        <div class="hidden sm:block w-px h-24 bg-gray-200 dark:bg-gray-700 self-start mt-7"></div>
-        <div class="flex-1">
-          <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 mb-4 text-2xl font-black text-white bg-indigo-600 rounded-2xl shadow-lg">
+
+        <!-- Step 2 -->
+        <div class="relative flex gap-6">
+          <div class="flex-shrink-0 relative z-10 flex items-center justify-center w-12 h-12 text-lg font-black text-white bg-indigo-600 rounded-full shadow-lg ring-4 ring-gray-50 dark:ring-gray-800">
             2
           </div>
-          <h3 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Create Your Account
-          </h3>
-          <p class="mb-4 text-gray-600 dark:text-gray-400">
-            Sign up with your Twitch account for instant access, or use email if you just need Zoom captions.
-          </p>
-          <%= link("Sign up free", to: ~p"/users/register", class: "inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors") %>
+          <div class="flex-1 pt-1 pb-2">
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              Create your free account
+            </h3>
+            <p class="mb-3 text-gray-600 dark:text-gray-400">
+              Sign up with your Twitch account for instant access.
+            </p>
+            <%= link to: ~p"/users/register", class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 transition-colors dark:text-indigo-300 dark:bg-indigo-900/50 dark:hover:bg-indigo-900/80" do %>
+              Sign up free
+            <% end %>
+          </div>
         </div>
-      </div>
 
-      <!-- Step 3 -->
-      <div class="flex flex-col items-start gap-8 sm:flex-row sm:items-center">
-        <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 text-2xl font-black text-white bg-indigo-600 rounded-2xl shadow-lg">
-          3
+        <!-- Step 3 -->
+        <div class="relative flex gap-6">
+          <div class="flex-shrink-0 relative z-10 flex items-center justify-center w-12 h-12 text-lg font-black text-white bg-indigo-600 rounded-full shadow-lg ring-4 ring-gray-50 dark:ring-gray-800">
+            3
+          </div>
+          <div class="flex-1 pt-1 pb-2">
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              Configure your caption settings
+            </h3>
+            <p class="mb-3 text-gray-600 dark:text-gray-400">
+              Pick your spoken language and customize captions appearance.
+            </p>
+            <%= link to: Routes.caption_settings_index_path(@socket, :show), class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 transition-colors dark:text-indigo-300 dark:bg-indigo-900/50 dark:hover:bg-indigo-900/80" do %>
+              Open settings
+            <% end %>
+          </div>
         </div>
-        <div class="flex-1">
-          <h3 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Configure Your Settings
-          </h3>
-          <p class="mb-4 text-gray-600 dark:text-gray-400">
-            Set your spoken language, Zoom URL, caption style, and any words you want filtered.
-          </p>
-          <%= link("Configure settings", to: Routes.caption_settings_index_path(@socket, :show), class: "inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors") %>
-        </div>
-        <div class="hidden sm:block w-px h-24 bg-gray-200 dark:bg-gray-700 self-start mt-7"></div>
-        <div class="flex-shrink-0 w-full sm:w-64">
-          <%= img_tag(Routes.static_path(@socket, "/images/settings.png"),
-            alt: "Stream Closed Captioner caption settings page",
-            class: "w-full rounded-xl shadow-md"
-          ) %>
-        </div>
-      </div>
 
-      <!-- Step 4 -->
-      <div class="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center">
-        <div class="flex-shrink-0 w-full sm:w-64">
-          <%= img_tag(Routes.static_path(@socket, "/images/captions-start.png"),
-            alt: "Stream Closed Captioner start captions button",
-            class: "w-full rounded-xl shadow-md"
-          ) %>
-        </div>
-        <div class="hidden sm:block w-px h-24 bg-gray-200 dark:bg-gray-700 self-start mt-7"></div>
-        <div class="flex-1">
-          <div class="flex-shrink-0 flex items-center justify-center w-14 h-14 mb-4 text-2xl font-black text-white bg-indigo-600 rounded-2xl shadow-lg">
+        <!-- Step 4 -->
+        <div class="relative flex gap-6">
+          <div class="flex-shrink-0 relative z-10 flex items-center justify-center w-12 h-12 text-lg font-black text-white bg-indigo-600 rounded-full shadow-lg ring-4 ring-gray-50 dark:ring-gray-800">
             4
           </div>
-          <h3 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Click "Start Closed Captions"
-          </h3>
-          <p class="mb-4 text-gray-600 dark:text-gray-400">
-            One button is all it takes. Grant microphone access and you're live — captions appear instantly for your viewers.
-          </p>
-          <%= link("Go to Dashboard", to: Routes.dashboard_path(@socket, :index), class: "inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors") %>
+          <div class="flex-1 pt-1 pb-2">
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              Hit "Start Captions" and go live
+            </h3>
+            <p class="mb-3 text-gray-600 dark:text-gray-400">
+              Grant microphone access and captions appear instantly for your viewers.
+            </p>
+            <%= link to: Routes.dashboard_path(@socket, :index), class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 transition-colors dark:text-indigo-300 dark:bg-indigo-900/50 dark:hover:bg-indigo-900/80" do %>
+              Go to Dashboard
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

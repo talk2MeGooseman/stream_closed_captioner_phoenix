@@ -8,6 +8,82 @@
   </div>
 <% end %>
 
+<!-- Quick Start Guide (first thing users see) -->
+<section class="mb-8">
+  <div class="bg-white rounded-2xl shadow-sm dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden" x-data="collapse()">
+    <button
+      class="flex items-center justify-between w-full px-6 py-4 text-left"
+      aria-controls="quickstart-collapse"
+      aria-expanded="false"
+      x-spread="trigger"
+    >
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span class="font-bold text-gray-900 dark:text-white">Quick Start Guide</span>
+      </div>
+      <svg
+        x-bind:class="{ 'rotate-180': open }"
+        class="transition transform h-5 w-5 text-gray-400 dark:text-gray-500"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+    <div id="quickstart-collapse" x-spread="collapse" x-cloak class="border-t border-gray-100 dark:border-gray-700">
+      <ol class="px-6 py-4 space-y-3">
+        <li class="flex gap-3 items-start">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">1</span>
+          <a
+            target="_blank"
+            href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
+            class="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            Install the Twitch Extension on your channel (if streaming on Twitch)
+          </a>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">2</span>
+          <%= link "Set your spoken language in Caption Settings", to: ~p"/users/caption-settings", class: "text-sm text-indigo-600 hover:underline dark:text-indigo-400" %>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">3</span>
+          <span class="text-sm text-gray-700 dark:text-gray-300">Click "Click to Start Captions" below when you're ready to go live</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">4</span>
+          <span class="text-sm text-gray-700 dark:text-gray-300">Allow microphone access when prompted by your browser</span>
+        </li>
+        <li class="flex gap-3 items-start">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">5</span>
+          <span class="text-sm text-gray-700 dark:text-gray-300">Confirm the correct microphone is selected in your browser settings</span>
+        </li>
+        <li class="flex gap-3 items-start pt-1">
+          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6">
+            <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </span>
+          <a
+            target="_blank"
+            href="https://talk2megooseman.notion.site/stream-cc-faq"
+            class="text-sm text-gray-500 hover:text-indigo-600 hover:underline dark:text-gray-400 dark:hover:text-indigo-400"
+          >
+            Full documentation and FAQ
+          </a>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
 <!-- Primary Action: Start Captions -->
 <section class="mb-8">
   <div class="overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-lg dark:from-indigo-700 dark:to-purple-800">
@@ -261,82 +337,6 @@
       <div x-spread="collapse" x-cloak id="translation-toggle" class="border-t border-gray-100 dark:border-gray-700">
         <ul data-translations-target="translationsList" class="px-4 py-2 divide-y divide-gray-100 dark:divide-gray-700"></ul>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Quick Start Guide -->
-<section class="mb-8">
-  <div class="bg-white rounded-2xl shadow-sm dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden" x-data="collapse()">
-    <button
-      class="flex items-center justify-between w-full px-6 py-4 text-left"
-      aria-controls="quickstart-collapse"
-      aria-expanded="false"
-      x-spread="trigger"
-    >
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        <span class="font-bold text-gray-900 dark:text-white">Quick Start Guide</span>
-      </div>
-      <svg
-        x-bind:class="{ 'rotate-180': open }"
-        class="transition transform h-5 w-5 text-gray-400"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </button>
-    <div id="quickstart-collapse" x-spread="collapse" x-cloak class="border-t border-gray-100 dark:border-gray-700">
-      <ol class="px-6 py-4 space-y-3">
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">1</span>
-          <a
-            target="_blank"
-            href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-            class="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
-          >
-            Install the Twitch Extension on your channel (if streaming on Twitch)
-          </a>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">2</span>
-          <%= link "Set your spoken language in Caption Settings", to: ~p"/users/caption-settings", class: "text-sm text-indigo-600 hover:underline dark:text-indigo-400" %>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">3</span>
-          <span class="text-sm text-gray-700 dark:text-gray-300">Click "Click to Start Captions" above when you're ready to go live</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">4</span>
-          <span class="text-sm text-gray-700 dark:text-gray-300">Allow microphone access when prompted by your browser</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-indigo-600 rounded-full">5</span>
-          <span class="text-sm text-gray-700 dark:text-gray-300">Confirm the correct microphone is selected in your browser settings</span>
-        </li>
-        <li class="flex gap-3 pt-1">
-          <span class="flex-shrink-0 flex items-center justify-center w-6 h-6">
-            <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </span>
-          <a
-            target="_blank"
-            href="https://talk2megooseman.notion.site/stream-cc-faq"
-            class="text-sm text-gray-500 hover:text-indigo-600 hover:underline dark:text-gray-400 dark:hover:text-indigo-400"
-          >
-            Full documentation and FAQ →
-          </a>
-        </li>
-      </ol>
     </div>
   </div>
 </section>
