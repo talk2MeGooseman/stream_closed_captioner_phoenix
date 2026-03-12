@@ -64,3 +64,8 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: "client_id",
   client_secret: "client_secret",
   redirect_uri: "http://localhost:4000/auth/twitch/callback"
+
+# Encryption key for testing (DO NOT use in production)
+# This is a properly encoded 32-byte key
+config :stream_closed_captioner_phoenix,
+  encryption_key: "G1U89ys/OtWZKgTn3mV98WyTPb8ssKn7mp380/N6jfE="

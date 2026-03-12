@@ -61,7 +61,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
     test "does not render reset password with invalid token", %{conn: conn} do
       conn = get(conn, Routes.user_reset_password_path(conn, :edit, "oops"))
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Reset password link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Reset password link is invalid or it has expired"
     end
   end
 
@@ -108,7 +110,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
     test "does not reset password with invalid token", %{conn: conn} do
       conn = put(conn, Routes.user_reset_password_path(conn, :update, "oops"))
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Reset password link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Reset password link is invalid or it has expired"
     end
   end
 end

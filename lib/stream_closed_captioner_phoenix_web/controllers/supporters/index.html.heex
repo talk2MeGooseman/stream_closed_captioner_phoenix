@@ -2,12 +2,12 @@
 
 <h2 class="text-4xl">Twitch Subscribers</h2>
 <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-<%= for subscriber <- get_in(@data, ["twitch", "broadcasterSubscriptions"]) |> filter_twitch_subscribers do %>
+  <%= for subscriber <- get_in(@data, ["twitch", "broadcasterSubscriptions"]) |> filter_twitch_subscribers do %>
     <div class="card p-3 dark:bg-gray-800">
       <div class="grid grid-cols-3">
         <div class="col-span-1">
           <div class="avatar avatar-lg">
-            <img class="" src={ subscriber["user"]["profileImageUrl"] } />
+            <img class="" src={subscriber["user"]["profileImageUrl"]} />
           </div>
         </div>
         <div class="col-span-2">
@@ -16,12 +16,12 @@
         </div>
       </div>
     </div>
-<% end %>
+  <% end %>
 </div>
 
 <h2 class="text-4xl">Patrons</h2>
 <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-<%= for patron <- get_in(@data, ["patreon", "campaignMembers"]) |> filter_patreon_subscribers || [] do %>
+  <%= for patron <- get_in(@data, ["patreon", "campaignMembers"]) |> filter_patreon_subscribers || [] do %>
     <div class="card p-3 dark:bg-gray-800">
       <div class="grid grid-cols-3">
         <div class="col-span-1">
@@ -31,9 +31,11 @@
         </div>
         <div class="col-span-2">
           <div class="font-semibold text-gray-900"><%= patron["fullName"] %></div>
-          <span class="capitalize"><%= get_polite_status(patron["currentlyEntitledAmountCents"]) %></span>
+          <span class="capitalize">
+            <%= get_polite_status(patron["currentlyEntitledAmountCents"]) %>
+          </span>
         </div>
       </div>
     </div>
-<% end %>
+  <% end %>
 </div>

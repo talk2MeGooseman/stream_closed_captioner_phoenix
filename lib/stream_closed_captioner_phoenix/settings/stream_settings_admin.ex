@@ -30,7 +30,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin do
         content: UserQueries.get_users_without_settings() |> Enum.count(),
         order: 1,
         width: 4,
-        icon: ''
+        icon: ~c""
       }
     ]
   end

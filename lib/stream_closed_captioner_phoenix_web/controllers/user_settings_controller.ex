@@ -64,6 +64,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "update_azure_key"} = params) do
+    %{"user" => user_params} = params
+    user = conn.assigns.current_user
+
+    case Accounts.update_user_azure_key(user, user_params) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Azure service key updated successfully.")
+        |> redirect(to: Routes.user_settings_path(conn, :edit))
+
+      {:error, changeset} ->
+        render(conn, "edit.html", azure_key_changeset: changeset)
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_user, token) do
       :ok ->
@@ -85,6 +100,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
     |> assign(:provider_changeset, AccountsOauth.change_user_provider(user))
+    |> assign(:azure_key_changeset, Accounts.change_user_azure_key(user))
     |> assign(:user, user)
   end
 end

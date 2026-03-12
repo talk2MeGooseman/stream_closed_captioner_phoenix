@@ -52,7 +52,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       phx-remove={hide_modal(@id)}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="fixed bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="fixed bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 transition-opacity"
+        aria-hidden="true"
+      />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -98,7 +102,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
                 <%= render_slot(@inner_block) %>
               </div>
 
-              <div :if={@confirm != [] or @cancel != []} class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+              <div
+                :if={@confirm != [] or @cancel != []}
+                class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
+              >
                 <.button
                   :for={confirm <- @confirm}
                   id={"#{@id}-confirm"}
@@ -263,7 +270,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       type={@type}
       class={[
         "font-medium rounded-lg text-sm px-5 py-2.5 focus:ring-4 inline-flex items-center gap-2 focus:outline-none phx-submit-loading:opacity-75",
-        @default && "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
+        @default &&
+          "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
         @class
       ]}
       {@rest}
@@ -379,7 +387,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
           "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
           "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
           "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
-          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+          @errors != [] &&
+            "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
@@ -403,7 +412,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
           "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
           "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
           "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
-          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+          @errors != [] &&
+            "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       />
@@ -506,11 +516,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
           </tr>
         </thead>
-        <tbody
-          id={@id}
-          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-        >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tbody id={@id} phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}>
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+          >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
@@ -557,7 +568,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
     ~H"""
     <dl class="-my-4 divide-y divide-gray-200 dark:divide-gray-700">
       <div :for={item <- @item} class="flex gap-4 py-4 sm:gap-8">
-        <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-gray-500 dark:text-gray-400"><%= item.title %></dt>
+        <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-gray-500 dark:text-gray-400">
+          <%= item.title %>
+        </dt>
         <dd class="text-sm leading-6 text-gray-900 dark:text-white"><%= render_slot(item) %></dd>
       </div>
     </dl>
