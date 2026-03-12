@@ -197,14 +197,39 @@
           </p>
         </div>
         <div class="flex-1 p-2">
-          <p class="text-sm font-medium leading-none text-gray-600">
-            <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
-              Using your own Azure service key
-            <% else %>
-              500 credits are required for to activate translations
-              for 24 hours
-            <% end %>
-          </p>
+          <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
+            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Using Your Azure Key
+            </div>
+            <p class="text-sm font-medium leading-none text-gray-600 mt-2">
+              Translations use your own Azure service
+            </p>
+          <% else %>
+            <div x-data="{ showTooltip: false }" class="relative inline-block">
+              <div @mouseenter="showTooltip = true" @mouseleave="showTooltip = false" class="cursor-help">
+                <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                  </svg>
+                  Credits Required
+                </div>
+              </div>
+              <div x-show="showTooltip" x-cloak x-transition class="absolute z-10 w-64 p-3 text-sm bg-gray-900 text-white rounded-lg shadow-lg bottom-full left-1/2 transform -translate-x-1/2 mb-2">
+                <div class="font-semibold mb-1">💡 New Feature: Use Your Own Azure Key!</div>
+                <p class="mb-2">Save credits by providing your own Azure Cognitive Services key.</p>
+                <.link navigate={~p"/users/settings"} class="text-blue-300 hover:text-blue-100 underline font-medium">
+                  → Set up in Account Settings
+                </.link>
+                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
+              </div>
+            </div>
+            <p class="text-sm font-medium leading-none text-gray-600 mt-2">
+              500 credits required to activate translations for 24 hours
+            </p>
+          <% end %>
         </div>
         <%= if @current_user.azure_service_key && String.trim(@current_user.azure_service_key) != "" do %>
           <div class="flex-1 p-2">
@@ -222,6 +247,11 @@
                       else: "btn-primary"
                     )
               ) %>
+            <% end %>
+            <%= if @stream_settings.translation_enabled do %>
+              <p class="text-xs text-green-600 mt-1">✓ Translations are active</p>
+            <% else %>
+              <p class="text-xs text-gray-500 mt-1">Click to enable</p>
             <% end %>
           </div>
         <% end %>

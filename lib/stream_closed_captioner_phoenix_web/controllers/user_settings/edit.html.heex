@@ -91,6 +91,9 @@
       <h4 class="text-2xl">Azure Translation Service</h4>
       <p class="text-sm mb-4">
         Enter your own Azure Cognitive Services key to enable translations without using credits.
+        <a href="https://azure.microsoft.com/en-us/services/cognitive-services/translator/" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+          Learn more about Azure Translator
+        </a>
       </p>
       <%= form_for @azure_key_changeset, ~p"/users/settings", fn f -> %>
         <%= if @azure_key_changeset.action do %>
@@ -99,13 +102,30 @@
           </div>
         <% end %>
 
-        <div class="mb-6">
+        <div class="mb-6" x-data="{ showKey: false }">
           <%= label(f, :azure_service_key, "Azure Service Key", class: "form-label") %>
-          <%= text_input(f, :azure_service_key,
-            class: "form-input",
-            placeholder: "Enter your Azure Cognitive Services subscription key"
-          ) %>
+          <div class="relative">
+            <input
+              x-bind:type="showKey ? 'text' : 'password'"
+              name="user[azure_service_key]"
+              id="user_azure_service_key"
+              class="form-input pr-24"
+              placeholder="Enter your Azure Cognitive Services subscription key"
+              value={@current_user.azure_service_key}
+            />
+            <button
+              type="button"
+              @click="showKey = !showKey"
+              class="absolute inset-y-0 right-0 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-l-0 border-gray-300 rounded-r hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <span x-show="!showKey">Show</span>
+              <span x-show="showKey" x-cloak>Hide</span>
+            </button>
+          </div>
           <%= error_tag(f, :azure_service_key) %>
+          <p class="text-xs text-gray-600 mt-1">
+            Your key is encrypted and securely stored. Toggle to show/hide for security.
+          </p>
         </div>
 
         <div class="mt-8 mb-2">
