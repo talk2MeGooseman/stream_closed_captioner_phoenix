@@ -23,10 +23,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.Layouts, :logged_in})
   end
 
-  pipeline :transcript_ui do
-    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.Layouts, :transcript})
-  end
-
   pipeline :admin_protected do
     plug(:fetch_current_user)
     plug(:redirect_if_not_admin)
@@ -140,12 +136,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       ecto_repos: [StreamClosedCaptionerPhoenix.Repo],
       metrics: StreamClosedCaptionerPhoenixWeb.Telemetry
     )
-  end
-
-  scope "/", StreamClosedCaptionerPhoenixWeb do
-    pipe_through([:browser, :admin_protected, :transcript_ui])
-
-    live "/transcripts/:id", TranscirptsLive.Show, :show
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do

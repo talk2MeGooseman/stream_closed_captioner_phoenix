@@ -23,15 +23,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} ->
         NewRelic.stop_transaction()
 
-        if FunWithFlags.enabled?(:caption_source, for: socket.assigns.current_user) do
-          StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-            self(),
-            "transcript:1",
-            "new_msg",
-            payload
-          )
-        end
-
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->
@@ -41,7 +32,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   @trace :handle_in
-  def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
+  def handle_in("publishFinal", %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
@@ -51,15 +42,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
         Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
           new_twitch_caption: user.uid
         )
-
-        if FunWithFlags.enabled?(:caption_source, for: socket.assigns.current_user) do
-          StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-            self(),
-            "transcript:1",
-            "new_msg",
-            sent_payload
-          )
-        end
 
         new_relic_track(:ok, user, sent_on_time)
         {:reply, {:ok, sent_payload}, socket}
@@ -99,13 +81,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
       {:ok, sent_payload} ->
-        StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast_from!(
-          self(),
-          "transcript:1",
-          "new_msg",
-          payload
-        )
-
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, _} ->
