@@ -192,6 +192,24 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                Settings.get_stream_settings!(stream_settings.id).id
     end
 
+    test "update_stream_settings/2 returns error when blocklist contains an empty string" do
+      stream_settings = insert(:stream_settings)
+
+      assert {:error, %Ecto.Changeset{} = error_changeset} =
+               Settings.update_stream_settings(stream_settings, %{blocklist: ["valid", ""]})
+
+      assert [{:blocklist, _error_details}] = error_changeset.errors
+    end
+
+    test "update_stream_settings/2 returns error when blocklist contains a whitespace-only string" do
+      stream_settings = insert(:stream_settings)
+
+      assert {:error, %Ecto.Changeset{} = error_changeset} =
+               Settings.update_stream_settings(stream_settings, %{blocklist: ["valid", "   "]})
+
+      assert [{:blocklist, _error_details}] = error_changeset.errors
+    end
+
     test "delete_stream_settings/1 deletes the stream_settings" do
       stream_settings = insert(:stream_settings)
       assert {:ok, %StreamSettings{}} = Settings.delete_stream_settings(stream_settings)
