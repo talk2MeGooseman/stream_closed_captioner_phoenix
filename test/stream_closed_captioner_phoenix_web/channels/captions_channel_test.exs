@@ -68,4 +68,46 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
 
     assert_reply ref, :ok, %{final: "world", interim: "hello"}
   end
+
+  test "publishFinal with malformed sentOn does not crash", %{socket: socket} do
+    ref =
+      push(socket, "publishFinal", %{
+        "interim" => "hello",
+        "final" => "world",
+        "session" => "abc",
+        "twitch" => %{"enabled" => true},
+        "sentOn" => "not-a-valid-date"
+      })
+
+    assert_reply ref, :ok, %{final: "world", interim: "hello"}
+  end
+
+  test "publishFinal returns error when pipeline fails" do
+    bad_user = insert(:user, stream_settings: nil)
+
+    import Ecto.Query
+
+    StreamClosedCaptionerPhoenix.Repo.delete_all(
+      from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
+        where: ss.user_id == ^bad_user.id
+      )
+    )
+
+    {:ok, _, bad_socket} =
+      StreamClosedCaptionerPhoenixWeb.UserSocket
+      |> socket("user_id", %{current_user: bad_user})
+      |> subscribe_and_join(
+        StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+        "captions:#{bad_user.id}"
+      )
+
+    ref =
+      push(bad_socket, "publishFinal", %{
+        "interim" => "hello",
+        "final" => "world",
+        "session" => "abc"
+      })
+
+    assert_reply ref, :error, "Issue sending captions."
+  end
 end
