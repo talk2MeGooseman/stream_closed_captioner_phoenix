@@ -126,19 +126,18 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     |> maybe_pirate_mode_for(:final, stream_settings)
   end
 
-  defp maybe_pirate_mode_for(payload, key, %StreamSettings{} = stream_settings) do
-    if stream_settings.pirate_mode do
-      {:ok, text} = TalkLikeAX.translate(Map.get(payload, key))
+  defp maybe_pirate_mode_for(payload, key, %StreamSettings{pirate_mode: true}) do
+    case TalkLikeAX.translate(Map.get(payload, key)) do
+      {:ok, text} ->
+        Map.put(payload, key, text)
 
-      Map.put(
-        payload,
-        key,
-        text
-      )
-    else
-      payload
+      {:error, reason} ->
+        Logger.warning("Pirate mode translation failed: #{inspect(reason)}")
+        payload
     end
   end
+
+  defp maybe_pirate_mode_for(payload, _key, _stream_settings), do: payload
 
   defp validate_zoom_url(url) when is_binary(url) do
     uri = URI.parse(url)
