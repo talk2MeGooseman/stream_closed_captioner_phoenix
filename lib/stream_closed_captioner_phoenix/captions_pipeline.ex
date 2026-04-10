@@ -2,20 +2,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   require Logger
   use NewRelic.Tracer
 
-  alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Profanity
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations
   alias StreamClosedCaptionerPhoenix.Settings
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
-  alias StreamClosedCaptionerPhoenixWeb.UserTracker
   alias Twitch.Extension.CaptionsPayload
 
-  @type message_map :: %{
-          optional(:final) => String.t(),
-          optional(:interim) => String.t(),
-          optional(:session) => String.t()
-        }
+  @type message_map :: %{optional(String.t()) => String.t()}
 
   @spec pipeline_to(
           :twitch | :zoom | :default,
@@ -43,11 +37,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       payload =
         CaptionsPayload.new(message)
-        |> tap(fn _ ->
-          UserTracker.update(self(), "active_channels", user.uid, %{
-            last_publish: System.system_time(:second)
-          })
-        end)
         |> apply_censoring(stream_settings)
         |> Translations.maybe_translate(:final, user)
         |> apply_pirate_mode(stream_settings)
@@ -58,6 +47,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
+  @trace :pipeline_to
   def pipeline_to(:zoom, %User{} = user, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       params = %Zoom.Params{
