@@ -39,6 +39,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
 
+    UserTracker.update(self(), "active_channels", user.uid, %{
+      last_publish: System.system_time(:second)
+    })
+
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
         Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
