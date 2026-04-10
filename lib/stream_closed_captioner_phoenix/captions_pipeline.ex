@@ -68,19 +68,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       |> maybe_pirate_mode_for(:final, stream_settings)
 
     zoom_text = Map.get(payload, :final)
-    url = get_in(message, ["zoom", "url"])
 
-    case Zoom.send_captions_to(url, zoom_text, params) do
-      {:ok, %HTTPoison.Response{status_code: 200}} ->
-        {:ok, payload}
+    with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
+      case Zoom.send_captions_to(url, zoom_text, params) do
+        {:ok, %HTTPoison.Response{status_code: 200}} ->
+          {:ok, payload}
 
-      {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-        Logger.debug("Request was rejected code: #{code} body: #{body}")
-        {:error, body}
+        {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+          Logger.debug("Request was rejected code: #{code} body: #{body}")
+          {:error, body}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        Logger.debug("Request was error")
-        {:error, reason}
+        {:error, %HTTPoison.Error{reason: reason}} ->
+          Logger.debug("Request was error")
+          {:error, reason}
+      end
     end
   end
 
@@ -141,4 +142,23 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       payload
     end
   end
+
+  defp validate_zoom_url(url) when is_binary(url) do
+    uri = URI.parse(url)
+
+    cond do
+      uri.scheme != "https" ->
+        Logger.warning("Rejected non-HTTPS Zoom URL: #{inspect(uri.scheme)}")
+        {:error, :invalid_zoom_url}
+
+      not String.ends_with?(uri.host || "", ".zoom.us") ->
+        Logger.warning("Rejected non-Zoom host: #{inspect(uri.host)}")
+        {:error, :invalid_zoom_url}
+
+      true ->
+        {:ok, url}
+    end
+  end
+
+  defp validate_zoom_url(_), do: {:error, :invalid_zoom_url}
 end
