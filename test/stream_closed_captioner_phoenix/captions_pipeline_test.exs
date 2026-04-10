@@ -257,4 +257,83 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
   end
+
+  describe "pipeline_to(:zoom) URL validation" do
+    test "rejects non-Zoom host URL" do
+      user = insert(:user)
+
+      result =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "abc",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "https://evil.example.com/callback",
+            "seq" => 1
+          }
+        })
+
+      assert {:error, :invalid_zoom_url} = result
+    end
+
+    test "rejects non-HTTPS Zoom URL" do
+      user = insert(:user)
+
+      result =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "abc",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "http://us02web.zoom.us/closedcaption",
+            "seq" => 1
+          }
+        })
+
+      assert {:error, :invalid_zoom_url} = result
+    end
+
+    test "rejects nil URL" do
+      user = insert(:user)
+
+      result =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "abc",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => nil,
+            "seq" => 1
+          }
+        })
+
+      assert {:error, :invalid_zoom_url} = result
+    end
+  end
+
+  describe "pipeline_to with missing stream settings" do
+    test "returns error when user has no stream settings" do
+      user = insert(:user, stream_settings: nil)
+
+      import Ecto.Query
+
+      StreamClosedCaptionerPhoenix.Repo.delete_all(
+        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
+          where: ss.user_id == ^user.id
+        )
+      )
+
+      result =
+        CaptionsPipeline.pipeline_to(:default, user, %{
+          "interim" => "Hello",
+          "final" => "World",
+          "session" => "abc123"
+        })
+
+      assert {:error, "Stream settings not found"} = result
+    end
+  end
 end
