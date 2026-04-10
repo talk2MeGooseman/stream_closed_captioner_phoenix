@@ -7,6 +7,7 @@ function isChromium() {
     if (hasGoogleChromeBrand) {
       return true;
     }
+    return false;
   } else {
     // Possibly older version of Chrome or Chromium that does not have
     // navigator.userAgentData.brands

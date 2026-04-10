@@ -1,6 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   use StreamClosedCaptionerPhoenixWeb, :channel
   use NewRelic.Tracer
+  require Logger
   alias StreamClosedCaptionerPhoenixWeb.UserTracker
 
   @impl true
@@ -25,7 +26,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
         {:reply, {:ok, sent_payload}, socket}
 
-      {:error, _} ->
+      {:error, reason} ->
+        Logger.error("Zoom pipeline failed for user #{user.id}: #{inspect(reason)}")
         NewRelic.stop_transaction()
         {:reply, {:error, "Issue sending captions."}, socket}
     end
@@ -46,20 +48,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
         new_relic_track(:ok, user, sent_on_time)
         {:reply, {:ok, sent_payload}, socket}
 
-      {:error, _} ->
+      {:error, reason} ->
+        Logger.error("Twitch pipeline failed for user #{user.id}: #{inspect(reason)}")
         new_relic_track(:error, user, sent_on_time)
         {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
 
   def handle_in("publishBlob", {:binary, chunk}, socket) do
-    if socket.assigns.wss_pid do
-      case WebSockex.send_frame(socket.assigns.wss_pid, {:binary, chunk}) do
-        :ok ->
-          {:noreply, socket}
-
-        {:error, _} ->
-          {:noreply, socket}
+    if pid = socket.assigns[:wss_pid] do
+      case WebSockex.send_frame(pid, {:binary, chunk}) do
+        :ok -> :ok
+        {:error, reason} ->
+          Logger.warning("WebSockex send_frame failed: #{inspect(reason)}")
       end
     end
 
@@ -83,7 +84,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       {:ok, sent_payload} ->
         {:reply, {:ok, sent_payload}, socket}
 
-      {:error, _} ->
+      {:error, reason} ->
+        Logger.error("Default pipeline failed for user #{user.id}: #{inspect(reason)}")
         {:reply, {:error, "Issue sending captions."}, socket}
     end
   end
@@ -110,10 +112,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   defp time_to_complete(nil), do: 0
 
   defp time_to_complete(sent_on) do
-    parsed_sent_on = Timex.parse!(sent_on, "{ISO:Extended}")
-    current_time = Timex.now()
-
-    DateTime.diff(current_time, parsed_sent_on, :millisecond)
+    case Timex.parse(sent_on, "{ISO:Extended}") do
+      {:ok, parsed} -> DateTime.diff(Timex.now(), parsed, :millisecond)
+      {:error, _} -> 0
+    end
   end
 
   defp new_relic_track(:ok, user, sent_on) do

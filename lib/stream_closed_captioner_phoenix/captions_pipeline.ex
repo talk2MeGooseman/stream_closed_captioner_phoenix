@@ -26,62 +26,69 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           | {:ok, CaptionsPayload.t()}
   @trace :pipeline_to
   def pipeline_to(:default, %User{} = user, message) do
-    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_censoring(stream_settings)
+        |> apply_pirate_mode(stream_settings)
 
-    payload =
-      CaptionsPayload.new(message)
-      |> apply_censoring(stream_settings)
-      |> apply_pirate_mode(stream_settings)
-
-    {:ok, payload}
+      {:ok, payload}
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
   end
 
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
-    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      payload =
+        CaptionsPayload.new(message)
+        |> tap(fn _ ->
+          UserTracker.update(self(), "active_channels", user.uid, %{
+            last_publish: System.system_time(:second)
+          })
+        end)
+        |> apply_censoring(stream_settings)
+        |> Translations.maybe_translate(:final, user)
+        |> apply_pirate_mode(stream_settings)
 
-    payload =
-      CaptionsPayload.new(message)
-      |> tap(fn _ ->
-        UserTracker.update(self(), "active_channels", user.uid, %{
-          last_publish: System.system_time(:second)
-        })
-      end)
-      |> apply_censoring(stream_settings)
-      |> Translations.maybe_translate(:final, user)
-      |> apply_pirate_mode(stream_settings)
-
-    {:ok, payload}
+      {:ok, payload}
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
   end
 
   def pipeline_to(:zoom, %User{} = user, message) do
-    {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      params = %Zoom.Params{
+        seq: get_in(message, ["zoom", "seq"]),
+        lang: stream_settings.language
+      }
 
-    params = %Zoom.Params{
-      seq: get_in(message, ["zoom", "seq"]),
-      lang: stream_settings.language
-    }
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_users_blocklist_for(:final, stream_settings)
+        |> maybe_additional_censoring_for(:final, stream_settings)
+        |> maybe_pirate_mode_for(:final, stream_settings)
 
-    payload =
-      CaptionsPayload.new(message)
-      |> maybe_additional_censoring_for(:final, stream_settings)
-      |> maybe_pirate_mode_for(:final, stream_settings)
+      zoom_text = Map.get(payload, :final)
 
-    zoom_text = Map.get(payload, :final)
+      with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
+        case Zoom.send_captions_to(url, zoom_text, params) do
+          {:ok, %HTTPoison.Response{status_code: 200}} ->
+            {:ok, payload}
 
-    with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
-      case Zoom.send_captions_to(url, zoom_text, params) do
-        {:ok, %HTTPoison.Response{status_code: 200}} ->
-          {:ok, payload}
+          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+            Logger.debug("Request was rejected code: #{code} body: #{body}")
+            {:error, body}
 
-        {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-          Logger.debug("Request was rejected code: #{code} body: #{body}")
-          {:error, body}
-
-        {:error, %HTTPoison.Error{reason: reason}} ->
-          Logger.debug("Request was error")
-          {:error, reason}
+          {:error, %HTTPoison.Error{reason: reason}} ->
+            Logger.debug("Request was error")
+            {:error, reason}
+        end
       end
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
     end
   end
 
