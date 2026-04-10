@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-03-11T20:20:00Z",
-  "run_id": "22971694140",
+  "last_run": "2026-04-10T04:18:05Z",
+  "run_id": "24226069494",
   "commands": {
     "test": "mix test",
     "coverage": "mix coveralls",
@@ -13,29 +13,23 @@
   "ci_notes": "CI requires PostgreSQL 15; uses DATABASE_URL=postgres://postgres:postgres@localhost/stream_closed_captioner_phoenix_test. Tests cannot run in workflow without DB service. Elixir 1.16.0 / OTP 26.0.",
   "testing_framework": "ExUnit with ExMachina factories, Mox for external mocks (Azure.MockCognitive, Twitch.MockHelix, Twitch.MockExtension), DataCase for DB, ConnCase for controllers, ChannelCase for channels",
   "tasks_run": {
-    "task1": "2025-07-17",
+    "task1": "2026-04-10",
     "task2": "2026-03-11",
-    "task3": "2026-03-11",
-    "task4": "2026-03-01",
+    "task3": "2026-04-10",
+    "task4": "2026-04-10",
     "task5": "2026-03-03",
     "task6": "2026-03-08",
-    "task7": "2026-03-11"
+    "task7": "2026-04-10"
   },
   "testing_backlog": [
     {
       "priority": 1,
       "title": "pipeline_to(:zoom) - untested",
-      "detail": "No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; needs Bypass or new behavior mock.",
+      "detail": "No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly via Zoom.send_captions_to/3; needs Bypass or new behavior mock.",
       "status": "pending"
     },
     {
       "priority": 2,
-      "title": "Stream settings validation edge cases",
-      "detail": "Ecto changeset edge cases: invalid languages, extreme values.",
-      "status": "pending"
-    },
-    {
-      "priority": 3,
       "title": "Twitch.get_live_streams/1 - blocked",
       "detail": "Non-trivial chunk/sort/dedup logic but blocked by hardcoded OAuth HTTP in Twitch.Oauth.get_client_access_token/0 (uses HTTPoison.post! directly, no behavior). Would need production refactor.",
       "status": "blocked"
@@ -47,42 +41,44 @@
       "branch": "test-assist/captions-pipeline-translations-coverage",
       "pr_number": 239,
       "description": "Added 2 tests for untested branches in CaptionsPipeline.Translations.maybe_translate/3.",
-      "run_id": "22528035393",
       "status": "MERGED"
     },
     {
       "branch": "test-assist/captions-pipeline-default-zoom-coverage",
       "pr_number": 241,
       "description": "Added 3 tests for pipeline_to(:default): passthrough, pirate mode, profanity filter.",
-      "run_id": "22536444145",
       "status": "MERGED"
     },
     {
       "branch": "test-assist/captions-channel-tests",
       "pr_number": 243,
       "description": "Revived captions_channel_test.exs with 5 tests: join auth, unauthorized join, active event, default pipeline, twitch pipeline.",
-      "run_id": "22613231346",
       "status": "MERGED"
     },
     {
       "branch": "test-assist/caption-settings-live-tests",
       "pr_number": 244,
       "description": "Revived stream_settings_live_test.exs with 7 LiveView tests for CaptionSettingsLive.Index event handlers.",
-      "run_id": "22827313517",
       "status": "MERGED"
     },
     {
       "branch": "test-assist/twitch-send-pubsub-message-tests",
+      "pr_number": 247,
+      "description": "6 unit tests for Twitch.send_pubsub_message/2: nil channel_id guard, 204/400/500/502 responses, HTTPoison.Error.",
+      "status": "MERGED"
+    },
+    {
+      "branch": "test-assist/stream-settings-blocklist-validation",
       "pr_number": null,
-      "description": "6 unit tests for Twitch.send_pubsub_message/2: nil channel_id guard, 204/400/500/502 responses, HTTPoison.Error. Uses existing Twitch.MockExtension Mox infra.",
-      "run_id": "22971694140",
+      "description": "2 tests for StreamSettings.update_changeset/2 blocklist validation: empty string and whitespace-only string rejected.",
+      "run_id": "24226069494",
       "status": "SUBMITTED"
     }
   ],
-  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)). CaptionSettingsLive: update_stream_settings safe in tests (test users have provider=nil, no eventsub records, no Twitch calls triggered). render_hook(view, event_name, params) cleanly triggers handle_event without DOM selector issues. Twitch.get_live_streams untestable without refactor - Twitch.Oauth.get_client_access_token/0 uses HTTPoison.post! directly (no behavior mock). send_pubsub_message/2 uses ext_api_client() which returns Twitch.MockExtension in test env - fully testable.",
+  "notes": "Factory: insert(:bits_balance_debit, user: user) to create active debit. User factory has stream_settings: build(:stream_settings), bits_balance: build(:bits_balance) by default. translate_languages is has_many - pass as list in insert(:user, translate_languages: [...]). mix format/lint not runnable without Elixir installed in workflow runner. No Zoom mock - pipeline_to(:zoom) calls HTTPoison directly via Zoom.send_captions_to/3; would need Bypass or new behavior. CaptionsChannel: async: false required (channel subprocess makes DB calls through ChannelCase sandbox). Factory pattern to avoid duplicate stream_settings: insert(:stream_settings, user: build(:user, stream_settings: nil)). CaptionSettingsLive: update_stream_settings safe in tests (test users have provider=nil, no eventsub records, no Twitch calls triggered). render_hook(view, event_name, params) cleanly triggers handle_event without DOM selector issues. Twitch.get_live_streams untestable without refactor - Twitch.Oauth.get_client_access_token/0 uses HTTPoison.post! directly (no behavior mock). send_pubsub_message/2 uses ext_api_client() which returns Twitch.MockExtension in test env. StreamSettings.update_changeset validate_word_list: invalid blocklist (empty or whitespace items) → only :blocklist error, no Mox needed since error path short-circuits before Twitch sync.",
   "monthly_activity_issue": {
-    "issue_number": 242,
-    "month": "2026-03",
-    "note": "PR #244 merged. New PR for twitch-send-pubsub-message-tests submitted 2026-03-11."
+    "issue_number": null,
+    "month": "2026-04",
+    "note": "April 2026 issue to be created this run. March issue #242 to be closed."
   }
 }
