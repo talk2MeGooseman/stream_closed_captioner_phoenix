@@ -34,7 +34,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   @trace :handle_in
-  def handle_in("publishFinal", %{"twitch" => %{"enabled" => true}} = payload, socket) do
+  def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
