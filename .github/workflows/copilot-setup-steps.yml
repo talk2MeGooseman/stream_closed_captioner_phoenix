@@ -58,6 +58,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-
 
+      - name: Disable IPv6 for Hex
+        run: echo "export ERL_FLAGS='-proto_dist inet_tcp'" >> $GITHUB_ENV
+
       - name: Install Elixir dependencies
         run: mix deps.get
 
