@@ -9,14 +9,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
   alias Twitch.Extension.CaptionsPayload
 
-  @type message_map :: %{optional(String.t()) => String.t()}
+  @type message_map :: %{optional(String.t()) => term()}
 
   @spec pipeline_to(
           :twitch | :zoom | :default,
           StreamClosedCaptionerPhoenix.Accounts.User.t(),
           message_map()
         ) ::
-          {:error, String.t()}
+          {:error, term()}
           | {:ok, CaptionsPayload.t()}
   @trace :pipeline_to
   def pipeline_to(:default, %User{} = user, message) do
@@ -141,13 +141,15 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   defp validate_zoom_url(url) when is_binary(url) do
     uri = URI.parse(url)
+    scheme = uri.scheme && String.downcase(uri.scheme)
+    host = uri.host && String.downcase(uri.host)
 
     cond do
-      uri.scheme != "https" ->
+      scheme != "https" ->
         Logger.warning("Rejected non-HTTPS Zoom URL: #{inspect(uri.scheme)}")
         {:error, :invalid_zoom_url}
 
-      not String.ends_with?(uri.host || "", ".zoom.us") ->
+      not String.ends_with?(host || "", ".zoom.us") ->
         Logger.warning("Rejected non-Zoom host: #{inspect(uri.host)}")
         {:error, :invalid_zoom_url}
 
