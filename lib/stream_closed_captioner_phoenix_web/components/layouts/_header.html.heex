@@ -235,7 +235,10 @@
         <%= _user_dropdown(assigns) %>
       <% else %>
         <div class="flex items-center space-x-3">
-          <%= link("Login", to: ~p"/users/log_in", class: "btn btn-sm btn-link dark:text-blue-500") %>
+          <%= link("Login",
+            to: ~p"/users/log_in",
+            class: "btn btn-sm btn-link dark:text-blue-500"
+          ) %>
           <%= link("Connect with Twitch", to: "/auth/twitch", class: "btn btn-sm btn-primary") %>
         </div>
       <% end %>

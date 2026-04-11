@@ -2,12 +2,15 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Inspect, except: [:password, :encrypted_password]}
+  alias StreamClosedCaptionerPhoenix.Encryption.EncryptedBinary
+
+  @derive {Inspect, except: [:password, :encrypted_password, :azure_service_key, :access_token, :refresh_token]}
   @derive {Jason.Encoder,
            only: [:email, :provider, :uid, :username, :login, :profile_image_url, :description]}
 
   schema "users" do
     field :access_token, :string
+    field :azure_service_key, EncryptedBinary
     field :description, :string
     field :email, :string
     field :encrypted_password, :string
@@ -204,6 +207,67 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   def provider_changeset(user, attrs) do
     user
     |> cast(attrs, [:provider])
+  end
+
+  def azure_key_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:azure_service_key])
+    |> validate_azure_key()
+  end
+
+  defp validate_azure_key(changeset) do
+    case get_change(changeset, :azure_service_key) do
+      nil ->
+        changeset
+
+      # Allow clearing the key - convert empty string to nil
+      "" ->
+        put_change(changeset, :azure_service_key, nil)
+
+      key when is_binary(key) ->
+        changeset
+        |> validate_key_length(key)
+        |> validate_key_format(key)
+
+      _ ->
+        add_error(changeset, :azure_service_key, "must be a valid string")
+    end
+  end
+
+  defp validate_key_length(changeset, key) do
+    cond do
+      byte_size(key) < 10 ->
+        add_error(changeset, :azure_service_key, "must be at least 10 characters")
+
+      byte_size(key) > 256 ->
+        add_error(changeset, :azure_service_key, "must be at most 256 characters")
+
+      true ->
+        changeset
+    end
+  end
+
+  defp validate_key_format(changeset, key) do
+    # Azure Cognitive Services keys are typically 32-character hexadecimal strings
+    # or base64-encoded strings. We'll validate for common patterns.
+    cond do
+      # Valid 32-char hex (most common Azure key format)
+      String.match?(key, ~r/^[a-fA-F0-9]{32}$/) ->
+        changeset
+
+      # Valid base64-like format (alternative Azure key format)
+      String.match?(key, ~r/^[A-Za-z0-9+\/=_-]{20,}$/) ->
+        changeset
+
+      # If it doesn't match expected formats, add a warning but don't fail
+      # (Azure may use different formats in the future)
+      true ->
+        add_error(
+          changeset,
+          :azure_service_key,
+          "does not match expected Azure API key format (32-character hex or base64 string)"
+        )
+    end
   end
 end
 

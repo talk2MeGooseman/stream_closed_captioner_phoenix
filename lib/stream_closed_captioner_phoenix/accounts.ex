@@ -346,6 +346,58 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     end
   end
 
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user azure service key.
+  """
+  def change_user_azure_key(user, attrs \\ %{}) do
+    User.azure_key_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user azure service key.
+  Logs the action to audit logs.
+  """
+  def update_user_azure_key(user, attrs) do
+    changeset = User.azure_key_changeset(user, attrs)
+    
+    with {:ok, updated_user} <- Repo.update(changeset) do
+      # Determine the action based on whether key was added, updated, or deleted
+      action = 
+        cond do
+          is_nil(updated_user.azure_service_key) and not is_nil(user.azure_service_key) ->
+            "azure_key_deleted"
+          
+          is_nil(user.azure_service_key) and not is_nil(updated_user.azure_service_key) ->
+            "azure_key_created"
+          
+          not is_nil(updated_user.azure_service_key) ->
+            "azure_key_updated"
+          
+          true ->
+            nil
+        end
+      
+      # Log the action if there was a change
+      if action do
+        StreamClosedCaptionerPhoenix.Audit.log_azure_key_action(
+          user.id,
+          action,
+          %{changed_at: DateTime.utc_now()}
+        )
+      end
+      
+      {:ok, updated_user}
+    end
+  end
+
+  @doc """
+  Clears the user's Azure service key.
+  Logs the action to audit logs.
+  """
+  def clear_user_azure_key(user) do
+    update_user_azure_key(user, %{azure_service_key: ""})
+  end
+
   ## Session
 
   @doc """

@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.EventsubSubscriptionAdmin do
         content: Twitch.get_event_subscriptions("") |> Enum.count(),
         order: 1,
         width: 3,
-        icon: ''
+        icon: ~c""
       }
     ]
   end

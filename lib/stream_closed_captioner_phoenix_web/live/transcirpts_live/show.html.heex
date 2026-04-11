@@ -2,13 +2,14 @@
   <div class="d-flex flex-grow-1">
     <div class="d-flex flex-grow-1 position-relative">
       <!-- style="color:#ffffff;background-color:rgba(0, 0, 0, 1);font-family:'Cousine';font-size:4em;font-style:normal;font-weight:normal;line-height:1.2em;letter-spacing:0em;text-transform:uppercase;padding:0.25em 0.25em 0.25em 0.25em ;text-shadow:0.05em 0.05em 0px rgba(0,0,0,1);cursor:default;" -->
-      <div
-        class="transcript d-flex flex-grow-1 align-items-start"
-        style={@transcript_styles}
-      >
-        <span id="transcript-scoller" class="transcript-scroller w-100 mx-5 h-100" phx-hook="CaptionObserver">
+      <div class="transcript d-flex flex-grow-1 align-items-start" style={@transcript_styles}>
+        <span
+          id="transcript-scoller"
+          class="transcript-scroller w-100 mx-5 h-100"
+          phx-hook="CaptionObserver"
+        >
           <span class="transcript-scroller-child">
-           <!-- TODO: Support a setting to allow the user to apply this class -->
+            <!-- TODO: Support a setting to allow the user to apply this class -->
             <span class="d-block w-100">
               <%= Enum.join(@final_list, ". ") %>
             </span>
@@ -18,7 +19,7 @@
             </span>
             <!---->
             <br />
-            <span id="scrollerEndMarker"/>
+            <span id="scrollerEndMarker" />
           </span>
         </span>
         <!----> <!----> <!---->

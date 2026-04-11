@@ -20,6 +20,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       showcase: false,
       switch_settings_position: false,
       text_uppercase: false,
+      translation_enabled: true,
       user_id: 43,
       blocklist: ["no", "kappa"],
       turn_on_reminder: true
