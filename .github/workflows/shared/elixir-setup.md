@@ -20,7 +20,7 @@ services:
       - 5432:5432
 
 steps:
-  - uses: erlef/setup-beam@v1
+  - uses: erlef/setup-beam@v1.24.0
     with:
       otp-version: "26"
       elixir-version: "1.16"

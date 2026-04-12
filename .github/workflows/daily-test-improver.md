@@ -1,4 +1,48 @@
 ---
+on:
+  reaction: eyes
+  slash_command:
+    name: test-assist
+  workflow_dispatch: null
+permissions: read-all
+network:
+  allowed:
+  - defaults
+  - dotnet
+  - node
+  - python
+  - rust
+  - java
+imports:
+- shared/elixir-setup.md
+safe-outputs:
+  add-comment:
+    hide-older-comments: true
+    max: 10
+    target: "*"
+  create-issue:
+    labels:
+    - automation
+    - testing
+    max: 4
+    title-prefix: "[Test Improver] "
+  create-pull-request:
+    draft: true
+    labels:
+    - automation
+    - testing
+    max: 4
+    protected-files: fallback-to-issue
+    title-prefix: "[Test Improver] "
+  github-token: ${{secrets.GH_AW_GITHUB_TOKEN}}
+  push-to-pull-request-branch:
+    max: 4
+    target: "*"
+    title-prefix: "[Test Improver] "
+  update-issue:
+    max: 1
+    target: "*"
+    title-prefix: "[Test Improver] "
 description: |
   A testing-focused repository assistant that runs daily to improve test quality and coverage.
   Can also be triggered on-demand via '/test-assist <instructions>' to perform specific tasks.
@@ -9,62 +53,16 @@ description: |
   - Records testing techniques and learnings in persistent memory
   - Updates a monthly activity summary for maintainer visibility
   Always thoughtful, quality-focused, and mindful of test maintainability.
-
-on:
-  workflow_dispatch:
-  slash_command:
-    name: test-assist
-  reaction: "eyes"
-imports:
-  - shared/elixir-setup.md
-
+source: githubnext/agentics/workflows/daily-test-improver.md@97143ac59cb3a13ef2a77581f929f06719c7402a
 timeout-minutes: 30
-
-permissions: read-all
-
-network:
-  allowed:
-  - defaults
-  - dotnet
-  - node
-  - python
-  - rust
-  - java
-
-safe-outputs:
-  github-token: ${{secrets.GH_AW_GITHUB_TOKEN}}
-  add-comment:
-    max: 10
-    target: "*"
-    hide-older-comments: true
-  create-pull-request:
-    draft: true
-    title-prefix: "[Test Improver] "
-    labels: [automation, testing]
-    max: 4
-  push-to-pull-request-branch:
-    target: "*"
-    title-prefix: "[Test Improver] "
-    max: 4
-  create-issue:
-    title-prefix: "[Test Improver] "
-    labels: [automation, testing]
-    max: 4
-  update-issue:
-    target: "*"
-    title-prefix: "[Test Improver] "
-    max: 1
-
 tools:
-  web-fetch:
   bash: true
   github:
-    toolsets: [all]
+    toolsets:
+    - all
   repo-memory: true
-
-source: githubnext/agentics/workflows/daily-test-improver.md@442992eda2ccb11ee75a39c019ec6d38ae5a84a2
+  web-fetch: null
 ---
-
 # Daily Test Improver
 
 ## Command Mode
@@ -158,7 +156,7 @@ Always do Task 7 (Update Monthly Activity Summary Issue) every run. In all comme
 4. **Check for existing coverage pipeline**: Before generating coverage reports yourself, check if the repository has an existing coverage pipeline (CI jobs, coverage services like Codecov/Coveralls, or documented coverage commands). Use the existing pipeline when available - maintainers may rely on it for consistency.
 5. For the selected goal:
 
-   a. Create a fresh branch off `main`: `test-assist/<desc>`.
+   a. Create a fresh branch off the default branch: `test-assist/<desc>`.
 
    b. **Analyze complexity before testing**: Before writing any tests, thoroughly read and understand the implementation. Evaluate function complexity - is this trivial code or complex logic? See "What NOT to Test" in Guidelines. Exception: only test trivial code if the repo has an explicit policy requiring very high coverage.
 
@@ -178,12 +176,12 @@ Always do Task 7 (Update Monthly Activity Summary Issue) every run. In all comme
 
    g. **If tests fail**: See "Test Failures Mean Potential Bugs" in Guidelines. Never modify tests just to force them to pass - investigate and file bug issues when appropriate.
 
-5. **Finalize changes**:
+6. **Finalize changes**:
    - Apply any automatic code formatting used in the repo
    - Run linters and fix any new errors
    - Double-check no coverage reports or tool-generated files are staged
 
-6. **Create draft PR** with:
+7. **Create draft PR** with:
    - AI disclosure (🤖 Test Improver)
    - **Goal and rationale**: What was tested and why it matters
    - **Approach**: Testing strategy and implementation steps
@@ -192,7 +190,7 @@ Always do Task 7 (Update Monthly Activity Summary Issue) every run. In all comme
    - **Reproducibility**: Commands to run tests and generate coverage
    - **Test Status**: Build/test outcome
 
-7. Update memory with:
+8. Update memory with:
    - Work completed and PR created
    - Coverage changes (for future reference)
    - Testing notes/techniques learned (keep brief - just key insights)
