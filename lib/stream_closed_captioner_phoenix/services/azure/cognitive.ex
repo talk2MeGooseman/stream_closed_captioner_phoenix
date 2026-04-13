@@ -58,6 +58,10 @@ defmodule Azure.Cognitive do
           {:ok, [translations]} ->
             {:ok, Translations.new(translations)}
 
+          {:ok, other} ->
+            Logger.warning("Azure API returned unexpected JSON shape: #{inspect(other)}")
+            {:error, {:unexpected_json, other}}
+
           {:error, reason} ->
             Logger.warning("Azure API response decode failed: #{inspect(reason)}")
             {:error, {:json_decode, reason}}
