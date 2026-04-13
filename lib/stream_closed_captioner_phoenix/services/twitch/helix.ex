@@ -186,12 +186,19 @@ defmodule Twitch.Helix do
     url = encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
 
     case HTTPoison.post(url, body, headers) do
-      {:ok, response} ->
-        {:ok, response}
+      {:ok, %{body: raw_body}} ->
+        case Jason.decode(raw_body) do
+          {:ok, decoded} ->
+            {:ok, decoded}
 
-      {:error, %{reason: reason} = error} ->
+          {:error, reason} ->
+            Logger.warning("Twitch EventSub subscribe response decode failed: #{inspect(reason)}")
+            {:error, {:json_decode, reason}}
+        end
+
+      {:error, %{reason: reason}} ->
         Logger.warning("Twitch EventSub subscribe request failed: #{inspect(reason)}")
-        {:error, error}
+        {:error, {:http, reason}}
     end
   end
 

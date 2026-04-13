@@ -121,10 +121,10 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
       Twitch.MockHelix
       |> expect(:eventsub_subscribe, fn _, "webhook", "stream.online", "1", _ ->
-        %{"data" => [%{"id" => "anything"}]}
+        {:ok, %{"data" => [%{"id" => "anything"}]}}
       end)
       |> expect(:eventsub_subscribe, fn _, "webhook", "stream.offline", "1", _ ->
-        %{"data" => [%{"id" => "anything"}]}
+        {:ok, %{"data" => [%{"id" => "anything"}]}}
       end)
 
       assert {:ok, %StreamSettings{} = stream_settings} =
@@ -155,10 +155,10 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
 
       Twitch.MockHelix
       |> expect(:eventsub_subscribe, fn _, "webhook", "stream.online", "1", _ ->
-        %{"data" => [%{"id" => "anything"}]}
+        {:ok, %{"data" => [%{"id" => "anything"}]}}
       end)
       |> expect(:eventsub_subscribe, fn _, "webhook", "stream.offline", "1", _ ->
-        %{"data" => [%{"id" => "anything"}]}
+        {:ok, %{"data" => [%{"id" => "anything"}]}}
       end)
 
       assert {:ok, _} =

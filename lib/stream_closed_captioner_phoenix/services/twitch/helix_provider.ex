@@ -38,7 +38,7 @@ defmodule Twitch.HelixProvider do
               String.t(),
               String.t(),
               String.t()
-            ) :: {:ok, HTTPoison.Response.t()}
+            ) :: {:ok, map()} | {:error, term()}
 
   @callback get_eventsub_subscriptions(
               %{:access_token => binary, optional(any) => any},
