@@ -1,6 +1,8 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   use NewRelic.Tracer
 
+  require Logger
+
   alias Azure.Cognitive.Translations
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias StreamClosedCaptionerPhoenix.Bits
@@ -11,8 +13,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     text = Map.get(payload, key)
 
     if Bits.user_active_debit_exists?(user.id) do
-      %Translations{translations: translations} = get_translations(user, text)
-      %{payload | translations: translations}
+      case get_translations(user, text) do
+        {:ok, %Translations{translations: translations}} ->
+          %{payload | translations: translations}
+
+        {:error, reason} ->
+          Logger.warning("Translation failed for user #{user.id}: #{inspect(reason)}")
+          payload
+      end
     else
       to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
       bits_balance = Bits.get_bits_balance_for_user(user)
@@ -28,8 +36,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   defp activate_translations_for(%User{} = user, payload, text) do
     case Bits.activate_translations_for(user) do
       {:ok, _} ->
-        translations = get_translations(user, text)
-        %{payload | translations: translations}
+        case get_translations(user, text) do
+          {:ok, %Translations{translations: translations}} ->
+            %{payload | translations: translations}
+
+          {:error, reason} ->
+            Logger.warning(
+              "Translation failed after activation for user #{user.id}: #{inspect(reason)}"
+            )
+
+            payload
+        end
 
       _ ->
         payload

@@ -1,6 +1,8 @@
 defmodule Twitch.Helix do
   import Helpers
 
+  require Logger
+
   alias NewRelic.Instrumented.HTTPoison
   alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel, EventSub}
@@ -75,12 +77,20 @@ defmodule Twitch.Helix do
         extension_version: HttpHelpers.extension_version()
       })
 
-    encode_url_and_params(
-      "https://api.twitch.tv/helix/extensions/chat",
-      %{broadcaster_id: broadcaster_id}
-    )
-    |> HTTPoison.post!(body, headers)
-    |> Map.fetch!(:body)
+    url =
+      encode_url_and_params(
+        "https://api.twitch.tv/helix/extensions/chat",
+        %{broadcaster_id: broadcaster_id}
+      )
+
+    case HTTPoison.post(url, body, headers) do
+      {:ok, %{body: raw_body}} ->
+        raw_body
+
+      {:error, %{reason: reason}} ->
+        Logger.warning("Twitch Helix chat message request failed: #{inspect(reason)}")
+        {:error, {:http, reason}}
+    end
   end
 
   @impl HelixProvider
@@ -173,10 +183,16 @@ defmodule Twitch.Helix do
         transport: transport
       })
 
-    encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
-    |> HTTPoison.post!(body, headers)
-    |> Map.fetch!(:body)
-    |> Jason.decode!()
+    url = encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
+
+    case HTTPoison.post(url, body, headers) do
+      {:ok, %{body: raw_body}} ->
+        Jason.decode!(raw_body)
+
+      {:error, %{reason: reason}} ->
+        Logger.warning("Twitch EventSub subscribe request failed: #{inspect(reason)}")
+        {:error, {:http, reason}}
+    end
   end
 
   @impl HelixProvider

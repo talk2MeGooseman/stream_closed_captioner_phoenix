@@ -129,7 +129,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       Azure.MockCognitive
       |> expect(:translate, fn _from_language, _to_languages, _text ->
-        Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})
+        {:ok,
+         Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})}
       end)
 
       result =
@@ -144,10 +145,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                 delay: 0,
                 final: "Hello",
                 interim: "",
-                translations: %Azure.Cognitive.Translations{
-                  translations: %{
-                    "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
-                  }
+                translations: %{
+                  "es" => %Azure.Cognitive.Translation{text: "Hola", name: "Spanish"}
                 }
               }} == result
 
@@ -233,7 +232,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       Azure.MockCognitive
       |> expect(:translate, fn _from_language, _to_languages, _text ->
-        Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})
+        {:ok,
+         Azure.Cognitive.Translations.new(%{translations: [%{"text" => "Hola", "to" => "es"}]})}
       end)
 
       result =
