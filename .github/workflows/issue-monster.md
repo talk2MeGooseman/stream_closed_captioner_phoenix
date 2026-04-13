@@ -387,6 +387,7 @@ tools:
   github:
     min-integrity: approved
     toolsets: [default, pull_requests]
+    github-token: ${{ secrets.GH_AW_AGENT_TOKEN }}
 
 if: needs.pre_activation.outputs.has_issues == 'true'
 
