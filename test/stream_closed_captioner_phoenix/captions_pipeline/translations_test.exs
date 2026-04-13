@@ -44,7 +44,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
 
       # Drain the balance to simulate a race condition so activate_translations_for fails
       StreamClosedCaptionerPhoenix.Repo.update_all(
-        StreamClosedCaptionerPhoenix.Bits.BitsBalance,
+        Ecto.Query.from(
+          bits_balance in StreamClosedCaptionerPhoenix.Bits.BitsBalance,
+          where: bits_balance.user_id == ^user.id
+        ),
         set: [balance: 0]
       )
 
