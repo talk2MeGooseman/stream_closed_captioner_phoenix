@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  @impl true
+  @trace :handle_in
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "zoom")
     user = socket.assigns.current_user
@@ -138,7 +138,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   rescue
     e ->
       Logger.error(
-        "Pipeline raised exception for user #{user.id}: #{Exception.message(e)}"
+        "Pipeline raised exception for user #{user.id}: #{Exception.format(:error, e, __STACKTRACE__)}"
       )
 
       {:error, :exception}
