@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   schedule: every 30m
   skip-if-match:
-    query: "is:pr is:open is:draft author:app/copilot-swe-agent"
+    query: 'is:pr is:open is:draft author:app/copilot-swe-agent'
     max: 5
-  skip-if-no-match: "is:issue is:open"
+  skip-if-no-match: 'is:issue is:open'
   skip-if-check-failing:
     include:
       - build
@@ -25,7 +25,7 @@ on:
       with:
         script: |
           const { owner, repo } = context.repo;
-          
+
           try {
             // Check for recent rate-limited PRs to avoid scheduling more work during rate limiting
             core.info('Checking for recent rate-limited PRs...');
@@ -33,7 +33,7 @@ on:
             rateLimitCheckDate.setHours(rateLimitCheckDate.getHours() - 1); // Check last hour
             // Format as YYYY-MM-DDTHH:MM:SS for GitHub search API
             const rateLimitCheckISO = rateLimitCheckDate.toISOString().split('.')[0] + 'Z';
-            
+
             const recentPRsQuery = `is:pr author:app/copilot-swe-agent created:>${rateLimitCheckISO} repo:${owner}/${repo}`;
             const recentPRsResponse = await github.rest.search.issuesAndPullRequests({
               q: recentPRsQuery,
@@ -41,9 +41,9 @@ on:
               sort: 'created',
               order: 'desc'
             });
-            
+
             core.info(`Found ${recentPRsResponse.data.total_count} recent Copilot PRs to check for rate limiting`);
-            
+
             // Check if any recent PRs have rate limit indicators
             let rateLimitDetected = false;
             for (const pr of recentPRsResponse.data.items) {
@@ -65,16 +65,16 @@ on:
                     }
                   }
                 `;
-                
+
                 const prTimelineResult = await github.graphql(prTimelineQuery, {
                   owner,
                   repo,
                   number: pr.number
                 });
-                
+
                 const comments = prTimelineResult?.repository?.pullRequest?.timelineItems?.nodes || [];
                 const rateLimitPattern = /rate limit|API rate limit|secondary rate limit|abuse detection|429|too many requests/i;
-                
+
                 for (const comment of comments) {
                   if (comment.body && rateLimitPattern.test(comment.body)) {
                     core.warning(`Rate limiting detected in PR #${pr.number}: ${comment.body.substring(0, 200)}`);
@@ -82,13 +82,13 @@ on:
                     break;
                   }
                 }
-                
+
                 if (rateLimitDetected) break;
               } catch (error) {
                 core.warning(`Could not check PR #${pr.number} for rate limiting: ${error.message}`);
               }
             }
-            
+
             if (rateLimitDetected) {
               core.warning('🛑 Rate limiting detected in recent PRs. Skipping issue assignment to prevent further rate limit issues.');
               core.setOutput('issue_count', 0);
@@ -97,9 +97,9 @@ on:
               core.setOutput('has_issues', 'false');
               return;
             }
-            
+
             core.info('✓ No rate limiting detected. Proceeding with issue search.');
-            
+
             // Labels that indicate an issue should NOT be auto-assigned
             const excludeLabels = [
               'wontfix',
@@ -115,7 +115,7 @@ on:
               'no-bot',
               'no-campaign'
             ];
-            
+
             // Labels that indicate an issue is a GOOD candidate for auto-assignment
             const priorityLabels = [
               'good first issue',
@@ -129,7 +129,7 @@ on:
               'performance',
               'security'
             ];
-            
+
             // Search for open issues with "cookie" label and without excluded labels
             // The "cookie" label indicates issues that are approved work queue items from automated workflows
             const query = `is:issue is:open repo:${owner}/${repo} label:cookie -label:"${excludeLabels.join('" -label:"')}"`;
@@ -141,7 +141,7 @@ on:
               order: 'desc'
             });
             core.info(`Found ${response.data.total_count} total issues matching basic criteria`);
-            
+
             // Fetch full details for each issue to get labels, assignees, sub-issues, and linked PRs
             // Track integrity-filtered issues to emit a diagnostic summary
             const integrityFilteredIssues = [];
@@ -209,9 +209,9 @@ on:
                     repo,
                     number: issue.number
                   });
-                  
+
                   subIssuesCount = issueDetailsResult?.repository?.issue?.subIssues?.totalCount || 0;
-                  
+
                   // Extract linked PRs from timeline
                   const timelineItems = issueDetailsResult?.repository?.issue?.timelineItems?.nodes || [];
                   linkedPRs = timelineItems
@@ -222,13 +222,13 @@ on:
                       isDraft: item.source.isDraft,
                       author: item.source.author?.login
                     }));
-                    
+
                   core.info(`Issue #${issue.number} has ${linkedPRs.length} linked PR(s)`);
                 } catch (error) {
                   // If GraphQL query fails, continue with defaults
                   core.warning(`Could not check details for #${issue.number}: ${error.message}`);
                 }
-                
+
                 return {
                   ...fullIssue.data,
                   subIssuesCount,
@@ -241,7 +241,7 @@ on:
             if (integrityFilteredIssues.length > 0) {
               core.warning(`🛡️ Integrity filter diagnostic: ${integrityFilteredIssues.length} issue(s) were skipped due to integrity policy: #${integrityFilteredIssues.join(', #')}. These issues will be excluded from this run.`);
             }
-            
+
             // Filter and score issues
             const scoredIssues = issuesWithDetails
               .filter(issue => {
@@ -250,50 +250,50 @@ on:
                   core.info(`Skipping #${issue.number}: already has assignees`);
                   return false;
                 }
-                
+
                 // Exclude issues with excluded labels (double check)
                 const issueLabels = issue.labels.map(l => l.name.toLowerCase());
                 if (issueLabels.some(label => excludeLabels.map(l => l.toLowerCase()).includes(label))) {
                   core.info(`Skipping #${issue.number}: has excluded label`);
                   return false;
                 }
-                
+
                 // Exclude issues with campaign labels (campaign:*)
                 // Campaign items are managed by campaign orchestrators
                 if (issueLabels.some(label => label.startsWith('campaign:'))) {
                   core.info(`Skipping #${issue.number}: has campaign label (managed by campaign orchestrator)`);
                   return false;
                 }
-                
+
                 // Exclude issues that have sub-issues (parent/organizing issues)
                 if (issue.subIssuesCount > 0) {
                   core.info(`Skipping #${issue.number}: has ${issue.subIssuesCount} sub-issue(s) - parent issues are used for organizing, not tasks`);
                   return false;
                 }
-                
+
                 // Exclude issues with closed PRs (treat as complete)
                 const closedPRs = issue.linkedPRs?.filter(pr => pr.state === 'CLOSED' || pr.state === 'MERGED') || [];
                 if (closedPRs.length > 0) {
                   core.info(`Skipping #${issue.number}: has ${closedPRs.length} closed/merged PR(s) - treating as complete`);
                   return false;
                 }
-                
+
                 // Exclude issues with open PRs from Copilot coding agent
-                const openCopilotPRs = issue.linkedPRs?.filter(pr => 
-                  pr.state === 'OPEN' && 
+                const openCopilotPRs = issue.linkedPRs?.filter(pr =>
+                  pr.state === 'OPEN' &&
                   (pr.author === 'copilot-swe-agent' || pr.author?.includes('copilot'))
                 ) || [];
                 if (openCopilotPRs.length > 0) {
                   core.info(`Skipping #${issue.number}: has ${openCopilotPRs.length} open PR(s) from Copilot - already being worked on`);
                   return false;
                 }
-                
+
                 return true;
               })
               .map(issue => {
                 const issueLabels = issue.labels.map(l => l.name.toLowerCase());
                 let score = 0;
-                
+
                 // Score based on priority labels (higher score = higher priority)
                 if (issueLabels.includes('good first issue') || issueLabels.includes('good-first-issue')) {
                   score += 50;
@@ -316,16 +316,16 @@ on:
                 if (issueLabels.includes('tech-debt') || issueLabels.includes('refactoring')) {
                   score += 20;
                 }
-                
+
                 // Bonus for issues with clear labels (any priority label)
                 if (issueLabels.some(label => priorityLabels.map(l => l.toLowerCase()).includes(label))) {
                   score += 10;
                 }
-                
+
                 // Age bonus: older issues get slight priority (days old / 10)
                 const ageInDays = Math.floor((Date.now() - new Date(issue.created_at)) / (1000 * 60 * 60 * 24));
                 score += Math.min(ageInDays / 10, 20); // Cap age bonus at 20 points
-                
+
                 return {
                   number: issue.number,
                   title: issue.title,
@@ -335,24 +335,24 @@ on:
                 };
               })
               .sort((a, b) => b.score - a.score); // Sort by score descending
-            
+
             // Format output
             const issueList = scoredIssues.map(i => {
               const labelStr = i.labels.length > 0 ? ` [${i.labels.join(', ')}]` : '';
               return `#${i.number}: ${i.title}${labelStr} (score: ${i.score.toFixed(1)})`;
             }).join('\n');
-            
+
             const issueNumbers = scoredIssues.map(i => i.number).join(',');
-            
+
             core.info(`Total candidate issues after filtering: ${scoredIssues.length}`);
             if (scoredIssues.length > 0) {
               core.info(`Top candidates:\n${issueList.split('\n').slice(0, 10).join('\n')}`);
             }
-            
+
             core.setOutput('issue_count', scoredIssues.length);
             core.setOutput('issue_numbers', issueNumbers);
             core.setOutput('issue_list', issueList);
-            
+
             if (scoredIssues.length === 0) {
               core.info('🍽️ No suitable candidate issues - the plate is empty!');
               core.setOutput('has_issues', 'false');
@@ -366,7 +366,6 @@ on:
             core.setOutput('issue_list', '');
             core.setOutput('has_issues', 'false');
           }
-
 
 permissions:
   contents: read
@@ -400,18 +399,19 @@ jobs:
       has_issues: ${{ steps.search.outputs.has_issues }}
 
 safe-outputs:
+  github-token: ${{secrets.GH_AW_GITHUB_TOKEN}}
   assign-to-agent:
     max: 3
-    target: "*"           # Requires explicit issue_number in agent output
-    allowed: [copilot]    # Only allow copilot agent
+    target: '*' # Requires explicit issue_number in agent output
+    allowed: [copilot] # Only allow copilot agent
   add-comment:
     max: 3
-    target: "*"
+    target: '*'
   messages:
-    footer: "> 🍪 *Om nom nom by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}"
-    run-started: "🍪 ISSUE! ISSUE! [{workflow_name}]({run_url}) hungry for issues on this {event_type}! Om nom nom..."
-    run-success: "🍪 YUMMY! [{workflow_name}]({run_url}) ate the issues! That was DELICIOUS! Me want MORE! 😋"
-    run-failure: "🍪 Aww... [{workflow_name}]({run_url}) {status}. No cookie for monster today... 😢"
+    footer: '> 🍪 *Om nom nom by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}'
+    run-started: '🍪 ISSUE! ISSUE! [{workflow_name}]({run_url}) hungry for issues on this {event_type}! Om nom nom...'
+    run-success: '🍪 YUMMY! [{workflow_name}]({run_url}) ate the issues! That was DELICIOUS! Me want MORE! 😋'
+    run-failure: '🍪 Aww... [{workflow_name}]({run_url}) {status}. No cookie for monster today... 😢'
 source: github/gh-aw/.github/workflows/issue-monster.md@6ac51a36b5f8994887045f182017e4a33104c9a9
 ---
 
@@ -437,14 +437,16 @@ Find up to three issues that need work and assign them to the Copilot coding age
 The issue search has already been performed in the pre-activation job with smart filtering and prioritization:
 
 **Rate Limiting Protection:**
+
 - 🛡️ **Checks for rate-limited PRs in the last hour** before scheduling new work
 - If rate limiting is detected in recent Copilot PRs, the workflow skips all assignments to prevent further API issues
 - Looks for patterns: "rate limit", "API rate limit", "secondary rate limit", "abuse detection", "429", "too many requests"
 
 **Filtering Applied:**
+
 - ✅ Only open issues **with "cookie" label** (indicating approved work queue items from automated workflows)
 - ✅ Excluded issues with labels: wontfix, duplicate, invalid, question, discussion, needs-discussion, blocked, on-hold, waiting-for-feedback, needs-more-info, no-bot, no-campaign
-- ✅ Excluded issues with campaign labels (campaign:*) - these are managed by campaign orchestrators
+- ✅ Excluded issues with campaign labels (campaign:\*) - these are managed by campaign orchestrators
 - ✅ Excluded issues that already have assignees
 - ✅ Excluded issues that have sub-issues (parent/organizing issues)
 - ✅ Excluded issues with closed or merged PRs (treating those as complete)
@@ -453,6 +455,7 @@ The issue search has already been performed in the pre-activation job with smart
 
 **Scoring System:**
 Issues are scored and sorted by priority:
+
 - Good first issue: +50 points
 - Security: +45 points
 - Bug: +40 points
@@ -467,6 +470,7 @@ Issues are scored and sorted by priority:
 **Issue Numbers**: ${{ needs.pre_activation.outputs.issue_numbers }}
 
 **Available Issues (sorted by priority score):**
+
 ```
 ${{ needs.pre_activation.outputs.issue_list }}
 ```
@@ -488,6 +492,7 @@ For issues with the "task" or "plan" label, check if they are sub-issues linked 
 3. **Only one sub-issue sibling PR at a time**: If a sibling sub-issue already has an open draft PR from Copilot, skip all other siblings until that PR is merged or closed
 
 **Example**: If parent issue #100 has sub-issues #101, #102, #103:
+
 - If #101 has an open PR, skip #102 and #103
 - Only after #101's PR is merged/closed, process #102
 - This ensures orderly, sequential processing of related tasks
@@ -495,6 +500,7 @@ For issues with the "task" or "plan" label, check if they are sub-issues linked 
 ### 2. Review the Pre-Filtered Issue List
 
 The pre-activation job has already performed comprehensive filtering, including:
+
 - Issues already assigned to Copilot
 - Issues with open PRs linked to them (from any author)
 - Issues with closed/merged PRs (treated as complete)
@@ -505,6 +511,7 @@ The list you receive has already been filtered to exclude all of these cases, so
 ### 3. Select Up to Three Issues to Work On
 
 From the prioritized and filtered list (issues WITHOUT Copilot assignments or open PRs):
+
 - **Select up to three appropriate issues** to assign
 - **Use the priority scoring**: Issues are already sorted by score, so prefer higher-scored issues
 - **Topic Separation Required**: Issues MUST be completely separate in topic to avoid conflicts:
@@ -519,6 +526,7 @@ From the prioritized and filtered list (issues WITHOUT Copilot assignments or op
   - Clearly independent from each other
 
 **Topic Separation Examples:**
+
 - ✅ **GOOD**: Issue about CLI flags + Issue about documentation + Issue about workflow syntax
 - ✅ **GOOD**: Issue about error messages + Issue about performance optimization + Issue about test coverage
 - ❌ **BAD**: Two issues both modifying the same file or feature
@@ -526,6 +534,7 @@ From the prioritized and filtered list (issues WITHOUT Copilot assignments or op
 - ❌ **BAD**: Related issues that might have conflicting changes
 
 **If all issues are already being worked on:**
+
 - Use the `noop` tool to explain why no work was assigned:
   ```
   safeoutputs/noop(message="🍽️ All issues are already being worked on!")
@@ -533,12 +542,14 @@ From the prioritized and filtered list (issues WITHOUT Copilot assignments or op
 - **STOP** and do not proceed further
 
 **If fewer than 3 suitable separate issues are available:**
+
 - Assign only the issues that are clearly separate in topic
 - Do not force assignments just to reach the maximum
 
 ### 4. Read and Understand Each Selected Issue
 
 For each selected issue (which has already been pre-filtered to ensure no open/closed PRs exist):
+
 - Read the full issue body and any comments
 - Understand what fix is needed
 - Identify the files that need to be modified
@@ -547,6 +558,7 @@ For each selected issue (which has already been pre-filtered to ensure no open/c
 #### Handling Integrity-Blocked Issues
 
 Some issues may be blocked by an integrity policy when you try to read them with `issue_read`. If `issue_read` returns an error mentioning "integrity", "policy", "forbidden", or returns HTTP 403/451:
+
 - **Do NOT call `missing_data`** - this would fail the entire run
 - **Skip that issue silently** and remove it from your working list
 - **Track it** in your internal notes as "integrity-blocked"
@@ -559,7 +571,6 @@ Some issues may be blocked by an integrity policy when you try to read them with
 **Full filtering example**: All selected candidates are integrity-blocked.
 → Call `noop` with: `"🛡️ All 3 candidates (#100, #102, #105) were integrity-filtered. No assignments made this run."`
 
-
 ### 5. Assign Issues to Copilot Agent
 
 For each selected issue, use the `assign_to_agent` tool from the `safeoutputs` MCP server to assign the Copilot coding agent:
@@ -571,6 +582,7 @@ safeoutputs/assign_to_agent(issue_number=<issue_number>, agent="copilot")
 Do not use GitHub tools for this assignment. The `assign_to_agent` tool will handle the actual assignment.
 
 The Copilot coding agent will:
+
 1. Analyze the issue and related context
 2. Generate the necessary code changes
 3. Create a pull request with the fix
@@ -596,7 +608,7 @@ Issue Monster runs frequently (every 30 minutes), so keeping each run lean is cr
 - **Avoid repeating the issue list**: The pre-fetched issue list is already in your context. Do not make additional API calls to fetch the list again, and do not generate a summary of the entire list.
 - **One tool call per action**: Assign and comment in two calls per issue. Do not make extra verification calls after a successful assignment.
 
-**Target tokens/run**: 50K–150K  
+**Target tokens/run**: 50K–150K
 **Alert threshold**: >300K tokens
 
 ## Important Guidelines
@@ -614,10 +626,11 @@ Issue Monster runs frequently (every 30 minutes), so keeping each run lean is cr
 ## Success Criteria
 
 A successful run means:
+
 1. **Rate limiting check passed** - The search verified no recent PRs are rate-limited (or workflow skipped if rate limiting detected)
 2. You reviewed the pre-searched, filtered, and prioritized issue list
 3. The search already excluded issues with problematic labels (wontfix, question, discussion, etc.)
-4. The search already excluded issues with campaign labels (campaign:*) as these are managed by campaign orchestrators
+4. The search already excluded issues with campaign labels (campaign:\*) as these are managed by campaign orchestrators
 5. The search already excluded issues that already have assignees
 6. The search already excluded issues that have sub-issues (parent/organizing issues are not tasks)
 7. The search already excluded issues with closed or merged PRs (treated as complete)
@@ -633,6 +646,7 @@ A successful run means:
 ## Error Handling
 
 If anything goes wrong or no work can be assigned:
+
 - **Rate limiting detected**: The workflow automatically skips (no action needed - the pre-activation job handles this)
 - **No issues found**: Use the `noop` tool with message: "🍽️ No suitable candidate issues - the plate is empty!"
 - **All issues assigned**: Use the `noop` tool with message: "🍽️ All issues are already being worked on!"
