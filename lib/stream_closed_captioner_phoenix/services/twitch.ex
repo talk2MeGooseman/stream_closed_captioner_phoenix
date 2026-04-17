@@ -181,8 +181,14 @@ defmodule Twitch do
 
   """
   def get_users_active_extensions(user) do
-    Oauth.get_users_access_token(user)
-    |> helix_api_client().get_users_active_extensions()
+    case Oauth.get_users_access_token(user) do
+      {:error, reason} ->
+        Logger.warning("Twitch: Cannot get user extensions, token error: #{inspect(reason)}")
+        nil
+
+      credentials ->
+        helix_api_client().get_users_active_extensions(credentials)
+    end
   end
 
   def send_extension_chat_message(channel_id, message) do

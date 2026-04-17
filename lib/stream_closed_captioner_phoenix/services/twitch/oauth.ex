@@ -51,8 +51,8 @@ defmodule Twitch.Oauth do
         Map.put(credentials, :access_token, user.access_token)
 
       {:error, _} ->
-        nil
-        # Refresh token
+        Logger.warning("Twitch OAuth: Token validation failed for user #{user.id}")
+        {:error, :token_expired}
     end
   end
 

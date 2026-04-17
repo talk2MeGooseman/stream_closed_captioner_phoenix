@@ -256,6 +256,52 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
       # Balance should NOT be debited – the active debit record means translation was already paid
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
+
+    test "when Azure returns a network error, pipeline still returns ok with no translations" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 500),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      Azure.MockCognitive
+      |> expect(:translate, fn _from, _to, _text ->
+        {:error, {:network_error, :timeout}}
+      end)
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                translations: nil
+              }} =
+               CaptionsPipeline.pipeline_to(:twitch, user, %{
+                 "interim" => "",
+                 "final" => "Hello",
+                 "session" => "abc"
+               })
+    end
+
+    test "when Azure returns an HTTP error, pipeline still returns ok with no translations" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 500),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      Azure.MockCognitive
+      |> expect(:translate, fn _from, _to, _text ->
+        {:error, {:http_error, 503}}
+      end)
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                translations: nil
+              }} =
+               CaptionsPipeline.pipeline_to(:twitch, user, %{
+                 "interim" => "",
+                 "final" => "Hello",
+                 "session" => "abc"
+               })
+    end
   end
 
   describe "pipeline_to(:zoom) URL validation" do
