@@ -3,6 +3,8 @@ defmodule Azure.Cognitive do
 
   use NewRelic.Tracer
 
+  require Logger
+
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
   alias NewRelic.Instrumented.HTTPoison
@@ -46,13 +48,28 @@ defmodule Azure.Cognitive do
 
     NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
-    [translations] =
+    url =
       "https://guzman.codes/azure_proxy/translate"
       |> encode_url_and_params(params)
-      |> HTTPoison.post!(body, headers)
-      |> Map.fetch!(:body)
-      |> Jason.decode!()
 
-    Translations.new(translations)
+    case HTTPoison.post(url, body, headers) do
+      {:ok, %{body: raw_body}} ->
+        case Jason.decode(raw_body) do
+          {:ok, [translations]} ->
+            {:ok, Translations.new(translations)}
+
+          {:ok, other} ->
+            Logger.warning("Azure API returned unexpected JSON shape: #{inspect(other)}")
+            {:error, {:unexpected_json, other}}
+
+          {:error, reason} ->
+            Logger.warning("Azure API response decode failed: #{inspect(reason)}")
+            {:error, {:json_decode, reason}}
+        end
+
+      {:error, %{reason: reason}} ->
+        Logger.warning("Azure API request failed: #{inspect(reason)}")
+        {:error, {:http, reason}}
+    end
   end
 end

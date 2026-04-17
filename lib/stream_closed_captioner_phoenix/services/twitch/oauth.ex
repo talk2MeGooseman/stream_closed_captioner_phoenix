@@ -1,6 +1,8 @@
 defmodule Twitch.Oauth do
   import Helpers
 
+  require Logger
+
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias Twitch.Helix.Credentials
   alias Twitch.Parser
@@ -21,14 +23,24 @@ defmodule Twitch.Oauth do
       scope: ""
     }
 
-    access_token =
-      encode_url_and_params("https://id.twitch.tv/oauth2/token", params)
-      |> HTTPoison.post!("", headers)
-      |> Map.fetch!(:body)
-      |> Jason.decode!()
-      |> get_in(["access_token"])
+    url = encode_url_and_params("https://id.twitch.tv/oauth2/token", params)
 
-    Map.put(credentials, :access_token, access_token)
+    case HTTPoison.post(url, "", headers) do
+      {:ok, %{body: raw_body}} ->
+        case Jason.decode(raw_body) do
+          {:ok, data} ->
+            access_token = get_in(data, ["access_token"])
+            Map.put(credentials, :access_token, access_token)
+
+          {:error, reason} ->
+            Logger.warning("Twitch OAuth: Failed to decode token response: #{inspect(reason)}")
+            credentials
+        end
+
+      {:error, %{reason: reason}} ->
+        Logger.warning("Twitch OAuth: HTTP request failed: #{inspect(reason)}")
+        credentials
+    end
   end
 
   def get_users_access_token(%User{} = user) do

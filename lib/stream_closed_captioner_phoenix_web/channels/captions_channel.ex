@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  @impl true
+  @trace :handle_in
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     NewRelic.start_transaction("Captions", "zoom")
     user = socket.assigns.current_user
@@ -43,7 +43,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       last_publish: System.system_time(:second)
     })
 
-    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:twitch, user, payload) do
+    case safe_pipeline_to(:twitch, user, payload) do
       {:ok, sent_payload} ->
         Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
           new_twitch_caption: user.uid
@@ -84,7 +84,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_in(publish_state, payload, socket) when publish_state != "active" do
     user = socket.assigns.current_user
 
-    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:default, user, payload) do
+    case safe_pipeline_to(:default, user, payload) do
       {:ok, sent_payload} ->
         {:reply, {:ok, sent_payload}, socket}
 
@@ -131,5 +131,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   defp new_relic_track(:error, user, sent_on) do
     NewRelic.add_attributes(errored: true)
     new_relic_track(:ok, user, sent_on)
+  end
+
+  defp safe_pipeline_to(destination, user, payload) do
+    StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(destination, user, payload)
+  rescue
+    e ->
+      Logger.error(
+        "Pipeline raised exception for user #{user.id}: #{Exception.format(:error, e, __STACKTRACE__)}"
+      )
+
+      {:error, :exception}
   end
 end

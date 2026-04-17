@@ -408,7 +408,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp enable_or_disable_eventsub_subscriptions(user, subscription_name, status)
        when status == true do
     with nil <- Accounts.fetch_user_eventsub_subscriptions(user, subscription_name),
-         %{"data" => [%{"id" => id}]} <- Twitch.event_subscribe(subscription_name, user.uid) do
+         {:ok, %{"data" => [%{"id" => id}]}} <- Twitch.event_subscribe(subscription_name, user.uid) do
       Accounts.create_eventsub_subscription(user, %{
         type: subscription_name,
         subscription_id: id
