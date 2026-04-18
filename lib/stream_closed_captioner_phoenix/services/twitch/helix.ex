@@ -28,8 +28,8 @@ defmodule Twitch.Helix do
             new_cursor = get_in(data, ["pagination", "cursor"])
 
             if is_binary(new_cursor) && new_cursor != cursor do
-              get_streams(credentials, user_ids, cursor) ++
-                Enum.map(get_in(data, ["data"]), &Stream.new/1)
+              get_streams(credentials, user_ids, new_cursor) ++
+                Enum.map(get_in(data, ["data"]) || [], &Stream.new/1)
             else
               Enum.map(get_in(data, ["data"]) || [], &Stream.new/1)
             end
@@ -136,7 +136,7 @@ defmodule Twitch.Helix do
       {:ok, %{body: raw_body}} ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
-            new_cursor = get_in(data, ["pagination"])
+            new_cursor = get_in(data, ["pagination", "cursor"])
 
             if is_binary(new_cursor) && current_cursor != new_cursor do
               get_live_channels(credentials, new_cursor) ++
@@ -194,11 +194,21 @@ defmodule Twitch.Helix do
          })
          |> HTTPoison.get(headers) do
       {:ok, %{body: raw_body}} ->
-        Jason.decode!(raw_body)
+        case Jason.decode(raw_body) do
+          {:ok, decoded} ->
+            {:ok, decoded}
+
+          {:error, reason} ->
+            Logger.warning(
+              "Twitch Helix get_configuration_for response decode failed: #{inspect(reason)}"
+            )
+
+            {:error, {:json_decode, reason}}
+        end
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix get_configuration_for request failed: #{inspect(reason)}")
-        %{}
+        {:error, {:http, reason}}
     end
   end
 
@@ -310,7 +320,7 @@ defmodule Twitch.Helix do
           "Twitch Helix delete_eventsub_subscription request failed: #{inspect(reason)}"
         )
 
-        nil
+        500
     end
   end
 end

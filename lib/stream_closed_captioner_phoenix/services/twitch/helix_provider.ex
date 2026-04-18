@@ -30,7 +30,7 @@ defmodule Twitch.HelixProvider do
               Twitch.Extension.Credentials.t(),
               atom(),
               String.t()
-            ) :: {:ok, HTTPoison.Response.t()}
+            ) :: {:ok, map()} | {:error, term()}
 
   @callback eventsub_subscribe(
               Credentials.t(),
