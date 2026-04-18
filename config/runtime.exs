@@ -108,4 +108,12 @@ if config_env() == :prod do
 
   config :stream_closed_captioner_phoenix,
     eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
+
+  # Default 500 MB — set CACHE_ALLOCATED_MEMORY (bytes) to tune for your host RAM.
+  # The compile-time default of 2 GB is too large for small self-hosted instances.
+  cache_memory =
+    System.get_env("CACHE_ALLOCATED_MEMORY", "524288000") |> String.to_integer()
+
+  config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
+    allocated_memory: cache_memory
 end
