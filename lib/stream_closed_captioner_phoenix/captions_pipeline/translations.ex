@@ -61,6 +61,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
     to_languages =
       Settings.get_formatted_translate_languages_by_user(user.id) |> Map.keys() |> Enum.sort()
 
-    Azure.perform_translations(from_language, to_languages, text)
+    if FunWithFlags.enabled?(:gemini_translations, for: user) do
+      Gemini.perform_translations(from_language, to_languages, text)
+    else
+      Azure.perform_translations(from_language, to_languages, text)
+    end
   end
 end

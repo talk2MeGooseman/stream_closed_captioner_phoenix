@@ -34,6 +34,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
 config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.MockExtension
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.MockHelix
 config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.MockCognitive
+config :stream_closed_captioner_phoenix, gemini_cognitive_client: Gemini.MockCognitive
 
 config :stream_closed_captioner_phoenix, Oban, testing: :manual
 

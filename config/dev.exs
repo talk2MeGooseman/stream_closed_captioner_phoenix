@@ -89,5 +89,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Mailer,
 config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
 config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
+config :stream_closed_captioner_phoenix, gemini_cognitive_client: Gemini.Cognitive
 
 import_config "dev.secret.exs"
