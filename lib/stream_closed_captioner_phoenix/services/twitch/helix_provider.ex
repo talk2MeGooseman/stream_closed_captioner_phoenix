@@ -9,7 +9,7 @@ defmodule Twitch.HelixProvider do
 
   @callback get_transactions(Credentials.t()) :: list(Transaction.t())
 
-  @callback get_users_active_extensions(Credentials.t()) :: map()
+  @callback get_users_active_extensions(Credentials.t()) :: map() | nil
 
   @callback send_extension_chat_message(Twitch.Extension.Credentials.t(), String.t(), String.t()) ::
               tuple()
@@ -30,7 +30,7 @@ defmodule Twitch.HelixProvider do
               Twitch.Extension.Credentials.t(),
               atom(),
               String.t()
-            ) :: {:ok, HTTPoison.Response.t()}
+            ) :: {:ok, map()} | {:error, term()}
 
   @callback eventsub_subscribe(
               Credentials.t(),

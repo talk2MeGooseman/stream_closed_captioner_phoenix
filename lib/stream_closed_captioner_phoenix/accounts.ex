@@ -131,19 +131,18 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       true
   """
   def user_has_extension_installed?(%User{} = user) do
-    try do
-      result = Twitch.get_users_active_extensions(user)
+    result = Twitch.get_users_active_extensions(user)
 
-      check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel") ||
-        check_for_extension_in(result, "component")
-    rescue
-      _ -> true
-    end
+    check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel") ||
+      check_for_extension_in(result, "component")
   end
 
+  # Fail-open: if the API call failed (nil result), assume extension is installed
+  # to avoid degrading the user experience when Twitch API is unavailable
+  defp check_for_extension_in(nil, _key), do: true
+
   defp check_for_extension_in(result, key) do
-    result
-    |> Map.get(key)
+    (Map.get(result, key) || %{})
     |> Map.values()
     |> Enum.any?(fn ext -> ext["id"] == Twitch.extension_id() end)
   end

@@ -25,8 +25,12 @@ defmodule Twitch do
 
   @spec extension_live_channels :: list
   def extension_live_channels() do
-    Oauth.get_client_access_token()
-    |> helix_api_client().get_live_channels()
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} -> helix_api_client().get_live_channels(credentials)
+      {:error, reason} ->
+        Logger.warning("Twitch: extension_live_channels OAuth failed: #{inspect(reason)}")
+        []
+    end
   end
 
   def send_pubsub_message(_payload, channel_id) when is_nil(channel_id),
@@ -123,8 +127,12 @@ defmodule Twitch do
     chunked_user_ids = Enum.chunk_every(user_ids, 80)
 
     Enum.flat_map(chunked_user_ids, fn uids ->
-      Oauth.get_client_access_token()
-      |> helix_api_client().get_streams(uids)
+      case Oauth.get_client_access_token() do
+        {:ok, credentials} -> helix_api_client().get_streams(credentials, uids)
+        {:error, reason} ->
+          Logger.warning("Twitch: get_live_streams OAuth failed: #{inspect(reason)}")
+          []
+      end
     end)
     |> Enum.sort_by(& &1.user_id, :desc)
     |> Enum.dedup_by(fn stream -> stream.user_id end)
@@ -133,12 +141,18 @@ defmodule Twitch do
 
   @spec get_extension_transactons() :: list
   def get_extension_transactons() do
-    Oauth.get_client_access_token()
-    |> helix_api_client().get_transactions()
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} -> helix_api_client().get_transactions(credentials)
+      {:error, reason} ->
+        Logger.warning("Twitch: get_extension_transactons OAuth failed: #{inspect(reason)}")
+        []
+    end
   end
 
   @doc """
   Get all active extensions and user channel has.
+
+  Returns `nil` when the user's OAuth token has expired or is invalid.
 
   # Examples
       iex(19)> Twitch.get_users_active_extensions(user)
@@ -180,9 +194,16 @@ defmodule Twitch do
       }
 
   """
+  @spec get_users_active_extensions(any()) :: map() | nil
   def get_users_active_extensions(user) do
-    Oauth.get_users_access_token(user)
-    |> helix_api_client().get_users_active_extensions()
+    case Oauth.get_users_access_token(user) do
+      {:error, reason} ->
+        Logger.warning("Twitch: Cannot get user extensions, token error: #{inspect(reason)}")
+        nil
+
+      credentials ->
+        helix_api_client().get_users_active_extensions(credentials)
+    end
   end
 
   def send_extension_chat_message(channel_id, message) do
@@ -191,34 +212,53 @@ defmodule Twitch do
   end
 
   def event_subscribe(type, broadcaster_id) do
-    Oauth.get_client_access_token()
-    |> helix_api_client().eventsub_subscribe("webhook", type, "1", %{
-      broadcaster_user_id: broadcaster_id
-    })
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} ->
+        helix_api_client().eventsub_subscribe(credentials, "webhook", type, "1", %{
+          broadcaster_user_id: broadcaster_id
+        })
+      {:error, reason} ->
+        Logger.warning("Twitch: event_subscribe OAuth failed: #{inspect(reason)}")
+        {:error, {:oauth, reason}}
+    end
   end
 
   @spec event_subscribe(String.t()) :: any
   def event_subscribe("extension.bits_transaction.create" = type) do
-    Oauth.get_client_access_token()
-    |> helix_api_client().eventsub_subscribe(
-      "webhook",
-      type,
-      "1",
-      %{
-        extension_client_id: Twitch.HttpHelpers.client_id()
-      }
-    )
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} ->
+        helix_api_client().eventsub_subscribe(
+          credentials,
+          "webhook",
+          type,
+          "1",
+          %{
+            extension_client_id: Twitch.HttpHelpers.client_id()
+          }
+        )
+      {:error, reason} ->
+        Logger.warning("Twitch: event_subscribe(bits) OAuth failed: #{inspect(reason)}")
+        {:error, {:oauth, reason}}
+    end
   end
 
   @spec get_event_subscriptions(String.t()) :: any
   def get_event_subscriptions(type) do
-    Oauth.get_client_access_token()
-    |> helix_api_client().get_eventsub_subscriptions(type)
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} -> helix_api_client().get_eventsub_subscriptions(credentials, type)
+      {:error, reason} ->
+        Logger.warning("Twitch: get_event_subscriptions OAuth failed: #{inspect(reason)}")
+        []
+    end
   end
 
   @spec delete_event_subscription(String.t()) :: any
   def delete_event_subscription(id) do
-    Oauth.get_client_access_token()
-    |> helix_api_client().delete_eventsub_subscription(id)
+    case Oauth.get_client_access_token() do
+      {:ok, credentials} -> helix_api_client().delete_eventsub_subscription(credentials, id)
+      {:error, reason} ->
+        Logger.warning("Twitch: delete_event_subscription OAuth failed: #{inspect(reason)}")
+        500
+    end
   end
 end

@@ -26,20 +26,24 @@ defmodule Twitch.Oauth do
     url = encode_url_and_params("https://id.twitch.tv/oauth2/token", params)
 
     case HTTPoison.post(url, "", headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             access_token = get_in(data, ["access_token"])
-            Map.put(credentials, :access_token, access_token)
+            {:ok, Map.put(credentials, :access_token, access_token)}
 
           {:error, reason} ->
             Logger.warning("Twitch OAuth: Failed to decode token response: #{inspect(reason)}")
-            credentials
+            {:error, {:json_decode, reason}}
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch OAuth: Token request returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        {:error, {:http_status, status}}
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch OAuth: HTTP request failed: #{inspect(reason)}")
-        credentials
+        {:error, {:http, reason}}
     end
   end
 
@@ -50,9 +54,13 @@ defmodule Twitch.Oauth do
       {:ok, _} ->
         Map.put(credentials, :access_token, user.access_token)
 
+      {:error, _body, _status} ->
+        Logger.warning("Twitch OAuth: Token validation failed for user #{user.id}")
+        {:error, :token_expired}
+
       {:error, _} ->
-        nil
-        # Refresh token
+        Logger.warning("Twitch OAuth: Token validation failed for user #{user.id}")
+        {:error, :token_expired}
     end
   end
 
