@@ -59,7 +59,7 @@
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
-			"version": "18.5.0",
+			"version": "22.21.1",
 			"pnpmVersion": "none",
 			"nvmVersion": "latest"
 		},
@@ -73,6 +73,7 @@
 			"userUid": "automatic",
 			"userGid": "automatic"
 		},
-		"ghcr.io/itsmechlark/features/doppler:2": {}
+		"ghcr.io/itsmechlark/features/doppler:2": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	}
 }

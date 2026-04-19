@@ -1,0 +1,22 @@
+{
+  "universe_usage_history": [
+    {
+      "universe": "The Matrix",
+      "used_at": "2026-04-19",
+      "assignment_id": "cast-20260419-matrix-v1"
+    }
+  ],
+  "assignment_cast_snapshots": {
+    "cast-20260419-matrix-v1": {
+      "universe": "The Matrix",
+      "cast_at": "2026-04-19",
+      "agents": {
+        "morpheus": {"role": "Lead", "persistent_name": "Morpheus"},
+        "trinity": {"role": "Backend Dev", "persistent_name": "Trinity"},
+        "neo": {"role": "Frontend Dev", "persistent_name": "Neo"},
+        "tank": {"role": "Tester", "persistent_name": "Tank"},
+        "oracle": {"role": "Security/SRE", "persistent_name": "Oracle"}
+      }
+    }
+  }
+}

@@ -1,1 +1,6 @@
 .github/workflows/*.lock.yml linguist-generated=true merge=ours
+# Squad: union merge for append-only team state files
+.squad/decisions.md merge=union
+.squad/agents/*/history.md merge=union
+.squad/log/** merge=union
+.squad/orchestration-log/** merge=union
