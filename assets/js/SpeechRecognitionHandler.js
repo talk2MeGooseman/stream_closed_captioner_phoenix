@@ -172,7 +172,7 @@ export default class SpeechRecognitionHandler {
    * @param {Number} value
    */
   setDelayTime(value = 0) {
-    this.delayTime = delayInput.value * 1000
+    this.delayTime = value * 1000
   }
 
   /**

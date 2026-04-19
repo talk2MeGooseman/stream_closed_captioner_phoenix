@@ -4,6 +4,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   """
   use Nebulex.Caching
 
+  require Logger
+
   @default_languages []
 
   @translatable_languages %{
@@ -444,8 +446,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
 
       # Send to Twitch
       case Twitch.set_extension_broadcaster_configuration_for(user.uid, settings) do
-        {:ok, _} -> IO.puts("Sent to Twitch Successfully")
-        {:error, _} -> IO.puts("Issue Syncing to Twitch")
+        {:ok, _} -> Logger.info("Sent to Twitch Successfully")
+        {:error, _} -> Logger.error("Issue Syncing to Twitch")
       end
     end
 

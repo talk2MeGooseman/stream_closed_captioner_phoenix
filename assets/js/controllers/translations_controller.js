@@ -20,13 +20,13 @@ export default class extends ApplicationController {
     this.captionsChannel = captionsChannel
 
     this.captionsChannel.on("transaction", ({ balance }) => {
-      this.bitsBalanceTarget.innerHTML = balance
+      this.bitsBalanceTarget.textContent = balance
     })
 
     this.captionsChannel.on("translationActivated", ({ enabled, balance }) => {
       if (enabled) {
-        this.translationStatusTarget.innerHTML = "Enabled"
-        this.bitsBalanceTarget.innerHTML = balance
+        this.translationStatusTarget.textContent = "Enabled"
+        this.bitsBalanceTarget.textContent = balance
       }
     })
   }
