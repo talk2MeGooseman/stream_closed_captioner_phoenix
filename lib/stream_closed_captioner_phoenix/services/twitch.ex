@@ -140,6 +140,8 @@ defmodule Twitch do
   @doc """
   Get all active extensions and user channel has.
 
+  Returns `nil` when the user's OAuth token has expired or is invalid.
+
   # Examples
       iex(19)> Twitch.get_users_active_extensions(user)
       %{
@@ -180,6 +182,7 @@ defmodule Twitch do
       }
 
   """
+  @spec get_users_active_extensions(any()) :: map() | nil
   def get_users_active_extensions(user) do
     case Oauth.get_users_access_token(user) do
       {:error, reason} ->

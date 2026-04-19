@@ -278,6 +278,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                  "final" => "Hello",
                  "session" => "abc"
                })
+
+      # Bits are debited when activation occurs before the Azure call
+      assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
 
     test "when Azure returns an HTTP error, pipeline still returns ok with no translations" do
@@ -301,6 +304,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
                  "final" => "Hello",
                  "session" => "abc"
                })
+
+      # Bits are debited when activation occurs before the Azure call
+      assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
   end
 

@@ -56,7 +56,9 @@ defmodule Twitch.Helix do
       {:ok, %{body: raw_body}} ->
         case Jason.decode(raw_body) do
           {:ok, data} -> Enum.map(get_in(data, ["data"]) || [], &Transaction.new/1)
-          {:error, _} -> []
+          {:error, reason} ->
+            Logger.warning("Twitch Helix get_transactions decode failed: #{inspect(reason)}")
+            []
         end
 
       {:error, %{reason: reason}} ->
