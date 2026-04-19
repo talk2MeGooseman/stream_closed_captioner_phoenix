@@ -20,18 +20,25 @@ defmodule Twitch.Helix do
 
     user_tuple_list = Enum.map(user_ids, fn user_id -> {:user_id, user_id} end)
 
-    case encode_url_and_params("https://api.twitch.tv/helix/streams", user_tuple_list)
+    params =
+      if is_binary(cursor) do
+        user_tuple_list ++ [{:after, cursor}]
+      else
+        user_tuple_list
+      end
+
+    case encode_url_and_params("https://api.twitch.tv/helix/streams", params)
          |> HTTPoison.get(headers) do
       {:ok, %{body: raw_body}} ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
+            current_page = Enum.map(get_in(data, ["data"]) || [], &Stream.new/1)
 
             if is_binary(new_cursor) && new_cursor != cursor do
-              get_streams(credentials, user_ids, new_cursor) ++
-                Enum.map(get_in(data, ["data"]) || [], &Stream.new/1)
+              current_page ++ get_streams(credentials, user_ids, new_cursor)
             else
-              Enum.map(get_in(data, ["data"]) || [], &Stream.new/1)
+              current_page
             end
 
           {:error, reason} ->
@@ -76,7 +83,13 @@ defmodule Twitch.Helix do
       {:ok, %{body: raw_body}} ->
         case Jason.decode(raw_body) do
           {:ok, data} -> Map.get(data, "data")
-          {:error, _} -> nil
+
+          {:error, reason} ->
+            Logger.warning(
+              "Twitch Helix get_users_active_extensions decode failed: #{inspect(reason)}"
+            )
+
+            nil
         end
 
       {:error, %{reason: reason}} ->
