@@ -54,7 +54,9 @@ defmodule Twitch.Jwt do
   end
 
   defp create_signer(credentials) do
-    secret = credentials.token_secret |> Base.decode64!()
-    Joken.Signer.create("HS256", secret)
+    case Base.decode64(credentials.token_secret || "") do
+      {:ok, secret} -> Joken.Signer.create("HS256", secret)
+      :error -> raise ArgumentError, "TWITCH_TOKEN_SECRET is missing or not valid Base64"
+    end
   end
 end

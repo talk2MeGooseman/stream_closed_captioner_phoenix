@@ -16,7 +16,10 @@ defmodule Twitch.HttpHelpers do
       secret: eventsub_secret()
     }
 
-  def eventsub_secret, do: System.get_env("TWITCH_EVENTSUB_SECRET") || ""
+  def eventsub_secret,
+    do:
+      System.get_env("TWITCH_EVENTSUB_SECRET") ||
+        raise("TWITCH_EVENTSUB_SECRET environment variable is not set")
 
   def client_secret,
     do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_client_secret) || ""

@@ -12,18 +12,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
   @impl true
   def call(conn, _opts) do
     with {:ok, body} <- raw_body(conn),
-         true <- verify(conn, body) do
-      [type] = Plug.Conn.get_req_header(conn, @twitch_message_type)
-
+         true <- verify(conn, body),
+         [type] <- Plug.Conn.get_req_header(conn, @twitch_message_type) do
       conn
       |> Plug.Conn.assign(:twitch_event_type, type)
     else
-      {:error, _} ->
-        conn
-        |> Plug.Conn.resp(400, "")
-        |> Plug.Conn.halt()
-
-      false ->
+      _ ->
         conn
         |> Plug.Conn.resp(400, "")
         |> Plug.Conn.halt()
@@ -32,20 +26,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.HTTPSignature do
 
   @spec verify(Plug.Conn.t(), binary) :: boolean
   def verify(conn, body) do
-    message = get_hmac_message(conn, body)
-    hmac = "sha256=" <> get_hmac(message)
-    [signature] = Plug.Conn.get_req_header(conn, @twitch_message_signature)
-    Plug.Crypto.secure_compare(signature, hmac)
+    with {:ok, message} <- get_hmac_message(conn, body),
+         [signature] <- Plug.Conn.get_req_header(conn, @twitch_message_signature) do
+      hmac = "sha256=" <> get_hmac(message)
+      Plug.Crypto.secure_compare(signature, hmac)
+    else
+      _ -> false
+    end
   end
 
   @doc """
   Build the message used to get the HMAC.
   """
   def get_hmac_message(conn, body) do
-    [message_id] = Plug.Conn.get_req_header(conn, @twitch_message_id)
-    [message_timestamp] = Plug.Conn.get_req_header(conn, @twitch_message_timestamp)
-
-    message_id <> message_timestamp <> body
+    with [message_id] <- Plug.Conn.get_req_header(conn, @twitch_message_id),
+         [message_timestamp] <- Plug.Conn.get_req_header(conn, @twitch_message_timestamp) do
+      {:ok, message_id <> message_timestamp <> body}
+    else
+      _ -> {:error, :missing_headers}
+    end
   end
 
   def get_hmac(message),
