@@ -142,8 +142,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   defp check_for_extension_in(nil, _key), do: true
 
   defp check_for_extension_in(result, key) do
-    result
-    |> Map.get(key, %{})
+    (Map.get(result, key) || %{})
     |> Map.values()
     |> Enum.any?(fn ext -> ext["id"] == Twitch.extension_id() end)
   end
