@@ -29,7 +29,7 @@ defmodule Twitch.Helix do
 
     case encode_url_and_params("https://api.twitch.tv/helix/streams", params)
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -46,6 +46,10 @@ defmodule Twitch.Helix do
             []
         end
 
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch Helix get_streams returned HTTP #{status}: #{String.slice(body, 0, 200)}")
+        []
+
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix get_streams request failed: #{inspect(reason)}")
         []
@@ -60,13 +64,17 @@ defmodule Twitch.Helix do
            extension_id: client_id
          })
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} -> Enum.map(get_in(data, ["data"]) || [], &Transaction.new/1)
           {:error, reason} ->
             Logger.warning("Twitch Helix get_transactions decode failed: #{inspect(reason)}")
             []
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch Helix get_transactions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        []
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix get_transactions request failed: #{inspect(reason)}")
@@ -80,7 +88,7 @@ defmodule Twitch.Helix do
 
     case encode_url_and_params("https://api.twitch.tv/helix/users/extensions")
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} -> Map.get(data, "data")
 
@@ -91,6 +99,10 @@ defmodule Twitch.Helix do
 
             nil
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch Helix get_users_active_extensions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        nil
 
       {:error, %{reason: reason}} ->
         Logger.warning(
@@ -148,7 +160,7 @@ defmodule Twitch.Helix do
            }
          )
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -164,6 +176,10 @@ defmodule Twitch.Helix do
             Logger.warning("Twitch Helix get_live_channels decode failed: #{inspect(reason)}")
             []
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch Helix get_live_channels returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        []
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix get_live_channels request failed: #{inspect(reason)}")
@@ -300,7 +316,7 @@ defmodule Twitch.Helix do
 
     case encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", params)
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -319,6 +335,10 @@ defmodule Twitch.Helix do
 
             []
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch Helix get_eventsub_subscriptions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        []
 
       {:error, %{reason: reason}} ->
         Logger.warning(
