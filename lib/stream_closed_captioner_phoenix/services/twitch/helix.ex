@@ -208,7 +208,7 @@ defmodule Twitch.Helix do
            segment: to_string(segment)
          })
          |> HTTPoison.get(headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, decoded} ->
             {:ok, decoded}
@@ -220,6 +220,13 @@ defmodule Twitch.Helix do
 
             {:error, {:json_decode, reason}}
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning(
+          "Twitch Helix get_configuration_for returned HTTP #{status}: #{inspect(body)}"
+        )
+
+        {:error, {:http_status, status}}
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix get_configuration_for request failed: #{inspect(reason)}")
@@ -249,7 +256,7 @@ defmodule Twitch.Helix do
     url = encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
 
     case HTTPoison.post(url, body, headers) do
-      {:ok, %{body: raw_body}} ->
+      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, decoded} ->
             {:ok, decoded}
@@ -258,6 +265,10 @@ defmodule Twitch.Helix do
             Logger.warning("Twitch EventSub subscribe response decode failed: #{inspect(reason)}")
             {:error, {:json_decode, reason}}
         end
+
+      {:ok, %{status_code: status, body: body}} ->
+        Logger.warning("Twitch EventSub subscribe returned HTTP #{status}: #{inspect(body)}")
+        {:error, {:http_status, status}}
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch EventSub subscribe request failed: #{inspect(reason)}")

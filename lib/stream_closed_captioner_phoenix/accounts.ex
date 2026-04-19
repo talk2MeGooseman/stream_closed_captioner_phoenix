@@ -137,7 +137,9 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       check_for_extension_in(result, "component")
   end
 
-  defp check_for_extension_in(nil, _key), do: false
+  # Fail-open: if the API call failed (nil result), assume extension is installed
+  # to avoid degrading the user experience when Twitch API is unavailable
+  defp check_for_extension_in(nil, _key), do: true
 
   defp check_for_extension_in(result, key) do
     result
