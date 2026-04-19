@@ -23,5 +23,6 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalance do
     bits_balance
     |> cast(attrs, [:balance])
     |> validate_required([:balance])
+    |> validate_number(:balance, greater_than_or_equal_to: 0)
   end
 end

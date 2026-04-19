@@ -40,10 +40,13 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   end
 
   defp bits_balance_check(user) do
-    fn _repo, _ ->
-      bits_balance = get_bits_balance_for_user(user)
+    fn repo, _ ->
+      bits_balance =
+        BitsBalanceQueries.with_user_id(user.id)
+        |> limit(1)
+        |> repo.one(lock: "FOR UPDATE")
 
-      if bits_balance.balance >= 500 do
+      if bits_balance && bits_balance.balance >= 500 do
         {:ok, bits_balance}
       else
         {:error, :insufficent_balance}
@@ -161,6 +164,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       {:error, %Ecto.Changeset{}}
 
   """
+  @decorate cache_evict(cache: Cache, key: {BitsBalanceDebit, user.id})
   def create_bits_balance_debit(user, attrs \\ %{}) do
     user
     |> Ecto.build_assoc(:bits_balance_debits)
@@ -440,6 +444,13 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     amount = get_in(transaction_info, ["product", "cost", "amount"])
 
     Ecto.Multi.new()
+    |> Ecto.Multi.run(:validate_amount, fn _repo, _ ->
+      if amount == 500 do
+        {:ok, amount}
+      else
+        {:error, :invalid_amount}
+      end
+    end)
     |> Ecto.Multi.run(:validate_transaction, validate_transaction(transaction_id))
     |> Ecto.Multi.run(:retrieve_channel_user, retrieve_user_by_uid(uid))
     |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
