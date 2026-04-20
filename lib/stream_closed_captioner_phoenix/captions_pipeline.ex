@@ -35,11 +35,23 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      payload =
+      censored =
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings)
-        |> Translations.maybe_translate(:final, user)
-        |> apply_pirate_mode(stream_settings)
+
+      task = Task.async(fn -> Translations.maybe_translate(:final, user, censored) end)
+
+      translated =
+        case Task.yield(task, 3_000) || Task.shutdown(task) do
+          {:ok, result} ->
+            result
+
+          _ ->
+            Logger.warning("Translation timed out or failed, passing through untranslated")
+            censored
+        end
+
+      payload = apply_pirate_mode(translated, stream_settings)
 
       {:ok, payload}
     else
