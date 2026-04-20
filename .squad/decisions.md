@@ -58,6 +58,23 @@ All team members should read and follow *The Pragmatic Programmer* methodologies
 - Reduces dependency and configuration surface area.
 - Keeps supervision and runtime config focused on active components.
 
+### 2026-04-20: Security audit log events via shared Logger + Telemetry contract
+
+**By:** Trinity
+
+**What:**
+
+- Implement security audit events through a shared lightweight module that emits both structured Logger entries and Telemetry events.
+- Emit telemetry on `[:stream_closed_captioner_phoenix, :audit_log]` with metadata including `event`, `level`, and contextual non-secret fields.
+- Apply the contract to security-relevant flows: bits debit/credit, translation activation, password change/reset (including reset instruction issuance), and OAuth link/unlink plus settings entry points that invoke these actions.
+- Enforce metadata redaction for sensitive keys: `access_token`, `refresh_token`, `token`, `password`, `current_password`, `encrypted_password`, `azure_service_key`.
+
+**Why:**
+
+- Provides immediate security observability without introducing migrations or a persistence subsystem.
+- Keeps runtime behavior stable while improving incident traceability and testability.
+- Standardizes audit semantics across sensitive flows with explicit redaction requirements.
+
 ## Governance
 
 - All meaningful changes require team consensus
