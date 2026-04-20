@@ -483,7 +483,12 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   defp retrieve_balance(_repo, %{retrieve_channel_user: user}) do
     user = Repo.preload(user, :bits_balance)
-    {:ok, user.bits_balance}
+
+    if is_nil(user.bits_balance) do
+      {:error, :no_bits_balance}
+    else
+      {:ok, user.bits_balance}
+    end
   end
 
   defp add_to_balance(amount) do

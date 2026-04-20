@@ -20,6 +20,12 @@
 | Scribe | Scribe | [charter](.squad/agents/scribe/charter.md) | active |
 | Ralph | Monitor | [charter](.squad/agents/ralph/charter.md) | active |
 
+## Human Staff
+
+| Name | Role | Responsibilities |
+|------|------|-----------------|
+| Erik Guzman | Staff Engineer (Reviewer) | Final approval on all implementation plans and completed work before merge. Escalation point for architecture decisions, security concerns, and scope changes. |
+
 ## Project Context
 
 - **Project:** stream_closed_captioner_phoenix

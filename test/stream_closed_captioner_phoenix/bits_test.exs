@@ -277,5 +277,27 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       assert {:ok, _} = Bits.process_bits_transaction(user.uid, data)
     end
+
+    test "process_bits_transaction returns error when user has no bits_balance" do
+      user = insert(:user, provider: "twitch")
+      StreamClosedCaptionerPhoenix.Repo.delete!(user.bits_balance)
+
+      data = %{
+        "data" => %{
+          "transactionId" => "2",
+          "userId" => "1235",
+          "time" => NaiveDateTime.utc_now(),
+          "product" => %{
+            "sku" => "translation500",
+            "cost" => %{
+              "amount" => 500
+            }
+          }
+        }
+      }
+
+      assert {:error, :retrieve_balance, :no_bits_balance, _} =
+               Bits.process_bits_transaction(user.uid, data)
+    end
   end
 end

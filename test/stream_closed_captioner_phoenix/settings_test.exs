@@ -2,6 +2,8 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
   import StreamClosedCaptionerPhoenix.Factory
   import Mox
 
+  setup :verify_on_exit!
+
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenix.Settings

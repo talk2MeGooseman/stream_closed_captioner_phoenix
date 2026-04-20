@@ -77,10 +77,10 @@ export default class extends Controller {
         )
       )
       this.removeEvents.push(
-        this.speechRecognitionHandler.onEvent("final", this.receiveFinalMessage)
+        this.speechRecognitionHandler.onEvent("final", this.receiveFinalMessage.bind(this))
       )
       this.removeEvents.push(
-        this.speechRecognitionHandler.onEvent("interim", this.receiveInterimMessage)
+        this.speechRecognitionHandler.onEvent("interim", this.receiveInterimMessage.bind(this))
       )
 
       this.initBrowserChannelMessageListener()
