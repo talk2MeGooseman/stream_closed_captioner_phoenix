@@ -309,12 +309,15 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "updates the password", %{user: user} do
       {:ok, user} =
-        Accounts.update_user_password(user, valid_user_password(), %{
-          password: "new valid password"
-        })
+        capture_audit_events(fn ->
+          Accounts.update_user_password(user, valid_user_password(), %{
+            password: "new valid password"
+          })
+        end)
 
       assert is_nil(user.password)
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert_audit_event("accounts.password_changed")
     end
 
     test "deletes all tokens for the given user", %{user: user} do
@@ -503,9 +506,14 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "updates the password", %{user: user} do
-      {:ok, updated_user} = Accounts.reset_user_password(user, %{password: "new valid password"})
+      {:ok, updated_user} =
+        capture_audit_events(fn ->
+          Accounts.reset_user_password(user, %{password: "new valid password"})
+        end)
+
       assert is_nil(updated_user.password)
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert_audit_event("accounts.password_reset")
     end
 
     test "deletes all tokens for the given user", %{user: user} do
@@ -559,5 +567,30 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
       assert status == :error
     end
+  end
+
+  defp capture_audit_events(fun) do
+    parent = self()
+    handler_id = "audit-log-#{System.unique_integer([:positive])}"
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:stream_closed_captioner_phoenix, :audit_log],
+        fn _event, measurements, metadata, _config ->
+          send(parent, {:audit_event, measurements, metadata})
+        end,
+        nil
+      )
+
+    try do
+      fun.()
+    after
+      :telemetry.detach(handler_id)
+    end
+  end
+
+  defp assert_audit_event(event_name) do
+    assert_receive {:audit_event, _measurements, %{event: ^event_name}}
   end
 end

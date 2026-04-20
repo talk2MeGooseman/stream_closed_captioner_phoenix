@@ -5,6 +5,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   use Nebulex.Caching
 
   import Ecto.Query, warn: false
+  alias StreamClosedCaptionerPhoenix.AuditLog
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
@@ -256,9 +257,20 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
 
   """
   def remove_user_provider(%User{} = user) do
-    user
-    |> User.remove_provider(%{})
-    |> Repo.update()
+    result =
+      user
+      |> User.remove_provider(%{})
+      |> Repo.update()
+
+    case result do
+      {:ok, updated_user} ->
+        AuditLog.info("accounts.oauth_unlinked", %{user_id: updated_user.id, provider: "twitch"})
+
+      {:error, _changeset} ->
+        AuditLog.warn("accounts.oauth_unlink_failed", %{user_id: user.id, provider: "twitch"})
+    end
+
+    result
   end
 
   @doc """
@@ -340,8 +352,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, :all))
     |> Repo.transaction()
     |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:ok, %{user: updated_user}} ->
+        AuditLog.info("accounts.password_changed", %{user_id: updated_user.id})
+        {:ok, updated_user}
+
+      {:error, :user, password_changeset, _} ->
+        AuditLog.warn("accounts.password_change_failed", %{user_id: user.id})
+        {:error, password_changeset}
     end
   end
 
@@ -429,6 +446,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       when is_function(reset_password_url_fun, 1) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "reset_password")
     Repo.insert!(user_token)
+    AuditLog.info("accounts.password_reset_instructions_sent", %{user_id: user.id})
     UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
   end
 
@@ -471,8 +489,13 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, :all))
     |> Repo.transaction()
     |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:ok, %{user: updated_user}} ->
+        AuditLog.info("accounts.password_reset", %{user_id: updated_user.id})
+        {:ok, updated_user}
+
+      {:error, :user, password_changeset, _} ->
+        AuditLog.warn("accounts.password_reset_failed", %{user_id: user.id})
+        {:error, password_changeset}
     end
   end
 

@@ -5,6 +5,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Accounts.User
+  alias StreamClosedCaptionerPhoenix.AuditLog
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
@@ -63,11 +64,15 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
           })
           |> Repo.update()
 
+        AuditLog.info("oauth.account_refreshed", %{user_id: updated_user.id, provider: "twitch"})
+
         {:ok, %{user: updated_user}}
 
       _ ->
         case Accounts.get_user_by_email(user_attrs["email"]) do
           %User{} ->
+            AuditLog.warn("oauth.account_link_failed_email_conflict", %{provider: "twitch"})
+
             {:error,
              "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}
 
@@ -80,6 +85,11 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
   def find_or_register_user_with_oauth(user_attrs, creds, %User{} = current_user) do
     case get_user_for_provider("twitch", user_attrs["id"]) do
       %User{} = user when user.id != current_user.id ->
+        AuditLog.warn("oauth.account_link_failed_already_linked", %{
+          user_id: current_user.id,
+          provider: "twitch"
+        })
+
         {:error,
          "Your Twitch account is connected to another account, please log out and log in with Twitch to remove the connection from your other account."}
 
@@ -98,25 +108,45 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
         })
         |> Repo.update()
         |> case do
-          {:ok, user} -> {:ok, %{user: user}}
-          {:error, message} -> {:error, message}
+          {:ok, user} ->
+            AuditLog.info("oauth.account_linked", %{user_id: user.id, provider: "twitch"})
+            {:ok, %{user: user}}
+
+          {:error, message} ->
+            AuditLog.warn("oauth.account_link_failed", %{
+              user_id: current_user.id,
+              provider: "twitch"
+            })
+
+            {:error, message}
         end
     end
   end
 
   defp register_oauth_user(attrs, creds) do
-    Accounts.register_user(%{
-      email: attrs["email"],
-      password: Accounts.generate_secure_password(),
-      uid: attrs["id"],
-      username: attrs["display_name"],
-      profile_image_url: attrs["profile_image_url"],
-      login: attrs["login"],
-      description: attrs["description"],
-      offline_image_url: attrs["offline_image_url"],
-      provider: "twitch",
-      access_token: creds[:access_token],
-      refresh_token: creds[:refresh_token]
-    })
+    result =
+      Accounts.register_user(%{
+        email: attrs["email"],
+        password: Accounts.generate_secure_password(),
+        uid: attrs["id"],
+        username: attrs["display_name"],
+        profile_image_url: attrs["profile_image_url"],
+        login: attrs["login"],
+        description: attrs["description"],
+        offline_image_url: attrs["offline_image_url"],
+        provider: "twitch",
+        access_token: creds[:access_token],
+        refresh_token: creds[:refresh_token]
+      })
+
+    case result do
+      {:ok, %{user: user}} ->
+        AuditLog.info("oauth.account_registered", %{user_id: user.id, provider: "twitch"})
+
+      {:error, _, _changeset, _} ->
+        AuditLog.warn("oauth.account_register_failed", %{provider: "twitch"})
+    end
+
+    result
   end
 end

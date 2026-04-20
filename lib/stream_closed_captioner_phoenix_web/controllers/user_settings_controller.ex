@@ -1,7 +1,7 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
-  alias StreamClosedCaptionerPhoenix.{Accounts, AccountsOauth}
+  alias StreamClosedCaptionerPhoenix.{Accounts, AccountsOauth, AuditLog}
   alias StreamClosedCaptionerPhoenixWeb.UserAuth
 
   plug :assign_email_and_password_changesets
@@ -16,6 +16,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
     case Accounts.apply_user_email(user, password, user_params) do
       {:ok, applied_user} ->
+        AuditLog.info("user_settings.email_update_requested", %{user_id: applied_user.id})
+
         Accounts.deliver_update_email_instructions(
           applied_user,
           user.email,
@@ -30,6 +32,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
         |> redirect(to: Routes.user_settings_path(conn, :edit))
 
       {:error, changeset} ->
+        AuditLog.warn("user_settings.email_update_request_failed", %{user_id: user.id})
         render(conn, "edit.html", email_changeset: changeset)
     end
   end
@@ -40,12 +43,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
     case Accounts.update_user_password(user, password, user_params) do
       {:ok, user} ->
+        AuditLog.info("user_settings.password_changed", %{user_id: user.id})
+
         conn
         |> put_flash(:info, "Password updated successfully.")
         |> put_session(:user_return_to, Routes.user_settings_path(conn, :edit))
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
+        AuditLog.warn("user_settings.password_change_failed", %{user_id: user.id})
         render(conn, "edit.html", password_changeset: changeset)
     end
   end
@@ -55,11 +61,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
     case Accounts.remove_user_provider(user) do
       {:ok, _user} ->
+        AuditLog.info("user_settings.provider_unlinked", %{user_id: user.id, provider: "twitch"})
+
         conn
         |> put_flash(:info, "Twitch connection successfully removed.")
         |> redirect(to: Routes.user_settings_path(conn, :edit))
 
       {:error, changeset} ->
+        AuditLog.warn("user_settings.provider_unlink_failed", %{
+          user_id: user.id,
+          provider: "twitch"
+        })
+
         render(conn, "edit.html", password_changeset: changeset)
     end
   end

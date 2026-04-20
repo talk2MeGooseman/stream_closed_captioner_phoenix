@@ -23,7 +23,26 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 0))
-      assert {:error, :bits_balance_check, _, _} = Bits.activate_translations_for(user)
+
+      result =
+        capture_audit_events(fn ->
+          Bits.activate_translations_for(user)
+        end)
+
+      assert {:error, :bits_balance_check, _, _} = result
+      assert_audit_event("bits.translation_activation_failed")
+    end
+
+    test "activate_translations_for/1 emits audit log when activation succeeds" do
+      user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
+
+      result =
+        capture_audit_events(fn ->
+          Bits.activate_translations_for(user)
+        end)
+
+      assert {:ok, _} = result
+      assert_audit_event("bits.translation_activated")
     end
 
     test "activate_translations_for/1 return :ok if user has minimum balance" do
@@ -275,7 +294,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
         }
       }
 
-      assert {:ok, _} = Bits.process_bits_transaction(user.uid, data)
+      result =
+        capture_audit_events(fn ->
+          Bits.process_bits_transaction(user.uid, data)
+        end)
+
+      assert {:ok, _} = result
+      assert_audit_event("bits.credit_applied")
     end
 
     test "process_bits_transaction returns error when user has no bits_balance" do
@@ -299,5 +324,30 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert {:error, :retrieve_balance, :no_bits_balance, _} =
                Bits.process_bits_transaction(user.uid, data)
     end
+  end
+
+  defp capture_audit_events(fun) do
+    parent = self()
+    handler_id = "audit-log-#{System.unique_integer([:positive])}"
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:stream_closed_captioner_phoenix, :audit_log],
+        fn _event, measurements, metadata, _config ->
+          send(parent, {:audit_event, measurements, metadata})
+        end,
+        nil
+      )
+
+    try do
+      fun.()
+    after
+      :telemetry.detach(handler_id)
+    end
+  end
+
+  defp assert_audit_event(event_name) do
+    assert_receive {:audit_event, _measurements, %{event: ^event_name}}
   end
 end

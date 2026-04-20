@@ -26,3 +26,5 @@
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
 - 2026-04-19: `assets/js/controllers/twitch_controller.js` now treats extension-status polling as bounded state (max attempts + exponential backoff + timer cleanup on disconnect + network-error catch), and keeps the existing success path immediate when `extensionInstalled` becomes true.
+- 2026-04-19: Security audit events now use a shared lightweight module (`StreamClosedCaptionerPhoenix.AuditLog`) that emits both Logger entries and Telemetry on `[:stream_closed_captioner_phoenix, :audit_log]`, with secret-key redaction applied before emission.
+- 2026-04-19: Audit coverage includes Bits translation activation/debit-credit, Accounts password change/reset + reset-instructions, OAuth link/unlink, and User Settings action entry points; tests assert telemetry events directly instead of mocking internal modules.

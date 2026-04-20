@@ -84,7 +84,10 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
 
       user = insert(:user, uid: nil, provider: nil)
 
-      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, user)
+      {:ok, data} =
+        capture_audit_events(fn ->
+          AccountsOauth.find_or_register_user_with_oauth(attrs, creds, user)
+        end)
 
       assert data.user.uid == attrs["id"]
       refute data.user.email == attrs["email"]
@@ -92,6 +95,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       assert data.user.description == attrs["description"]
       assert data.user.provider == "twitch"
       assert data.user.access_token == "12345"
+      assert_audit_event("oauth.account_linked")
     end
 
     test "when current user, doesnt connect twitch accoutn if linked with another user" do
@@ -113,8 +117,38 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       insert(:user, uid: attrs["id"], provider: "twitch")
       current_user = insert(:user, uid: nil, provider: nil)
 
-      assert {:error, _message} =
-               AccountsOauth.find_or_register_user_with_oauth(attrs, creds, current_user)
+      result =
+        capture_audit_events(fn ->
+          AccountsOauth.find_or_register_user_with_oauth(attrs, creds, current_user)
+        end)
+
+      assert {:error, _message} = result
+      assert_audit_event("oauth.account_link_failed_already_linked")
     end
+  end
+
+  defp capture_audit_events(fun) do
+    parent = self()
+    handler_id = "audit-log-#{System.unique_integer([:positive])}"
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:stream_closed_captioner_phoenix, :audit_log],
+        fn _event, measurements, metadata, _config ->
+          send(parent, {:audit_event, measurements, metadata})
+        end,
+        nil
+      )
+
+    try do
+      fun.()
+    after
+      :telemetry.detach(handler_id)
+    end
+  end
+
+  defp assert_audit_event(event_name) do
+    assert_receive {:audit_event, _measurements, %{event: ^event_name}}
   end
 end

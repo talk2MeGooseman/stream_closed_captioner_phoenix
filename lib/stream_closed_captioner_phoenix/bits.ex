@@ -12,6 +12,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceQueries
   alias StreamClosedCaptionerPhoenix.Bits.BitsTransactionQueries
+  alias StreamClosedCaptionerPhoenix.AuditLog
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
@@ -29,14 +30,39 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   end
 
   def activate_translations_for(%User{} = user) do
-    Ecto.Multi.new()
-    |> Ecto.Multi.run(:bits_balance_check, bits_balance_check(user))
-    |> Ecto.Multi.run(:debit, fn _repo, _ ->
-      create_bits_balance_debit(user, %{amount: 500})
-    end)
-    |> Ecto.Multi.run(:update_balance, &update_bits_balance_transaction/2)
-    |> Ecto.Multi.run(:broadcast, broadcast_updated_bits_balance(user))
-    |> Repo.transaction()
+    result =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:bits_balance_check, bits_balance_check(user))
+      |> Ecto.Multi.run(:debit, fn _repo, _ ->
+        create_bits_balance_debit(user, %{amount: 500})
+      end)
+      |> Ecto.Multi.run(:update_balance, &update_bits_balance_transaction/2)
+      |> Ecto.Multi.run(:broadcast, broadcast_updated_bits_balance(user))
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{debit: debit, update_balance: updated_balance}} ->
+        AuditLog.info("bits.translation_activated", %{
+          user_id: user.id,
+          amount: debit.amount,
+          balance: updated_balance.balance
+        })
+
+      {:error, :bits_balance_check, :insufficent_balance, _} ->
+        AuditLog.warn("bits.translation_activation_failed", %{
+          user_id: user.id,
+          reason: :insufficent_balance
+        })
+
+      {:error, step, reason, _} ->
+        AuditLog.warn("bits.translation_activation_failed", %{
+          user_id: user.id,
+          step: step,
+          reason: inspect(reason)
+        })
+    end
+
+    result
   end
 
   defp bits_balance_check(user) do
@@ -166,10 +192,25 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   """
   @decorate cache_evict(cache: Cache, key: {BitsBalanceDebit, user.id})
   def create_bits_balance_debit(user, attrs \\ %{}) do
-    user
-    |> Ecto.build_assoc(:bits_balance_debits)
-    |> BitsBalanceDebit.changeset(attrs)
-    |> Repo.insert()
+    result =
+      user
+      |> Ecto.build_assoc(:bits_balance_debits)
+      |> BitsBalanceDebit.changeset(attrs)
+      |> Repo.insert()
+
+    case result do
+      {:ok, debit} ->
+        AuditLog.info("bits.debit_created", %{
+          user_id: user.id,
+          debit_id: debit.id,
+          amount: debit.amount
+        })
+
+      {:error, _changeset} ->
+        AuditLog.warn("bits.debit_create_failed", %{user_id: user.id})
+    end
+
+    result
   end
 
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalance
@@ -443,21 +484,42 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     transaction_id = Map.get(transaction_info, "transactionId")
     amount = get_in(transaction_info, ["product", "cost", "amount"])
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.run(:validate_amount, fn _repo, _ ->
-      if amount == 500 do
-        {:ok, amount}
-      else
-        {:error, :invalid_amount}
-      end
-    end)
-    |> Ecto.Multi.run(:validate_transaction, validate_transaction(transaction_id))
-    |> Ecto.Multi.run(:retrieve_channel_user, retrieve_user_by_uid(uid))
-    |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
-    |> Ecto.Multi.run(:add_to_balance, add_to_balance(amount))
-    |> Ecto.Multi.run(:save_transaction, save_transaction(transaction_info))
-    |> Ecto.Multi.run(:publish_activity, &publish_activity/2)
-    |> Repo.transaction()
+    result =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:validate_amount, fn _repo, _ ->
+        if amount == 500 do
+          {:ok, amount}
+        else
+          {:error, :invalid_amount}
+        end
+      end)
+      |> Ecto.Multi.run(:validate_transaction, validate_transaction(transaction_id))
+      |> Ecto.Multi.run(:retrieve_channel_user, retrieve_user_by_uid(uid))
+      |> Ecto.Multi.run(:retrieve_balance, &retrieve_balance/2)
+      |> Ecto.Multi.run(:add_to_balance, add_to_balance(amount))
+      |> Ecto.Multi.run(:save_transaction, save_transaction(transaction_info))
+      |> Ecto.Multi.run(:publish_activity, &publish_activity/2)
+      |> Repo.transaction()
+
+    case result do
+      {:ok, %{retrieve_channel_user: user, add_to_balance: bits_balance}} ->
+        AuditLog.info("bits.credit_applied", %{
+          user_id: user.id,
+          transaction_id: transaction_id,
+          amount: amount,
+          balance: bits_balance.balance
+        })
+
+      {:error, step, reason, _} ->
+        AuditLog.warn("bits.credit_apply_failed", %{
+          uid: uid,
+          transaction_id: transaction_id,
+          step: step,
+          reason: inspect(reason)
+        })
+    end
+
+    result
   end
 
   defp validate_transaction(transaction_id) do

@@ -23,19 +23,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
   describe "PUT /users/settings (change password form)" do
     test "updates the user password and resets tokens", %{conn: conn, user: user} do
       new_password_conn =
-        put(conn, Routes.user_settings_path(conn, :update), %{
-          "action" => "update_password",
-          "current_password" => valid_user_password(),
-          "user" => %{
-            "password" => "new valid password",
-            "password_confirmation" => "new valid password"
-          }
-        })
+        capture_audit_events(fn ->
+          put(conn, Routes.user_settings_path(conn, :update), %{
+            "action" => "update_password",
+            "current_password" => valid_user_password(),
+            "user" => %{
+              "password" => "new valid password",
+              "password_confirmation" => "new valid password"
+            }
+          })
+        end)
 
       assert redirected_to(new_password_conn) == Routes.user_settings_path(conn, :edit)
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
-      assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~ "Password updated successfully"
+
+      assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~
+               "Password updated successfully"
+
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert_audit_event("user_settings.password_changed")
     end
 
     test "does not update password on invalid data", %{conn: conn} do
@@ -56,6 +62,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert response =~ "is not valid"
 
       assert get_session(old_password_conn, :user_token) == get_session(conn, :user_token)
+    end
+  end
+
+  describe "PUT /users/settings (remove provider form)" do
+    test "removes the user's Twitch provider", %{conn: conn, user: user} do
+      conn =
+        capture_audit_events(fn ->
+          put(conn, Routes.user_settings_path(conn, :update), %{
+            "action" => "remove_provider"
+          })
+        end)
+
+      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Twitch connection successfully removed"
+
+      assert Accounts.get_user!(user.id).provider == nil
+      assert_audit_event("user_settings.provider_unlinked")
     end
   end
 
@@ -111,13 +136,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Email change link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Email change link is invalid or it has expired"
     end
 
     test "does not update email with invalid token", %{conn: conn, user: user} do
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, "oops"))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Email change link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Email change link is invalid or it has expired"
+
       assert Accounts.get_user_by_email(user.email)
     end
 
@@ -126,5 +156,30 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_session_path(conn, :new)
     end
+  end
+
+  defp capture_audit_events(fun) do
+    parent = self()
+    handler_id = "audit-log-#{System.unique_integer([:positive])}"
+
+    :ok =
+      :telemetry.attach(
+        handler_id,
+        [:stream_closed_captioner_phoenix, :audit_log],
+        fn _event, measurements, metadata, _config ->
+          send(parent, {:audit_event, measurements, metadata})
+        end,
+        nil
+      )
+
+    try do
+      fun.()
+    after
+      :telemetry.detach(handler_id)
+    end
+  end
+
+  defp assert_audit_event(event_name) do
+    assert_receive {:audit_event, _measurements, %{event: ^event_name}}
   end
 end
