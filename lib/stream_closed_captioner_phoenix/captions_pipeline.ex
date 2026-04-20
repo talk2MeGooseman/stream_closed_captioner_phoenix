@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings)
 
-      task = Task.async(fn -> Translations.maybe_translate(:final, user, censored) end)
+      task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
 
       translated =
         case Task.yield(task, 3_000) || Task.shutdown(task) do

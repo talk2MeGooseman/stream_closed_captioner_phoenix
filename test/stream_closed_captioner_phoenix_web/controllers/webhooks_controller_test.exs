@@ -3,6 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
   use Oban.Testing, repo: StreamClosedCaptionerPhoenix.Repo
 
   import Mox
+  import StreamClosedCaptionerPhoenix.Factory
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Jobs.SendChatReminder
@@ -36,7 +37,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
         )
 
     conn
-    |> Plug.Conn.assign(:raw_body, body_json)
     |> put_req_header("content-type", "application/json")
     |> put_req_header("twitch-eventsub-message-id", msg_id)
     |> put_req_header("twitch-eventsub-message-timestamp", timestamp)
@@ -155,7 +155,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
 
   describe "stream.online notification" do
     setup do
-      user = insert(:user)
+      user = insert(:user, provider: "twitch")
       broadcaster_uid = user.uid
 
       {:ok, sub} =
@@ -237,7 +237,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
 
   describe "stream.offline notification" do
     setup do
-      user = insert(:user)
+      user = insert(:user, provider: "twitch")
       broadcaster_uid = user.uid
 
       {:ok, sub} =
