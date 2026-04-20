@@ -33,11 +33,11 @@ export default class extends ApplicationController {
           this.clearRetryTimeout()
           this.clearErrorMessage()
           return this.enableExtension()
-        } 
-          this.disableExtension()
-          this.displayErrorMessage("You do not have the Stream Closed Captioner Extension installed, please visit the 'Quick Starts Instructions' to learn how.")
-          return this.scheduleExtensionStatusRetry()
-        
+        }
+        this.disableExtension()
+        this.displayErrorMessage("You do not have the Stream Closed Captioner Extension installed, please visit the 'Quick Starts Instructions' to learn how.")
+        return this.scheduleExtensionStatusRetry()
+
       })
       .catch(() => {
         this.disableExtension()
