@@ -16,9 +16,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Bits do
   def process_bits_transaction(_parent, %{channel_id: channel_id}, %{
         context: %{decoded_token: decoded_token}
       }) do
-    case Bits.process_bits_transaction(channel_id, decoded_token) do
-      {:ok, _} -> {:ok, %{message: "Transaction Successful"}}
-      {:error, _, message, _} -> {:error, %{message: message}}
+    if channel_id == decoded_token["channel_id"] do
+      case Bits.process_bits_transaction(channel_id, decoded_token) do
+        {:ok, _} -> {:ok, %{message: "Transaction Successful"}}
+        {:error, _, message, _} -> {:error, %{message: message}}
+      end
+    else
+      {:error, "Access denied"}
     end
   end
 
