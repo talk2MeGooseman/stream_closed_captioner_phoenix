@@ -1,43 +1,55 @@
 # Project Context
 
 - **Owner:** Erik Guzman
-- **Project:** stream_closed_captioner_phoenix — real-time closed captioning platform for Twitch streamers
-- **Stack:** Elixir, Phoenix, PostgreSQL, Absinthe (GraphQL), Phoenix Channels, Phoenix LiveView, Oban (background jobs), Twitch API (OAuth, JWT, EventSub, Extension), Azure Cognitive Services (translation), Mox (test mocking), FunWithFlags (feature flags), Nebulex (caching)
+- **Project:** stream_closed_captioner_phoenix — real-time closed captioning for Twitch streamers
+- **Stack:** Elixir, Phoenix, PostgreSQL, Absinthe (GraphQL), Phoenix Channels, Phoenix LiveView, Oban, Twitch API (OAuth, JWT, EventSub, Extension), Azure Cognitive Services, Mox, FunWithFlags, Nebulex
 - **Created:** 2026-04-19
 
-### Security Architecture I Guard
+### Auth Flows
 
-**Authentication flows:**
-- Browser sessions: `UserAuth` plug → `fetch_current_user` / `require_authenticated_user`; token in `"user_token"` session key
-- GraphQL/API: cookie session token → `context.current_user`; or `Authorization: Bearer <token>` → Twitch JWT → `context.decoded_token`
-- Guardian: `StreamClosedCaptionerPhoenix.Guardian` encodes/decodes JWTs; subject is user integer `id`
-- EventSub webhooks: `HTTPSignature` plug validates Twitch HMAC before controller sees the request
+- **Browser sessions:** `UserAuth` plug — `fetch_current_user`, `require_authenticated_user`; token stored in `"user_token"` session key
+- **GraphQL/API:** `Context` plug — cookie session token → `context.current_user`; `Authorization: Bearer <token>` → validated as Twitch JWT via `Twitch.Jwt` → `context.decoded_token`
+- **Guardian JWT:** `StreamClosedCaptionerPhoenix.Guardian` — subject is integer user `id`; used for `:api_authenticated` REST pipeline
+- **EventSub webhooks:** `HTTPSignature` plug validates Twitch HMAC before controller sees request
+- **Admin guard:** `:admin_protected` pipeline — requires `user.uid == "120750024"`
 
-**Sensitive field rules:**
-- `User` schema has `@derive {Inspect, except: [...]}` — currently covers `:password`, `:encrypted_password`, `:azure_service_key`, `:access_token`, `:refresh_token`
-- NEW sensitive fields must be added to this list immediately
-- `azure_service_key` uses `EncryptedBinary` Ecto type (AES-256-GCM)
-- Empty strings must convert to `nil` for nullable secret fields
+### Sensitive Field Rules
 
-**Audit logging:**
-- `StreamClosedCaptionerPhoenix.Audit.log_azure_key_action/3` for Azure key mutations
-- Pattern: audit log call on every create/update/delete/use of sensitive resources
+**`@derive {Inspect, except: [...]}` must include:**
+`:password, :encrypted_password, :azure_service_key, :access_token, :refresh_token`
 
-**HTTP error scrubbing:**
-- `HTTPoison.post` (not `post!`) for Azure calls
-- Error paths must scrub sensitive data before logging — never log raw API keys or tokens
+Keep this list current when adding sensitive fields. Log and crash alerts must not expose any of these.
 
-**Admin protection:**
-- Admin pipeline: `:admin_protected` requires `user.uid == "120750024"`
-- Maintenance mode: `StreamClosedCaptionerPhoenixWeb.Maintenance.begin/0` / `finish/0`
+**`EncryptedBinary` Ecto type (AES-256-GCM):**
+- Used for: `azure_service_key`
+- Key source: `ENCRYPTION_KEY` env var
+- Pattern: apply to any new user-provided secret field
 
-### Fault Tolerance Concerns
+**Empty string → nil:**
+User changeset converts `""` → `nil` for `azure_service_key`. Follow for all nullable secret fields.
 
-- Translation deducts from Bits balance — must handle race conditions and negative balance edge cases
-- Azure Cognitive Services calls must fail gracefully (fallback to no translation, not crash)
-- Twitch OAuth token expiry: `Twitch.Oauth.get_users_access_token/1` returns `{:error, :token_expired}` — callers must handle this
-- `Twitch.Parser.parse/1` returns `{:error, map, status_code}` for non-200 HTTP — always pattern match on this
+### Audit Logging Contract
+
+- Function: `StreamClosedCaptionerPhoenix.Audit.log_azure_key_action/3`
+- Telemetry event: `[:stream_closed_captioner_phoenix, :audit_log]`
+- Redact before emit: `access_token, refresh_token, token, password, current_password, encrypted_password, azure_service_key`
+- Operations to log: key created, key updated, key deleted, key used for translation
+- Schema timestamp: `timestamps(updated_at: false, inserted_at: :created_at)` for audit log table
+
+### HTTP Scrubbing
+
+Azure HTTP calls use `HTTPoison.post` (not `post!`), pattern-match result. Error path scrubs sensitive data before logging to prevent API key leakage in exception messages.
+
+### Fault Tolerance Patterns
+
+- **Bits race condition:** `BitsBalance` debit uses DB-level check; race condition handled gracefully — translation falls back if insufficient balance
+- **Azure fallback:** `maybe_translate/3` returns untranslated caption if Azure call fails rather than crashing pipeline
+- **Token expiry:** `Twitch.Oauth.get_users_access_token/1` returns `{:error, :token_expired}` — callers handle gracefully
+- **Parser errors:** `Twitch.Parser.parse/1` returns `{:error, map, status_code}` for non-200 and `{:error, %{reason: reason}}` for network errors
 
 ## Learnings
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
+- 2026-04-19: Security audit events use shared `StreamClosedCaptionerPhoenix.AuditLog` — emits Logger entries + Telemetry on `[:stream_closed_captioner_phoenix, :audit_log]`, secret-key redaction before emission.
+- 2026-04-19: Audit coverage includes Bits translation activation/debit-credit, Accounts password change/reset + reset-instructions, OAuth link/unlink, User Settings action entry points.
+- 2026-04-19: `@derive {Inspect, except: [...]}` on User schema covers: `:password, :encrypted_password, :azure_service_key, :access_token, :refresh_token`.

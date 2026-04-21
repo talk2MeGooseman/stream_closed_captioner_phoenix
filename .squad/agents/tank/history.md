@@ -1,8 +1,8 @@
 # Project Context
 
 - **Owner:** Erik Guzman
-- **Project:** stream_closed_captioner_phoenix — real-time closed captioning platform for Twitch streamers
-- **Stack:** Elixir, Phoenix, PostgreSQL, Absinthe (GraphQL), Phoenix Channels, Phoenix LiveView, Oban (background jobs), Twitch API (OAuth, JWT, EventSub, Extension), Azure Cognitive Services (translation), Mox (test mocking), FunWithFlags (feature flags), Nebulex (caching)
+- **Project:** stream_closed_captioner_phoenix — real-time closed captioning for Twitch streamers
+- **Stack:** Elixir, Phoenix, PostgreSQL, Absinthe (GraphQL), Phoenix Channels, Phoenix LiveView, Oban, Twitch API (OAuth, JWT, EventSub, Extension), Azure Cognitive Services, Mox, FunWithFlags, Nebulex
 - **Created:** 2026-04-19
 
 ### Test Infrastructure
@@ -17,7 +17,7 @@
 ### Factory Rules
 
 - `insert(:user)` creates user WITH pre-built `stream_settings` and `bits_balance`
-- To change those → update the existing association via `Repo.update!`, do NOT insert new ones
+- To change those → update existing association via `Repo.update!`, do NOT insert new ones
 - Factory module: `StreamClosedCaptionerPhoenix.Factory`
 
 ### Mox Setup
@@ -30,7 +30,7 @@
 
 - `UserTrackerTest` — must NOT use `async: true` (global Phoenix.Tracker state)
 - `put_flash` inside `live_component` does not propagate to parent in Phoenix LiveView 0.19
-- Oban is configured `testing: :manual` in test env — use `perform_job/2` to run jobs explicitly
+- Oban `testing: :manual` in test env — use `perform_job/2` to run jobs explicitly
 
 ### Test Commands
 
