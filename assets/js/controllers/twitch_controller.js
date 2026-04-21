@@ -17,7 +17,7 @@ export default class extends ApplicationController {
   connect() {
     this.enabled = false
     this.extensionInstalled = false
-    this.retryAttempts = 0
+    this.attemptCount = 1
     this.retryTimeout = null
 
     this.fetchExtensionStatus()
@@ -29,7 +29,7 @@ export default class extends ApplicationController {
         this.extensionInstalled = !isNil(me) && me.extensionInstalled
 
         if (this.extensionInstalled) {
-          this.retryAttempts = 0
+          this.attemptCount = 0
           this.clearRetryTimeout()
           this.clearErrorMessage()
           return this.enableExtension()
@@ -51,18 +51,21 @@ export default class extends ApplicationController {
   }
 
   scheduleExtensionStatusRetry() {
-    if (this.retryAttempts >= this.maxRetryAttemptsValue) {
+    if (this.attemptCount >= this.maxRetryAttemptsValue) {
+      this.displayErrorMessage(
+        "Unable to verify extension status after multiple attempts. Please refresh the page after installing the extension."
+      )
       return
     }
 
     this.clearRetryTimeout()
 
     const delay = Math.min(
-      this.retryBaseDelayMsValue * 2 ** this.retryAttempts,
+      this.retryBaseDelayMsValue * 2 ** (this.attemptCount - 1),
       this.maxRetryDelayMsValue,
     )
 
-    this.retryAttempts += 1
+    this.attemptCount += 1
     this.retryTimeout = workerTimers.setTimeout(this.fetchExtensionStatus, delay)
   }
 
