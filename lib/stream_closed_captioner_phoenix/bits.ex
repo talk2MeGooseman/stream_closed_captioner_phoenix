@@ -58,7 +58,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
         AuditLog.warn("bits.translation_activation_failed", %{
           user_id: user.id,
           step: step,
-          reason: inspect(reason)
+          reason: audit_failure_reason(reason)
         })
     end
 
@@ -515,7 +515,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
           uid: uid,
           transaction_id: transaction_id,
           step: step,
-          reason: inspect(reason)
+          reason: audit_failure_reason(reason)
         })
     end
 
@@ -571,6 +571,11 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       })
     end
   end
+
+  defp audit_failure_reason(reason) when is_atom(reason), do: reason
+  defp audit_failure_reason(%Ecto.Changeset{} = cs), do: Ecto.Changeset.traverse_errors(cs, fn {msg, _} -> msg end)
+  defp audit_failure_reason(reason) when is_binary(reason), do: reason
+  defp audit_failure_reason(reason), do: inspect(reason, limit: 5, printable_limit: 100)
 
   defp publish_activity(_repo, %{retrieve_channel_user: user, add_to_balance: bits_balance}) do
     StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(

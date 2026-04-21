@@ -70,8 +70,11 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
 
       _ ->
         case Accounts.get_user_by_email(user_attrs["email"]) do
-          %User{} ->
-            AuditLog.warn("oauth.account_link_failed_email_conflict", %{provider: "twitch"})
+          %User{} = existing_user ->
+            AuditLog.warn("oauth.account_link_failed_email_conflict", %{
+              user_id: existing_user.id,
+              provider: "twitch"
+            })
 
             {:error,
              "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}

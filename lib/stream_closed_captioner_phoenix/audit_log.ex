@@ -6,15 +6,18 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
   require Logger
 
   @telemetry_event [:stream_closed_captioner_phoenix, :audit_log]
-  @redacted_keys [
-    :access_token,
-    :refresh_token,
-    :token,
-    :password,
-    :current_password,
-    :encrypted_password,
-    :azure_service_key
-  ]
+  @redacted_keys ~w(
+    access_token
+    refresh_token
+    token
+    password
+    current_password
+    password_confirmation
+    encrypted_password
+    azure_service_key
+  )
+
+  @redacted_atom_keys Enum.map(@redacted_keys, &String.to_atom/1)
 
   def info(event, metadata \\ %{}) when is_binary(event) and is_map(metadata) do
     emit(:info, event, metadata)
@@ -27,7 +30,7 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
   defp emit(level, event, metadata) do
     safe_metadata =
       metadata
-      |> Map.drop(@redacted_keys)
+      |> redact_deep()
       |> Map.put(:event, event)
       |> Map.put(:level, level)
 
@@ -37,4 +40,13 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
 
     :ok
   end
+
+  defp redact_deep(map) when is_map(map) do
+    map
+    |> Map.drop(@redacted_atom_keys)
+    |> Map.drop(@redacted_keys)
+    |> Map.new(fn {k, v} -> {k, redact_deep(v)} end)
+  end
+
+  defp redact_deep(value), do: value
 end
