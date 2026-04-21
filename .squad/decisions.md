@@ -4,8 +4,8 @@
 
 ### Pragmatic Programmer Methodologies — Team Standard
 
-**By:** Erik Guzman (via Copilot)  
-**Date:** 2026-04-21  
+**By:** Erik Guzman (via Copilot)
+**Date:** 2026-04-21
 **Category:** Process & Philosophy
 
 All team members should read and follow *The Pragmatic Programmer* methodologies as core development practices for this project.
