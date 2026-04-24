@@ -1,5 +1,7 @@
 defmodule Gemini.CognitiveTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
+
+  import Plug.Conn
 
   alias Azure.Cognitive.Translation
   alias Azure.Cognitive.Translations
@@ -97,6 +99,71 @@ defmodule Gemini.CognitiveTest do
                Gemini.Cognitive.translate("en", [], "Hello")
 
       assert translations == %{}
+    end
+  end
+
+  describe "do_translate/3 — HTTP" do
+    setup do
+      bypass = Bypass.open()
+
+      System.put_env("GEMINI_API_KEY", "test-api-key")
+
+      Application.put_env(
+        :stream_closed_captioner_phoenix,
+        :gemini_endpoint,
+        "http://localhost:#{bypass.port}"
+      )
+
+      on_exit(fn ->
+        System.delete_env("GEMINI_API_KEY")
+        Application.delete_env(:stream_closed_captioner_phoenix, :gemini_endpoint)
+      end)
+
+      {:ok, bypass: bypass}
+    end
+
+    test "returns translations struct and sends API key as header, not query param", %{
+      bypass: bypass
+    } do
+      response_body =
+        Jason.encode!(%{
+          "candidates" => [
+            %{
+              "content" => %{
+                "parts" => [
+                  %{
+                    "text" =>
+                      Jason.encode!(%{
+                        "translations" => [%{"text" => "Hola", "to" => "es"}]
+                      })
+                  }
+                ]
+              }
+            }
+          ]
+        })
+
+      Bypass.expect_once(bypass, "POST", "/gemini-2.5-flash-lite:generateContent", fn conn ->
+        [api_key_header] = get_req_header(conn, "x-goog-api-key")
+        assert api_key_header == "test-api-key"
+        refute conn.query_string =~ "key="
+
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, response_body)
+      end)
+
+      assert {:ok, %Translations{translations: translations}} =
+               Gemini.Cognitive.translate("en", ["es"], "Hello")
+
+      assert %{"es" => %Translation{text: "Hola"}} = translations
+    end
+
+    test "returns error tuple when server is unreachable", %{bypass: bypass} do
+      Bypass.down(bypass)
+
+      assert {:error, {:http, :econnrefused}} =
+               Gemini.Cognitive.translate("en", ["es"], "Hello")
     end
   end
 end

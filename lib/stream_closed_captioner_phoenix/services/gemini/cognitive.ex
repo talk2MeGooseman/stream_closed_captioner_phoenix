@@ -47,9 +47,13 @@ defmodule Gemini.Cognitive do
   defp do_translate(from_language, to_languages, text) do
     NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
-    headers = [{"Content-Type", "application/json"}]
+    headers = [
+      {"Content-Type", "application/json"},
+      {"x-goog-api-key", System.get_env("GEMINI_API_KEY")}
+    ]
+
     body = Jason.encode!(build_request_body(from_language, to_languages, text))
-    url = "#{@endpoint}/#{@model}:generateContent?key=#{System.get_env("GEMINI_API_KEY")}"
+    url = "#{endpoint()}/#{@model}:generateContent"
 
     case HTTPoison.post(url, body, headers) do
       {:ok, %{body: raw_body}} ->
@@ -118,4 +122,7 @@ defmodule Gemini.Cognitive do
   end
 
   defp extract_inner_text(other), do: {:error, {:unexpected_json, other}}
+
+  defp endpoint,
+    do: Application.get_env(:stream_closed_captioner_phoenix, :gemini_endpoint, @endpoint)
 end
