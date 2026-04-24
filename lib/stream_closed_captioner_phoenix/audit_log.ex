@@ -41,12 +41,33 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
     :ok
   end
 
+  defp redacted_key?(key), do: key in @redacted_atom_keys or key in @redacted_keys
+
   defp redact_deep(map) when is_map(map) do
     map
-    |> Map.drop(@redacted_atom_keys)
-    |> Map.drop(@redacted_keys)
+    |> Map.reject(fn {key, _value} -> redacted_key?(key) end)
     |> Map.new(fn {k, v} -> {k, redact_deep(v)} end)
   end
 
+  defp redact_deep(list) when is_list(list) do
+    if Keyword.keyword?(list) do
+      list
+      |> Enum.reject(fn {key, _value} -> redacted_key?(key) end)
+      |> Enum.map(fn {key, value} -> {key, redact_deep(value)} end)
+    else
+      Enum.map(list, &redact_deep/1)
+    end
+  end
+
+  defp redact_deep({key, _value}) when redacted_key?(key) do
+    {key, "[REDACTED]"}
+  end
+
+  defp redact_deep(tuple) when is_tuple(tuple) do
+    tuple
+    |> Tuple.to_list()
+    |> Enum.map(&redact_deep/1)
+    |> List.to_tuple()
+  end
   defp redact_deep(value), do: value
 end

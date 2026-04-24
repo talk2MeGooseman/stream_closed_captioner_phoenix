@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
-  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
+  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: false
   import StreamClosedCaptionerPhoenix.AuditHelpers
 
   alias StreamClosedCaptionerPhoenix.Accounts

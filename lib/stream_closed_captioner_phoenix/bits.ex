@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
       {:ok, %{debit: debit, update_balance: updated_balance}} ->
         AuditLog.info("bits.translation_activated", %{
           user_id: user.id,
+          debit_id: debit.id,
           amount: debit.amount,
           balance: updated_balance.balance
         })

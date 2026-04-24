@@ -77,7 +77,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
             })
 
             {:error,
-             "An existing account with the email being used by your Twitch account already exists, please log in to that accoutn and connect your Twitch account"}
+             "An existing account with the email being used by your Twitch account already exists, please log in to that account and connect your Twitch account"}
 
           _ ->
             register_oauth_user(user_attrs, creds)
