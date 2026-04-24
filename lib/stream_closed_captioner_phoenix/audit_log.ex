@@ -59,8 +59,12 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
     end
   end
 
-  defp redact_deep({key, _value}) when redacted_key?(key) do
-    {key, "[REDACTED]"}
+  defp redact_deep({key, value}) do
+    if redacted_key?(key) do
+      {key, "[REDACTED]"}
+    else
+      {redact_deep(key), redact_deep(value)}
+    end
   end
 
   defp redact_deep(tuple) when is_tuple(tuple) do
@@ -69,5 +73,6 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
     |> Enum.map(&redact_deep/1)
     |> List.to_tuple()
   end
+
   defp redact_deep(value), do: value
 end
