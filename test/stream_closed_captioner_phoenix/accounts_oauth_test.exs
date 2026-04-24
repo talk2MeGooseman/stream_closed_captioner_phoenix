@@ -1,7 +1,8 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
   import StreamClosedCaptionerPhoenix.Factory
 
-  use StreamClosedCaptionerPhoenix.DataCase, async: true
+  use StreamClosedCaptionerPhoenix.DataCase, async: false
+  import StreamClosedCaptionerPhoenix.AuditHelpers
 
   alias StreamClosedCaptionerPhoenix.AccountsOauth
 
@@ -84,7 +85,10 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
 
       user = insert(:user, uid: nil, provider: nil)
 
-      {:ok, data} = AccountsOauth.find_or_register_user_with_oauth(attrs, creds, user)
+      {:ok, data} =
+        capture_audit_events(fn ->
+          AccountsOauth.find_or_register_user_with_oauth(attrs, creds, user)
+        end)
 
       assert data.user.uid == attrs["id"]
       refute data.user.email == attrs["email"]
@@ -92,6 +96,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       assert data.user.description == attrs["description"]
       assert data.user.provider == "twitch"
       assert data.user.access_token == "12345"
+      assert_audit_event("oauth.account_linked")
     end
 
     test "when current user, doesnt connect twitch accoutn if linked with another user" do
@@ -113,8 +118,14 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       insert(:user, uid: attrs["id"], provider: "twitch")
       current_user = insert(:user, uid: nil, provider: nil)
 
-      assert {:error, _message} =
-               AccountsOauth.find_or_register_user_with_oauth(attrs, creds, current_user)
+      result =
+        capture_audit_events(fn ->
+          AccountsOauth.find_or_register_user_with_oauth(attrs, creds, current_user)
+        end)
+
+      assert {:error, _message} = result
+      assert_audit_event("oauth.account_link_failed_already_linked")
     end
   end
+
 end

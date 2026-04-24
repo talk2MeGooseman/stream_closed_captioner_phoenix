@@ -24,7 +24,7 @@
 
 | Name | Role | Responsibilities |
 |------|------|-----------------|
-| Erik Guzman | Staff Engineer (Reviewer) | Final approval on all implementation plans and completed work before merge. Escalation point for architecture decisions, security concerns, and scope changes. |
+| Erik Guzman | Staff Engineer (Reviewer) | Final approval on plans + completed work before merge. Escalation for arch decisions, security, scope changes. |
 
 ## Project Context
 

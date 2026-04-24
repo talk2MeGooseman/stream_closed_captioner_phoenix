@@ -1,7 +1,8 @@
 defmodule StreamClosedCaptionerPhoenix.AccountsTest do
   import StreamClosedCaptionerPhoenix.Factory
 
-  use StreamClosedCaptionerPhoenix.DataCase, async: true
+  use StreamClosedCaptionerPhoenix.DataCase, async: false
+  import StreamClosedCaptionerPhoenix.AuditHelpers
 
   alias StreamClosedCaptionerPhoenix.Accounts
   import StreamClosedCaptionerPhoenix.AccountsFixtures
@@ -309,12 +310,15 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "updates the password", %{user: user} do
       {:ok, user} =
-        Accounts.update_user_password(user, valid_user_password(), %{
-          password: "new valid password"
-        })
+        capture_audit_events(fn ->
+          Accounts.update_user_password(user, valid_user_password(), %{
+            password: "new valid password"
+          })
+        end)
 
       assert is_nil(user.password)
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert_audit_event("accounts.password_changed")
     end
 
     test "deletes all tokens for the given user", %{user: user} do
@@ -503,9 +507,14 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
 
     test "updates the password", %{user: user} do
-      {:ok, updated_user} = Accounts.reset_user_password(user, %{password: "new valid password"})
+      {:ok, updated_user} =
+        capture_audit_events(fn ->
+          Accounts.reset_user_password(user, %{password: "new valid password"})
+        end)
+
       assert is_nil(updated_user.password)
       assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
+      assert_audit_event("accounts.password_reset")
     end
 
     test "deletes all tokens for the given user", %{user: user} do
@@ -560,4 +569,5 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       assert status == :error
     end
   end
+
 end

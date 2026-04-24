@@ -1,6 +1,7 @@
 defmodule StreamClosedCaptionerPhoenix.BitsTest do
   import StreamClosedCaptionerPhoenix.Factory
   use StreamClosedCaptionerPhoenix.DataCase, async: false
+  import StreamClosedCaptionerPhoenix.AuditHelpers
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Bits
@@ -23,7 +24,26 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 0))
-      assert {:error, :bits_balance_check, _, _} = Bits.activate_translations_for(user)
+
+      result =
+        capture_audit_events(fn ->
+          Bits.activate_translations_for(user)
+        end)
+
+      assert {:error, :bits_balance_check, _, _} = result
+      assert_audit_event("bits.translation_activation_failed")
+    end
+
+    test "activate_translations_for/1 emits audit log when activation succeeds" do
+      user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
+
+      result =
+        capture_audit_events(fn ->
+          Bits.activate_translations_for(user)
+        end)
+
+      assert {:ok, _} = result
+      assert_audit_event("bits.translation_activated")
     end
 
     test "activate_translations_for/1 return :ok if user has minimum balance" do
@@ -275,7 +295,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
         }
       }
 
-      assert {:ok, _} = Bits.process_bits_transaction(user.uid, data)
+      result =
+        capture_audit_events(fn ->
+          Bits.process_bits_transaction(user.uid, data)
+        end)
+
+      assert {:ok, _} = result
+      assert_audit_event("bits.credit_applied")
     end
 
     test "process_bits_transaction returns error when user has no bits_balance" do
@@ -300,4 +326,5 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
                Bits.process_bits_transaction(user.uid, data)
     end
   end
+
 end

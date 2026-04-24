@@ -6,15 +6,14 @@ Documentation specialist maintaining history, decisions, and technical records.
 
 **Project:** stream_closed_captioner_phoenix
 
-
 ## Responsibilities
 
-- Collaborate with team members on assigned work
+- Collaborate with team on assigned work
 - Maintain code quality and project standards
 - Document decisions and progress in history
 
 ## Work Style
 
-- Read project context and team decisions before starting work
-- Communicate clearly with team members
+- Read project context and decisions before starting
+- Communicate clearly with team
 - Follow established patterns and conventions
