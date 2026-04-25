@@ -1,6 +1,8 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Accounts do
+  alias StreamClosedCaptionerPhoenix.Accounts
+
   def get_user(_parent, %{id: id}, _resolution) do
-    case StreamClosedCaptionerPhoenix.Accounts.get_user!(id) do
+    case Accounts.get_user!(id) do
       nil ->
         {:error, "User ID #{id} not found"}
 
@@ -9,17 +11,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Accounts do
     end
   end
 
-  def get_me(_parent, _params, %{
-        context: %{current_user: current_user}
-      })
-      when current_user != nil do
-    case StreamClosedCaptionerPhoenix.Accounts.get_user!(current_user.id) do
-      nil ->
-        {:error, "Access Denied, no current user set"}
-
-      user ->
-        {:ok, user}
-    end
+  def get_me(_parent, _params, %{context: %{current_user: %Accounts.User{} = current_user}}) do
+    {:ok, current_user}
   end
 
   def get_me(_parent, _args, _resolution) do

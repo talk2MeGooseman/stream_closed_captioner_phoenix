@@ -1,6 +1,9 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   use Absinthe.Schema
 
+  import Absinthe.Resolution.Helpers, only: [dataloader: 3]
+
+  alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenixWeb.{Resolvers, Schema}
 
   def middleware(middleware, _field, _object) do
@@ -9,9 +12,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
 
   def plugins do
     [
-      StreamClosedCaptionerPhoenixWeb.Schema.Middleware.AuthorizedIntrospection
+      StreamClosedCaptionerPhoenixWeb.Schema.Middleware.AuthorizedIntrospection,
+      Absinthe.Middleware.Dataloader
       | Absinthe.Plugin.defaults()
     ]
+  end
+
+  def context(ctx) do
+    loader =
+      Dataloader.new()
+      |> Dataloader.add_source(Repo, Dataloader.Ecto.new(Repo))
+
+    Map.put(ctx, :loader, loader)
   end
 
   import_types(Schema.AccountsTypes)
@@ -26,7 +38,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field(:uid, :string)
 
     field :bits_balance, :bits_balance do
-      resolve(&Resolvers.Bits.bits_balance/3)
+      resolve(
+        dataloader(Repo, :bits_balance,
+          callback: fn
+            nil, _parent, _args -> {:error, "Bits balance not found"}
+            bits_balance, _parent, _args -> {:ok, bits_balance}
+          end
+        )
+      )
     end
 
     field :translations, :translations do
