@@ -14,8 +14,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     [
       StreamClosedCaptionerPhoenixWeb.Schema.Middleware.AuthorizedIntrospection,
       Absinthe.Middleware.Dataloader
-      | Absinthe.Plugin.defaults()
-    ]
+    ] ++ Absinthe.Plugin.defaults()
   end
 
   # Called automatically by Absinthe.run/3 before resolvers execute.
