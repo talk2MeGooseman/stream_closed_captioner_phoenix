@@ -28,6 +28,14 @@
 - Telemetry event: `[:stream_closed_captioner_phoenix, :audit_log]`
 - Redact before logging: `access_token`, `refresh_token`, `token`, `password`, `current_password`, `encrypted_password`, `azure_service_key`
 
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `requesting-code-review` | After completing security audit, before issuing merge approval or block decision | **Hard** — must invoke before issuing final verdict |
+
+Use: `skill("requesting-code-review")`.
+
 ## Merge-Blocking Criteria
 
 Block merge if ANY of these are true:
@@ -58,6 +66,7 @@ Block merge if ANY of these are true:
 Before starting: run `git rev-parse --show-toplevel` for repo root, or use `TEAM ROOT` from spawn prompt. Resolve all `.squad/` paths from root — don't assume CWD is repo root.
 
 Read `.squad/decisions.md` before starting.
+Read `.squad/superpowers.md` before starting.
 Write decisions to `.squad/decisions/inbox/oracle-{brief-slug}.md` — Scribe merges.
 Flag if need another member's input.
 

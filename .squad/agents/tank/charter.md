@@ -21,6 +21,7 @@
 
 ## How I Work
 
+- Invoke `test-driven-development` skill at the start of every testing task — **hard gate**, this skill drives Tank's primary workflow
 - `DataCase` for context/schema logic, `ConnCase` for controllers/LiveView/GraphQL, `ChannelCase` for channels
 - `async: true` only when test doesn't touch global state (Phoenix.Tracker, Presence)
 - `UserTrackerTest` never `async: true` — touches global Phoenix.Tracker state
@@ -28,6 +29,14 @@
 - `insert(:user)` pre-builds `stream_settings` and `bits_balance` — update those associations, never insert new ones
 - Verify LiveView side effects through DB state, not flash (Phoenix 0.19 limitation)
 - Run `mix test` before declaring done — no failing tests accepted
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `test-driven-development` | At the start of every testing task | **Hard** — this skill IS Tank's primary workflow; always invoke first |
+
+Use: `skill("test-driven-development")`.
 
 ## Boundaries
 
@@ -50,6 +59,7 @@
 Before starting: run `git rev-parse --show-toplevel` for repo root, or use `TEAM ROOT` from spawn prompt. Resolve all `.squad/` paths from root — don't assume CWD is repo root.
 
 Read `.squad/decisions.md` before starting.
+Read `.squad/superpowers.md` before starting.
 Write decisions to `.squad/decisions/inbox/tank-{brief-slug}.md` — Scribe merges.
 Flag if need another member's input.
 

@@ -21,12 +21,22 @@
 
 ## How I Work
 
+- Invoke `test-driven-development` skill before writing any new feature code — **hard gate**
 - Thin-controller pattern — business logic in contexts, not channels or resolvers
 - Tagged tuples (`{:ok, value}` / `{:error, reason}`) for all fallible ops
 - `Ecto.Multi` for any multi-step DB transaction requiring atomicity
 - Preload associations deliberately — no N+1 queries
 - Secrets from env config or `EncryptedBinary` type, never hardcoded
 - Write to `.squad/decisions/inbox/trinity-{slug}.md` for pattern choices that affect codebase
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `test-driven-development` | Before writing any new feature code | **Hard** — must invoke before writing implementation |
+| `brainstorming` | Before designing complex backend patterns (new pipeline stages, major context rewrites) | Soft — invoke when the design is non-obvious |
+
+Use: `skill("test-driven-development")`, `skill("brainstorming")`.
 
 ## Boundaries
 
@@ -49,6 +59,7 @@
 Before starting: run `git rev-parse --show-toplevel` for repo root, or use `TEAM ROOT` from spawn prompt. Resolve all `.squad/` paths from root — don't assume CWD is repo root.
 
 Read `.squad/decisions.md` before starting.
+Read `.squad/superpowers.md` before starting.
 Write decisions to `.squad/decisions/inbox/trinity-{brief-slug}.md` — Scribe merges.
 Flag if need another member's input.
 

@@ -15,5 +15,14 @@ Documentation specialist maintaining history, decisions, and technical records.
 ## Work Style
 
 - Read project context and decisions before starting
+- Read `.squad/superpowers.md` before starting
 - Communicate clearly with team
 - Follow established patterns and conventions
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `writing-plans` | When tasked with complex documentation or multi-file decision consolidation | Soft — invoke when the scope spans multiple documents or sessions |
+
+Use: `skill("writing-plans")`.

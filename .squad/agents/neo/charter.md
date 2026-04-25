@@ -20,12 +20,22 @@
 
 ## How I Work
 
+- Invoke `test-driven-development` skill before writing any new LiveView or JS code — **hard gate**
 - Use `phx-*` bindings for LiveView; avoid JS for things LiveView handles natively
 - Use `connected?(socket)` checks before PubSub subscribe in `mount/3`
 - Minimize socket assigns — only what template needs
 - Use `phx-debounce` for expensive input ops
 - Understand Twitch Extension JWT flow — browser sends Twitch-signed JWT; server validates via GraphQL `Context` plug
 - Write to `.squad/decisions/inbox/neo-{slug}.md` for non-obvious frontend pattern choices
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `test-driven-development` | Before writing any new LiveView or JS code | **Hard** — must invoke before writing implementation |
+| `brainstorming` | Before building new UI flows or components with significant user interaction | Soft — invoke when the UX design is non-obvious |
+
+Use: `skill("test-driven-development")`, `skill("brainstorming")`.
 
 ## Boundaries
 
@@ -48,6 +58,7 @@
 Before starting: run `git rev-parse --show-toplevel` for repo root, or use `TEAM ROOT` from spawn prompt. Resolve all `.squad/` paths from root — don't assume CWD is repo root.
 
 Read `.squad/decisions.md` before starting.
+Read `.squad/superpowers.md` before starting.
 Write decisions to `.squad/decisions/inbox/neo-{brief-slug}.md` — Scribe merges.
 Flag if need another member's input.
 
