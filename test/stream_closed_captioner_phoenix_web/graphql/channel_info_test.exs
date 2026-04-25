@@ -34,7 +34,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoTest do
           variables: %{"id" => user.uid}
         )
 
-      refute Map.has_key?(result, :errors)
+      assert result[:errors] == nil
       assert result.data["channelInfo"]["uid"] == user.uid
       assert result.data["channelInfo"]["bitsBalance"]["balance"] == 750
     end

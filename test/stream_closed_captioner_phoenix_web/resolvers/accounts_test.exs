@@ -28,4 +28,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.AccountsTest do
       assert {:error, _msg} = Resolvers.Accounts.get_me(nil, %{}, resolution)
     end
   end
+
+  describe "get_user/3" do
+    test "returns user when found" do
+      user = insert(:user)
+      assert {:ok, found_user} = Resolvers.Accounts.get_user(nil, %{id: user.id}, nil)
+      assert found_user.id == user.id
+    end
+
+    test "returns error when user not found" do
+      assert {:error, msg} = Resolvers.Accounts.get_user(nil, %{id: 99_999_999}, nil)
+      assert msg =~ "not found"
+    end
+  end
 end
