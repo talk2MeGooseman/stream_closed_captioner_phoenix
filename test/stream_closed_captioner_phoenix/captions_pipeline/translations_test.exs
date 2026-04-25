@@ -29,7 +29,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "returns payload unchanged when user has languages but insufficient bits balance" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -45,7 +45,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "returns payload unchanged when activation fails (e.g. race condition drains balance)" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -69,7 +69,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "translates when user already has an active translation debit" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -94,7 +94,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "returns payload unchanged when Azure returns an error on active debit" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -116,7 +116,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "activates and translates when user has enough bits and a language configured" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -142,7 +142,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "returns payload unchanged when Azure returns an error during fresh activation" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -162,7 +162,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "routes to Gemini when flag is enabled for the user (active debit)" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -188,7 +188,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "routes to Gemini on fresh activation when flag is enabled for the user" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "fr")]
         )
 
@@ -215,7 +215,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "falls back to payload when Gemini returns an error" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -239,7 +239,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
 
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -266,7 +266,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
     test "skips translation when to_languages is empty even if balance is sufficient" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: []
         )
 

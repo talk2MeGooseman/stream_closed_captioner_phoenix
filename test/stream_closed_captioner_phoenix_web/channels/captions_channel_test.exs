@@ -5,10 +5,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
   import StreamClosedCaptionerPhoenix.Factory
 
   setup do
-    # Use stream_settings: nil on the user to prevent a duplicate stream_settings
-    # record (the user factory builds one by default; we need exactly one per user
-    # so that Settings.get_stream_settings_by_user_id/1 returns a single result).
-    stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
+    stream_settings = insert(:stream_settings, user: build(:bare_user))
 
     {:ok, _, socket} =
       StreamClosedCaptionerPhoenixWeb.UserSocket

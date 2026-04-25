@@ -23,7 +23,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
-      user = insert(:user, bits_balance: build(:bits_balance, balance: 0))
+      user = insert(:user, bits_balance: build(:bits_balance, balance: 0, user: nil))
 
       result =
         capture_audit_events(fn ->
@@ -35,7 +35,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "activate_translations_for/1 emits audit log when activation succeeds" do
-      user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
+      user = insert(:user, bits_balance: build(:bits_balance, balance: 500, user: nil))
 
       result =
         capture_audit_events(fn ->
@@ -48,7 +48,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "activate_translations_for/1 return :ok if user has minimum balance" do
       parent = self()
-      created_user = insert(:user, bits_balance: build(:bits_balance, balance: 500))
+      created_user = insert(:user, bits_balance: build(:bits_balance, balance: 500, user: nil))
 
       user = Accounts.get_user!(created_user.id)
 
@@ -70,26 +70,26 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "list_users_bits_balance_debits/1 returns all bits_balance_debits for a user" do
-      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit)
 
       assert Enum.map(Bits.list_users_bits_balance_debits(bits_balance_debit.user), & &1.id) ==
                [bits_balance_debit.id]
     end
 
     test "list_bits_balance_debits/0 returns all bits_balance_debits" do
-      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit)
       assert Enum.map(Bits.list_bits_balance_debits(), & &1.id) == [bits_balance_debit.id]
     end
 
     test "get_bits_balance_debit!/1 returns the bits_balance_debit with given id" do
-      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit)
 
       assert Bits.get_bits_balance_debit!(bits_balance_debit.id).id ==
                bits_balance_debit.id
     end
 
     test "get_users_bits_balance_debit!/1 returns the bits_balance_debit for given user and debit id" do
-      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit)
 
       assert Bits.get_users_bits_balance_debit!(bits_balance_debit.user, bits_balance_debit.id).id ==
                bits_balance_debit.id
@@ -111,15 +111,14 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "get_user_active_debit/1 return a record a debit has occurred in the past 24 hours" do
-      bits_balance_debit = insert(:bits_balance_debit, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit)
       assert Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
 
     test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
       created_at = Timex.today() |> Timex.shift(days: -3) |> Timex.to_naive_datetime()
 
-      bits_balance_debit =
-        insert(:bits_balance_debit, created_at: created_at, user: build(:user, bits_balance: nil))
+      bits_balance_debit = insert(:bits_balance_debit, created_at: created_at)
 
       refute Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
@@ -133,22 +132,22 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     @invalid_attrs %{balance: nil, user_id: 100}
 
     test "list_bits_balances/0 returns all bits_balances" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert Enum.map(Bits.list_bits_balances(), & &1.id) == [bits_balance.id]
     end
 
     test "get_bits_balance!/1 returns the bits_balance with given id" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert Bits.get_bits_balance!(bits_balance.id).id == bits_balance.id
     end
 
     test "get_bits_balance!/1 returns the bits_balance with given user" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert Bits.get_bits_balance!(bits_balance.user).id == bits_balance.id
     end
 
     test "get_bits_balance_by_user_id/1 returns the bits_balance with given user" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil), balance: 100)
+      bits_balance = insert(:bits_balance, balance: 100)
       {:ok, result} = Bits.get_bits_balance_by_user_id(bits_balance.user_id)
       assert result.id == bits_balance.id
       assert result.balance == bits_balance.balance
@@ -173,7 +172,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "update_bits_balance/2 with valid data updates the bits_balance" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
 
       assert {:ok, %BitsBalance{} = bits_balance} =
                Bits.update_bits_balance(bits_balance, @update_attrs)
@@ -182,19 +181,19 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "update_bits_balance/2 with invalid data returns error changeset" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert {:error, %Ecto.Changeset{}} = Bits.update_bits_balance(bits_balance, @invalid_attrs)
       assert bits_balance.id == Bits.get_bits_balance!(bits_balance.id).id
     end
 
     test "delete_bits_balance/1 deletes the bits_balance" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert {:ok, %BitsBalance{}} = Bits.delete_bits_balance(bits_balance)
       assert_raise Ecto.NoResultsError, fn -> Bits.get_bits_balance!(bits_balance.id) end
     end
 
     test "change_bits_balance/1 returns a bits_balance changeset" do
-      bits_balance = insert(:bits_balance, user: build(:user, bits_balance: nil))
+      bits_balance = insert(:bits_balance)
       assert %Ecto.Changeset{} = Bits.change_bits_balance(bits_balance)
     end
   end
@@ -212,27 +211,26 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     }
 
     test "list_bits_transactions/0 returns all bits_transactions" do
-      bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
+      bits_transaction = insert(:bits_transaction)
       assert Enum.map(Bits.list_bits_transactions(), & &1.id) == [bits_transaction.id]
     end
 
     test "get_bits_transaction!/1 returns the bits_transaction with given id" do
-      bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
+      bits_transaction = insert(:bits_transaction)
 
       assert Bits.get_bits_transaction!(bits_transaction.id).id ==
                bits_transaction.id
     end
 
     test "get_bits_transactions!/1 returns the bits_transactions for the given user" do
-      bits_transaction = insert(:bits_transaction, user: build(:user, bits_balance: nil))
+      bits_transaction = insert(:bits_transaction)
 
       assert Enum.map(Bits.get_bits_transactions!(bits_transaction.user), & &1.id) ==
                [bits_transaction.id]
     end
 
     test "get_bits_transaction_by/1 returns the bits_transactions for the given transaction_id" do
-      bits_transaction =
-        insert(:bits_transaction, user: build(:user, bits_balance: nil), transaction_id: "1234")
+      bits_transaction = insert(:bits_transaction, transaction_id: "1234")
 
       assert Bits.get_bits_transaction_by(bits_transaction.transaction_id).id ==
                bits_transaction.id

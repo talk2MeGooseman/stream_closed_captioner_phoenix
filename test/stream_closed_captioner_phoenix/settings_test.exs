@@ -119,7 +119,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_stream_settings/2 with valid data updates the stream_settings but not the user" do
-      stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
 
       assert {:ok, %StreamSettings{} = stream_settings} =
                Settings.update_stream_settings(stream_settings, @update_attrs)
@@ -179,7 +179,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_stream_settings/2 silently drops empty string from blocklist" do
-      stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
 
       assert {:ok, %StreamSettings{} = updated} =
                Settings.update_stream_settings(stream_settings, %{blocklist: ["valid", ""]})
@@ -188,7 +188,7 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
 
     test "update_stream_settings/2 silently drops whitespace-only string from blocklist" do
-      stream_settings = insert(:stream_settings, user: build(:user, stream_settings: nil))
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
 
       assert {:ok, %StreamSettings{} = updated} =
                Settings.update_stream_settings(stream_settings, %{blocklist: ["valid", "   "]})

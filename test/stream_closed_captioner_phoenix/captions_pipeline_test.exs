@@ -98,7 +98,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when user has enough bits, but hasnt selected a translate language, it wont translate" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: []
         )
 
@@ -123,7 +123,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when user has enough bits, activates translations and debits amount" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -199,7 +199,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when user has languages but insufficient bits balance, it won't translate" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 499),
+          bits_balance: build(:bits_balance, balance: 499, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -224,7 +224,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when user already has an active translation debit, translates without debiting balance" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 0),
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -260,7 +260,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when Azure returns a network error, pipeline still returns ok with no translations" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
@@ -286,7 +286,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "when Azure returns an HTTP error, pipeline still returns ok with no translations" do
       user =
         insert(:user,
-          bits_balance: build(:bits_balance, balance: 500),
+          bits_balance: build(:bits_balance, balance: 500, user: nil),
           translate_languages: [build(:translate_language, language: "es")]
         )
 
