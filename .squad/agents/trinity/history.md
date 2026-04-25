@@ -30,3 +30,4 @@
 - 2026-04-19: Audit coverage includes Bits translation activation/debit-credit, Accounts password change/reset + reset-instructions, OAuth link/unlink, User Settings action entry points; tests assert telemetry events directly.
 - 2026-04-25: TMI/TwitchBot was fully dead code in runtime (supervisor commented, no callsites/tests). Safe removal includes config+deps+module cleanup and lock pruning (`mix deps.unlock --unused`) to prevent stale dependency drift.
 - 2026-04-25: Issue #278 Path A was selected and implemented end-to-end with compile + targeted test verification; decision and risk notes were handed off for canonical merge.
+- 2026-04-25: Resolver error handling pattern: bang functions (`Accounts.get_user!(id)`) raise `Ecto.NoResultsError` — use `rescue` clause to catch and convert to GraphQL error tuple, not `case` patterns on nil (dead code). This is idiomatic Elixir.

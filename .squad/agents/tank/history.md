@@ -54,3 +54,4 @@ mix coveralls.html                # Coverage report
 	- `mix.exs` deps list does not include `{:tmi, ...}`.
 - Residual coverage gap: this suite intentionally checks `mix.exs` (source of dependency truth) but does not assert lockfile/doc sync; that remains a lightweight manual review point when dependency cleanup touches `mix.lock` or docs.
 - 2026-04-25: Targeted issue #278 regression suite validated expected behavior after TMI/TwitchBot removal and is now part of the ongoing guardrail set.
+- 2026-04-25: Test assertion normalization: prefer explicit `assert bits_balance == expected_value` over `refute bits_balance` for clarity. Assertion style consistency improves test readability for future maintainers. All 10 tests passing with new coverage for resolver error paths.
