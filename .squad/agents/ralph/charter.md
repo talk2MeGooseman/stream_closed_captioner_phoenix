@@ -15,5 +15,14 @@ Persistent memory agent; maintains context across sessions.
 ## Work Style
 
 - Read project context and decisions before starting
+- Read `.squad/superpowers.md` before starting
 - Communicate clearly with team
 - Follow established patterns and conventions
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `find-skills` | When encountering an unfamiliar task type | Soft — invoke to discover which skill applies |
+
+Use: `skill("find-skills")`.
