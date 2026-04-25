@@ -18,10 +18,22 @@
 
 ## How I Work
 
+- Invoke `brainstorming` skill before any architecture decision or feature scoping — **hard gate**
+- Invoke `requesting-code-review` skill before declaring any review work done — **hard gate**
 - Read `.squad/decisions.md` before every task — team decisions are the architecture's memory
 - Think in fault domains: what breaks, does it fail gracefully?
 - Make trade-offs explicit rather than hiding them in implementation
 - Write ADR-style decisions to `.squad/decisions/inbox/` for lasting choices
+
+## Skills
+
+| Skill | Trigger | Gate |
+|-------|---------|------|
+| `brainstorming` | Before any architecture decision, feature scoping, or design work | **Hard** — must invoke before proceeding |
+| `writing-plans` | Before breaking down complex multi-step work for the team | Soft — invoke when scope is multi-file or multi-session |
+| `requesting-code-review` | After completing architecture/design review, before declaring done | **Hard** — must invoke before proceeding |
+
+Use: `skill("brainstorming")`, `skill("writing-plans")`, `skill("requesting-code-review")`.
 
 ## Boundaries
 
@@ -44,6 +56,7 @@
 Before starting: run `git rev-parse --show-toplevel` for repo root, or use `TEAM ROOT` from spawn prompt. Resolve all `.squad/` paths from root — don't assume CWD is repo root.
 
 Read `.squad/decisions.md` before starting.
+Read `.squad/superpowers.md` before starting.
 Write decisions to `.squad/decisions/inbox/morpheus-{brief-slug}.md` — Scribe merges.
 Flag if need another member's input.
 
