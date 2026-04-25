@@ -18,6 +18,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     ]
   end
 
+  # Called automatically by Absinthe.run/3 before resolvers execute.
+  # Adds a Dataloader.Ecto source keyed by Repo for batching association loads.
   def context(ctx) do
     loader =
       Dataloader.new()

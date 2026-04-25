@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoTest do
   use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   alias StreamClosedCaptionerPhoenixWeb.Schema
+  alias StreamClosedCaptionerPhoenix.Repo
 
   import StreamClosedCaptionerPhoenix.Factory
 
@@ -23,8 +24,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoTest do
   """
 
   describe "channelInfo query" do
-    test "returns uid and bits_balance for a channel using Dataloader" do
+    test "returns uid and bits_balance via Dataloader integration" do
       user = insert(:user, provider: "twitch")
+      Repo.update!(StreamClosedCaptionerPhoenix.Bits.BitsBalance.changeset(user.bits_balance, %{balance: 750}))
 
       {:ok, result} =
         Absinthe.run(@query, Schema,
@@ -34,7 +36,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoTest do
 
       refute Map.has_key?(result, :errors)
       assert result.data["channelInfo"]["uid"] == user.uid
-      assert result.data["channelInfo"]["bitsBalance"]["balance"] == user.bits_balance.balance
+      assert result.data["channelInfo"]["bitsBalance"]["balance"] == 750
+    end
+
+    test "returns field error when user has no bits_balance" do
+      user = insert(:user, bits_balance: nil, provider: "twitch")
+
+      {:ok, result} =
+        Absinthe.run(@query, Schema,
+          context: graphql_context(user.uid),
+          variables: %{"id" => user.uid}
+        )
+
+      assert result.data["channelInfo"]["bitsBalance"] == nil
+      assert Enum.any?(result[:errors], &(&1.message == "Bits balance not found"))
     end
 
     test "returns error when channel is not found" do
