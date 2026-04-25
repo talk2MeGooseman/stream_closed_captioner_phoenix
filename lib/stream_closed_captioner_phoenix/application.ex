@@ -30,7 +30,6 @@ defmodule StreamClosedCaptionerPhoenix.Application do
        ]},
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
       {StreamClosedCaptionerPhoenix.Cache, []},
-      # {TMI.Supervisor, bot_config()},
       NewRelicOban.Telemetry.Oban,
       {Oban, oban_config()}
     ]
@@ -53,12 +52,4 @@ defmodule StreamClosedCaptionerPhoenix.Application do
   defp oban_config do
     Application.fetch_env!(:stream_closed_captioner_phoenix, Oban)
   end
-
-  # defp redis_pubsub_config do
-  #   Application.fetch_env!(:stream_closed_captioner_phoenix, :pubsub_redis)
-  # end
-
-  # defp bot_config do
-  #   Application.fetch_env!(:stream_closed_captioner_phoenix, :bot)
-  # end
 end

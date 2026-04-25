@@ -113,15 +113,6 @@ config :stream_closed_captioner_phoenix, Oban,
   queues: [default: 10, events: 10]
 
 config :stream_closed_captioner_phoenix,
-  bot: [
-    bot: TwitchBot,
-    user: "StreamClosedCaptioner",
-    pass: System.get_env("TWITCH_CHAT_OAUTH"),
-    channels: [],
-    debug: false
-  ]
-
-config :stream_closed_captioner_phoenix,
   deepgram_token: System.get_env("DEEPGRAM_TOKEN")
 
 config :stream_closed_captioner_phoenix,

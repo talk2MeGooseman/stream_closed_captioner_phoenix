@@ -44,3 +44,13 @@ mix coveralls.html                # Coverage report
 ## Learnings
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
+
+### 2026-04-25 — Issue #278 TMI/TwitchBot test coverage audit
+
+- There was no direct test coverage guarding the dead TMI/TwitchBot removal contract.
+- Added `test/stream_closed_captioner_phoenix/tmi_removal_test.exs` to lock three safety checks:
+	- `:stream_closed_captioner_phoenix` app config does not expose `:bot`.
+	- `lib/stream_closed_captioner_phoenix/application.ex` does not reference `TMI.Supervisor` or `bot_config`.
+	- `mix.exs` deps list does not include `{:tmi, ...}`.
+- Residual coverage gap: this suite intentionally checks `mix.exs` (source of dependency truth) but does not assert lockfile/doc sync; that remains a lightweight manual review point when dependency cleanup touches `mix.lock` or docs.
+- 2026-04-25: Targeted issue #278 regression suite validated expected behavior after TMI/TwitchBot removal and is now part of the ongoing guardrail set.

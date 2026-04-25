@@ -210,4 +210,3 @@ Absinthe.Subscription.publish(Endpoint, payload, new_twitch_caption: user.uid)
 | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | Twitch OAuth |
 | `AZURE_COGNITIVE_KEY` | Server-side Azure key (used when user has no own key) |
 | `DEEPGRAM_TOKEN` | API token for Deepgram WebSocket transcription |
-| `TWITCH_CHAT_OAUTH` | OAuth token for the Twitch chat bot account |

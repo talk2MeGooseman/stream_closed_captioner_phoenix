@@ -53,3 +53,5 @@ Azure HTTP calls use `HTTPoison.post` (not `post!`), pattern-match result. Error
 - 2026-04-19: Security audit events use shared `StreamClosedCaptionerPhoenix.AuditLog` — emits Logger entries + Telemetry on `[:stream_closed_captioner_phoenix, :audit_log]`, secret-key redaction before emission.
 - 2026-04-19: Audit coverage includes Bits translation activation/debit-credit, Accounts password change/reset + reset-instructions, OAuth link/unlink, User Settings action entry points.
 - 2026-04-19: `@derive {Inspect, except: [...]}` on User schema covers: `:password, :encrypted_password, :azure_service_key, :access_token, :refresh_token`.
+- 2026-04-25: Residual `lib/.../services/twitch_bot.ex` (`use TMI`) can break compile when `:tmi` is removed, even if bot supervisor/config wiring is already gone; full removal must include deleting orphan modules and stale env var docs.
+- 2026-04-25: Issue #278 risk pass confirmed Path A is safe after orphan cleanup; stale `TWITCH_CHAT_OAUTH` doc mention removed and compile/reminder-job checks validated.
