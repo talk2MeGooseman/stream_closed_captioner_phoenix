@@ -24,7 +24,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_balance_debit
     end
 
-    test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
+    test "activate_translations_for/1 return an :insufficient_balance error if user doesnt have large enough bits balance" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 0, user: nil))
 
       result =
@@ -69,8 +69,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       results = [Task.await(task1), Task.await(task2)]
       assert Enum.any?(results, &match?({:ok, _}, &1)),
         "Expected one task to succeed"
-      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficent_balance, _}, &1)),
-        "Expected one task to fail with :insufficent_balance"
+      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficient_balance, _}, &1)),
+        "Expected one task to fail with :insufficient_balance"
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
@@ -451,6 +451,198 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       assert {:error, :retrieve_balance, :no_bits_balance, _} =
                Bits.process_bits_transaction(user.uid, data)
+    end
+  end
+
+
+  # ===== BROADCAST TESTS (Critical Gaps) =====
+
+  describe "broadcast behavior" do
+    test "activate_translations_for/1 broadcasts translationActivated event after transaction commits" do
+      user = insert(:user, bits_balance: build(:bits_balance, balance: 500, user: nil))
+
+      # Subscribe to the captions channel before calling the function
+      :ok = StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("captions:#{user.id}")
+
+      # Call activate_translations_for
+      {:ok, %{update_balance: updated_balance}} = Bits.activate_translations_for(user)
+
+      # Assert that the broadcast was received with the correct event and payload
+      assert_receive %Phoenix.Socket.Broadcast{
+        event: "translationActivated",
+        payload: %{enabled: true, balance: balance}
+      }, 1000
+
+      # Verify the balance in the broadcast payload matches the updated balance
+      assert balance == updated_balance.balance
+    end
+
+    test "activate_translations_for/1 does NOT broadcast on failure (phantom broadcast prevention)" do
+      # Create a user with NO bits_balance (force the transaction to fail)
+      user = insert(:user)
+      Repo.delete!(user.bits_balance)
+      user = Repo.reload(user)
+
+      # Subscribe to the captions channel
+      :ok = StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("captions:#{user.id}")
+
+      # Call activate_translations_for - should fail
+      {:error, :bits_balance_check, :insufficient_balance, _} = Bits.activate_translations_for(user)
+
+      # Assert NO broadcast is received (phantom broadcast prevention)
+      refute_receive %Phoenix.Socket.Broadcast{event: "translationActivated"}, 500
+    end
+
+    test "process_bits_transaction/2 broadcasts transaction event after balance is credited" do
+      user = insert(:user, provider: "twitch")
+
+      # Subscribe to the captions channel before calling the function
+      :ok = StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("captions:#{user.id}")
+
+      data = %{
+        "data" => %{
+          "transactionId" => "broadcast-test-tx-#{user.id}-#{System.monotonic_time()}",
+          "userId" => "1235",
+          "time" => NaiveDateTime.utc_now(),
+          "product" => %{
+            "sku" => "translation500",
+            "cost" => %{
+              "amount" => 500
+            }
+          }
+        }
+      }
+
+      # Get the initial balance before the transaction
+      initial_balance = Bits.get_bits_balance!(user).balance
+
+      # Call process_bits_transaction
+      {:ok, %{add_to_balance: updated_balance}} = Bits.process_bits_transaction(user.uid, data)
+
+      # Assert that the broadcast was received with the correct event and payload
+      assert_receive %Phoenix.Socket.Broadcast{
+        event: "transaction",
+        payload: %{balance: broadcast_balance}
+      }, 1000
+
+      # Verify the balance in the broadcast payload matches the updated balance
+      assert broadcast_balance == updated_balance.balance
+      assert broadcast_balance == initial_balance + 500
+    end
+  end
+
+  # ===== PAGINATION & EDGE CASE TESTS (Medium Priority Gaps) =====
+
+  describe "bits_transactions_and_debits_for_user" do
+    test "bits_transactions_and_debits_for_user/3 returns paginated results with correct total count" do
+      user = insert(:user)
+
+      # Create 3 debits
+      _debits = Enum.map(1..3, fn _i ->
+        insert(:bits_balance_debit, user: user)
+      end)
+
+      # Create 2 transactions with unique transaction_ids
+      _transactions = Enum.map(1..2, fn i ->
+        insert(:bits_transaction, user: user, transaction_id: "tx-unique-#{user.id}-#{i}-#{System.monotonic_time()}")
+      end)
+
+      # Total should be 5 records
+      result = Bits.bits_transactions_and_debits_for_user(user.id, 0, 10)
+
+      assert result.total_records == 5
+      assert length(result.records) == 5
+    end
+
+    test "bits_transactions_and_debits_for_user/3 respects offset and limit pagination" do
+      user = insert(:user)
+
+      # Create 5 debits
+      _debits = Enum.map(1..5, fn _i ->
+        insert(:bits_balance_debit, user: user)
+      end)
+
+      # Create 3 transactions with unique transaction_ids (using counter to ensure uniqueness)
+      _transactions = Enum.map(1..3, fn i ->
+        insert(:bits_transaction, user: user, transaction_id: "tx-offset-#{user.id}-#{i}")
+      end)
+
+      # Total: 8 records
+
+      # Get first page: offset=0, limit=3
+      page1 = Bits.bits_transactions_and_debits_for_user(user.id, 0, 3)
+
+      # Get second page: offset=3, limit=3
+      page2 = Bits.bits_transactions_and_debits_for_user(user.id, 3, 3)
+
+      # Get third page: offset=6, limit=3
+      page3 = Bits.bits_transactions_and_debits_for_user(user.id, 6, 3)
+
+      # Assert total count
+      assert page1.total_records == 8
+      assert page2.total_records == 8
+      assert page3.total_records == 8
+
+      # Assert that pagination returns the correct number of records per page
+      assert length(page1.records) == 3
+      assert length(page2.records) == 3
+      assert length(page3.records) == 2
+    end
+
+    test "bits_transactions_and_debits_for_user/3 returns empty result for user with no records" do
+      user = insert(:user)
+
+      result = Bits.bits_transactions_and_debits_for_user(user.id, 0, 10)
+
+      assert result.total_records == 0
+      assert result.records == []
+    end
+  end
+
+  describe "get_translation_snapshot" do
+    test "get_translation_snapshot/1 returns tuple with balance and debit when both exist" do
+      user = insert(:user)
+      _debit = insert(:bits_balance_debit, user: user)
+
+      {balance, debit} = Bits.get_translation_snapshot(user.id)
+
+      assert not is_nil(balance)
+      assert not is_nil(debit)
+      assert balance.user_id == user.id
+      assert debit.user_id == user.id
+    end
+
+    test "get_translation_snapshot/1 returns {balance, nil} when user has no active debit" do
+      user = insert(:user)
+      # Don't insert any debit
+
+      {balance, debit} = Bits.get_translation_snapshot(user.id)
+
+      assert not is_nil(balance)
+      assert is_nil(debit)
+      assert balance.user_id == user.id
+    end
+
+    test "get_translation_snapshot/1 returns {nil, nil} when user has neither balance nor debit" do
+      user = insert(:user, bits_balance: nil)
+      # Don't insert any debit
+
+      {balance, debit} = Bits.get_translation_snapshot(user.id)
+
+      assert is_nil(balance)
+      assert is_nil(debit)
+    end
+
+    test "get_translation_snapshot/1 returns {nil, debit} when user has active debit but no balance record" do
+      user = insert(:user)
+      debit = insert(:bits_balance_debit, user: user)
+      Repo.delete!(user.bits_balance)
+
+      {balance, active_debit} = Bits.get_translation_snapshot(user.id)
+
+      assert is_nil(balance)
+      assert not is_nil(active_debit)
+      assert active_debit.id == debit.id
     end
   end
 
