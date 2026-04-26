@@ -39,9 +39,10 @@ TWITCH_CHAT_OAUTH
 EVENTSUB_CALLBACK_URL          # https://<your-domain>/webhooks/twitch
 SENDGRID_API_KEY
 DEEPGRAM_TOKEN
+COGNITIVE_SERVICE_KEY          # Azure Cognitive Services key (for live caption translation)
 NOTION_API_KEY
 NOTION_VERSION
-GRAPHQL_ENABLE_INTROSPECTION   # false
+GRAPHQL_ENABLE_INTROSPECTION   # set to "true" to enable; defaults to disabled ("false")
 GRAPHQL_ENABLE_FIELD_SUGGESTIONS # false
 CACHE_ALLOCATED_MEMORY         # 1073741824 for 4 GB host, 536870912 for 2 GB host
 ```
@@ -60,9 +61,25 @@ Run all of these against the Coolify **temp domain** (not the live domain yet).
 
 ### 1.2 — Database
 
-- [ ] Migrations ran cleanly during deploy (check Coolify deploy logs for `Running migrations...` with no errors)
+Migrations run **automatically on every deploy**: the `bin/server` startup script
+(the Docker `CMD` entrypoint) calls `StreamClosedCaptionerPhoenix.Release.migrate`
+before the server starts. You do not need to run them manually as part of a normal
+deploy.
+
+- [ ] Migrations ran cleanly during deploy — check the **app startup logs** in
+      Coolify (not a separate pre-deploy step) for `Running migrations...` with no errors
 - [ ] Can log in — this exercises the `users` table read path
 - [ ] Visit admin panel (`/admin`) and confirm data is accessible
+
+#### Manual migration (troubleshooting only)
+
+If a migration gets stuck or you need to migrate before a deploy, use Coolify's
+**"Execute command"** feature (or SSH into the container) and run:
+
+```bash
+# Run migrations manually inside the running container
+./stream_closed_captioner_phoenix eval "StreamClosedCaptionerPhoenix.Release.migrate"
+```
 
 ### 1.3 — Twitch integration (test with a secondary/test account)
 
