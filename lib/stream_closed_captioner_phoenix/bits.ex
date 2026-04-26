@@ -16,6 +16,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
+  @cache_ttl :timer.minutes(2)
+
   def bits_transactions_and_debits_for_user(user_id, offset, limit) do
     records =
       BitsTransactionQueries.get_bits_transactions_and_debits_for_user(user_id)
@@ -171,7 +173,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalanceDebit, user_id},
-              opts: [ttl: :timer.minutes(5)]
+              opts: [ttl: @cache_ttl]
             )
   def user_active_debit_exists?(user_id) do
     BitsBalanceDebitQueries.with_user_id(user_id)
@@ -262,7 +264,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalance, user.id},
-              opts: [ttl: :timer.minutes(2)]
+              opts: [ttl: @cache_ttl]
             )
   def get_bits_balance_for_user(%User{} = user) do
     BitsBalanceQueries.with_user_id(user.id)

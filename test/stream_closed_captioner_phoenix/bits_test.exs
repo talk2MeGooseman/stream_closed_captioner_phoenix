@@ -5,6 +5,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
   alias StreamClosedCaptionerPhoenix.Accounts
   alias StreamClosedCaptionerPhoenix.Bits
+  alias StreamClosedCaptionerPhoenix.Cache
+  alias StreamClosedCaptionerPhoenix.Repo
 
   describe "bits_balance_debits" do
     alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
@@ -195,6 +197,72 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     test "change_bits_balance/1 returns a bits_balance changeset" do
       bits_balance = insert(:bits_balance)
       assert %Ecto.Changeset{} = Bits.change_bits_balance(bits_balance)
+    end
+  end
+
+  describe "cache behavior" do
+    alias StreamClosedCaptionerPhoenix.Bits.BitsBalance
+    alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
+
+    setup do
+      Cache.delete_all()
+      :ok
+    end
+
+    test "user_active_debit_exists?/1 returns cached result after debit is deleted directly from DB" do
+      user = insert(:user)
+      debit = insert(:bits_balance_debit, user: user)
+
+      # Prime the cache — result is true because debit exists
+      assert Bits.user_active_debit_exists?(user.id) == true
+
+      # Delete the debit directly, bypassing Bits.create_bits_balance_debit cache eviction
+      Repo.delete!(debit)
+
+      # Cache is still warm: result must still be true
+      assert Bits.user_active_debit_exists?(user.id) == true
+    end
+
+    test "create_bits_balance_debit/2 evicts the debit cache so fresh data is returned" do
+      user = insert(:user)
+
+      # Prime the cache — no debit exists yet, result is false
+      assert Bits.user_active_debit_exists?(user.id) == false
+
+      # create_bits_balance_debit evicts the cache key
+      {:ok, _debit} = Bits.create_bits_balance_debit(user, %{amount: 500})
+
+      # Cache was evicted: fresh DB read shows true
+      assert Bits.user_active_debit_exists?(user.id) == true
+    end
+
+    test "get_bits_balance_for_user/1 returns cached result after balance is updated directly in DB" do
+      user = insert(:user)
+
+      # Prime the cache — default balance is 0
+      cached = Bits.get_bits_balance_for_user(user)
+      assert %BitsBalance{} = cached
+      original_balance = cached.balance
+
+      # Update the balance directly in the DB, bypassing update_bits_balance cache eviction
+      Repo.update!(Ecto.Changeset.change(user.bits_balance, balance: original_balance + 999))
+
+      # Cache is still warm: balance must be unchanged
+      result = Bits.get_bits_balance_for_user(user)
+      assert result.balance == original_balance
+    end
+
+    test "update_bits_balance/2 evicts the balance cache so fresh data is returned" do
+      user = insert(:user)
+
+      # Prime the cache — default balance is 0
+      assert %BitsBalance{balance: 0} = Bits.get_bits_balance_for_user(user)
+
+      # update_bits_balance evicts the cache key
+      {:ok, _updated} = Bits.update_bits_balance(user.bits_balance, %{balance: 100})
+
+      # Cache was evicted: fresh DB read shows the new balance
+      assert %BitsBalance{balance: 100} = Bits.get_bits_balance_for_user(user)
     end
   end
 
