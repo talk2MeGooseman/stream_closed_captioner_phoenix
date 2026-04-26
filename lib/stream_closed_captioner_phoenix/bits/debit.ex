@@ -93,10 +93,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
           balance: updated_balance.balance
         })
 
-      {:error, :bits_balance_check, :insufficent_balance, _} ->
+      {:error, :bits_balance_check, :insufficient_balance, _} ->
         AuditLog.warn("bits.translation_activation_failed", %{
           user_id: user.id,
-          reason: :insufficent_balance
+          reason: :insufficient_balance
         })
 
       {:error, step, reason, _} ->
@@ -120,7 +120,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
       if bits_balance && bits_balance.balance >= 500 do
         {:ok, bits_balance}
       else
-        {:error, :insufficent_balance}
+        {:error, :insufficient_balance}
       end
     end
   end

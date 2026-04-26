@@ -24,7 +24,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_balance_debit
     end
 
-    test "activate_translations_for/1 return an :insufficent_balance error if user doesnt have large enough bits balance" do
+    test "activate_translations_for/1 return an :insufficient_balance error if user doesnt have large enough bits balance" do
       user = insert(:user, bits_balance: build(:bits_balance, balance: 0, user: nil))
 
       result =
@@ -69,8 +69,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       results = [Task.await(task1), Task.await(task2)]
       assert Enum.any?(results, &match?({:ok, _}, &1)),
         "Expected one task to succeed"
-      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficent_balance, _}, &1)),
-        "Expected one task to fail with :insufficent_balance"
+      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficient_balance, _}, &1)),
+        "Expected one task to fail with :insufficient_balance"
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
@@ -487,7 +487,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       :ok = StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("captions:#{user.id}")
 
       # Call activate_translations_for - should fail
-      {:error, :bits_balance_check, :insufficent_balance, _} = Bits.activate_translations_for(user)
+      {:error, :bits_balance_check, :insufficient_balance, _} = Bits.activate_translations_for(user)
 
       # Assert NO broadcast is received (phantom broadcast prevention)
       refute_receive %Phoenix.Socket.Broadcast{event: "translationActivated"}, 500
@@ -564,8 +564,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       # Create 3 transactions with unique transaction_ids (using counter to ensure uniqueness)
       _transactions = Enum.map(1..3, fn i ->
-        Process.sleep(1)  # Ensure monotonic_time() differs between iterations
-        insert(:bits_transaction, user: user, transaction_id: "tx-offset-#{user.id}-#{i}-#{System.monotonic_time()}")
+        insert(:bits_transaction, user: user, transaction_id: "tx-offset-#{user.id}-#{i}")
       end)
 
       # Total: 8 records
@@ -632,6 +631,18 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       assert is_nil(balance)
       assert is_nil(debit)
+    end
+
+    test "get_translation_snapshot/1 returns {nil, debit} when user has active debit but no balance record" do
+      user = insert(:user)
+      debit = insert(:bits_balance_debit, user: user)
+      Repo.delete!(user.bits_balance)
+
+      {balance, active_debit} = Bits.get_translation_snapshot(user.id)
+
+      assert is_nil(balance)
+      assert not is_nil(active_debit)
+      assert active_debit.id == debit.id
     end
   end
 
