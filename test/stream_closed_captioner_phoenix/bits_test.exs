@@ -130,16 +130,16 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     # --- 24h boundary tests (issue #289) ---
     #
-    # We update `created_at` via raw SQL using the DB's own NOW() so that the fixture
-    # timestamps are in the same timezone frame as the query's `NOW() - INTERVAL '24 hours'`
-    # expression. Using Elixir's NaiveDateTime.utc_now() would introduce UTC-vs-session-
-    # timezone drift and make these tests flaky on non-UTC database servers.
+    # We update `created_at` via raw SQL using `NOW() AT TIME ZONE 'UTC'` so that the fixture
+    # timestamps match the UTC-normalized reference frame used by the query's
+    # `(NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours'` expression. This avoids
+    # drift on non-UTC database sessions.
 
     test "get_user_active_debit/1 returns a debit created 23h 59m ago (just inside the 24h window)" do
       bits_balance_debit = insert(:bits_balance_debit)
 
       Repo.query!(
-        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '23 hours 59 minutes')::timestamp WHERE id = $1",
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '23 hours 59 minutes' WHERE id = $1",
         [bits_balance_debit.id]
       )
 
@@ -147,13 +147,12 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "get_user_active_debit/1 does not return a debit created 24h 1m ago (just outside the 24h window)" do
-      # The original bug (NaiveDateTime seconds-zeroing) widened the window by up to 59s,
       # so a debit at 24h+1m ago could still be returned. This exact DB-native interval
       # comparison closes that gap.
       bits_balance_debit = insert(:bits_balance_debit)
 
       Repo.query!(
-        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '24 hours 1 minute')::timestamp WHERE id = $1",
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours 1 minute' WHERE id = $1",
         [bits_balance_debit.id]
       )
 
@@ -164,7 +163,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       bits_balance_debit = insert(:bits_balance_debit)
 
       Repo.query!(
-        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '25 hours')::timestamp WHERE id = $1",
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '25 hours' WHERE id = $1",
         [bits_balance_debit.id]
       )
 

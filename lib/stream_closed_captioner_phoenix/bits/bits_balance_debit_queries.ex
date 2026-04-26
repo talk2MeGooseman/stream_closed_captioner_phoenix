@@ -17,7 +17,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries do
 
   def less_than_one_day_ago(query \\ base()) do
     query
-    |> where([bits_balance_debit], bits_balance_debit.created_at >= fragment("NOW() - INTERVAL '24 hours'"))
+    |> where([bits_balance_debit], bits_balance_debit.created_at >= fragment("(NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours'"))
   end
 
   defp base do
