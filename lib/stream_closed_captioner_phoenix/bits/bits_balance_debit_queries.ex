@@ -1,8 +1,6 @@
 defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries do
   import Ecto.Query, warn: false
 
-  @seconds_in_hours 3600
-
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
 
   def all(query \\ base()), do: query
@@ -18,20 +16,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries do
   end
 
   def less_than_one_day_ago(query \\ base()) do
-    one_day_ago = NaiveDateTime.utc_now() |> NaiveDateTime.add(@seconds_in_hours * -24)
-    # set seconds to 0
-    one_day_ago =
-      NaiveDateTime.new!(
-        one_day_ago.year,
-        one_day_ago.month,
-        one_day_ago.day,
-        one_day_ago.hour,
-        one_day_ago.minute,
-        0
-      )
-
     query
-    |> where([bits_balance_debit], bits_balance_debit.created_at >= ^one_day_ago)
+    |> where([bits_balance_debit], bits_balance_debit.created_at >= fragment("NOW() - INTERVAL '24 hours'"))
   end
 
   defp base do
