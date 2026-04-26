@@ -16,6 +16,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
 
+  @cache_ttl :timer.minutes(2)
+
   def bits_transactions_and_debits_for_user(user_id, offset, limit) do
     records =
       BitsTransactionQueries.get_bits_transactions_and_debits_for_user(user_id)
@@ -168,10 +170,21 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     |> Repo.one()
   end
 
+  @doc """
+  Returns a consistent `{balance, debit}` snapshot read atomically from the
+  database, bypassing the cache. Use this when balance and activation state must
+  reflect the same point-in-time (e.g. GraphQL resolvers).
+  """
+  def get_translation_snapshot(user_id) do
+    debit = get_user_active_debit(user_id)
+    balance = BitsBalanceQueries.with_user_id(user_id) |> limit(1) |> Repo.one()
+    {balance, debit}
+  end
+
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalanceDebit, user_id},
-              opts: [ttl: :timer.minutes(5)]
+              opts: [ttl: @cache_ttl]
             )
   def user_active_debit_exists?(user_id) do
     BitsBalanceDebitQueries.with_user_id(user_id)
@@ -192,6 +205,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   @decorate cache_evict(cache: Cache, key: {BitsBalanceDebit, user.id})
+  @decorate cache_evict(cache: Cache, key: {BitsBalance, user.id})
   def create_bits_balance_debit(user, attrs \\ %{}) do
     result =
       user
@@ -262,7 +276,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalance, user.id},
-              opts: [ttl: :timer.minutes(2)]
+              opts: [ttl: @cache_ttl]
             )
   def get_bits_balance_for_user(%User{} = user) do
     BitsBalanceQueries.with_user_id(user.id)
@@ -325,6 +339,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   @decorate cache_evict(
               cache: Cache,
               key: {BitsBalance, bits_balance.user_id}
+            )
+  @decorate cache_evict(
+              cache: Cache,
+              key: {BitsBalanceDebit, bits_balance.user_id}
             )
   def update_bits_balance(%BitsBalance{} = bits_balance, attrs) do
     bits_balance

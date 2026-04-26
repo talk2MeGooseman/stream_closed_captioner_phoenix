@@ -1,9 +1,10 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Settings do
   alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenix.Bits
   alias StreamClosedCaptionerPhoenix.Settings
 
   def get_translations_info(%Accounts.User{} = user, _, _resolution) do
-    debit = StreamClosedCaptionerPhoenix.Bits.get_user_active_debit(user.id)
+    {_balance, debit} = Bits.get_translation_snapshot(user.id)
     time = Map.get(debit || %{}, :created_at)
 
     {:ok,
