@@ -64,4 +64,9 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Balance do
   def change_bits_balance(%BitsBalance{} = bits_balance, attrs \\ %{}) do
     BitsBalance.changeset(bits_balance, attrs)
   end
+
+  @doc "Returns the balance record directly from DB, bypassing cache. Use when point-in-time consistency is required."
+  def get_bits_balance_uncached(user_id) do
+    BitsBalanceQueries.with_user_id(user_id) |> limit(1) |> Repo.one()
+  end
 end

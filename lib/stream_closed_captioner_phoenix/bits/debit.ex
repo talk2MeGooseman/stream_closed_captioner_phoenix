@@ -10,6 +10,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalance
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebit
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceDebitQueries
+  # BitsBalanceQueries is used directly here (not via Balance) so that bits_balance_check/1
+  # can issue a "FOR UPDATE" locking query through the transactional repo from Ecto.Multi.
   alias StreamClosedCaptionerPhoenix.Bits.BitsBalanceQueries
   alias StreamClosedCaptionerPhoenix.Cache
   alias StreamClosedCaptionerPhoenix.Repo
@@ -39,7 +41,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
 
   def get_translation_snapshot(user_id) do
     debit = get_user_active_debit(user_id)
-    balance = BitsBalanceQueries.with_user_id(user_id) |> limit(1) |> Repo.one()
+    balance = Balance.get_bits_balance_uncached(user_id)
     {balance, debit}
   end
 
@@ -60,11 +62,11 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
       |> Repo.insert()
 
     case result do
-      {:ok, debit} ->
-        AuditLog.info("bits.debit_created", %{user_id: user.id, debit_id: debit.id, amount: debit.amount})
-
       {:error, _changeset} ->
         AuditLog.warn("bits.debit_create_failed", %{user_id: user.id})
+
+      _ ->
+        :ok
     end
 
     result
@@ -80,6 +82,8 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
 
     case result do
       {:ok, %{debit: debit, update_balance: updated_balance}} ->
+        AuditLog.info("bits.debit_created", %{user_id: user.id, debit_id: debit.id, amount: debit.amount})
+
         StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
           "captions:#{user.id}",
           "translationActivated",
@@ -103,7 +107,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
         AuditLog.warn("bits.translation_activation_failed", %{
           user_id: user.id,
           step: step,
-          reason: audit_failure_reason(reason)
+          reason: AuditLog.format_reason(reason)
         })
     end
 
@@ -128,8 +132,4 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
   defp update_bits_balance_transaction(_repo, %{bits_balance_check: balance, debit: debit}),
     do: Balance.update_bits_balance(balance, %{balance: balance.balance - debit.amount})
 
-  defp audit_failure_reason(reason) when is_atom(reason), do: reason
-  defp audit_failure_reason(%Ecto.Changeset{} = cs), do: Ecto.Changeset.traverse_errors(cs, fn {msg, _} -> msg end)
-  defp audit_failure_reason(reason) when is_binary(reason), do: reason
-  defp audit_failure_reason(reason), do: inspect(reason, limit: 5, printable_limit: 100)
 end

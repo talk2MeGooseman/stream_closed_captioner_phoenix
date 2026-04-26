@@ -92,7 +92,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Transaction do
           uid: uid,
           transaction_id: transaction_id,
           step: step,
-          reason: audit_failure_reason(reason)
+          reason: AuditLog.format_reason(reason)
         })
     end
 
@@ -145,8 +145,4 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Transaction do
     end
   end
 
-  defp audit_failure_reason(reason) when is_atom(reason), do: reason
-  defp audit_failure_reason(%Ecto.Changeset{} = cs), do: Ecto.Changeset.traverse_errors(cs, fn {msg, _} -> msg end)
-  defp audit_failure_reason(reason) when is_binary(reason), do: reason
-  defp audit_failure_reason(reason), do: inspect(reason, limit: 5, printable_limit: 100)
 end
