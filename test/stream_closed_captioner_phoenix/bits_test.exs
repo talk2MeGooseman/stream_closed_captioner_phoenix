@@ -127,6 +127,54 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       refute Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
+
+    # --- 24h boundary tests (issue #289) ---
+    #
+    # We update `created_at` via raw SQL using the DB's own NOW() so that the fixture
+    # timestamps are in the same timezone frame as the query's `NOW() - INTERVAL '24 hours'`
+    # expression. Using Elixir's NaiveDateTime.utc_now() would introduce UTC-vs-session-
+    # timezone drift and make these tests flaky on non-UTC database servers.
+
+    test "get_user_active_debit/1 returns a debit created 23h 59m ago (just inside the 24h window)" do
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '23 hours 59 minutes')::timestamp WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      assert Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    test "get_user_active_debit/1 does not return a debit created 24h 1m ago (just outside the 24h window)" do
+      # The original bug (NaiveDateTime seconds-zeroing) widened the window by up to 59s,
+      # so a debit at 24h+1m ago could still be returned. Trinity's SQL-interval fix closes
+      # this gap by using an exact DB-native interval comparison.
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '24 hours 1 minute')::timestamp WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      refute Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    test "get_user_active_debit/1 does not return a debit created 25h ago (well outside the 24h window)" do
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() - INTERVAL '25 hours')::timestamp WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      refute Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    # Boundary note — exactly 24h ago:
+    # The query uses `>=`, so a record created at precisely NOW() - 24h is included.
+    # Testing this microsecond edge is inherently racy; the three tests above (23h59m,
+    # 24h+1m, 25h) provide sufficient coverage of the boundary on both sides.
   end
 
   describe "bits_balances" do
