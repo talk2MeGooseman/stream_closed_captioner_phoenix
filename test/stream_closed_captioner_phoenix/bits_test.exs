@@ -147,8 +147,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "get_user_active_debit/1 does not return a debit created 24h 1m ago (just outside the 24h window)" do
-      # so a debit at 24h+1m ago could still be returned. This exact DB-native interval
-      # comparison closes that gap.
+      # The DB-native interval comparison is exact: a debit at 24h+1m ago falls
+      # outside the window and must not be returned.
       bits_balance_debit = insert(:bits_balance_debit)
 
       Repo.query!(
