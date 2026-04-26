@@ -148,8 +148,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "get_user_active_debit/1 does not return a debit created 24h 1m ago (just outside the 24h window)" do
       # The original bug (NaiveDateTime seconds-zeroing) widened the window by up to 59s,
-      # so a debit at 24h+1m ago could still be returned. Trinity's SQL-interval fix closes
-      # this gap by using an exact DB-native interval comparison.
+      # so a debit at 24h+1m ago could still be returned. This exact DB-native interval
+      # comparison closes that gap.
       bits_balance_debit = insert(:bits_balance_debit)
 
       Repo.query!(
