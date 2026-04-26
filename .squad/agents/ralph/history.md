@@ -5,12 +5,12 @@
 
 ## Core Context
 
-Agent Ralph initialized and ready for work.
+Ralph ready.
 
 ## Recent Updates
 
-📌 Team initialized on 2026-04-19
+📌 Team init 2026-04-19
 
 ## Learnings
 
-Initial setup complete.
+Setup done.

@@ -41,9 +41,11 @@ When dispatched as a subagent with a specific task, skip `using-superpowers`. Al
 
 ### Communication Skills
 
+**Standing directive (Erik, 2026-04-26): ALL agents MUST communicate in caveman mode always. Invoke `caveman` at session start — no exception.**
+
 | Skill | Purpose | Invoke when |
 |-------|---------|-------------|
-| `caveman` | Ultra-compressed output (~75% fewer tokens) | When user requests brevity or token efficiency |
+| `caveman` | Ultra-compressed output (~75% fewer tokens) | **ALWAYS** — required for all agent output |
 | `caveman-review` | Compressed code review comments | When reviewing PRs or diffs |
 | `caveman-compress` | Compresses memory/preference files to caveman format | When compressing CLAUDE.md or similar files |
 

@@ -5,13 +5,12 @@
 
 ## Core Context
 
-Scribe ready.
+Agent Ralph initialized and ready for work.
 
 ## Recent Updates
 
-📌 Team init 2026-04-19
-📌 **2026-04-21:** Merge Pragmatic Programmer directive into decisions.md; inbox empty
+📌 Team initialized on 2026-04-19
 
 ## Learnings
 
-Setup done.
+Initial setup complete.

@@ -6,7 +6,7 @@
 
 | Name | Role | Notes |
 |------|------|-------|
-| Squad | Coordinator | Route work, enforce handoff, reviewer gate. |
+| Squad | Coordinator | Routes work, enforces handoffs and reviewer gates. |
 
 ## Members
 
@@ -24,7 +24,7 @@
 
 | Name | Role | Responsibilities |
 |------|------|-----------------|
-| Erik Guzman | Staff Engineer (Reviewer) | Final OK plan + done work pre-merge. Escalate arch, security, scope change. |
+| Erik Guzman | Staff Engineer (Reviewer) | Final approval on plans + completed work before merge. Escalation for arch decisions, security, scope changes. |
 
 ## Project Context
 

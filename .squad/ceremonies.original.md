@@ -1,6 +1,6 @@
 # Ceremonies
 
-> Team meet before/after work.
+> Team meetings before or after work.
 
 ## Design Review
 
@@ -15,10 +15,10 @@
 | **Enabled** | ✅ yes |
 
 **Agenda:**
-1. Read task, reqs
-2. Agree interfaces, contracts tween parts
-3. Spot risks, edge cases
-4. Give action items
+1. Review task and requirements
+2. Agree on interfaces and contracts between components
+3. Identify risks and edge cases
+4. Assign action items
 
 ---
 
@@ -35,7 +35,7 @@
 | **Enabled** | ✅ yes |
 
 **Agenda:**
-1. What happen? (facts only)
-2. Root cause hunt
-3. What change?
-4. Action items for next round
+1. What happened? (facts only)
+2. Root cause analysis
+3. What should change?
+4. Action items for next iteration
