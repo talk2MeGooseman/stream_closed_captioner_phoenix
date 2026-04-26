@@ -5,10 +5,10 @@
 import Config
 
 config :absinthe_security, AbsintheSecurity.Phase.IntrospectionCheck,
-  enable_introspection: System.get_env("GRAPHQL_ENABLE_INTROSPECTION") || true
+  enable_introspection: System.get_env("GRAPHQL_ENABLE_INTROSPECTION", "false") == "true"
 
 config :absinthe_security, AbsintheSecurity.Phase.FieldSuggestionsCheck,
-  enable_field_suggestions: System.get_env("GRAPHQL_ENABLE_FIELD_SUGGESTIONS") || true
+  enable_field_suggestions: System.get_env("GRAPHQL_ENABLE_FIELD_SUGGESTIONS", "false") == "true"
 
 config :absinthe_security, AbsintheSecurity.Phase.MaxAliasesCheck, max_alias_count: 0
 config :absinthe_security, AbsintheSecurity.Phase.MaxDepthCheck, max_depth_count: 10
@@ -109,10 +109,23 @@ if config_env() == :prod do
   config :stream_closed_captioner_phoenix,
     eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
 
-  # Default 500 MB — set CACHE_ALLOCATED_MEMORY (bytes) to tune for your host RAM.
+  config :stream_closed_captioner_phoenix,
+    deepgram_token: System.get_env("DEEPGRAM_TOKEN"),
+    twitch_token_secret: System.get_env("TWITCH_TOKEN_SECRET"),
+    twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
+    twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
+    bot: [
+      bot: TwitchBot,
+      user: "StreamClosedCaptioner",
+      pass: System.get_env("TWITCH_CHAT_OAUTH"),
+      channels: [],
+      debug: false
+    ]
+
+  # Default 1 GB — set CACHE_ALLOCATED_MEMORY (bytes) to tune for your host RAM.
   # The compile-time default of 2 GB is too large for small self-hosted instances.
   cache_memory =
-    System.get_env("CACHE_ALLOCATED_MEMORY", "524288000") |> String.to_integer()
+    System.get_env("CACHE_ALLOCATED_MEMORY", "1073741824") |> String.to_integer()
 
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
     allocated_memory: cache_memory
