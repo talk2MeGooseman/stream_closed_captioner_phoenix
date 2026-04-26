@@ -179,3 +179,13 @@ Facade declares two explicit delegations (1-arity + 2-arity) instead `\\` syntax
 All squad agents MUST communicate caveman mode. Ultra-compressed speak: drop articles/filler/hedging. Fragments OK. Technical terms/code/URLs/paths preserved. Cuts token ~75%.
 
 User req. Enforce via skill invoke.
+
+---
+
+## 2026-04-26T18:35:22Z — Subagent-Driven Development Hard Gate
+
+**By:** Erik Guzman (User) | **Status:** Active
+
+All team members must use `subagent-driven-development` skill for implementation tasks — hard gate, same weight as `test-driven-development`.
+
+User request. Ensures implementation always broken into sub-agent-driven steps rather than monolithic single-agent execution. Charters updated: Trinity, Tank, Neo, Morpheus.

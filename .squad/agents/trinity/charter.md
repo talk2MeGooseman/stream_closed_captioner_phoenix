@@ -34,9 +34,10 @@
 | Skill | Trigger | Gate |
 |-------|---------|------|
 | `test-driven-development` | Before any new feature code | **Hard** — must invoke before implementation |
+| `subagent-driven-development` | Before any implementation task | **Hard** — must invoke before writing code; drives execution strategy |
 | `brainstorming` | Before complex backend patterns (new pipeline stages, major context rewrites) | Soft — invoke when design non-obvious |
 
-Use: `skill("test-driven-development")`, `skill("brainstorming")`.
+Use: `skill("test-driven-development")`, `skill("subagent-driven-development")`, `skill("brainstorming")`.
 
 ## Boundaries
 
