@@ -264,6 +264,64 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       # Cache was evicted: fresh DB read shows the new balance
       assert %BitsBalance{balance: 100} = Bits.get_bits_balance_for_user(user)
     end
+
+    test "update_bits_balance/2 also evicts the debit cache (cross-invalidation)" do
+      user = insert(:user)
+      insert(:bits_balance_debit, user: user)
+
+      # Prime the debit cache — debit exists, so true
+      assert Bits.user_active_debit_exists?(user.id) == true
+
+      # Delete the debit directly in DB so next fresh DB read returns false
+      Bits.get_user_active_debit(user.id) |> Repo.delete!()
+
+      # Cache is still warm: stale true
+      assert Bits.user_active_debit_exists?(user.id) == true
+
+      # update_bits_balance must also evict {BitsBalanceDebit, user_id}
+      {:ok, _updated} = Bits.update_bits_balance(user.bits_balance, %{balance: 50})
+
+      # Debit cache evicted: fresh DB read returns false
+      assert Bits.user_active_debit_exists?(user.id) == false
+    end
+
+    test "create_bits_balance_debit/2 also evicts the balance cache (cross-invalidation)" do
+      user = insert(:user)
+
+      # Prime the balance cache
+      cached_balance = Bits.get_bits_balance_for_user(user)
+      assert %BitsBalance{} = cached_balance
+
+      # Update balance directly in DB, bypassing cache eviction
+      Repo.update!(Ecto.Changeset.change(user.bits_balance, balance: cached_balance.balance + 999))
+
+      # Cache is still warm: returns stale value
+      assert Bits.get_bits_balance_for_user(user).balance == cached_balance.balance
+
+      # create_bits_balance_debit must also evict {BitsBalance, user_id}
+      {:ok, _debit} = Bits.create_bits_balance_debit(user, %{amount: 500})
+
+      # Balance cache evicted: fresh DB read shows the updated value
+      assert Bits.get_bits_balance_for_user(user).balance == cached_balance.balance + 999
+    end
+
+    test "get_translation_snapshot/1 reads from DB regardless of stale cache" do
+      user = insert(:user)
+
+      # Prime the debit cache with false (no debit)
+      assert Bits.user_active_debit_exists?(user.id) == false
+
+      # Insert a debit directly in DB, bypassing cache eviction
+      insert(:bits_balance_debit, user: user)
+
+      # Cached value is stale: still says false
+      assert Bits.user_active_debit_exists?(user.id) == false
+
+      # Snapshot always reads DB — returns the real debit
+      {balance, debit} = Bits.get_translation_snapshot(user.id)
+      assert %BitsBalance{} = balance
+      assert debit != nil
+    end
   end
 
   describe "bits_transactions" do

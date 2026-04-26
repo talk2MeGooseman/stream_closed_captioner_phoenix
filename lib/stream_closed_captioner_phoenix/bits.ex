@@ -170,6 +170,17 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
     |> Repo.one()
   end
 
+  @doc """
+  Returns a consistent `{balance, debit}` snapshot read atomically from the
+  database, bypassing the cache. Use this when balance and activation state must
+  reflect the same point-in-time (e.g. GraphQL resolvers).
+  """
+  def get_translation_snapshot(user_id) do
+    debit = get_user_active_debit(user_id)
+    balance = BitsBalanceQueries.with_user_id(user_id) |> limit(1) |> Repo.one()
+    {balance, debit}
+  end
+
   @decorate cacheable(
               cache: Cache,
               key: {BitsBalanceDebit, user_id},
@@ -194,6 +205,7 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
 
   """
   @decorate cache_evict(cache: Cache, key: {BitsBalanceDebit, user.id})
+  @decorate cache_evict(cache: Cache, key: {BitsBalance, user.id})
   def create_bits_balance_debit(user, attrs \\ %{}) do
     result =
       user
@@ -327,6 +339,10 @@ defmodule StreamClosedCaptionerPhoenix.Bits do
   @decorate cache_evict(
               cache: Cache,
               key: {BitsBalance, bits_balance.user_id}
+            )
+  @decorate cache_evict(
+              cache: Cache,
+              key: {BitsBalanceDebit, bits_balance.user_id}
             )
   def update_bits_balance(%BitsBalance{} = bits_balance, attrs) do
     bits_balance
