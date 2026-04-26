@@ -1,3 +1,4 @@
 #!/bin/sh
 cd -P -- "$(dirname -- "$0")"
+./stream_closed_captioner_phoenix eval "StreamClosedCaptionerPhoenix.Release.migrate"
 PHX_SERVER=true exec ./stream_closed_captioner_phoenix start
