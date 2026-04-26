@@ -30,6 +30,7 @@
 | Skill | Trigger | Gate |
 |-------|---------|------|
 | `brainstorming` | Before any architecture decision, feature scoping, design work | **Hard** — must invoke before proceeding |
+| `subagent-driven-development` | Before any implementation task Morpheus directly executes | **Hard** — must invoke before writing code |
 | `writing-plans` | Before break down complex multi-step work for team | Soft — invoke when scope multi-file or multi-session |
 | `requesting-code-review` | After architecture/design review done, before declaring done | **Hard** — must invoke before proceeding |
 

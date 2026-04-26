@@ -35,8 +35,9 @@
 | Skill | Trigger | Gate |
 |-------|---------|------|
 | `test-driven-development` | At start every testing task | **Hard** — skill IS Tank primary workflow; always invoke first |
+| `subagent-driven-development` | Before any implementation task (writing test code) | **Hard** — must invoke before writing test code; drives execution strategy |
 
-Use: `skill("test-driven-development")`.
+Use: `skill("test-driven-development")`, `skill("subagent-driven-development")`.
 
 ## Boundaries
 

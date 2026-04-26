@@ -127,6 +127,53 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       refute Bits.get_user_active_debit(bits_balance_debit.user_id)
     end
+
+    # --- 24h boundary tests (issue #289) ---
+    #
+    # We update `created_at` via raw SQL using `NOW() AT TIME ZONE 'UTC'` so that the fixture
+    # timestamps match the UTC-normalized reference frame used by the query's
+    # `(NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours'` expression. This avoids
+    # drift on non-UTC database sessions.
+
+    test "get_user_active_debit/1 returns a debit created 23h 59m ago (just inside the 24h window)" do
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '23 hours 59 minutes' WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      assert Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    test "get_user_active_debit/1 does not return a debit created 24h 1m ago (just outside the 24h window)" do
+      # The DB-native interval comparison is exact: a debit at 24h+1m ago falls
+      # outside the window and must not be returned.
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours 1 minute' WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      refute Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    test "get_user_active_debit/1 does not return a debit created 25h ago (well outside the 24h window)" do
+      bits_balance_debit = insert(:bits_balance_debit)
+
+      Repo.query!(
+        "UPDATE bits_balance_debits SET created_at = (NOW() AT TIME ZONE 'UTC') - INTERVAL '25 hours' WHERE id = $1",
+        [bits_balance_debit.id]
+      )
+
+      refute Bits.get_user_active_debit(bits_balance_debit.user_id)
+    end
+
+    # Boundary note — exactly 24h ago:
+    # The query uses `>=`, so a record created at precisely NOW() - 24h is included.
+    # Testing this microsecond edge is inherently racy; the three tests above (23h59m,
+    # 24h+1m, 25h) provide sufficient coverage of the boundary on both sides.
   end
 
   describe "bits_balances" do

@@ -33,9 +33,10 @@
 | Skill | Trigger | Gate |
 |-------|---------|------|
 | `test-driven-development` | Before any new LiveView/JS code | **Hard** — must invoke before implementation |
+| `subagent-driven-development` | Before any implementation task | **Hard** — must invoke before writing code; drives execution strategy |
 | `brainstorming` | Before new UI flows or components with big user interaction | Soft — invoke when UX design non-obvious |
 
-Use: `skill("test-driven-development")`, `skill("brainstorming")`.
+Use: `skill("test-driven-development")`, `skill("subagent-driven-development")`, `skill("brainstorming")`.
 
 ## Boundaries
 
