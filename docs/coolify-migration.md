@@ -136,17 +136,19 @@ nslookup stream-cc.gooseman.codes 8.8.8.8
 
 Do this during low-traffic hours. Check your analytics for the quietest window.
 
-### 3.1 — Final Gigalixir backup
+### 3.1 — Pre-cutover database backup
 
-```bash
-# Take a database dump from Gigalixir's DB before any DNS changes
-gigalixir pg:backups:create
-gigalixir pg:backups:list
-# Download the latest backup to local storage
-gigalixir pg:backups:download <backup-id>
-```
+Since the PostgreSQL database is already hosted in Coolify (not on Gigalixir), no
+database migration is required. Take a manual backup of the Coolify Postgres database
+before making any DNS changes so you have a clean restore point:
 
-Store the backup somewhere safe outside of Gigalixir.
+1. Use Coolify's built-in backup feature for your Postgres service, **or**
+2. SSH into your server and run a `pg_dump`:
+   ```bash
+   pg_dump "$DATABASE_URL" -Fc -f /tmp/pre-cutover-$(date +%Y%m%d-%H%M%S).dump
+   ```
+
+Store the backup somewhere safe outside of the server (e.g. local download or object storage).
 
 ### 3.2 — Configure custom domain in Coolify
 
@@ -277,10 +279,11 @@ Roll back immediately if any of these are observed:
 
 ### What is NOT at risk
 
-- **Database** — Your Coolify Postgres is independent. Gigalixir's DB has its own
-  connection, so both old and new hosts can read/write without conflict during the
-  overlap window. (There is a brief dual-write window during propagation; this is
-  acceptable since the app is session-based and not event-sourced.)
+- **Database** — Both Gigalixir and Coolify point to the **same** Coolify-hosted
+  PostgreSQL instance throughout the cutover. There is no separate Gigalixir-managed
+  database, so data divergence between the two hosts is not possible. The only effect
+  during the DNS propagation window is normal concurrent traffic hitting the same
+  database from two app hosts, which is safe for a session-based application.
 - **User sessions** — Sessions are cookie-based. Existing browser sessions remain
   valid on whichever host they land on.
 
@@ -294,7 +297,7 @@ All of the following must be true before updating DNS:
 |-------|---------------|
 | Phase 1 smoke tests | All passing on temp domain |
 | DNS TTL lowered | ≥ 24 hours ago |
-| DB backup downloaded | Confirmed locally |
+| Coolify DB backup downloaded | Confirmed locally or in object storage |
 | Coolify app uptime | Stable for ≥ 1 hour with no restarts |
 | Twitch temp redirect added | Confirmed in dev console |
 | Low-traffic window | Confirmed (check analytics) |
