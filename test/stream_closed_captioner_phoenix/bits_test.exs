@@ -66,8 +66,11 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
           Bits.activate_translations_for(user)
         end)
 
-      assert {:ok, _} = Task.await(task1)
-      assert {:error, :bits_balance_check, :insufficent_balance, _} = Task.await(task2)
+      results = [Task.await(task1), Task.await(task2)]
+      assert Enum.any?(results, &match?({:ok, _}, &1)),
+        "Expected one task to succeed"
+      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficent_balance, _}, &1)),
+        "Expected one task to fail with :insufficent_balance"
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
