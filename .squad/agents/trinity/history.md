@@ -31,3 +31,4 @@
 - 2026-04-25: TMI/TwitchBot fully dead code at runtime (supervisor commented, no callsites/tests). Safe removal = config+deps+module cleanup + lock prune (`mix deps.unlock --unused`) to stop stale dep drift.
 - 2026-04-25: Issue #278 Path A picked + done end-to-end w/ compile + targeted test verify; decision + risk notes handed off for canonical merge.
 - 2026-04-25: Resolver err pattern: bang fns (`Accounts.get_user!(id)`) raise `Ecto.NoResultsError` — use `rescue` to catch + convert to GraphQL err tuple, not `case` on nil (dead code). Idiomatic Elixir.
+- 2026-04-25: Template guards for nullable assigns: `Repo.first()` returns `nil` when no rows exist. Controllers passing `Repo.first()` as assigns MUST be guarded in template with `@var && @var.field` pattern, not bare `@var.field`.

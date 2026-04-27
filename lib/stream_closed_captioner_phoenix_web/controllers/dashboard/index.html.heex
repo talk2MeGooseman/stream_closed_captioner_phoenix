@@ -284,7 +284,7 @@
   </div>
 </section>
 <!-- Captions Sections -->
-<%= if @announcement.display do %>
+<%= if @announcement && @announcement.display do %>
   <div class="alert bg-primary-light text-primary text-left" role="alert">
     <div>
       <%= raw(@announcement.message) %>
