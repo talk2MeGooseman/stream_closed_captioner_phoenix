@@ -1,35 +1,24 @@
-# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
+# Find eligible builder and runner images on Docker Hub. We use Debian
 # instead of Alpine to avoid DNS resolution issues in production.
 #
-# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
-# https://hub.docker.com/_/ubuntu?tab=tags
+#   https://hub.docker.com/r/hexpm/elixir/tags - for the build image
+#   https://hub.docker.com/_/debian?tab=tags&name=bookworm - for the runtime image
+#   https://pkgs.org/ - resource for finding needed packages
 #
-# This file is based on these images:
-#
-#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
-#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20221004-slim - for the release image
-#   - https://pkgs.org/ - resource for finding needed packages
-#   - Ex: hexpm/elixir:1.14.2-erlang-25.1.2-debian-bullseye-20221004-slim
-#
-ARG ELIXIR_VERSION=1.14.2
-ARG OTP_VERSION=25.1.2
-ARG DEBIAN_VERSION=bullseye-20221004-slim
+# Versions must match the app's requirements in mix.exs (elixir ~> 1.16)
+# and elixir_buildpack.config (elixir 1.16.0 / erlang 26.0).
+ARG ELIXIR_VERSION=1.16.3
+ARG OTP_VERSION=26.2.5
+ARG DEBIAN_VERSION=bookworm-20240513-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
 
-# install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git npm  \
+# install build dependencies (nodejs/npm needed for assets.deploy)
+RUN apt-get update -y && apt-get install -y build-essential git nodejs npm \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
-
-# Cleanup after installing build dependencies
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Add a non-root user in the builder stage
-RUN useradd -ms /bin/bash builder
-USER builder
 
 # prepare build dir
 WORKDIR /app
@@ -41,7 +30,7 @@ RUN mix local.hex --force && \
 # set build ENV
 ENV MIX_ENV="prod"
 
-# Copy mix files before installing dependencies
+# install mix dependencies
 COPY mix.exs mix.lock ./
 RUN mix deps.get --only $MIX_ENV
 RUN mkdir config
@@ -52,27 +41,21 @@ RUN mkdir config
 COPY config/config.exs config/${MIX_ENV}.exs config/
 RUN mix deps.compile
 
-# build assets
+# install npm deps for asset build
 COPY assets/package.json assets/package-lock.json ./assets/
 RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 
-# assets -- copy asset files so purgecss doesnt remove css files
-COPY lib/stream_closed_captioner_phoenix_web/live/ lib/stream_closed_captioner_phoenix_web/live/
-COPY lib/stream_closed_captioner_phoenix_web/components/ lib/stream_closed_captioner_phoenix_web/components/
-COPY lib/stream_closed_captioner_phoenix_web/controllers/ lib/stream_closed_captioner_phoenix_web/controllers/
-
+# copy source (lib must be present before mix assets.deploy so Tailwind JIT
+# can scan .ex/.heex files for class usage)
 COPY priv priv
-
 COPY lib lib
-
 COPY assets assets
-
 COPY config/profanity/english.txt config/profanity/english.txt
 
-# compile assets
+# compile assets (tailwind, esbuild, phx.digest)
 RUN mix assets.deploy
 
-# Compile the release
+# compile the release
 RUN mix compile
 
 # Changes to config/runtime.exs don't require recompiling the code
@@ -81,29 +64,33 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
-# start a new build stage so that the final image will only contain
-# the compiled release and other runtime necessities
+# start a new build stage so the final image only contains the compiled
+# release and required runtime libraries
 FROM ${RUNNER_IMAGE}
 
-RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales \
+RUN apt-get update -y && \
+    apt-get install -y libstdc++6 openssl libncurses6 locales ca-certificates \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
-# Set the locale
+# set the locale (required by Elixir for proper string handling)
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
-WORKDIR "/app"
+WORKDIR /app
 RUN chown nobody /app
 
 # set runner ENV
 ENV MIX_ENV="prod"
+ENV PORT=4000
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/stream_closed_captioner_phoenix ./
 
 USER nobody
+
+EXPOSE 4000
 
 CMD ["/app/bin/server"]
