@@ -53,9 +53,6 @@ config :stream_closed_captioner_phoenix,
   twitch_token_secret: "HELLOmfTIWyWI1I8hrtEsTZSlzDXqyQThIm/Ytc3D1o="
 
 config :stream_closed_captioner_phoenix,
-  deepgram_token: "DEEPGRAM_TOKEN"
-
-config :stream_closed_captioner_phoenix,
   twitch_client_secret: "TWITCHCLIENTSECRET"
 
 config :stream_closed_captioner_phoenix,

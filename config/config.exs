@@ -113,9 +113,6 @@ config :stream_closed_captioner_phoenix, Oban,
   queues: [default: 10, events: 10]
 
 config :stream_closed_captioner_phoenix,
-  deepgram_token: System.get_env("DEEPGRAM_TOKEN")
-
-config :stream_closed_captioner_phoenix,
   twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET")
 
 config :stream_closed_captioner_phoenix,

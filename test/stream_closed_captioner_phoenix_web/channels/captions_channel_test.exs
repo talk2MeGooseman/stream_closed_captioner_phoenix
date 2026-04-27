@@ -136,12 +136,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
     assert_reply ref, :error, "Issue sending captions."
   end
 
-  test "publishBlob with no wss_pid assigned does not crash the channel", %{socket: socket} do
-    # Push a binary blob when no wss_pid is in the socket assigns (nil path)
-    push(socket, "publishBlob", {:binary, <<1, 2, 3>>})
-
-    # Verify the channel is still alive by sending a subsequent message
-    ref = push(socket, "active", %{})
-    assert_reply ref, :ok
-  end
 end

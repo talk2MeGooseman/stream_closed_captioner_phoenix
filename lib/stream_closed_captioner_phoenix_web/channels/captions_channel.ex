@@ -59,18 +59,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  def handle_in("publishBlob", {:binary, chunk}, socket) do
-    if pid = socket.assigns[:wss_pid] do
-      case WebSockex.send_frame(pid, {:binary, chunk}) do
-        :ok -> :ok
-        {:error, reason} ->
-          Logger.warning("WebSockex send_frame failed: #{inspect(reason)}")
-      end
-    end
-
-    {:noreply, socket}
-  end
-
   def handle_in("active", _payload, socket) do
     user = socket.assigns.current_user
 

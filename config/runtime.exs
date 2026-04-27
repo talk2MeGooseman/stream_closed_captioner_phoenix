@@ -111,7 +111,6 @@ if config_env() == :prod do
     eventsub_callback_url: System.get_env("EVENTSUB_CALLBACK_URL")
 
   config :stream_closed_captioner_phoenix,
-    deepgram_token: System.fetch_env!("DEEPGRAM_TOKEN"),
     twitch_token_secret: System.fetch_env!("TWITCH_TOKEN_SECRET"),
     twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
     twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),

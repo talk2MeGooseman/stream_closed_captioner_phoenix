@@ -1,7 +1,6 @@
 import SpeechRecognitionHandler from "../SpeechRecognitionHandler"
 import { isBrowserCompatible } from "../utils"
 import { Controller } from '@hotwired/stimulus'
-import { startDeepgram, stopDeepgram, isDeepgramActive } from "../service/deepgram"
 import { getZoomSequence, setZoomSequence } from "../service/zoom-sequence"
 import { Channel } from "phoenix"
 import debugLogger from "debug"
@@ -117,7 +116,6 @@ export default class extends Controller {
     this.captionsChannel = captionsChannel
     this.startTarget.disabled = false
 
-    this.captionsChannel.on("deepgram", this.displayCaptions)
     this.captionsChannel.on("stream.offline", () => this.speechRecognitionHandler.stop())
   }
 
@@ -127,18 +125,7 @@ export default class extends Controller {
   }
 
   startCaptions = () => {
-    // Need to check if it's deepgram enabled account and choose flow
-    if (window.permissions.isDeepgramEnabled) {
-      if (isDeepgramActive()) {
-        stopDeepgram()
-        this.recognitionStopped()
-      } else {
-        startDeepgram(this.sendAudioStream)
-        this.recognitionStarted()
-      }
-    } else {
-      this.speechRecognitionHandler.toggleOn()
-    }
+    this.speechRecognitionHandler.toggleOn()
 
     this.captionsChannel
       .push("active", {})
@@ -242,13 +229,4 @@ export default class extends Controller {
     this.finalOutputTarget.textContent = captions.final
   }
 
-  sendAudioStream = async (data) => {
-    var audioBlob = new Blob([data], {
-      type: "audio/webm"
-    });
-    const arrayBuffer = await audioBlob.arrayBuffer();
-
-    this.captionsChannel
-      .push("publishBlob", arrayBuffer, 5000)
-  }
 }
