@@ -25,3 +25,10 @@ App send caps streamer → server → viewers:
 ## Learnings
 
 <!-- Append new learnings below. Each entry is something lasting about the project. -->
+
+### 2026-07-22 — Coolify Deploy Secret Leak Analysis
+
+- **Dockerfile is clean.** All secrets read at runtime via `System.get_env` in `config/runtime.exs`. No `ARG`-based secrets in our Dockerfile.
+- **Coolify injects ALL env vars as `--build-arg` by default.** This bakes secrets into image layer metadata even when Dockerfile never references them. Fix: separate build vars from runtime vars in Coolify UI.
+- **Dead bot config persists.** `runtime.exs` lines 117-123 still reference `TwitchBot` and `TWITCH_CHAT_OAUTH` despite TMI removal decision (2026-04-25). `docs/coolify-migration.md` still lists `TWITCH_CHAT_OAUTH` as required. Both need cleanup.
+- **Key architectural principle confirmed:** Runtime config via `config/runtime.exs` + `System.get_env` is the correct pattern for containerized Elixir. Build-time secrets should never be needed for this app.

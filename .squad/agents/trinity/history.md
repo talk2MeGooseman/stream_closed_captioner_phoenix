@@ -32,3 +32,7 @@
 - 2026-04-25: Issue #278 Path A picked + done end-to-end w/ compile + targeted test verify; decision + risk notes handed off for canonical merge.
 - 2026-04-25: Resolver err pattern: bang fns (`Accounts.get_user!(id)`) raise `Ecto.NoResultsError` — use `rescue` to catch + convert to GraphQL err tuple, not `case` on nil (dead code). Idiomatic Elixir.
 - 2026-04-25: Template guards for nullable assigns: `Repo.first()` returns `nil` when no rows exist. Controllers passing `Repo.first()` as assigns MUST be guarded in template with `@var && @var.field` pattern, not bare `@var.field`.
+- 2026-04-26: Coolify orphan container warnings come from Coolify's `docker compose up` lacking `--remove-orphans` flag, not our compose file. Fix lives in Coolify deployment config.
+- 2026-04-26: Memory swappiness warnings in Coolify deploy are kernel-level (cgroup v2/unsupported limits). Our `docker-compose.yml` has no swap config—likely inherited from Coolify base. Safe to ignore.
+- 2026-04-26: Dockerfile multi-stage casing must be consistent: `FROM ... AS` (uppercase). Linters enforce style even though Docker parser is case-insensitive.
+- 2026-04-26: Dead bot config block (`:bot` in `config/runtime.exs` referencing `TWITCH_CHAT_OAUTH` + `TwitchBot` module) confirmed unreachable after TMI removal. Removed lines 117-123 matching decision 2026-04-25. All tests pass post-removal.
