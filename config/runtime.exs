@@ -113,14 +113,7 @@ if config_env() == :prod do
   config :stream_closed_captioner_phoenix,
     twitch_token_secret: System.fetch_env!("TWITCH_TOKEN_SECRET"),
     twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
-    twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
-    bot: [
-      bot: TwitchBot,
-      user: "StreamClosedCaptioner",
-      pass: System.get_env("TWITCH_CHAT_OAUTH"),
-      channels: [],
-      debug: false
-    ]
+    twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET")
 
   # Default 1 GB — set CACHE_ALLOCATED_MEMORY (bytes) to tune for your host RAM.
   # The compile-time default of 2 GB is too large for small self-hosted instances.
