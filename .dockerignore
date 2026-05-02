@@ -49,12 +49,3 @@ erl_crash.dump
 /memory-bank/
 /.github/
 /docs/
-
-# Docker files (not needed in build context)
-docker-compose*.yml
-Dockerrun.aws.json
-Dockerfile*
-!Dockerfile
-
-# Environment files
-.env*
