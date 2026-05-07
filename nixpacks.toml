@@ -1,0 +1,39 @@
+# Nixpacks build config for Coolify deploys.
+# Pinned to .tool-versions (elixir 1.16.0, erlang 26.0, nodejs 22.21.1).
+#
+# nixpkgsArchive note: current nixpkgs unstable has removed elixir_1_16 and
+# erlang_26 as EOL. Pin to the Nixpacks-internal archive where these attrs
+# still resolve:
+#   elixir_1_16 -> 1.16.3
+#   erlang_26   -> 26.2.5.4
+#   nodejs_22   -> 22.9.0
+# (Patch-level drift from .tool-versions is acceptable; node 22.9 vs 22.21.1
+# is a wider gap but produces deterministic asset builds via package-lock.json.)
+providers = ["phoenix"]
+nixpkgsArchive = "c5702bd28cbde41a191a9c2a00501f18941efbd0"
+
+[phases.setup]
+nixPkgs = ["elixir_1_16", "erlang_26", "nodejs_22", "git", "openssl"]
+
+[phases.install]
+cmds = [
+  "mix local.hex --force",
+  "mix local.rebar --force",
+  "mix deps.get --only prod",
+  "npm --prefix assets ci --no-audit --progress=false",
+]
+
+[phases.build]
+cmds = [
+  "mix deps.compile",
+  "mix assets.deploy",
+  "mix compile",
+  "mix release",
+]
+
+[start]
+cmd = "/app/_build/prod/rel/stream_closed_captioner_phoenix/bin/server"
+
+[variables]
+MIX_ENV = "prod"
+LANG = "en_US.UTF-8"
