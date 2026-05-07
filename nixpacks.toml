@@ -48,10 +48,16 @@ cmds = [
   "mix assets.deploy",
   "mix compile",
   "mix release",
+  # Symlink /app/bin -> the release bin/ so the start command is the clean
+  # /app/bin/server (matching the prior Dockerfile's entrypoint). A symlink
+  # is used instead of `mv` because Nixpacks runs `COPY . /app` after the
+  # build phase, which would partially undo a destructive move; the
+  # symlink survives because the source tree has no top-level bin/.
+  "ln -sfn /app/_build/prod/rel/stream_closed_captioner_phoenix/bin /app/bin",
 ]
 
 [start]
-cmd = "/app/_build/prod/rel/stream_closed_captioner_phoenix/bin/server"
+cmd = "/app/bin/server"
 
 [variables]
 MIX_ENV = "prod"
