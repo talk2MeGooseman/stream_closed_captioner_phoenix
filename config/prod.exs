@@ -15,8 +15,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  # Some proxies (notably some Coolify/Traefik setups) forward the original
-  # scheme as X-Forwarded-Scheme rather than X-Forwarded-Proto. Trust both so
-  # Plug.SSL doesn't 301-redirect WebSocket upgrades behind such proxies.
-  force_ssl: [rewrite_on: [:x_forwarded_proto, :x_forwarded_scheme]]
+# force_ssl removed: Coolify's Traefik handles HTTP -> HTTPS redirection at
+# the edge. App-level Plug.SSL was redirecting WebSocket upgrades because
+# the proxy doesn't reliably pass X-Forwarded-Proto to this service.
