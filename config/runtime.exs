@@ -65,6 +65,14 @@ if config_env() == :prod do
       port: String.to_integer(System.get_env("PORT") || "4000")
     ],
     url: [host: System.get_env("HOST"), port: 443, scheme: "https"],
+    # WS check_origin is configured here (not in endpoint.ex) so each deploy
+    # derives its allowlist from HOST. The Twitch extension iframe is a true
+    # cross-origin embed (its origin is Twitch's CDN, not HOST) and stays
+    # hardcoded.
+    check_origin: [
+      "//#{System.get_env("HOST")}",
+      "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
+    ],
     secret_key_base: secret_key_base,
     live_view: [signing_salt: live_signing_salt]
 
