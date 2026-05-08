@@ -16,4 +16,7 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 config :logger, level: :info
 
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+  # Some proxies (notably some Coolify/Traefik setups) forward the original
+  # scheme as X-Forwarded-Scheme rather than X-Forwarded-Proto. Trust both so
+  # Plug.SSL doesn't 301-redirect WebSocket upgrades behind such proxies.
+  force_ssl: [rewrite_on: [:x_forwarded_proto, :x_forwarded_scheme]]
