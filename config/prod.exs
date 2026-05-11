@@ -15,5 +15,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+# force_ssl removed: Coolify's Traefik handles HTTP -> HTTPS redirection at
+# the edge. App-level Plug.SSL was redirecting WebSocket upgrades because
+# the proxy doesn't reliably pass X-Forwarded-Proto to this service.

@@ -11,18 +11,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Endpoint do
     signing_salt: System.get_env("COOKIE_SIGNING_SALT", "0JfoiBDr")
   ]
 
-  # Origin checks for WS connections outside of app
+  # check_origin is configured in config/runtime.exs so each deploy can
+  # derive its allowlist from the HOST env var. Dev relies on
+  # `check_origin: false` in config/dev.exs.
   socket "/socket", StreamClosedCaptionerPhoenixWeb.UserSocket,
-    websocket: [
-      check_origin: [
-        "//localhost:4000",
-        "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv",
-        "//localhost:8080",
-        "//stream-cc.gooseman.codes",
-        "//talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev",
-        "//talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.preview.app.github.dev"
-      ]
-    ],
+    websocket: [],
     longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]

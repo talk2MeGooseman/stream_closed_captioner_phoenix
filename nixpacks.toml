@@ -1,0 +1,64 @@
+# Nixpacks build config for Coolify deploys.
+# Pinned to .tool-versions (elixir 1.16.0, erlang 26.0, nodejs 22.21.1).
+#
+# nixpkgsArchive note: current nixpkgs unstable has removed elixir_1_16 and
+# erlang_26 as EOL. Pin to the Nixpacks-internal archive where these attrs
+# still resolve:
+#   elixir_1_16 -> 1.16.3 (paired with Erlang 26 via the phoenix provider)
+#   nodejs_22   -> 22.9.0
+# (Patch-level drift from .tool-versions is acceptable; node 22.9 vs 22.21.1
+# is a wider gap but produces deterministic asset builds via package-lock.json.)
+#
+# We let the elixir provider handle the [phases.setup] block. It pairs
+# Elixir and Erlang correctly (via beam.packages.<erlang>.elixir_1_16) and
+# includes build tools (gcc, gnumake) needed for NIF compilation in
+# bcrypt_elixir. Manually pinning `elixir_1_16` + `erlang_26` separately in
+# nixPkgs leaks Erlang 25 (Elixir 1.16's default BEAM pair at this archive)
+# into the env, which then collides with the explicit Erlang 26.
+providers = ["elixir"]
+nixpkgsArchive = "c5702bd28cbde41a191a9c2a00501f18941efbd0"
+
+[phases.setup]
+# Add Node from the same nixpkgsArchive as the elixir provider so libstdc++
+# ABI matches. Using the `node` provider pulls a newer Node (22.14) from a
+# different archive, causing CXXABI_1.3.15 mismatch against the elixir
+# provider's gcc-13 libstdc++.
+nixPkgs = ["...", "nodejs_22"]
+
+[phases.install]
+# Pin Hex to 2.3.2: Hex 2.4.0+ enforces a 128KB MAX_METADATA_SIZE on unpack
+# (hex_core commit 28cfc17f, 2026-03-08). kaffy 0.10.2/0.10.3/0.11.0 ship a
+# ~134KB metadata.config, so `mix deps.get` fails with
+# "Unpacking tarball failed: file too big: metadata.config" under Hex 2.4.x.
+# 2.3.2 is the last release before that check landed.
+#
+# --sha512 is required when fetching archives from a URL (Elixir security
+# check). SHA verified against the hex.pm-published 2.3.2 archive on
+# 2026-05-07.
+cmds = [
+  "mix archive.install --force https://builds.hex.pm/installs/1.16.0/hex-2.3.2.ez --sha512 abfa24b07c61fdb7d8156a6ff113979e135740ffafbbab7cf02f28541e140ffbc8be772800a120c465c81b297b5b90e03968d91cb4ee8c82d26668812941b02a",
+  "mix local.rebar --force",
+  "mix deps.get --only prod",
+  "npm --prefix assets ci --no-audit --progress=false",
+]
+
+[phases.build]
+cmds = [
+  "mix deps.compile",
+  "mix assets.deploy",
+  "mix compile",
+  "mix release",
+  # Symlink /app/bin -> the release bin/ so the start command is the clean
+  # /app/bin/server (matching the prior Dockerfile's entrypoint). A symlink
+  # is used instead of `mv` because Nixpacks runs `COPY . /app` after the
+  # build phase, which would partially undo a destructive move; the
+  # symlink survives because the source tree has no top-level bin/.
+  "ln -sfn /app/_build/prod/rel/stream_closed_captioner_phoenix/bin /app/bin",
+]
+
+[start]
+cmd = "/app/bin/server"
+
+[variables]
+MIX_ENV = "prod"
+LANG = "en_US.UTF-8"

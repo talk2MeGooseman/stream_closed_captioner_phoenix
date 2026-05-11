@@ -23,6 +23,19 @@ Done through service
 
 `bin/stream_closed_captioner_phoenix eval "StreamClosedCaptionerPhoenix.Release.migrate"`
 
+## Reproducing the production build
+
+Production images are built by [Nixpacks](https://nixpacks.com/) (configured in `nixpacks.toml`) and deployed via Coolify. To reproduce locally:
+
+```sh
+nixpacks build . --name scc-phoenix
+docker run --rm -p 4000:4000 --env-file .env.prod-test scc-phoenix
+```
+
+`.env.prod-test` is gitignored — see `config/runtime.exs` for the required environment variables. At minimum you need `SECRET_KEY_BASE`, `LIVE_SIGNING_SALT`, `TWITCH_TOKEN_SECRET`, and either `DATABASE_URL` (with `USE_SSL=true`) or the `RDS_*` set.
+
+The container starts with `/app/bin/server`, which runs `Release.migrate` and then boots Phoenix on port 4000.
+
 ## Debugging on Elastic Beanstalk
 
 `eb logs`
