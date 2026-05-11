@@ -11,6 +11,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @type message_map :: %{optional(String.t()) => term()}
 
+  @translation_timeout_default_ms 3_000
+
   @spec pipeline_to(
           :twitch | :zoom | :default,
           StreamClosedCaptionerPhoenix.Accounts.User.t(),
@@ -43,29 +45,22 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
-    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      censored =
-        CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
+    metadata = %{
+      destination: :twitch,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
 
-      task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
-
-      translated =
-        case Task.yield(task, 3_000) || Task.shutdown(task) do
-          {:ok, result} ->
-            result
-
-          _ ->
-            Logger.warning("Translation timed out or failed, passing through untranslated")
-            censored
-        end
-
-      payload = apply_pirate_mode(translated, stream_settings)
-
-      {:ok, payload}
-    else
-      {:error, _} -> {:error, "Stream settings not found"}
-    end
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_twitch(user, message) do
+        {:ok, _payload} = ok -> {ok, %{metadata | result: :ok}}
+        {:error, reason} = err -> {err, %{metadata | result: :error, error_reason: reason}}
+      end
+    end)
   end
 
   @trace :pipeline_to
@@ -193,4 +188,48 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   end
 
   defp validate_zoom_url(_), do: {:error, :invalid_zoom_url}
+
+  defp do_pipeline_twitch(%User{} = user, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      censored =
+        CaptionsPayload.new(message)
+        |> apply_censoring(stream_settings)
+
+      timeout_ms = translation_task_timeout_ms()
+      task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
+
+      translated =
+        case Task.yield(task, timeout_ms) || Task.shutdown(task) do
+          {:ok, result} ->
+            result
+
+          _ ->
+            :telemetry.execute(
+              [:scc, :captions, :translation, :timeout],
+              %{duration_ms: timeout_ms},
+              %{user_id: user.id}
+            )
+
+            Logger.warning("translation timed out",
+              user_id: user.id,
+              duration_ms: timeout_ms
+            )
+
+            censored
+        end
+
+      payload = apply_pirate_mode(translated, stream_settings)
+      {:ok, payload}
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
+  end
+
+  defp translation_task_timeout_ms do
+    Application.get_env(
+      :stream_closed_captioner_phoenix,
+      :translation_task_timeout_ms,
+      @translation_timeout_default_ms
+    )
+  end
 end
