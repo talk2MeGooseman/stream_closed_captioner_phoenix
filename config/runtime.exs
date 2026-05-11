@@ -146,4 +146,13 @@ if config_env() == :prod do
 
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
     allocated_memory: cache_memory
+
+  metrics_auth_token =
+    System.get_env("METRICS_AUTH_TOKEN") ||
+      raise """
+      environment variable METRICS_AUTH_TOKEN is missing.
+      Generate one: mix phx.gen.secret 64
+      """
+
+  config :stream_closed_captioner_phoenix, metrics_auth_token: metrics_auth_token
 end

@@ -62,6 +62,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     )
   end
 
+  pipeline :metrics_scrape do
+    plug(:accepts, ["text/plain"])
+    plug(StreamClosedCaptionerPhoenixWeb.Plugs.MetricsAuth)
+  end
+
   if Mix.env() == :dev do
     forward("/sent_emails", Bamboo.SentEmailViewerPlug)
 
@@ -174,5 +179,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
 
     resources("/bits_balance_debits", BitsBalanceDebitController, only: [:index, :show])
     resources("/dashboard", DashboardController, only: [:index])
+  end
+
+  scope "/" do
+    pipe_through(:metrics_scrape)
+
+    forward("/metrics", PromEx.Plug,
+      prom_ex_module: StreamClosedCaptionerPhoenix.PromEx
+    )
   end
 end
