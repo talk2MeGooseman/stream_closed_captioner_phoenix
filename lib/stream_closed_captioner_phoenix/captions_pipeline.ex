@@ -166,7 +166,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           {Map.put(payload, key, text), %{metadata | result: :ok}}
 
         {:error, reason} ->
-          Logger.warning("Pirate mode translation failed: #{inspect(reason)}")
+          Logger.warning("pirate mode translation failed",
+            user_id: user_id,
+            key: key,
+            reason: inspect(reason)
+          )
           {payload, %{metadata | result: :error}}
       end
     end)
@@ -181,11 +185,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     cond do
       scheme != "https" ->
-        Logger.warning("Rejected non-HTTPS Zoom URL: #{inspect(uri.scheme)}")
+        Logger.warning("rejected non-https zoom url",
+          reason: :non_https_scheme,
+          scheme: inspect(uri.scheme)
+        )
         {:error, :invalid_zoom_url}
 
       not String.ends_with?(host || "", ".zoom.us") ->
-        Logger.warning("Rejected non-Zoom host: #{inspect(uri.host)}")
+        Logger.warning("rejected non-zoom host",
+          reason: :invalid_host,
+          host: inspect(uri.host)
+        )
         {:error, :invalid_zoom_url}
 
       true ->
@@ -260,11 +270,18 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
             {:ok, payload}
 
           {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-            Logger.debug("Request was rejected code: #{code} body: #{body}")
+            Logger.warning("zoom delivery rejected",
+              http_status: code,
+              body: inspect(body),
+              destination: :zoom
+            )
             {:error, body}
 
           {:error, %HTTPoison.Error{reason: reason}} ->
-            Logger.debug("Request was error")
+            Logger.warning("zoom delivery error",
+              reason: inspect(reason),
+              destination: :zoom
+            )
             {:error, reason}
         end
       end
