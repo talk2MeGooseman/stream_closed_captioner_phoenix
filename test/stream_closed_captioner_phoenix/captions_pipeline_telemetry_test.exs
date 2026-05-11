@@ -162,4 +162,27 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTelemetryTest do
       assert uid == user.id
     end
   end
+
+  describe "[:scc, :captions, :pirate_mode, :stop]" do
+    test "emits :stop with result: :ok when pirate mode succeeds" do
+      TelemetryCapture.attach([[:scc, :captions, :pirate_mode, :stop]])
+
+      user =
+        insert(:user, stream_settings: build(:stream_settings, pirate_mode: true))
+
+      assert {:ok, _} =
+               CaptionsPipeline.pipeline_to(:default, user, %{
+                 "interim" => "Hello",
+                 "final" => "Friend",
+                 "session" => "abc"
+               })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :pirate_mode, :stop],
+                      %{duration: _},
+                      %{user_id: uid, key: :interim, result: :ok}}
+
+      assert uid == user.id
+    end
+  end
 end

@@ -88,7 +88,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       payload =
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings, :default, user.id)
-        |> apply_pirate_mode(stream_settings)
+        |> apply_pirate_mode(stream_settings, user.id)
 
       {:ok, payload}
     else
@@ -148,26 +148,31 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @spec apply_pirate_mode(
           CaptionsPayload.t(),
-          StreamSettings.t()
+          StreamSettings.t(),
+          integer() | nil
         ) :: CaptionsPayload.t()
-  defp apply_pirate_mode(payload, %StreamSettings{} = stream_settings) do
+  defp apply_pirate_mode(payload, %StreamSettings{} = stream_settings, user_id) do
     payload
-    |> maybe_pirate_mode_for(:interim, stream_settings)
-    |> maybe_pirate_mode_for(:final, stream_settings)
+    |> maybe_pirate_mode_for(:interim, stream_settings, user_id)
+    |> maybe_pirate_mode_for(:final, stream_settings, user_id)
   end
 
-  defp maybe_pirate_mode_for(payload, key, %StreamSettings{pirate_mode: true}) do
-    case TalkLikeAX.translate(Map.get(payload, key)) do
-      {:ok, text} ->
-        Map.put(payload, key, text)
+  defp maybe_pirate_mode_for(payload, key, %StreamSettings{pirate_mode: true}, user_id) do
+    metadata = %{user_id: user_id, key: key, result: nil}
 
-      {:error, reason} ->
-        Logger.warning("Pirate mode translation failed: #{inspect(reason)}")
-        payload
-    end
+    :telemetry.span([:scc, :captions, :pirate_mode], metadata, fn ->
+      case TalkLikeAX.translate(Map.get(payload, key)) do
+        {:ok, text} ->
+          {Map.put(payload, key, text), %{metadata | result: :ok}}
+
+        {:error, reason} ->
+          Logger.warning("Pirate mode translation failed: #{inspect(reason)}")
+          {payload, %{metadata | result: :error}}
+      end
+    end)
   end
 
-  defp maybe_pirate_mode_for(payload, _key, _stream_settings), do: payload
+  defp maybe_pirate_mode_for(payload, _key, _stream_settings, _user_id), do: payload
 
   defp validate_zoom_url(url) when is_binary(url) do
     uri = URI.parse(url)
@@ -219,7 +224,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
             censored
         end
 
-      payload = apply_pirate_mode(translated, stream_settings)
+      payload = apply_pirate_mode(translated, stream_settings, user.id)
       {:ok, payload}
     else
       {:error, _} -> {:error, "Stream settings not found"}
@@ -245,7 +250,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         CaptionsPayload.new(message)
         |> apply_users_blocklist_for(:final, stream_settings, :zoom, user.id)
         |> maybe_additional_censoring_for(:final, stream_settings)
-        |> maybe_pirate_mode_for(:final, stream_settings)
+        |> maybe_pirate_mode_for(:final, stream_settings, user.id)
 
       zoom_text = Map.get(payload, :final)
 
