@@ -3,8 +3,8 @@ import Config
 # Configure your database
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   username: "postgres",
-  password: "",
-  database: "stream-cc-development",
+  password: "postgres",
+  database: "app",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: false,
   pool_size: 10,
@@ -70,7 +70,25 @@ config :stream_closed_captioner_phoenix, dev_routes: true
 # Human-readable dev logs with key metadata fields
 config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id, :user_id, :twitch_uid, :destination, :provider, :http_status]
+  metadata: [
+    :body,
+    :destination,
+    :duration_ms,
+    :error_reason,
+    :host,
+    :http_status,
+    :key,
+    :kind,
+    :language,
+    :provider,
+    :reason,
+    :request_id,
+    :scheme,
+    :stacktrace,
+    :text_length,
+    :twitch_uid,
+    :user_id
+  ]
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

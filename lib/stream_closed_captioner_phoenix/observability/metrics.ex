@@ -14,7 +14,9 @@ defmodule StreamClosedCaptionerPhoenix.Observability.Metrics do
   def metrics, do: event_metrics() ++ polling_metrics() ++ __legacy__()
 
   @spec event_metrics() :: [Telemetry.Metrics.t()]
-  def event_metrics do
+  def event_metrics, do: event_counters() ++ event_distributions()
+
+  defp event_counters do
     [
       counter("scc.captions.channel.publish.count",
         event_name: [:scc, :captions, :channel, :publish],
@@ -54,7 +56,12 @@ defmodule StreamClosedCaptionerPhoenix.Observability.Metrics do
       sum("scc.captions.pipeline.censored.blocked_count",
         event_name: [:scc, :captions, :pipeline, :censored],
         measurement: :blocked_count,
-        tags: [:destination, :key]),
+        tags: [:destination, :key])
+    ]
+  end
+
+  defp event_distributions do
+    [
       distribution("scc.captions.pipeline.stop.duration",
         event_name: [:scc, :captions, :pipeline, :stop],
         measurement: :duration,
