@@ -15,6 +15,12 @@ config :absinthe_security, AbsintheSecurity.Phase.MaxDepthCheck, max_depth_count
 config :absinthe_security, AbsintheSecurity.Phase.MaxDirectivesCheck, max_directive_count: 0
 
 if config_env() == :prod do
+  # JSON structured logging for prod; LoggerJSON.Formatters.BasicLogger is the v5.x generic formatter.
+  config :logger, :default_handler,
+    formatter: {LoggerJSON.Formatters.BasicLogger, metadata: :all}
+
+  config :logger, level: :info
+
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint, server: true
 
   config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extension

@@ -67,8 +67,10 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoin
 # Enable dev routes for dashboard and mailbox
 config :stream_closed_captioner_phoenix, dev_routes: true
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+# Human-readable dev logs with key metadata fields
+config :logger, :default_formatter,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id, :user_id, :twitch_uid, :destination, :provider, :http_status]
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
