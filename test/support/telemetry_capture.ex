@@ -6,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenix.TelemetryCapture do
   use `assert_receive/2` directly.
   """
 
-  @spec attach([list(atom())]) :: :ok
+  @spec attach([[atom()]]) :: :ok
   def attach(events) when is_list(events) do
     ref = make_ref()
     pid = self()
