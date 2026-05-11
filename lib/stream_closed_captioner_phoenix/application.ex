@@ -17,6 +17,8 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       StreamClosedCaptionerPhoenix.Repo,
       # Start the Telemetry supervisor
       StreamClosedCaptionerPhoenixWeb.Telemetry,
+      # Start PromEx for Prometheus metrics
+      StreamClosedCaptionerPhoenix.PromEx,
       # Start the PubSub system
       {Phoenix.PubSub, name: StreamClosedCaptionerPhoenix.PubSub},
       # Start the Endpoint (http/https)
