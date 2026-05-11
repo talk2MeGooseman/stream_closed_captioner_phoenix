@@ -91,4 +91,19 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTelemetryTes
                     %{duration: _},
                     %{from_lang: "en", to_count: 1, result: :ok}}
   end
+
+  test "emits [:scc, :outbound, :gemini_translation, :stop] when Gemini call succeeds" do
+    TelemetryCapture.attach([[:scc, :outbound, :gemini_translation, :stop]])
+
+    Mox.expect(Gemini.MockCognitive, :translate, fn _from, _to, _text ->
+      {:ok, %Azure.Cognitive.Translations{translations: %{"es" => "hola"}}}
+    end)
+
+    assert {:ok, _} = Gemini.perform_translations("en", ["es"], "Hello")
+
+    assert_receive {:telemetry,
+                    [:scc, :outbound, :gemini_translation, :stop],
+                    %{duration: _},
+                    %{from_lang: "en", to_count: 1, result: :ok}}
+  end
 end
