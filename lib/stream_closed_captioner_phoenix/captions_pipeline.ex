@@ -20,6 +20,28 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           | {:ok, CaptionsPayload.t()}
   @trace :pipeline_to
   def pipeline_to(:default, %User{} = user, message) do
+    metadata = %{
+      destination: :default,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
+
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_default(user, message) do
+        {:ok, _payload} = ok ->
+          {ok, %{metadata | result: :ok}}
+
+        {:error, reason} = err ->
+          {err, %{metadata | result: :error, error_reason: reason}}
+      end
+    end)
+  end
+
+  defp do_pipeline_default(%User{} = user, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       payload =
         CaptionsPayload.new(message)
