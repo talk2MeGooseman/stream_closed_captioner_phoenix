@@ -70,4 +70,66 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTelemetryTest do
 
     assert uid == user.id
   end
+
+  describe "[:scc, :captions, :channel, :publish]" do
+    setup do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      user = stream_settings.user
+
+      {:ok, _, socket} =
+        StreamClosedCaptionerPhoenixWeb.UserSocket
+        |> socket("user_id", %{current_user: user})
+        |> subscribe_and_join(
+          StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+          "captions:#{user.id}"
+        )
+
+      %{socket: socket, user: user}
+    end
+
+    test "emits with destination: :default when no zoom/twitch flags", %{socket: socket} do
+      TelemetryCapture.attach([[:scc, :captions, :channel, :publish]])
+
+      push(socket, "publishFinal", %{
+        "interim" => "hi",
+        "final" => "there",
+        "session" => "abc"
+      })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :channel, :publish],
+                      %{count: 1},
+                      %{destination: :default, event: "publishFinal"}},
+                     1_000
+    end
+
+    test "emits with destination: :twitch and client_send_age_ms when sentOn is present",
+         %{socket: socket} do
+      TelemetryCapture.attach([[:scc, :captions, :channel, :publish]])
+
+      sent_on = DateTime.utc_now() |> DateTime.add(-2, :second) |> DateTime.to_iso8601()
+
+      push(socket, "publishFinal", %{
+        "interim" => "hi",
+        "final" => "there",
+        "session" => "abc",
+        "twitch" => %{"enabled" => true},
+        "sentOn" => sent_on
+      })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :channel, :publish],
+                      %{count: 1, client_send_age_ms: age},
+                      %{destination: :twitch}},
+                     1_000
+
+      assert age >= 1_500
+    end
+
+    test "active does NOT trigger pipeline events", %{socket: socket} do
+      TelemetryCapture.attach([[:scc, :captions, :pipeline, :stop]])
+      push(socket, "active", %{})
+      refute_receive {:telemetry, [:scc, :captions, :pipeline, :stop], _, _}, 200
+    end
+  end
 end

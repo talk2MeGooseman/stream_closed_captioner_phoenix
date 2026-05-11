@@ -30,6 +30,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   @trace :handle_in
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
+    emit_publish("publishFinal", payload, socket, :zoom)
     NewRelic.start_transaction("Captions", "zoom")
     user = socket.assigns.current_user
 
@@ -47,7 +48,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   @trace :handle_in
-  def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
+  def handle_in(publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
+    emit_publish(publish_state, payload, socket, :twitch)
     NewRelic.start_transaction("Captions", "twitch")
     sent_on_time = Map.get(payload, "sentOn")
     user = socket.assigns.current_user
@@ -72,7 +74,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
     end
   end
 
-  def handle_in("active", _payload, socket) do
+  def handle_in("active", payload, socket) do
+    emit_publish("active", payload, socket, :none)
     user = socket.assigns.current_user
 
     UserTracker.update(self(), "active_channels", user.uid, %{
@@ -83,6 +86,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   def handle_in(publish_state, payload, socket) when publish_state != "active" do
+    emit_publish(publish_state, payload, socket, :default)
     user = socket.assigns.current_user
 
     case safe_pipeline_to(:default, user, payload) do
@@ -143,6 +147,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       )
 
       {:error, :exception}
+  end
+
+  defp emit_publish(event, payload, socket, destination) do
+    user = socket.assigns.current_user
+    sent_on = Map.get(payload, "sentOn")
+    age = time_to_complete(sent_on)
+
+    measurements =
+      case sent_on do
+        nil -> %{count: 1}
+        _ -> %{count: 1, client_send_age_ms: age}
+      end
+
+    metadata = %{
+      user_id: user.id,
+      destination: destination,
+      event: event,
+      zoom_enabled: get_in(payload, ["zoom", "enabled"]) == true,
+      twitch_enabled: get_in(payload, ["twitch", "enabled"]) == true
+    }
+
+    :telemetry.execute([:scc, :captions, :channel, :publish], measurements, metadata)
   end
 
   @impl true
