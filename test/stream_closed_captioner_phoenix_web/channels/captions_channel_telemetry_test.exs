@@ -132,4 +132,59 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTelemetryTest do
       refute_receive {:telemetry, [:scc, :captions, :pipeline, :stop], _, _}, 200
     end
   end
+
+  describe "[:scc, :captions, :channel, :reply, :stop] and twitch_publish" do
+    setup do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      user = stream_settings.user
+
+      {:ok, _, socket} =
+        StreamClosedCaptionerPhoenixWeb.UserSocket
+        |> socket("user_id", %{current_user: user})
+        |> subscribe_and_join(
+          StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+          "captions:#{user.id}"
+        )
+
+      %{socket: socket, user: user}
+    end
+
+    test "wraps handle_in in :reply :stop span", %{socket: socket} do
+      TelemetryCapture.attach([[:scc, :captions, :channel, :reply, :stop]])
+
+      push(socket, "publishFinal", %{
+        "interim" => "hi",
+        "final" => "there",
+        "session" => "abc"
+      })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :channel, :reply, :stop],
+                      %{duration: _},
+                      %{destination: :default, event: "publishFinal", result: :ok}},
+                     1_000
+    end
+
+    test "emits :twitch_publish after Absinthe publish on twitch path", %{
+      socket: socket,
+      user: user
+    } do
+      TelemetryCapture.attach([[:scc, :outbound, :twitch_publish, :stop]])
+
+      push(socket, "publishFinal", %{
+        "interim" => "hi",
+        "final" => "there",
+        "session" => "abc",
+        "twitch" => %{"enabled" => true}
+      })
+
+      assert_receive {:telemetry,
+                      [:scc, :outbound, :twitch_publish, :stop],
+                      %{count: 1},
+                      %{user_id: uid}},
+                     1_000
+
+      assert uid == user.id
+    end
+  end
 end
