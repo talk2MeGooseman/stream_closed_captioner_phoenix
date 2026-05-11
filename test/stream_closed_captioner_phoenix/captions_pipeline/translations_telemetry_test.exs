@@ -76,4 +76,19 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTelemetryTes
                     %{duration: _},
                     %{result: :ok, provider: :azure, to_count: 1}}
   end
+
+  test "emits [:scc, :outbound, :azure_translation, :stop] when Azure call succeeds" do
+    TelemetryCapture.attach([[:scc, :outbound, :azure_translation, :stop]])
+
+    Mox.expect(Azure.MockCognitive, :translate, fn _from, to, _text ->
+      {:ok, %Azure.Cognitive.Translations{translations: Map.new(to, &{&1, "hola"})}}
+    end)
+
+    assert {:ok, _} = Azure.perform_translations("en", ["es"], "Hello")
+
+    assert_receive {:telemetry,
+                    [:scc, :outbound, :azure_translation, :stop],
+                    %{duration: _},
+                    %{from_lang: "en", to_count: 1, result: :ok}}
+  end
 end
