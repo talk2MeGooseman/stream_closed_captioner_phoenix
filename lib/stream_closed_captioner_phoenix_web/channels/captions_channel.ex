@@ -6,11 +6,24 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   @impl true
   def join("captions:" <> user_id, _payload, socket) do
-    if authorized?(socket, user_id) do
-      send(self(), :after_join)
+    user = socket.assigns.current_user
 
+    if authorized?(socket, user_id) do
+      :telemetry.execute(
+        [:scc, :captions, :channel, :join],
+        %{count: 1},
+        %{user_id: user.id, result: :ok}
+      )
+
+      send(self(), :after_join)
       {:ok, socket}
     else
+      :telemetry.execute(
+        [:scc, :captions, :channel, :join],
+        %{count: 1},
+        %{user_id: user.id, result: :unauthorized}
+      )
+
       {:error, %{reason: "unauthorized"}}
     end
   end
@@ -130,5 +143,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       )
 
       {:error, :exception}
+  end
+
+  @impl true
+  def terminate(reason, socket) do
+    user_id = get_in(socket.assigns, [:current_user, Access.key(:id)])
+
+    :telemetry.execute(
+      [:scc, :captions, :channel, :leave],
+      %{count: 1},
+      %{user_id: user_id, reason: inspect(reason)}
+    )
+
+    :ok
   end
 end
