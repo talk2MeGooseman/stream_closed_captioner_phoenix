@@ -15,6 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
         %{user_id: user.id, result: :ok}
       )
 
+      Logger.metadata(user_id: user.id, twitch_uid: user.uid)
       send(self(), :after_join)
       {:ok, socket}
     else
@@ -31,6 +32,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   @trace :handle_in
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
     emit_publish("publishFinal", payload, socket, :zoom)
+    Logger.metadata(destination: :zoom)
 
     with_reply_span("publishFinal", :zoom, socket, fn ->
       NewRelic.start_transaction("Captions", "zoom")
@@ -52,6 +54,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   @trace :handle_in
   def handle_in(publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
     emit_publish(publish_state, payload, socket, :twitch)
+    Logger.metadata(destination: :twitch)
 
     with_reply_span(publish_state, :twitch, socket, fn ->
       NewRelic.start_transaction("Captions", "twitch")
@@ -89,6 +92,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   def handle_in("active", payload, socket) do
     emit_publish("active", payload, socket, :none)
+    Logger.metadata(destination: :none)
     user = socket.assigns.current_user
 
     UserTracker.update(self(), "active_channels", user.uid, %{
@@ -100,6 +104,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   def handle_in(publish_state, payload, socket) when publish_state != "active" do
     emit_publish(publish_state, payload, socket, :default)
+    Logger.metadata(destination: :default)
 
     with_reply_span(publish_state, :default, socket, fn ->
       user = socket.assigns.current_user

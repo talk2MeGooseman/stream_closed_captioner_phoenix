@@ -133,6 +133,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTelemetryTest do
     end
   end
 
+  describe "Logger metadata" do
+    test "join sets user_id and twitch_uid in Logger.metadata" do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      user = stream_settings.user
+
+      {:ok, _, socket} =
+        StreamClosedCaptionerPhoenixWeb.UserSocket
+        |> socket("user_id", %{current_user: user})
+        |> subscribe_and_join(
+          StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+          "captions:#{user.id}"
+        )
+
+      {:dictionary, dict} = Process.info(socket.channel_pid, :dictionary)
+      raw = Keyword.get(dict, :"$logger_metadata$", %{})
+      metadata = if is_map(raw), do: raw, else: Map.new(raw)
+
+      assert Map.get(metadata, :user_id) == user.id
+      assert Map.get(metadata, :twitch_uid) == user.uid
+    end
+  end
+
   describe "[:scc, :captions, :channel, :reply, :stop] and twitch_publish" do
     setup do
       stream_settings = insert(:stream_settings, user: build(:bare_user))
