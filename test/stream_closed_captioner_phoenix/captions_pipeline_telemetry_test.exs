@@ -185,4 +185,26 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTelemetryTest do
       assert uid == user.id
     end
   end
+
+  describe "[:scc, :outbound, :zoom_delivery, …]" do
+    test "emits :stop with http_status and result on success" do
+      TelemetryCapture.attach([[:scc, :outbound, :zoom_delivery, :stop]])
+
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, "POST", "/", fn conn ->
+        Plug.Conn.resp(conn, 200, "ok")
+      end)
+
+      url = "http://localhost:#{bypass.port}/?token=x"
+
+      {:ok, %HTTPoison.Response{status_code: 200}} =
+        Zoom.send_captions_to(url, "hello", %Zoom.Params{seq: 1, lang: "en"})
+
+      assert_receive {:telemetry,
+                      [:scc, :outbound, :zoom_delivery, :stop],
+                      %{duration: _},
+                      %{http_status: 200, result: :ok}}
+    end
+  end
 end
