@@ -135,4 +135,31 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTelemetryTest do
                       %{destination: :zoom, result: :error, error_reason: :invalid_zoom_url}}
     end
   end
+
+  describe "[:scc, :captions, :pipeline, :censored]" do
+    test "emits :censored with blocked_count when blocklist matches" do
+      TelemetryCapture.attach([[:scc, :captions, :pipeline, :censored]])
+
+      user =
+        insert(:user,
+          stream_settings:
+            build(:stream_settings, filter_profanity: true, blocklist: ["poopy"])
+        )
+
+      assert {:ok, _} =
+               CaptionsPipeline.pipeline_to(:default, user, %{
+                 "interim" => "Hello poopy head",
+                 "final" => "Friend",
+                 "session" => "abc"
+               })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :pipeline, :censored],
+                      %{blocked_count: count},
+                      %{destination: :default, user_id: uid, key: :interim}}
+                     when count > 0
+
+      assert uid == user.id
+    end
+  end
 end

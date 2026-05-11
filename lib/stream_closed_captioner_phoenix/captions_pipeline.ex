@@ -87,7 +87,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       payload =
         CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
+        |> apply_censoring(stream_settings, :default, user.id)
         |> apply_pirate_mode(stream_settings)
 
       {:ok, payload}
@@ -96,10 +96,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  defp apply_censoring(payload, %StreamSettings{} = stream_settings) do
+  defp apply_censoring(payload, %StreamSettings{} = stream_settings, destination, user_id) do
     payload
-    |> apply_users_blocklist_for(:interim, stream_settings)
-    |> apply_users_blocklist_for(:final, stream_settings)
+    |> apply_users_blocklist_for(:interim, stream_settings, destination, user_id)
+    |> apply_users_blocklist_for(:final, stream_settings, destination, user_id)
     |> maybe_additional_censoring_for(:interim, stream_settings)
     |> maybe_additional_censoring_for(:final, stream_settings)
   end
@@ -107,14 +107,30 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   @spec apply_users_blocklist_for(
           CaptionsPayload.t(),
           :interim | :final,
-          StreamSettings.t()
+          StreamSettings.t(),
+          atom(),
+          integer() | nil
         ) :: CaptionsPayload.t()
-  defp apply_users_blocklist_for(payload, key, stream_settings) do
-    update_in(
-      payload,
-      [Access.key(key)],
-      fn text -> Profanity.censor_from_blocklist(stream_settings, text) end
-    )
+  defp apply_users_blocklist_for(payload, key, stream_settings, destination, user_id) do
+    before_text = Map.get(payload, key) || ""
+    after_text = Profanity.censor_from_blocklist(stream_settings, before_text)
+    blocked = count_blocked(before_text, after_text)
+
+    if blocked > 0 do
+      :telemetry.execute(
+        [:scc, :captions, :pipeline, :censored],
+        %{blocked_count: blocked},
+        %{destination: destination, user_id: user_id, key: key}
+      )
+    end
+
+    Map.put(payload, key, after_text)
+  end
+
+  defp count_blocked(before_text, after_text) do
+    before_words = String.split(before_text || "", ~r/\s+/, trim: true)
+    after_words = String.split(after_text || "", ~r/\s+/, trim: true)
+    Enum.count(Enum.zip(before_words, after_words), fn {b, a} -> b != a end)
   end
 
   @spec maybe_additional_censoring_for(
@@ -178,7 +194,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       censored =
         CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
+        |> apply_censoring(stream_settings, :twitch, user.id)
 
       timeout_ms = translation_task_timeout_ms()
       task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
@@ -227,7 +243,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
       payload =
         CaptionsPayload.new(message)
-        |> apply_users_blocklist_for(:final, stream_settings)
+        |> apply_users_blocklist_for(:final, stream_settings, :zoom, user.id)
         |> maybe_additional_censoring_for(:final, stream_settings)
         |> maybe_pirate_mode_for(:final, stream_settings)
 
