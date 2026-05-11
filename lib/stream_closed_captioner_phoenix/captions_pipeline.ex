@@ -41,19 +41,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end)
   end
 
-  defp do_pipeline_default(%User{} = user, message) do
-    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      payload =
-        CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
-        |> apply_pirate_mode(stream_settings)
-
-      {:ok, payload}
-    else
-      {:error, _} -> {:error, "Stream settings not found"}
-    end
-  end
-
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
@@ -111,6 +98,19 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
             {:error, reason}
         end
       end
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
+  end
+
+  defp do_pipeline_default(%User{} = user, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_censoring(stream_settings)
+        |> apply_pirate_mode(stream_settings)
+
+      {:ok, payload}
     else
       {:error, _} -> {:error, "Stream settings not found"}
     end
