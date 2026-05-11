@@ -114,4 +114,25 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTelemetryTest do
                      1_000
     end
   end
+
+  describe "[:scc, :captions, :pipeline, …] for :zoom path" do
+    test "emits :stop with destination: :zoom and result: :error on invalid URL" do
+      TelemetryCapture.attach([[:scc, :captions, :pipeline, :stop]])
+
+      user = insert(:user)
+
+      assert {:error, :invalid_zoom_url} =
+               CaptionsPipeline.pipeline_to(:zoom, user, %{
+                 "interim" => "x",
+                 "final" => "y",
+                 "session" => "abc",
+                 "zoom" => %{"url" => "http://evil.example.com", "seq" => 1}
+               })
+
+      assert_receive {:telemetry,
+                      [:scc, :captions, :pipeline, :stop],
+                      _measurements,
+                      %{destination: :zoom, result: :error, error_reason: :invalid_zoom_url}}
+    end
+  end
 end

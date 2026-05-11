@@ -65,37 +65,22 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @trace :pipeline_to
   def pipeline_to(:zoom, %User{} = user, message) do
-    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      params = %Zoom.Params{
-        seq: get_in(message, ["zoom", "seq"]),
-        lang: stream_settings.language
-      }
+    metadata = %{
+      destination: :zoom,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
 
-      payload =
-        CaptionsPayload.new(message)
-        |> apply_users_blocklist_for(:final, stream_settings)
-        |> maybe_additional_censoring_for(:final, stream_settings)
-        |> maybe_pirate_mode_for(:final, stream_settings)
-
-      zoom_text = Map.get(payload, :final)
-
-      with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
-        case Zoom.send_captions_to(url, zoom_text, params) do
-          {:ok, %HTTPoison.Response{status_code: 200}} ->
-            {:ok, payload}
-
-          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-            Logger.debug("Request was rejected code: #{code} body: #{body}")
-            {:error, body}
-
-          {:error, %HTTPoison.Error{reason: reason}} ->
-            Logger.debug("Request was error")
-            {:error, reason}
-        end
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_zoom(user, message) do
+        {:ok, _payload} = ok -> {ok, %{metadata | result: :ok}}
+        {:error, reason} = err -> {err, %{metadata | result: :error, error_reason: reason}}
       end
-    else
-      {:error, _} -> {:error, "Stream settings not found"}
-    end
+    end)
   end
 
   defp do_pipeline_default(%User{} = user, message) do
@@ -231,5 +216,39 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       :translation_task_timeout_ms,
       @translation_timeout_default_ms
     )
+  end
+
+  defp do_pipeline_zoom(%User{} = user, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      params = %Zoom.Params{
+        seq: get_in(message, ["zoom", "seq"]),
+        lang: stream_settings.language
+      }
+
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_users_blocklist_for(:final, stream_settings)
+        |> maybe_additional_censoring_for(:final, stream_settings)
+        |> maybe_pirate_mode_for(:final, stream_settings)
+
+      zoom_text = Map.get(payload, :final)
+
+      with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
+        case Zoom.send_captions_to(url, zoom_text, params) do
+          {:ok, %HTTPoison.Response{status_code: 200}} ->
+            {:ok, payload}
+
+          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+            Logger.debug("Request was rejected code: #{code} body: #{body}")
+            {:error, body}
+
+          {:error, %HTTPoison.Error{reason: reason}} ->
+            Logger.debug("Request was error")
+            {:error, reason}
+        end
+      end
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
   end
 end
