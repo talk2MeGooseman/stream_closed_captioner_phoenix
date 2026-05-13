@@ -8,6 +8,12 @@ defmodule Twitch.Oauth do
   alias Twitch.Parser
   alias NewRelic.Instrumented.HTTPoison
 
+  @behaviour Twitch.OauthProvider
+
+  # Connect and receive timeouts applied to every Twitch identity endpoint call.
+  @http_timeout [timeout: 5_000, recv_timeout: 10_000]
+
+  @impl Twitch.OauthProvider
   def get_client_access_token() do
     credentials = get_credentials()
 
@@ -25,7 +31,7 @@ defmodule Twitch.Oauth do
 
     url = encode_url_and_params("https://id.twitch.tv/oauth2/token", params)
 
-    case HTTPoison.post(url, "", headers) do
+    case HTTPoison.post(url, "", headers, @http_timeout) do
       {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
@@ -70,7 +76,7 @@ defmodule Twitch.Oauth do
     ]
 
     encode_url_and_params("https://id.twitch.tv/oauth2/validate")
-    |> HTTPoison.get(headers)
+    |> HTTPoison.get(headers, @http_timeout)
     |> Parser.parse()
   end
 

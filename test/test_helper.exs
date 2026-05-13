@@ -6,5 +6,7 @@ Ecto.Adapters.SQL.Sandbox.mode(StreamClosedCaptionerPhoenix.Repo, :manual)
 # Mocks services out using their provider
 Mox.defmock(Azure.MockCognitive, for: Azure.CognitiveProvider)
 Mox.defmock(Gemini.MockCognitive, for: Gemini.CognitiveProvider)
+Mox.defmock(Notion.MockDatabase, for: Notion.DatabaseProvider)
 Mox.defmock(Twitch.MockExtension, for: Twitch.ExtensionProvider)
 Mox.defmock(Twitch.MockHelix, for: Twitch.HelixProvider)
+Mox.defmock(Twitch.MockOauth, for: Twitch.OauthProvider)

@@ -1,5 +1,12 @@
 defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
-  use Oban.Worker, queue: :default
+  use Oban.Worker,
+    queue: :chat_reminders,
+    max_attempts: 3,
+    unique: [
+      period: 300,
+      fields: [:args, :queue],
+      states: [:available, :scheduled, :executing]
+    ]
 
   # %{broadcaster_user_id: "talk2megooseman", broadcaster_user_login: "talk2megooseman"} |> StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(schedule_in: 10) |> Oban.insert()
 
@@ -12,7 +19,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
         errors: errors
       }) do
     if Enum.any?(errors) do
-      :cancel
+      {:cancel, :prior_errors}
     else
       if !StreamClosedCaptionerPhoenixWeb.UserTracker.channel_active?(broadcaster_user_id) do
         Twitch.send_extension_chat_message(
