@@ -64,3 +64,12 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: "client_id",
   client_secret: "client_secret",
   redirect_uri: "http://localhost:4000/auth/twitch/callback"
+
+config :stream_closed_captioner_phoenix, translation_task_timeout_ms: 50
+
+config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.PromEx,
+  disabled: true,
+  manual_metrics_start_delay: :no_delay,
+  drop_metrics_groups: [],
+  grafana: :disabled,
+  metrics_server: :disabled

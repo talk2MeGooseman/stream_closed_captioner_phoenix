@@ -1,0 +1,98 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Pipeline p95 by destination",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, destination) (rate(scc_captions_pipeline_stop_duration_bucket[5m])))",
+          "legendFormat": "{{destination}} p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Translation p50/p95/p99 by provider",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by (le, provider) (rate(scc_captions_translation_stop_duration_bucket[5m])))",
+          "legendFormat": "{{provider}} p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, provider) (rate(scc_captions_translation_stop_duration_bucket[5m])))",
+          "legendFormat": "{{provider}} p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, provider) (rate(scc_captions_translation_stop_duration_bucket[5m])))",
+          "legendFormat": "{{provider}} p99"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Zoom delivery p95",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(scc_outbound_zoom_delivery_stop_duration_bucket[5m])))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Client send-age p95 (staleness)",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, destination) (rate(scc_captions_channel_publish_client_send_age_bucket[5m])))",
+          "legendFormat": "{{destination}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Pirate mode p95",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(scc_captions_pirate_mode_stop_duration_bucket[5m])))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Channel reply p95",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, destination) (rate(scc_captions_channel_reply_stop_duration_bucket[5m])))",
+          "legendFormat": "{{destination}}"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["captions", "scc"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "",
+  "title": "Captions — Latency",
+  "uid": "scc-captions-latency",
+  "version": 1
+}

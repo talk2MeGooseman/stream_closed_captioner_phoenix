@@ -1,0 +1,101 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Caption publishes/sec by destination",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (destination) (rate(scc_captions_channel_publish_count[1m]))",
+          "legendFormat": "{{destination}}"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Active channels",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "scc_captions_active_channels_count" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Translation outcomes/min by result",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (result) (rate(scc_captions_translation_stop_count[1m]))",
+          "legendFormat": "{{result}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Pipeline error rate by destination",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (destination) (rate(scc_captions_pipeline_stop_count{result=\"error\"}[5m])) / sum by (destination) (rate(scc_captions_pipeline_stop_count[5m]))",
+          "legendFormat": "{{destination}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Zoom HTTP statuses",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum by (http_status) (rate(scc_outbound_zoom_delivery_stop_count[1m]))",
+          "legendFormat": "{{http_status}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Channel joins / leaves per minute",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(rate(scc_captions_channel_join_count[1m]))",
+          "legendFormat": "joins"
+        },
+        {
+          "expr": "sum(rate(scc_captions_channel_leave_count[1m]))",
+          "legendFormat": "leaves"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Bits debits per minute",
+      "datasource": "${datasource_id}",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "targets": [
+        {
+          "expr": "sum(rate(scc_captions_translation_bits_debit_count[1m]))",
+          "legendFormat": "debits"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["captions", "scc"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "",
+  "title": "Captions — Overview",
+  "uid": "scc-captions-overview",
+  "version": 1
+}

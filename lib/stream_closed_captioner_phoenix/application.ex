@@ -17,6 +17,8 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       StreamClosedCaptionerPhoenix.Repo,
       # Start the Telemetry supervisor
       StreamClosedCaptionerPhoenixWeb.Telemetry,
+      # Start PromEx for Prometheus metrics
+      StreamClosedCaptionerPhoenix.PromEx,
       # Start the PubSub system
       {Phoenix.PubSub, name: StreamClosedCaptionerPhoenix.PubSub},
       # Start the Endpoint (http/https)
@@ -37,7 +39,9 @@ defmodule StreamClosedCaptionerPhoenix.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: StreamClosedCaptionerPhoenix.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+    StreamClosedCaptionerPhoenix.Observability.attach_logger_handlers()
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration

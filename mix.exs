@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       version: "0.1.0",
       elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:yecc] ++ Mix.compilers(),
+      compilers: [:leex, :yecc] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -95,6 +95,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Graphql Client
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.30"},
+      {:prom_ex, "~> 1.9"},
+      {:logger_json, "~> 5.1"},
       {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.13"},
       {:new_relic_oban, "~> 0.0.1"},

@@ -11,6 +11,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @type message_map :: %{optional(String.t()) => term()}
 
+  @translation_timeout_default_ms 3_000
+
   @spec pipeline_to(
           :twitch | :zoom | :default,
           StreamClosedCaptionerPhoenix.Accounts.User.t(),
@@ -20,38 +22,73 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
           | {:ok, CaptionsPayload.t()}
   @trace :pipeline_to
   def pipeline_to(:default, %User{} = user, message) do
-    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      payload =
-        CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
-        |> apply_pirate_mode(stream_settings)
+    metadata = %{
+      destination: :default,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
 
-      {:ok, payload}
-    else
-      {:error, _} -> {:error, "Stream settings not found"}
-    end
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_default(user, message) do
+        {:ok, _payload} = ok ->
+          {ok, %{metadata | result: :ok}}
+
+        {:error, reason} = err ->
+          {err, %{metadata | result: :error, error_reason: reason}}
+      end
+    end)
   end
 
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
+    metadata = %{
+      destination: :twitch,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
+
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_twitch(user, message) do
+        {:ok, _payload} = ok -> {ok, %{metadata | result: :ok}}
+        {:error, reason} = err -> {err, %{metadata | result: :error, error_reason: reason}}
+      end
+    end)
+  end
+
+  @trace :pipeline_to
+  def pipeline_to(:zoom, %User{} = user, message) do
+    metadata = %{
+      destination: :zoom,
+      user_id: user.id,
+      text_length: String.length(Map.get(message, "final", "")),
+      pirate_mode: false,
+      language: nil,
+      result: nil,
+      error_reason: nil
+    }
+
+    :telemetry.span([:scc, :captions, :pipeline], metadata, fn ->
+      case do_pipeline_zoom(user, message) do
+        {:ok, _payload} = ok -> {ok, %{metadata | result: :ok}}
+        {:error, reason} = err -> {err, %{metadata | result: :error, error_reason: reason}}
+      end
+    end)
+  end
+
+  defp do_pipeline_default(%User{} = user, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      censored =
+      payload =
         CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
-
-      task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
-
-      translated =
-        case Task.yield(task, 3_000) || Task.shutdown(task) do
-          {:ok, result} ->
-            result
-
-          _ ->
-            Logger.warning("Translation timed out or failed, passing through untranslated")
-            censored
-        end
-
-      payload = apply_pirate_mode(translated, stream_settings)
+        |> apply_censoring(stream_settings, :default, user.id)
+        |> apply_pirate_mode(stream_settings, user.id)
 
       {:ok, payload}
     else
@@ -59,45 +96,10 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     end
   end
 
-  @trace :pipeline_to
-  def pipeline_to(:zoom, %User{} = user, message) do
-    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
-      params = %Zoom.Params{
-        seq: get_in(message, ["zoom", "seq"]),
-        lang: stream_settings.language
-      }
-
-      payload =
-        CaptionsPayload.new(message)
-        |> apply_users_blocklist_for(:final, stream_settings)
-        |> maybe_additional_censoring_for(:final, stream_settings)
-        |> maybe_pirate_mode_for(:final, stream_settings)
-
-      zoom_text = Map.get(payload, :final)
-
-      with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
-        case Zoom.send_captions_to(url, zoom_text, params) do
-          {:ok, %HTTPoison.Response{status_code: 200}} ->
-            {:ok, payload}
-
-          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
-            Logger.debug("Request was rejected code: #{code} body: #{body}")
-            {:error, body}
-
-          {:error, %HTTPoison.Error{reason: reason}} ->
-            Logger.debug("Request was error")
-            {:error, reason}
-        end
-      end
-    else
-      {:error, _} -> {:error, "Stream settings not found"}
-    end
-  end
-
-  defp apply_censoring(payload, %StreamSettings{} = stream_settings) do
+  defp apply_censoring(payload, %StreamSettings{} = stream_settings, destination, user_id) do
     payload
-    |> apply_users_blocklist_for(:interim, stream_settings)
-    |> apply_users_blocklist_for(:final, stream_settings)
+    |> apply_users_blocklist_for(:interim, stream_settings, destination, user_id)
+    |> apply_users_blocklist_for(:final, stream_settings, destination, user_id)
     |> maybe_additional_censoring_for(:interim, stream_settings)
     |> maybe_additional_censoring_for(:final, stream_settings)
   end
@@ -105,14 +107,30 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   @spec apply_users_blocklist_for(
           CaptionsPayload.t(),
           :interim | :final,
-          StreamSettings.t()
+          StreamSettings.t(),
+          atom(),
+          integer() | nil
         ) :: CaptionsPayload.t()
-  defp apply_users_blocklist_for(payload, key, stream_settings) do
-    update_in(
-      payload,
-      [Access.key(key)],
-      fn text -> Profanity.censor_from_blocklist(stream_settings, text) end
-    )
+  defp apply_users_blocklist_for(payload, key, stream_settings, destination, user_id) do
+    before_text = Map.get(payload, key) || ""
+    after_text = Profanity.censor_from_blocklist(stream_settings, before_text)
+    blocked = count_blocked(before_text, after_text)
+
+    if blocked > 0 do
+      :telemetry.execute(
+        [:scc, :captions, :pipeline, :censored],
+        %{blocked_count: blocked},
+        %{destination: destination, user_id: user_id, key: key}
+      )
+    end
+
+    Map.put(payload, key, after_text)
+  end
+
+  defp count_blocked(before_text, after_text) do
+    before_words = String.split(before_text || "", ~r/\s+/, trim: true)
+    after_words = String.split(after_text || "", ~r/\s+/, trim: true)
+    Enum.count(Enum.zip(before_words, after_words), fn {b, a} -> b != a end)
   end
 
   @spec maybe_additional_censoring_for(
@@ -130,26 +148,35 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @spec apply_pirate_mode(
           CaptionsPayload.t(),
-          StreamSettings.t()
+          StreamSettings.t(),
+          integer() | nil
         ) :: CaptionsPayload.t()
-  defp apply_pirate_mode(payload, %StreamSettings{} = stream_settings) do
+  defp apply_pirate_mode(payload, %StreamSettings{} = stream_settings, user_id) do
     payload
-    |> maybe_pirate_mode_for(:interim, stream_settings)
-    |> maybe_pirate_mode_for(:final, stream_settings)
+    |> maybe_pirate_mode_for(:interim, stream_settings, user_id)
+    |> maybe_pirate_mode_for(:final, stream_settings, user_id)
   end
 
-  defp maybe_pirate_mode_for(payload, key, %StreamSettings{pirate_mode: true}) do
-    case TalkLikeAX.translate(Map.get(payload, key)) do
-      {:ok, text} ->
-        Map.put(payload, key, text)
+  defp maybe_pirate_mode_for(payload, key, %StreamSettings{pirate_mode: true}, user_id) do
+    metadata = %{user_id: user_id, key: key, result: nil}
 
-      {:error, reason} ->
-        Logger.warning("Pirate mode translation failed: #{inspect(reason)}")
-        payload
-    end
+    :telemetry.span([:scc, :captions, :pirate_mode], metadata, fn ->
+      case TalkLikeAX.translate(Map.get(payload, key)) do
+        {:ok, text} ->
+          {Map.put(payload, key, text), %{metadata | result: :ok}}
+
+        {:error, reason} ->
+          Logger.warning("pirate mode translation failed",
+            user_id: user_id,
+            key: key,
+            reason: inspect(reason)
+          )
+          {payload, %{metadata | result: :error}}
+      end
+    end)
   end
 
-  defp maybe_pirate_mode_for(payload, _key, _stream_settings), do: payload
+  defp maybe_pirate_mode_for(payload, _key, _stream_settings, _user_id), do: payload
 
   defp validate_zoom_url(url) when is_binary(url) do
     uri = URI.parse(url)
@@ -158,11 +185,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
     cond do
       scheme != "https" ->
-        Logger.warning("Rejected non-HTTPS Zoom URL: #{inspect(uri.scheme)}")
+        Logger.warning("rejected non-https zoom url",
+          reason: :non_https_scheme,
+          scheme: inspect(uri.scheme)
+        )
         {:error, :invalid_zoom_url}
 
       not String.ends_with?(host || "", ".zoom.us") ->
-        Logger.warning("Rejected non-Zoom host: #{inspect(uri.host)}")
+        Logger.warning("rejected non-zoom host",
+          reason: :invalid_host,
+          host: inspect(uri.host)
+        )
         {:error, :invalid_zoom_url}
 
       true ->
@@ -171,4 +204,89 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   end
 
   defp validate_zoom_url(_), do: {:error, :invalid_zoom_url}
+
+  defp do_pipeline_twitch(%User{} = user, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      censored =
+        CaptionsPayload.new(message)
+        |> apply_censoring(stream_settings, :twitch, user.id)
+
+      timeout_ms = translation_task_timeout_ms()
+      task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
+
+      translated =
+        case Task.yield(task, timeout_ms) || Task.shutdown(task) do
+          {:ok, result} ->
+            result
+
+          _ ->
+            :telemetry.execute(
+              [:scc, :captions, :translation, :timeout],
+              %{duration_ms: timeout_ms},
+              %{user_id: user.id}
+            )
+
+            Logger.warning("translation timed out",
+              user_id: user.id,
+              duration_ms: timeout_ms
+            )
+
+            censored
+        end
+
+      payload = apply_pirate_mode(translated, stream_settings, user.id)
+      {:ok, payload}
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
+  end
+
+  defp translation_task_timeout_ms do
+    Application.get_env(
+      :stream_closed_captioner_phoenix,
+      :translation_task_timeout_ms,
+      @translation_timeout_default_ms
+    )
+  end
+
+  defp do_pipeline_zoom(%User{} = user, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
+      params = %Zoom.Params{
+        seq: get_in(message, ["zoom", "seq"]),
+        lang: stream_settings.language
+      }
+
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_users_blocklist_for(:final, stream_settings, :zoom, user.id)
+        |> maybe_additional_censoring_for(:final, stream_settings)
+        |> maybe_pirate_mode_for(:final, stream_settings, user.id)
+
+      zoom_text = Map.get(payload, :final)
+
+      with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
+        case Zoom.send_captions_to(url, zoom_text, params) do
+          {:ok, %HTTPoison.Response{status_code: 200}} ->
+            {:ok, payload}
+
+          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+            Logger.warning("zoom delivery rejected",
+              http_status: code,
+              body: inspect(body),
+              destination: :zoom
+            )
+            {:error, body}
+
+          {:error, %HTTPoison.Error{reason: reason}} ->
+            Logger.warning("zoom delivery error",
+              reason: inspect(reason),
+              destination: :zoom
+            )
+            {:error, reason}
+        end
+      end
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
+  end
 end

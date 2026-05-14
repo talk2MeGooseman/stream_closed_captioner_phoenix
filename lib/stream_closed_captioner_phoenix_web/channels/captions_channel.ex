@@ -6,60 +6,93 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   @impl true
   def join("captions:" <> user_id, _payload, socket) do
-    if authorized?(socket, user_id) do
-      send(self(), :after_join)
+    user = socket.assigns.current_user
 
+    if authorized?(socket, user_id) do
+      :telemetry.execute(
+        [:scc, :captions, :channel, :join],
+        %{count: 1},
+        %{user_id: user.id, result: :ok}
+      )
+
+      Logger.metadata(user_id: user.id, twitch_uid: user.uid)
+      send(self(), :after_join)
       {:ok, socket}
     else
+      :telemetry.execute(
+        [:scc, :captions, :channel, :join],
+        %{count: 1},
+        %{user_id: user.id, result: :unauthorized}
+      )
+
       {:error, %{reason: "unauthorized"}}
     end
   end
 
   @trace :handle_in
   def handle_in("publishFinal", %{"zoom" => %{"enabled" => true}} = payload, socket) do
-    NewRelic.start_transaction("Captions", "zoom")
-    user = socket.assigns.current_user
+    emit_publish("publishFinal", payload, socket, :zoom)
+    Logger.metadata(destination: :zoom)
 
-    case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:zoom, user, payload) do
-      {:ok, sent_payload} ->
-        NewRelic.stop_transaction()
+    with_reply_span("publishFinal", :zoom, socket, fn ->
+      NewRelic.start_transaction("Captions", "zoom")
+      user = socket.assigns.current_user
 
-        {:reply, {:ok, sent_payload}, socket}
+      case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:zoom, user, payload) do
+        {:ok, sent_payload} ->
+          NewRelic.stop_transaction()
+          {{:reply, {:ok, sent_payload}, socket}, :ok}
 
-      {:error, reason} ->
-        Logger.error("Zoom pipeline failed for user #{user.id}: #{inspect(reason)}")
-        NewRelic.stop_transaction()
-        {:reply, {:error, "Issue sending captions."}, socket}
-    end
+        {:error, reason} ->
+          Logger.error("Zoom pipeline failed for user #{user.id}: #{inspect(reason)}")
+          NewRelic.stop_transaction()
+          {{:reply, {:error, "Issue sending captions."}, socket}, :error}
+      end
+    end)
   end
 
   @trace :handle_in
-  def handle_in(_publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
-    NewRelic.start_transaction("Captions", "twitch")
-    sent_on_time = Map.get(payload, "sentOn")
-    user = socket.assigns.current_user
+  def handle_in(publish_state, %{"twitch" => %{"enabled" => true}} = payload, socket) do
+    emit_publish(publish_state, payload, socket, :twitch)
+    Logger.metadata(destination: :twitch)
 
-    UserTracker.update(self(), "active_channels", user.uid, %{
-      last_publish: System.system_time(:second)
-    })
+    with_reply_span(publish_state, :twitch, socket, fn ->
+      NewRelic.start_transaction("Captions", "twitch")
+      sent_on_time = Map.get(payload, "sentOn")
+      user = socket.assigns.current_user
 
-    case safe_pipeline_to(:twitch, user, payload) do
-      {:ok, sent_payload} ->
-        Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, sent_payload,
-          new_twitch_caption: user.uid
-        )
+      UserTracker.update(self(), "active_channels", user.uid, %{
+        last_publish: System.system_time(:second)
+      })
 
-        new_relic_track(:ok, user, sent_on_time)
-        {:reply, {:ok, sent_payload}, socket}
+      case safe_pipeline_to(:twitch, user, payload) do
+        {:ok, sent_payload} ->
+          Absinthe.Subscription.publish(
+            StreamClosedCaptionerPhoenixWeb.Endpoint,
+            sent_payload,
+            new_twitch_caption: user.uid
+          )
 
-      {:error, reason} ->
-        Logger.error("Twitch pipeline failed for user #{user.id}: #{inspect(reason)}")
-        new_relic_track(:error, user, sent_on_time)
-        {:reply, {:error, "Issue sending captions."}, socket}
-    end
+          :telemetry.execute(
+            [:scc, :outbound, :twitch_publish, :stop],
+            %{count: 1},
+            %{user_id: user.id, twitch_uid: user.uid}
+          )
+
+          new_relic_track(:ok, user, sent_on_time)
+          {{:reply, {:ok, sent_payload}, socket}, :ok}
+
+        {:error, reason} ->
+          Logger.error("Twitch pipeline failed for user #{user.id}: #{inspect(reason)}")
+          new_relic_track(:error, user, sent_on_time)
+          {{:reply, {:error, "Issue sending captions."}, socket}, :error}
+      end
+    end)
   end
 
-  def handle_in("active", _payload, socket) do
+  def handle_in("active", payload, socket) do
+    emit_publish("active", payload, socket, :none)
+    Logger.metadata(destination: :none)
     user = socket.assigns.current_user
 
     UserTracker.update(self(), "active_channels", user.uid, %{
@@ -70,16 +103,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   def handle_in(publish_state, payload, socket) when publish_state != "active" do
-    user = socket.assigns.current_user
+    emit_publish(publish_state, payload, socket, :default)
+    Logger.metadata(destination: :default)
 
-    case safe_pipeline_to(:default, user, payload) do
-      {:ok, sent_payload} ->
-        {:reply, {:ok, sent_payload}, socket}
+    with_reply_span(publish_state, :default, socket, fn ->
+      user = socket.assigns.current_user
 
-      {:error, reason} ->
-        Logger.error("Default pipeline failed for user #{user.id}: #{inspect(reason)}")
-        {:reply, {:error, "Issue sending captions."}, socket}
-    end
+      case safe_pipeline_to(:default, user, payload) do
+        {:ok, sent_payload} ->
+          {{:reply, {:ok, sent_payload}, socket}, :ok}
+
+        {:error, reason} ->
+          Logger.error("Default pipeline failed for user #{user.id}: #{inspect(reason)}")
+          {{:reply, {:error, "Issue sending captions."}, socket}, :error}
+      end
+    end)
   end
 
   @impl true
@@ -130,5 +168,57 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       )
 
       {:error, :exception}
+  end
+
+  defp with_reply_span(event, destination, socket, fun) do
+    metadata = %{
+      user_id: socket.assigns.current_user.id,
+      destination: destination,
+      event: event,
+      result: nil
+    }
+
+    {reply, _result} =
+      :telemetry.span([:scc, :captions, :channel, :reply], metadata, fn ->
+        {reply_tuple, result_atom} = fun.()
+        {{reply_tuple, result_atom}, %{metadata | result: result_atom}}
+      end)
+
+    reply
+  end
+
+  defp emit_publish(event, payload, socket, destination) do
+    user = socket.assigns.current_user
+    sent_on = Map.get(payload, "sentOn")
+    age = time_to_complete(sent_on)
+
+    measurements =
+      case sent_on do
+        nil -> %{count: 1}
+        _ -> %{count: 1, client_send_age_ms: age}
+      end
+
+    metadata = %{
+      user_id: user.id,
+      destination: destination,
+      event: event,
+      zoom_enabled: get_in(payload, ["zoom", "enabled"]) == true,
+      twitch_enabled: get_in(payload, ["twitch", "enabled"]) == true
+    }
+
+    :telemetry.execute([:scc, :captions, :channel, :publish], measurements, metadata)
+  end
+
+  @impl true
+  def terminate(reason, socket) do
+    user_id = get_in(socket.assigns, [:current_user, Access.key(:id)])
+
+    :telemetry.execute(
+      [:scc, :captions, :channel, :leave],
+      %{count: 1},
+      %{user_id: user_id, reason: inspect(reason)}
+    )
+
+    :ok
   end
 end
