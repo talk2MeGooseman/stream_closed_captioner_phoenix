@@ -22,7 +22,8 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Cache,
   gc_cleanup_max_timeout: :timer.minutes(10)
 
 config :stream_closed_captioner_phoenix,
-  ecto_repos: [StreamClosedCaptionerPhoenix.Repo]
+  ecto_repos: [StreamClosedCaptionerPhoenix.Repo],
+  notion_database_client: Notion.Database
 
 # Configures the endpoint
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
@@ -110,7 +111,7 @@ config :phoenix_meta_tags,
 config :stream_closed_captioner_phoenix, Oban,
   repo: StreamClosedCaptionerPhoenix.Repo,
   plugins: [Oban.Plugins.Pruner, Oban.Plugins.Lifeline, Oban.Plugins.Reindexer],
-  queues: [default: 10, events: 10]
+  queues: [default: 10, events: 10, chat_reminders: 2]
 
 config :stream_closed_captioner_phoenix,
   twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET")

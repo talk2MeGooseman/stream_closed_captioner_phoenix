@@ -6,8 +6,12 @@ defmodule Twitch do
 
   @extension_id "h1ekceo16erc49snp0sine3k9ccbh9"
 
+  # TTL matches the original commented-out value (5 minutes).
+  @cache_ttl :timer.minutes(5)
+
   require Logger
 
+  alias StreamClosedCaptionerPhoenix.Cache
   alias Twitch.{Extension, Jwt, Oauth}
 
   @doc """
@@ -22,6 +26,22 @@ defmodule Twitch do
   @spec helix_api_client :: Twitch.HelixProvider
   def helix_api_client,
     do: Application.get_env(:stream_closed_captioner_phoenix, :twitch_helix_client)
+
+  @doc """
+  Returns the configured OAuth client module.
+
+  Defaults to `Twitch.Oauth` in production; override via application config
+  (e.g. `config :stream_closed_captioner_phoenix, twitch_oauth_client: Twitch.MockOauth`)
+  to inject a test double without touching real HTTP paths.
+  """
+  @spec oauth_client :: module()
+  def oauth_client,
+    do:
+      Application.get_env(
+        :stream_closed_captioner_phoenix,
+        :twitch_oauth_client,
+        Twitch.Oauth
+      )
 
   @spec extension_live_channels :: list
   def extension_live_channels() do
@@ -80,7 +100,10 @@ defmodule Twitch do
   Get the live streams for a list of user ids
 
   Twitch API only allows 100 user ids per request, so we chunk the list
-  and make multiple requests.
+  and make multiple requests. The client access token is fetched once per
+  call and reused for each chunk. Results are cached for #{div(@cache_ttl, 60_000)}
+  minutes keyed on the sorted, normalised set of user IDs so different callers
+  with the same logical set do not produce duplicate network requests.
 
   # Examples
       iex(18)> Twitch.get_live_streams(["123", "456"])
@@ -118,25 +141,25 @@ defmodule Twitch do
   @spec get_live_streams(list(binary())) :: list(Twitch.Helix.Stream.t())
   def get_live_streams([]), do: []
 
-  # @decorate cacheable(
-  #             cache: Cache,
-  #             key: "twitch:live_streams",
-  #             ttl: 300_000
-  #           )
+  @decorate cacheable(
+              cache: Cache,
+              key: {:twitch_live_streams, Enum.sort(user_ids)},
+              opts: [ttl: @cache_ttl]
+            )
   def get_live_streams(user_ids) do
-    chunked_user_ids = Enum.chunk_every(user_ids, 80)
+    case oauth_client().get_client_access_token() do
+      {:ok, credentials} ->
+        user_ids
+        |> Enum.chunk_every(80)
+        |> Enum.flat_map(fn uids -> helix_api_client().get_streams(credentials, uids, nil) end)
+        |> Enum.sort_by(& &1.user_id, :desc)
+        |> Enum.dedup_by(fn stream -> stream.user_id end)
+        |> Enum.sort_by(& &1.viewer_count, :desc)
 
-    Enum.flat_map(chunked_user_ids, fn uids ->
-      case Oauth.get_client_access_token() do
-        {:ok, credentials} -> helix_api_client().get_streams(credentials, uids)
-        {:error, reason} ->
-          Logger.warning("Twitch: get_live_streams OAuth failed: #{inspect(reason)}")
-          []
-      end
-    end)
-    |> Enum.sort_by(& &1.user_id, :desc)
-    |> Enum.dedup_by(fn stream -> stream.user_id end)
-    |> Enum.sort_by(& &1.viewer_count, :desc)
+      {:error, reason} ->
+        Logger.warning("Twitch: get_live_streams OAuth failed: #{inspect(reason)}")
+        []
+    end
   end
 
   @spec get_extension_transactons() :: list

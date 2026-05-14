@@ -2,6 +2,8 @@ defmodule Notion.Database do
   @moduledoc """
   Simple API wrapper for Notion API
   """
+  @behaviour Notion.DatabaseProvider
+
   import Notion.Base
 
   @doc """
@@ -69,5 +71,6 @@ defmodule Notion.Database do
       ]
     }}
   """
+  @impl Notion.DatabaseProvider
   def query_database(database_id, body \\ %{}), do: post("databases/#{database_id}/query", body)
 end
