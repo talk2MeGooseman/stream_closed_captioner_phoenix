@@ -42,7 +42,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   defp deps do
     [
       # Absinthe for GraphQL (upgrade to 1.10 in Phase 2 — issue #251)
-      {:absinthe, "~> 1.7"},
+      {:absinthe, "~> 1.10"},
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
