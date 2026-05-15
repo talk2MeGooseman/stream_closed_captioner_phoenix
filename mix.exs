@@ -83,7 +83,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:jason, "~> 1.0"},
       {:joken, "~> 2.3"},
       # Admin Dashboard
-      {:kaffy, "0.10.2"},
+      # TODO: upgrade to ~> 0.11 when phoenix_html 4.x lands (Phase 3f, issue #257)
+      {:kaffy, "~> 0.10"},
       {:libcluster, "~> 3.3"},
       {:libcluster_ec2, "~> 0.7"},
       {:mock, "~> 0.3.0", only: :test},
