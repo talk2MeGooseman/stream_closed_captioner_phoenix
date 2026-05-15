@@ -81,7 +81,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:guardian, "~> 2.4"},
       {:hackney, "~> 1.9"},
       # Rate limiting (upgrade to 7.x in Phase 3d — issue #255)
-      {:hammer, "~> 6.0"},
+      {:hammer, "~> 7.3"},
       {:heartcheck, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.6"},

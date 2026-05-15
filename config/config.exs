@@ -96,9 +96,6 @@ config :ueberauth, Ueberauth,
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email user:read:broadcast"]}
   ]
 
-config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 5, cleanup_interval_ms: 60_000 * 10]}
-
 config :phoenix_meta_tags,
   title: "Stream Closed Captioner",
   description:

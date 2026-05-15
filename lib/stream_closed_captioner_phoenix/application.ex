@@ -30,6 +30,7 @@ defmodule StreamClosedCaptionerPhoenix.Application do
        ]},
       {Absinthe.Subscription, StreamClosedCaptionerPhoenixWeb.Endpoint},
       {StreamClosedCaptionerPhoenix.Cache, []},
+      {StreamClosedCaptionerPhoenix.RateLimit, [clean_period: 600_000]},
       NewRelicOban.Telemetry.Oban,
       {Oban, oban_config()}
     ]
