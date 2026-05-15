@@ -76,7 +76,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:fun_with_flags_ui, "~> 1.1.0"},
       {:fun_with_flags, "~> 1.13"},
       # Gettext (upgrade to 1.0 in Phase 3a — issue #253)
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.26"},
       {:guardian, "~> 2.4"},
       {:hackney, "~> 1.9"},
       # Rate limiting (upgrade to 7.x in Phase 3d — issue #255)
