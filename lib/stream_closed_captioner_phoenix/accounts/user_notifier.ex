@@ -11,7 +11,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.UserNotifier do
       subject: subject,
       text_body: body
     )
-    |> StreamClosedCaptionerPhoenix.Mailer.deliver_now()
+    |> StreamClosedCaptionerPhoenix.Mailer.deliver_now!()
   end
 
   @doc """

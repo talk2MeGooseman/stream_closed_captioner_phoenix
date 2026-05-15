@@ -48,7 +48,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:absinthe_security, "~> 0.1"},
       {:dataloader, "~> 2.0"},
       # Bamboo for Emailing (upgrade to 2.x in Phase 3b — issue #252)
-      {:bamboo, "~> 1.7.1"},
+      {:bamboo, "~> 2.5"},
+      {:bamboo_phoenix, "~> 1.0"},
       {:bypass, "~> 2.1"},
       # Cachex (upgrade to 4.x in Phase 3c — issue #254)
       {:cachex, "~> 3.4"},
