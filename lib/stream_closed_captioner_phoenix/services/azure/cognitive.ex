@@ -7,7 +7,6 @@ defmodule Azure.Cognitive do
 
   alias Azure.Cognitive.Translations
   alias Ecto.UUID
-  alias NewRelic.Instrumented.HTTPoison
   @behaviour Azure.CognitiveProvider
 
   @impl Azure.CognitiveProvider

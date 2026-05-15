@@ -3,7 +3,6 @@ defmodule Twitch.Helix do
 
   require Logger
 
-  alias NewRelic.Instrumented.HTTPoison
   alias Twitch.HelixProvider
   alias Twitch.Helix.{Credentials, Stream, Transaction, ExtensionChannel, EventSub}
   alias Twitch.HttpHelpers

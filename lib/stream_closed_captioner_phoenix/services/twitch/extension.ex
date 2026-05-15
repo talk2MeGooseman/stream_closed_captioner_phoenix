@@ -1,7 +1,6 @@
 defmodule Twitch.Extension do
   import Helpers
 
-  alias NewRelic.Instrumented.HTTPoison
   alias Twitch.ExtensionProvider
   alias Twitch.Extension.Credentials
   @behaviour ExtensionProvider
