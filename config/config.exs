@@ -96,15 +96,6 @@ config :ueberauth, Ueberauth,
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email user:read:broadcast"]}
   ]
 
-config :phoenix_meta_tags,
-  title: "Stream Closed Captioner",
-  description:
-    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse.",
-  url: "https://stream-cc.gooseman.codes",
-  image: "/images/cc100x100.png",
-  "og:text":
-    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse."
-
 config :stream_closed_captioner_phoenix, Oban,
   repo: StreamClosedCaptionerPhoenix.Repo,
   plugins: [Oban.Plugins.Pruner, Oban.Plugins.Lifeline, Oban.Plugins.Reindexer],

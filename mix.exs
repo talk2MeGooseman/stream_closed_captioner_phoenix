@@ -58,8 +58,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:circular_buffer, "~> 0.3"},
       {:premailex, "~> 0.3"},
       {:floki, ">= 0.30.0"},
-      {:flop, "~> 0.22.1"},
-      {:flop_phoenix, "~> 0.21.1"},
+      {:flop, "~> 0.26"},
+      {:flop_phoenix, "~> 0.26"},
       # Other stuff
       {:bcrypt_elixir, "~> 3.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
@@ -67,7 +67,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
       {:ecto_psql_extras, "~> 0.8"},
-      {:ecto_sql, "~> 3.10"},
+      {:ecto_sql, "~> 3.12"},
       {:ex_machina, "~> 2.7.0"},
       # Generate struct from maps
       {:exconstructor, "~> 1.3"},
@@ -85,8 +85,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:heartcheck, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.6"},
-      # Admin Dashboard (upgrade to ~> 0.11 when phoenix_html 4.x lands — Phase 3f, issue #257)
-      {:kaffy, "~> 0.10"},
+      # Admin Dashboard (upgraded to ~> 0.11 in Phase 3f — issue #257)
+      {:kaffy, "~> 0.11"},
       {:libcluster, "~> 3.5"},
       {:libcluster_ec2, "~> 0.8"},
       {:mock, "~> 0.3", only: :test},
@@ -103,20 +103,20 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:new_relic_oban, "~> 0.0.1"},
       {:observer_cli, "~> 1.8"},
       {:phoenix_ecto, "~> 4.7"},
-      # phoenix_html (upgrade to 4.x in Phase 3f — issue #257)
-      {:phoenix_html, "~> 3.0"},
-      {:phoenix_live_dashboard, "~> 0.8"},
+      # phoenix_html (upgraded to 4.x in Phase 3f — issue #257)
+      {:phoenix_html, "~> 4.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
+      {:phoenix_live_dashboard, "~> 0.8.5"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
-      # phoenix_live_view (upgrade to 1.x in Phase 3g — issue #259)
-      {:phoenix_live_view, "~> 0.19.0"},
+      # phoenix_live_view (upgraded to 1.x in Phase 3g — issue #259)
+      {:phoenix_live_view, "~> 1.1"},
       {:phoenix_view, "~> 2.0.2"},
       # Phoenix (upgrade to 1.8 in Phase 3h — issue #258)
       {:phoenix, "~> 1.7.7"},
-      {:phoenix_meta_tags, "~> 0.1.9"},
       {:plug_cowboy, "~> 2.8"},
       {:poison, "~> 5.0"},
-      # postgrex (blocked by ecto_sql until Phase 3f; keep current)
-      {:postgrex, "~> 0.17"},
+      # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)
+      {:postgrex, "~> 0.19"},
       {:secure_random, "~> 0.5.1"},
       {:sobelow, "~> 0.14", only: :dev},
       {:sweet_xml, "~> 0.7"},
@@ -130,7 +130,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:websockex, "~> 0.4.3"},
       # UI Build stuff
       {:esbuild, "~> 0.9", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+      # LiveView 1.x test requirement
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 

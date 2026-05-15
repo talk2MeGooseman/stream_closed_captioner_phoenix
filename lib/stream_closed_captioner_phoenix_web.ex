@@ -24,8 +24,6 @@ defmodule StreamClosedCaptionerPhoenixWeb do
         formats: [:html, :json],
         layouts: [html: StreamClosedCaptionerPhoenixWeb.Layouts]
 
-      use PhoenixMetaTags.TagController
-
       import Plug.Conn
 
       alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
@@ -41,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import Phoenix.Controller,
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1, get_csrf_token: 0]
 
-      use PhoenixMetaTags.TagView
+      import StreamClosedCaptionerPhoenixWeb.MetaTags
 
       # Include shared imports and aliases for views
       unquote(html_helpers())
@@ -92,7 +90,9 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   defp html_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
+      use PhoenixHTMLHelpers
 
       # Import LiveView helpers (live_render, live_component, live_patch, etc)
       import Phoenix.LiveView.Helpers
