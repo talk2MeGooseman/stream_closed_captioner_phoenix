@@ -67,7 +67,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
       {:ecto_psql_extras, "~> 0.8"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_sql, "~> 3.10"},
       {:ex_machina, "~> 2.7.0"},
       # Generate struct from maps
       {:exconstructor, "~> 1.3"},
@@ -99,7 +99,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.40"},
       {:new_relic_absinthe, "~> 0.0.4"},
-      {:oban, "~> 2.13"},
+      {:oban, "~> 2.18"},
       {:new_relic_oban, "~> 0.0.1"},
       {:observer_cli, "~> 1.8"},
       {:phoenix_ecto, "~> 4.7"},
@@ -115,14 +115,14 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix_meta_tags, "~> 0.1.9"},
       {:plug_cowboy, "~> 2.8"},
       {:poison, "~> 5.0"},
-      # postgrex (upgrade in Phase 3e — issue #256)
-      {:postgrex, ">= 0.0.0"},
+      # postgrex (blocked by ecto_sql until Phase 3f; keep current)
+      {:postgrex, "~> 0.17"},
       {:secure_random, "~> 0.5.1"},
       {:sobelow, "~> 0.14", only: :dev},
       {:sweet_xml, "~> 0.7"},
       {:talk_like_a_x, "~> 0.0.8"},
       # telemetry_metrics (upgrade in Phase 3e — issue #256)
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.3"},
       {:timex, "~> 3.7"},
       {:ueberauth_twitch, "~> 0.2.0"},
