@@ -52,7 +52,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:bamboo_phoenix, "~> 1.0"},
       {:bypass, "~> 2.1"},
       # Cachex (upgrade to 4.x in Phase 3c — issue #254)
-      {:cachex, "~> 3.4"},
+      {:cachex, "~> 4.1"},
       {:cors_plug, "~> 3.0"},
       {:excoveralls, "~> 0.18", only: :test},
       {:circular_buffer, "~> 0.3"},
