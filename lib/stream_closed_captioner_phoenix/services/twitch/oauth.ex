@@ -6,7 +6,8 @@ defmodule Twitch.Oauth do
   alias StreamClosedCaptionerPhoenix.Accounts.User
   alias Twitch.Helix.Credentials
   alias Twitch.Parser
-  alias NewRelic.Instrumented.HTTPoison
+
+  @behaviour Twitch.OauthProvider
 
   @behaviour Twitch.OauthProvider
 

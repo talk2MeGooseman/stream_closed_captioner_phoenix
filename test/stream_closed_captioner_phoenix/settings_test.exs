@@ -11,6 +11,16 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
   describe "stream_settings" do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
+    setup do
+      stub(Twitch.MockOauth, :get_client_access_token, fn -> {:ok, %{access_token: "test_token"}} end)
+
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+        {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
+      end)
+
+      :ok
+    end
+
     @update_attrs %{
       auto_off_captions: true,
       caption_delay: 43,

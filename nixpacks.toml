@@ -36,7 +36,7 @@ nixPkgs = ["...", "nodejs_22"]
 # check). SHA verified against the hex.pm-published 2.3.2 archive on
 # 2026-05-07.
 cmds = [
-  "mix archive.install --force https://builds.hex.pm/installs/1.16.0/hex-2.3.2.ez --sha512 abfa24b07c61fdb7d8156a6ff113979e135740ffafbbab7cf02f28541e140ffbc8be772800a120c465c81b297b5b90e03968d91cb4ee8c82d26668812941b02a",
+  "mix local.hex --force",
   "mix local.rebar --force",
   "mix deps.get --only prod",
   "npm --prefix assets ci --no-audit --progress=false",
