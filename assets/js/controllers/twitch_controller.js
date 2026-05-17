@@ -20,7 +20,8 @@ export default class extends ApplicationController {
     this.attemptCount = 1
     this.retryTimeout = null
 
-    this.fetchExtensionStatus()
+    // this.fetchExtensionStatus()
+    this.enableExtension()
   }
 
   fetchExtensionStatus = () => {
