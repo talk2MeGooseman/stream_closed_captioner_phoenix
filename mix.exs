@@ -113,7 +113,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Phoenix (upgrade to 1.8 in Phase 3h — issue #258)
       {:phoenix, "~> 1.7.7"},
       {:plug_cowboy, "~> 2.8"},
-      {:poison, "~> 5.0"},
+      {:poison, "~> 6.0"},
       # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)
       {:postgrex, "~> 0.19"},
       {:secure_random, "~> 0.5.1"},
