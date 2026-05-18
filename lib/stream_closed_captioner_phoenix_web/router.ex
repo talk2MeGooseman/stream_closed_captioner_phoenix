@@ -1,6 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Router do
   use StreamClosedCaptionerPhoenixWeb, :router
-  use Kaffy.Routes, scope: "/admin", pipe_through: [:admin_protected]
   require Ueberauth
 
   import StreamClosedCaptionerPhoenixWeb.UserAuth
@@ -99,7 +98,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/" do
     pipe_through(:browser)
 
-    forward("/monitoring", HeartCheck.Plug, heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck)
+    forward("/monitoring", HeartCheck.Plug,
+      heartcheck: StreamClosedCaptionerPhoenixWeb.HeartCheck
+    )
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
