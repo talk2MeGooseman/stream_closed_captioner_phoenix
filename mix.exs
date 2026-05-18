@@ -131,7 +131,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:esbuild, "~> 0.9", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       # LiveView 1.x test requirement
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      {:jose, "~> 1.11"}
     ]
   end
 
