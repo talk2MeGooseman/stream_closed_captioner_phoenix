@@ -38,7 +38,7 @@ nixPkgs = ["...", "nodejs_22"]
 cmds = [
   "mix local.hex --force",
   "mix local.rebar --force",
-  "mix deps.get --only prod",
+  "mix deps.get",
   "npm --prefix assets ci --no-audit --progress=false",
 ]
 
