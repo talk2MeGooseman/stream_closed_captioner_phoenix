@@ -132,7 +132,11 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       # LiveView 1.x test requirement
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:jose, "~> 1.11"}
+      # Cap below 1.11.10 — newer jose uses the OTP 26 `dynamic()` type,
+      # but the Nixpacks build runs OTP 25 (elixir_1_16's default BEAM
+      # pair at the pinned nixpkgsArchive). Compile fails on
+      # `type dynamic() undefined` in jose_json.erl otherwise.
+      {:jose, "~> 1.11.0 and < 1.11.10"}
     ]
   end
 
