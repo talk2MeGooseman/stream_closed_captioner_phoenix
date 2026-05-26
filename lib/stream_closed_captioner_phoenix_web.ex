@@ -55,6 +55,17 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     end
   end
 
+  def admin_live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :admin_live}
+
+      import StreamClosedCaptionerPhoenixWeb.AdminComponents
+
+      unquote(html_helpers())
+    end
+  end
+
   def component do
     quote do
       use Phoenix.Component
@@ -66,6 +77,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+
+      import StreamClosedCaptionerPhoenixWeb.AdminComponents
 
       unquote(html_helpers())
     end

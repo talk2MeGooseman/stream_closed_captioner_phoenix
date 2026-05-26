@@ -27,6 +27,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     plug(:redirect_if_not_admin)
   end
 
+  pipeline :admin_layout do
+    plug(:put_root_layout, {StreamClosedCaptionerPhoenixWeb.Layouts, :admin})
+  end
+
   scope path: "/feature-flags" do
     pipe_through([:browser, :admin_protected])
     forward("/", FunWithFlags.UI.Router, namespace: "feature-flags")
@@ -137,6 +141,62 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       ecto_repos: [StreamClosedCaptionerPhoenix.Repo],
       metrics: StreamClosedCaptionerPhoenixWeb.Telemetry
     )
+  end
+
+  scope "/admin", StreamClosedCaptionerPhoenixWeb.Admin, as: :admin do
+    pipe_through([:browser, :admin_protected, :admin_layout])
+
+    live_session :admin,
+      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :admin},
+      on_mount: [{StreamClosedCaptionerPhoenixWeb.AdminHooks, :assign_current_user}] do
+      live("/", HomeLive, :index)
+
+      live("/users", UserLive.Index, :index)
+      live("/users/new", UserLive.Index, :new)
+      live("/users/:id/edit", UserLive.Index, :edit)
+      live("/users/:id", UserLive.Show, :show)
+      live("/users/:id/show/edit", UserLive.Show, :edit)
+
+      live("/announcements", AnnouncementLive.Index, :index)
+      live("/announcements/new", AnnouncementLive.Index, :new)
+      live("/announcements/:id/edit", AnnouncementLive.Index, :edit)
+
+      live("/bits-balances", BitsBalanceLive.Index, :index)
+      live("/bits-balances/new", BitsBalanceLive.Index, :new)
+      live("/bits-balances/:id/edit", BitsBalanceLive.Index, :edit)
+
+      live("/bits-transactions", BitsTransactionLive.Index, :index)
+      live("/bits-transactions/new", BitsTransactionLive.Index, :new)
+      live("/bits-transactions/:id/edit", BitsTransactionLive.Index, :edit)
+
+      live("/bits-balance-debits", BitsBalanceDebitLive.Index, :index)
+      live("/bits-balance-debits/new", BitsBalanceDebitLive.Index, :new)
+      live("/bits-balance-debits/:id/edit", BitsBalanceDebitLive.Index, :edit)
+
+      live("/transcripts", TranscriptLive.Index, :index)
+      live("/transcripts/new", TranscriptLive.Index, :new)
+      live("/transcripts/:id/edit", TranscriptLive.Index, :edit)
+      live("/transcripts/:id", TranscriptLive.Show, :show)
+      live("/transcripts/:id/show/edit", TranscriptLive.Show, :edit)
+
+      live("/messages", MessageLive.Index, :index)
+      live("/messages/new", MessageLive.Index, :new)
+      live("/messages/:id/edit", MessageLive.Index, :edit)
+
+      live("/stream-settings", StreamSettingsLive.Index, :index)
+      live("/stream-settings/new", StreamSettingsLive.Index, :new)
+      live("/stream-settings/:id/edit", StreamSettingsLive.Index, :edit)
+
+      live("/translate-languages", TranslateLanguageLive.Index, :index)
+      live("/translate-languages/new", TranslateLanguageLive.Index, :new)
+      live("/translate-languages/:id/edit", TranslateLanguageLive.Index, :edit)
+
+      live("/eventsub-subscriptions", EventsubSubscriptionLive.Index, :index)
+      live("/eventsub-subscriptions/new", EventsubSubscriptionLive.Index, :new)
+      live("/eventsub-subscriptions/:id/edit", EventsubSubscriptionLive.Index, :edit)
+
+      live("/user-tokens", UserTokenLive.Index, :index)
+    end
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do

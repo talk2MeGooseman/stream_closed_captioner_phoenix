@@ -24,6 +24,38 @@ import './tailwind';
 const Hooks = {};
 Hooks.InitToast = InitToast;
 
+Hooks.QuillEditor = {
+  mounted() {
+    if (!window.Quill) return;
+    const hiddenInput = document.getElementById(this.el.dataset.inputId);
+    this.quill = new window.Quill(this.el, {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ header: [1, 2, 3, false] }],
+          ['link'],
+          ['clean'],
+        ],
+      },
+    });
+    if (hiddenInput && hiddenInput.value) {
+      this.quill.root.innerHTML = hiddenInput.value;
+    }
+    this.quill.on('text-change', () => {
+      if (hiddenInput) {
+        hiddenInput.value = this.quill.root.innerHTML;
+        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  },
+  destroyed() {
+    this.quill = null;
+  },
+};
+
 Hooks.CaptionObserver = {
   mounted() {
     const container = document.querySelector('#scrollerEndMarker');

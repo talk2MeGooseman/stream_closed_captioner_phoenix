@@ -70,13 +70,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.AuthAcc
   module: StreamClosedCaptionerPhoenix.Guardian,
   error_handler: StreamClosedCaptionerPhoenixWeb.AuthErrorHandler
 
-config :kaffy,
-  otp_app: :stream_closed_captioner_phoenix,
-  ecto_repo: StreamClosedCaptionerPhoenix.Repo,
-  router: StreamClosedCaptionerPhoenixWeb.Router,
-  scheduled_tasks: [
-    StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin
-  ]
 
 # FunWithFlags configuration
 config :fun_with_flags, :persistence,
