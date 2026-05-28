@@ -3,8 +3,8 @@ import Config
 # Configure your database
 config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
   username: "postgres",
-  password: "",
-  database: "stream-cc-development",
+  password: "postgres",
+  database: "app",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: false,
   pool_size: 10,

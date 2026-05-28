@@ -1,6 +1,4 @@
 defmodule Zoom do
-  alias NewRelic.Instrumented.HTTPoison
-
   @spec send_captions_to(String.t() | URI.t(), String.t(), Zoom.Params.t()) ::
           {:error, HTTPoison.Error.t()}
           | {:ok,

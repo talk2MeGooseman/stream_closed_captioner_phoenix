@@ -4,7 +4,6 @@ defmodule Gemini.Cognitive do
   require Logger
 
   alias Azure.Cognitive.Translations
-  alias NewRelic.Instrumented.HTTPoison
 
   @behaviour Gemini.CognitiveProvider
 

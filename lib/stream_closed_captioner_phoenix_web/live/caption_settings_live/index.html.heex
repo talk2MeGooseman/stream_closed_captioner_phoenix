@@ -4,7 +4,7 @@
     <p class="text-sm">
       If no language is selected, the captions will not be translated.
     </p>
-    <.form :let={f} for={@language_changeset} id="blocklist-form" class="block" phx-submit="add">
+    <.form :let={f} for={@language_changeset} id="language-form" class="block" phx-submit="add">
       <div class="mb-6">
         <%= label(f, "Select Language To Translate to", class: "block text-sm mb-1 mt-4") %>
         <%= select(f, :language, @translatable_language,
@@ -25,10 +25,10 @@
 
   <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
     <h2 class="text-xl font-semibold text-gray-900">Caption Settings</h2>
-    <%= live_component(StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent,
-      id: @stream_settings.id,
-      stream_settings: @stream_settings
-    ) %>
+    <.live_component module={StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent}
+      id={@stream_settings.id}
+      stream_settings={@stream_settings}
+    />
   </div>
 
   <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">

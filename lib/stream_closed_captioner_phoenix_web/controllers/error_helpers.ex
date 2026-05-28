@@ -3,7 +3,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ErrorHelpers do
   Conveniences for translating and building error messages.
   """
 
-  use Phoenix.HTML
+  import PhoenixHTMLHelpers.Tag
 
   @doc """
   Generates tag for inlined form input errors.
@@ -12,7 +12,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.ErrorHelpers do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
       content_tag(:span, translate_error(error),
         class: opts[:class],
-        phx_feedback_for: input_id(form, field)
+        phx_feedback_for: "#{form.name}_#{field}"
       )
     end)
   end

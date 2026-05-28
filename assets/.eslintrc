@@ -1,7 +1,6 @@
 {
   "extends": [
-    "airbnb-base",
-    "adjunct"
+    "airbnb-base"
   ],
   "env": {
     "browser": true

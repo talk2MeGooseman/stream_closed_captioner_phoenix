@@ -20,7 +20,11 @@ export default class extends ApplicationController {
     this.attemptCount = 1
     this.retryTimeout = null
 
-    this.fetchExtensionStatus()
+    // this.fetchExtensionStatus()
+    // Defer to next tick: captions_controller registers its `twitch:state` listener
+    // on connect, and Stimulus connects controllers in DOM order — twitch is mounted
+    // above captions, so a synchronous dispatch fires before the listener attaches.
+    queueMicrotask(() => this.enableExtension())
   }
 
   fetchExtensionStatus = () => {

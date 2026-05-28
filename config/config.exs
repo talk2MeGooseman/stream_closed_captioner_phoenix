@@ -70,14 +70,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.AuthAcc
   module: StreamClosedCaptionerPhoenix.Guardian,
   error_handler: StreamClosedCaptionerPhoenixWeb.AuthErrorHandler
 
-config :kaffy,
-  otp_app: :stream_closed_captioner_phoenix,
-  ecto_repo: StreamClosedCaptionerPhoenix.Repo,
-  router: StreamClosedCaptionerPhoenixWeb.Router,
-  scheduled_tasks: [
-    StreamClosedCaptionerPhoenix.Settings.StreamSettingsAdmin
-  ]
-
 # FunWithFlags configuration
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,
@@ -95,18 +87,6 @@ config :ueberauth, Ueberauth,
        ]},
     twitch: {Ueberauth.Strategy.Twitch, [default_scope: "user:read:email user:read:broadcast"]}
   ]
-
-config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 5, cleanup_interval_ms: 60_000 * 10]}
-
-config :phoenix_meta_tags,
-  title: "Stream Closed Captioner",
-  description:
-    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse.",
-  url: "https://stream-cc.gooseman.codes",
-  image: "/images/cc100x100.png",
-  "og:text":
-    "Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse."
 
 config :stream_closed_captioner_phoenix, Oban,
   repo: StreamClosedCaptionerPhoenix.Repo,

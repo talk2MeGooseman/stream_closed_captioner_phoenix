@@ -28,7 +28,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
           class: "relative overflow-x-auto shadow-md sm:rounded-lg"
         ],
         no_results_content:
-          Phoenix.HTML.Tag.content_tag(:div, "No results.",
+          PhoenixHTMLHelpers.Tag.content_tag(:div, "No results.",
             class: "text-base-content/50 text-3xl font-bold text-center py-12"
           ),
         table_attrs: [class: "w-full text-sm text-left text-gray-500 dark:text-gray-400"],
@@ -74,18 +74,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
   attr(:meta, :any, required: true)
 
   def pagination(assigns) do
-    assigns =
-      assigns
-      |> assign(
-        opts: [
-          disabled_class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50",
-          next_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
-          previous_link_attrs: [class: "text-sm font-semibold text-gray-900 dark:text-white"],
-          pagination_link_attrs: [class: "flex items-center"],
-          pagination_list_attrs: [class: "hidden"]
-        ]
-      )
-
     ~H"""
     <div :if={@meta.total_count != 0} class="flex flex-col items-center my-4 space-y-4">
       <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -93,7 +81,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
         <span :if={@meta.total_pages != 1}>to <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.next_offset || @meta.total_count %></span></span>
         of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span> Entries
       </div>
-      <Flop.Phoenix.pagination :if={@meta.total_pages != 1} meta={@meta} path={@path} opts={@opts} />
+      <Flop.Phoenix.pagination
+        :if={@meta.total_pages != 1}
+        meta={@meta}
+        path={@path}
+        page_list_attrs={[class: "hidden"]}
+        page_link_attrs={[class: "flex items-center"]}
+        disabled_link_attrs={[class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50"]}
+      >
+        <:previous attrs={[class: "text-sm font-semibold text-gray-900 dark:text-white"]}>Previous</:previous>
+        <:next attrs={[class: "text-sm font-semibold text-gray-900 dark:text-white"]}>Next</:next>
+      </Flop.Phoenix.pagination>
     </div>
     """
   end

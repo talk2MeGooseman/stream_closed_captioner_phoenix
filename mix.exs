@@ -41,88 +41,101 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # Absinthe for GraphQL
-      {:absinthe, "~> 1.7"},
+      # Absinthe for GraphQL (upgrade to 1.10 in Phase 2 — issue #251)
+      {:absinthe, "~> 1.10"},
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
       {:dataloader, "~> 2.0"},
-      # Bamboo for Emailing
-      {:bamboo, "~> 1.7.1"},
-      {:bypass, "~> 2.1.0"},
-      {:cachex, "~> 3.4"},
+      # Bamboo for Emailing (upgrade to 2.x in Phase 3b — issue #252)
+      {:bamboo, "~> 2.5"},
+      {:bamboo_phoenix, "~> 1.0"},
+      {:bypass, "~> 2.1"},
+      # Cachex (upgrade to 4.x in Phase 3c — issue #254)
+      {:cachex, "~> 4.1"},
       {:cors_plug, "~> 3.0"},
       {:excoveralls, "~> 0.18", only: :test},
       {:circular_buffer, "~> 0.3"},
-      {:premailex, "~> 0.3.0"},
+      {:premailex, "~> 0.3"},
       {:floki, ">= 0.30.0"},
-      {:flop, "~> 0.22.1"},
-      {:flop_phoenix, "~> 0.21.1"},
+      {:flop, "~> 0.26"},
+      {:flop_phoenix, "~> 0.26"},
       # Other stuff
-      {:bcrypt_elixir, "~> 3.0"},
-      {:credo, "~> 1.7.11", only: [:dev, :test], runtime: false},
+      {:bcrypt_elixir, "~> 3.3"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       # Add some ecto helpers
       {:ecto_extras, "~> 0.1.3"},
       # For live dashboard
-      {:ecto_psql_extras, "~> 0.2"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_psql_extras, "~> 0.8"},
+      {:ecto_sql, "~> 3.12"},
       {:ex_machina, "~> 2.7.0"},
       # Generate struct from maps
-      {:exconstructor, "~> 1.2"},
+      {:exconstructor, "~> 1.3"},
       # Profanity censoring
-      {:expletive, "~> 0.1.4"},
+      {:expletive, "~> 0.1"},
       {:exsync, "~> 0.2", only: :dev},
       {:fun_with_flags_ui, "~> 1.1.0"},
       {:fun_with_flags, "~> 1.13"},
-      {:gettext, "~> 0.11"},
-      {:guardian, "~> 2.0"},
+      # Gettext (upgrade to 1.0 in Phase 3a — issue #253)
+      {:gettext, "~> 0.26"},
+      {:guardian, "~> 2.4"},
       {:hackney, "~> 1.9"},
-      # Rate limiting
-      {:hammer, "~> 6.0"},
+      # Rate limiting (upgrade to 7.x in Phase 3d — issue #255)
+      {:hammer, "~> 7.3"},
       {:heartcheck, "~> 0.4"},
       {:jason, "~> 1.0"},
-      {:joken, "~> 2.3"},
-      # Admin Dashboard
-      {:kaffy, "0.10.2"},
-      {:libcluster, "~> 3.3"},
-      {:libcluster_ec2, "~> 0.7"},
-      {:mock, "~> 0.3.0", only: :test},
-      {:mox, "~> 1.0.0", only: :test},
+      {:joken, "~> 2.6"},
+      {:libcluster, "~> 3.5"},
+      {:libcluster_ec2, "~> 0.8"},
+      {:mock, "~> 0.3", only: :test},
+      {:mox, "~> 1.0", only: :test},
       {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
       # Cache
       {:nebulex, "~> 2.5"},
       {:decorator, "~> 1.4"},
       # Graphql Client
       {:neuron, "~> 5.0"},
-      {:new_relic_agent, "~> 1.30"},
+      {:new_relic_agent, "~> 1.40"},
       {:new_relic_absinthe, "~> 0.0.4"},
-      {:oban, "~> 2.13"},
+      {:oban, "~> 2.18"},
       {:new_relic_oban, "~> 0.0.1"},
-      {:observer_cli, "~> 1.6"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 3.0"},
-      {:phoenix_live_dashboard, "~> 0.8.0"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.19.0"},
+      {:observer_cli, "~> 1.8"},
+      {:phoenix_ecto, "~> 4.7"},
+      # phoenix_html (upgraded to 4.x in Phase 3f — issue #257)
+      {:phoenix_html, "~> 4.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
+      {:phoenix_live_dashboard, "~> 0.8.5"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      # phoenix_live_view (upgraded to 1.x in Phase 3g — issue #259)
+      {:phoenix_live_view, "~> 1.1"},
       {:phoenix_view, "~> 2.0.2"},
+      # Phoenix (upgrade to 1.8 in Phase 3h — issue #258)
       {:phoenix, "~> 1.7.7"},
-      {:phoenix_meta_tags, "~> 0.1.9"},
-      {:plug_cowboy, "~> 2.0"},
-      {:poison, "~> 5.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:plug_cowboy, "~> 2.8"},
+      {:poison, "~> 6.0"},
+      # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)
+      {:postgrex, "~> 0.19"},
       {:secure_random, "~> 0.5.1"},
-      {:sobelow, "~> 0.11", only: :dev},
-      {:sweet_xml, "~> 0.6"},
+      {:sobelow, "~> 0.14", only: :dev},
+      {:sweet_xml, "~> 0.7"},
       {:talk_like_a_x, "~> 0.0.8"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
+      # telemetry_metrics (upgrade in Phase 3e — issue #256)
+      {:telemetry_metrics, "~> 1.0"},
+      {:telemetry_poller, "~> 1.3"},
       {:timex, "~> 3.7"},
       {:ueberauth_twitch, "~> 0.2.0"},
       {:ueberauth, "~> 0.10"},
       {:websockex, "~> 0.4.3"},
       # UI Build stuff
-      {:esbuild, "~> 0.9.0", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev}
+      {:esbuild, "~> 0.9", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+      # LiveView 1.x test requirement
+      {:lazy_html, ">= 0.1.0", only: :test},
+      # Cap below 1.11.10 — newer jose uses the OTP 26 `dynamic()` type,
+      # but the Nixpacks build runs OTP 25 (elixir_1_16's default BEAM
+      # pair at the pinned nixpkgsArchive). Compile fails on
+      # `type dynamic() undefined` in jose_json.erl otherwise.
+      {:jose, "~> 1.11.0 and < 1.11.10"}
     ]
   end
 
