@@ -152,20 +152,9 @@ end
 
 Plugins active in all envs: `Pruner`, `Lifeline` (rescues orphaned jobs), `Reindexer`.
 
-## Admin (Kaffy)
+## Admin
 
-Admin is at `/admin`, protected by the `:admin_protected` pipeline (requires `user.uid == "120750024"`). Each resource that needs an admin view gets a companion `*Admin` module:
-
-- `AnnouncementAdmin` — custom form with richtext field
-- `Accounts.EventsubSubscriptionAdmin` — adds a dashboard widget showing live EventSub count
-- `Settings.StreamSettingsAdmin` — dashboard widget for users without settings; registered as a `scheduled_task` in Kaffy config
-- `Bits.BitsBalanceAdmin`, `BitsBalanceDebitAdmin`, `BitsTransactionAdmin`, `Transcripts.TranscriptAdmin`
-
-**Admin module conventions:**
-- `index/1` — defines columns; use `%{value: fn record -> ... end}` for derived/associated values
-- `form_fields/1` — use `%{update: :readonly}` to lock fields on edit
-- `widgets/2` — return list of `%{type: "tidbit", ...}` maps for dashboard cards
-- `search_fields/1` — enables search through associations (e.g., `[user: [:email, :username, :uid]]`)
+The `:admin_protected` pipeline (`user.uid == "120750024"`) gates `/live-dashboard` (Phoenix LiveDashboard) and `/feature-flags` (FunWithFlags UI).
 
 To put the site in maintenance mode (admins still pass through):
 ```elixir
