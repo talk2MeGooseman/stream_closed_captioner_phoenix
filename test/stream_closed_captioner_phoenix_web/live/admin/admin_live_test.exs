@@ -115,9 +115,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AdminLiveTest do
     test "creates an announcement through the modal form", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/announcements/new")
 
+      # `message` is a hidden input driven by the Quill JS hook, so the value is
+      # supplied via render_submit/2 (the form helper forbids setting hidden fields).
       view
-      |> form("#announcement-form-modal form", announcement: %{message: "Brand new announcement"})
-      |> render_submit()
+      |> form("#announcement-form-modal form", announcement: %{display: true})
+      |> render_submit(announcement: %{message: "Brand new announcement"})
 
       assert render(view) =~ "Brand new announcement"
       assert Admin.count_announcements() == 1
@@ -128,9 +130,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AdminLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/admin/announcements/#{announcement.id}/edit")
 
+      # `message` is a hidden input driven by the Quill JS hook, so the value is
+      # supplied via render_submit/2 (the form helper forbids setting hidden fields).
       view
-      |> form("#announcement-form-modal form", announcement: %{message: "Updated message"})
-      |> render_submit()
+      |> form("#announcement-form-modal form", announcement: %{display: false})
+      |> render_submit(announcement: %{message: "Updated message"})
 
       assert Admin.get_announcement!(announcement.id).message == "Updated message"
     end

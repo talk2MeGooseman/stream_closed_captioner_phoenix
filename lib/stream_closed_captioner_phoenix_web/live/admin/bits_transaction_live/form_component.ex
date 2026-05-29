@@ -49,62 +49,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsTransactionLive.FormComponen
           phx-submit="save"
         >
           <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-              <%= Phoenix.HTML.Form.number_input(f, :user_id,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :user_id) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-              <%= Phoenix.HTML.Form.number_input(f, :amount,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :amount) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
-              <%= Phoenix.HTML.Form.text_input(f, :display_name,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :display_name) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Purchaser UID</label>
-              <%= Phoenix.HTML.Form.text_input(f, :purchaser_uid,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :purchaser_uid) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-              <%= Phoenix.HTML.Form.text_input(f, :sku,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :sku) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
-              <%= Phoenix.HTML.Form.text_input(f, :transaction_id,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :transaction_id) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
-              <%= Phoenix.HTML.Form.datetime_local_input(f, :time,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :time) %>
-            </div>
+            <.input field={f[:user_id]} type="number" label="User ID" />
+            <.input field={f[:amount]} type="number" label="Amount" />
+            <.input field={f[:display_name]} type="text" label="Display Name" />
+            <.input field={f[:purchaser_uid]} type="text" label="Purchaser UID" />
+            <.input field={f[:sku]} type="text" label="SKU" />
+            <.input field={f[:transaction_id]} type="text" label="Transaction ID" />
+            <.input field={f[:time]} type="datetime-local" label="Time" />
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <button
