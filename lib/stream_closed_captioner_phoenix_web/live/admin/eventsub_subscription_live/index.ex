@@ -91,13 +91,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.Index d
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.live_component
-        module={FormComponent}
-        id={(@record && @record.id) || :new}
-        record={@record}
-        action={@live_action}
-        patch={~p"/admin/eventsub-subscriptions"}
-      />
+      <.admin_modal id="eventsub-subscription-form-modal" show={true} on_cancel={JS.patch(~p"/admin/eventsub-subscriptions")}>
+        <.live_component
+          module={FormComponent}
+          id={(@record && @record.id) || :new}
+          record={@record}
+          action={@live_action}
+          patch={~p"/admin/eventsub-subscriptions"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end

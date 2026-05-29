@@ -37,8 +37,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.FormCom
   @impl true
   def render(assigns) do
     ~H"""
-    <.admin_modal id="eventsub-subscription-form" show={true} on_cancel={JS.patch(@patch)}>
-      <div class="p-6">
+    <div class="p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">
           <%= if @action == :new, do: "New Eventsub Subscription", else: "Edit Eventsub Subscription" %>
         </h2>
@@ -86,8 +85,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.FormCom
             <.button type="submit">Save</.button>
           </div>
         </.form>
-      </div>
-    </.admin_modal>
+    </div>
     """
   end
 end

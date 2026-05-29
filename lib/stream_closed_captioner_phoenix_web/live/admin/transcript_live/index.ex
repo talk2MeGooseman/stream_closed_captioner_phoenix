@@ -90,13 +90,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.live_component
-        module={StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent}
-        id={if @record.id, do: "edit-transcript-#{@record.id}", else: "new-transcript"}
-        action={@live_action}
-        record={@record}
-        patch={~p"/admin/transcripts"}
-      />
+      <.admin_modal id="transcript-form-modal" show={true} on_cancel={JS.patch(~p"/admin/transcripts")}>
+        <.live_component
+          module={StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent}
+          id={if @record.id, do: "edit-transcript-#{@record.id}", else: "new-transcript"}
+          action={@live_action}
+          record={@record}
+          patch={~p"/admin/transcripts"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end

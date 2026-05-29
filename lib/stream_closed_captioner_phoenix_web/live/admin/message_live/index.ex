@@ -90,13 +90,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.live_component
-        module={StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.FormComponent}
-        id={if @record.id, do: "edit-message-#{@record.id}", else: "new-message"}
-        action={@live_action}
-        record={@record}
-        patch={~p"/admin/messages"}
-      />
+      <.admin_modal id="message-form-modal" show={true} on_cancel={JS.patch(~p"/admin/messages")}>
+        <.live_component
+          module={StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.FormComponent}
+          id={if @record.id, do: "edit-message-#{@record.id}", else: "new-message"}
+          action={@live_action}
+          record={@record}
+          patch={~p"/admin/messages"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end

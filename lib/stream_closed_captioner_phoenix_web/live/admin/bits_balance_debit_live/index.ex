@@ -95,17 +95,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.live_component
-        module={StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.FormComponent}
-        id={
-          if @record.id,
-            do: "edit-bits-balance-debit-#{@record.id}",
-            else: "new-bits-balance-debit"
-        }
-        action={@live_action}
-        record={@record}
-        patch={~p"/admin/bits-balance-debits"}
-      />
+      <.admin_modal id="bits-balance-debit-form-modal" show={true} on_cancel={JS.patch(~p"/admin/bits-balance-debits")}>
+        <.live_component
+          module={StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.FormComponent}
+          id={
+            if @record.id,
+              do: "edit-bits-balance-debit-#{@record.id}",
+              else: "new-bits-balance-debit"
+          }
+          action={@live_action}
+          record={@record}
+          patch={~p"/admin/bits-balance-debits"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end

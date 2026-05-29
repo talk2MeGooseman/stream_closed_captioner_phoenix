@@ -37,8 +37,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.FormCompon
   @impl true
   def render(assigns) do
     ~H"""
-    <.admin_modal id="translate-language-form" show={true} on_cancel={JS.patch(@patch)}>
-      <div class="p-6">
+    <div class="p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">
           <%= if @action == :new, do: "New Translate Language", else: "Edit Translate Language" %>
         </h2>
@@ -80,8 +79,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.FormCompon
             <.button type="submit">Save</.button>
           </div>
         </.form>
-      </div>
-    </.admin_modal>
+    </div>
     """
   end
 end

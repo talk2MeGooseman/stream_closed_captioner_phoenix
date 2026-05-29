@@ -78,8 +78,6 @@ defmodule StreamClosedCaptionerPhoenixWeb do
     quote do
       use Phoenix.LiveComponent
 
-      import StreamClosedCaptionerPhoenixWeb.AdminComponents
-
       unquote(html_helpers())
     end
   end

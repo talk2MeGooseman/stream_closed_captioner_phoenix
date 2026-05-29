@@ -125,13 +125,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Show do
     </div>
 
     <%= if @live_action == :edit do %>
-      <.live_component
-        module={StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent}
-        id={"transcript-show-edit-#{@transcript.id}"}
-        action={:edit}
-        record={@record}
-        patch={~p"/admin/transcripts/#{@transcript.id}"}
-      />
+      <.admin_modal
+        id="transcript-show-form-modal"
+        show={true}
+        on_cancel={JS.patch(~p"/admin/transcripts/#{@transcript.id}")}
+      >
+        <.live_component
+          module={StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent}
+          id={"transcript-show-edit-#{@transcript.id}"}
+          action={:edit}
+          record={@record}
+          patch={~p"/admin/transcripts/#{@transcript.id}"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end

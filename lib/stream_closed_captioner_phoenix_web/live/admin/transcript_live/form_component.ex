@@ -4,14 +4,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent do
 
   @impl true
   def update(%{record: record} = assigns, socket) do
-    changeset =
-      if assigns[:action] == :edit do
-        Admin.change_transcript(record)
-      else
-        Admin.change_transcript(record)
-      end
-
-    {:ok, socket |> assign(assigns) |> assign(changeset: changeset)}
+    {:ok, socket |> assign(assigns) |> assign(changeset: Admin.change_transcript(record))}
   end
 
   @impl true
@@ -44,8 +37,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <.admin_modal id="transcript-form" show={true} on_cancel={JS.patch(@patch)}>
-      <div class="p-6">
+    <div class="p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">
           <%= if @action == :new, do: "New Transcript", else: "Edit Transcript" %>
         </h2>
@@ -97,8 +89,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent do
             <.button type="submit">Save</.button>
           </div>
         </.form>
-      </div>
-    </.admin_modal>
+    </div>
     """
   end
 end

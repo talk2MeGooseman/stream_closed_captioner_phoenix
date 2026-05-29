@@ -90,13 +90,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.live_component
-        module={FormComponent}
-        id={(@record && @record.id) || :new}
-        record={@record}
-        action={@live_action}
-        patch={~p"/admin/translate-languages"}
-      />
+      <.admin_modal id="translate-language-form-modal" show={true} on_cancel={JS.patch(~p"/admin/translate-languages")}>
+        <.live_component
+          module={FormComponent}
+          id={(@record && @record.id) || :new}
+          record={@record}
+          action={@live_action}
+          patch={~p"/admin/translate-languages"}
+        />
+      </.admin_modal>
     <% end %>
     """
   end
