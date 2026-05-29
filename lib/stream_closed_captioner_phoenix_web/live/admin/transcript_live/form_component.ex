@@ -50,32 +50,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent do
         >
           <div class="space-y-4">
             <%= if @action == :new do %>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-                <%= Phoenix.HTML.Form.number_input(f, :user_id,
-                  class:
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                ) %>
-                <%= Phoenix.HTML.Form.error_tag(f, :user_id) %>
-              </div>
+              <.input field={f[:user_id]} type="number" label="User ID" />
             <% end %>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <%= Phoenix.HTML.Form.text_input(f, :name,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :name) %>
-            </div>
+            <.input field={f[:name]} type="text" label="Name" />
             <%= if @action == :new do %>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Session</label>
-                <%= Phoenix.HTML.Form.text_input(f, :session,
-                  class:
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                ) %>
-                <%= Phoenix.HTML.Form.error_tag(f, :session) %>
-              </div>
+              <.input field={f[:session]} type="text" label="Session" />
             <% end %>
           </div>
           <div class="flex justify-end gap-2 mt-6">

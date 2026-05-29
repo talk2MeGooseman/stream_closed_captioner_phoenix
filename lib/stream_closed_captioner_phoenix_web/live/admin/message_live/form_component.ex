@@ -49,23 +49,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.FormComponent do
           phx-submit="save"
         >
           <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Transcript ID</label>
-              <%= Phoenix.HTML.Form.number_input(f, :transcript_id,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :transcript_id) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Text</label>
-              <%= Phoenix.HTML.Form.textarea(f, :text,
-                rows: 4,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :text) %>
-            </div>
+            <.input field={f[:transcript_id]} type="number" label="Transcript ID" />
+            <.input field={f[:text]} type="textarea" label="Text" rows="4" />
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <button

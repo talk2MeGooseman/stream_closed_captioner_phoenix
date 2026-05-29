@@ -49,22 +49,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.FormComponent do
           phx-submit="save"
         >
           <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-              <%= Phoenix.HTML.Form.number_input(f, :user_id,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :user_id) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Balance</label>
-              <%= Phoenix.HTML.Form.number_input(f, :balance,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :balance) %>
-            </div>
+            <.input field={f[:user_id]} type="number" label="User ID" />
+            <.input field={f[:balance]} type="number" label="Balance" />
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <button

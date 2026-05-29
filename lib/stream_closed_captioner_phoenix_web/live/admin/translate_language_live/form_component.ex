@@ -50,23 +50,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.FormCompon
         >
           <div class="space-y-4">
             <%= if @action == :new do %>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-                <%= Phoenix.HTML.Form.number_input(f, :user_id,
-                  class:
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                ) %>
-                <%= Phoenix.HTML.Form.error_tag(f, :user_id) %>
-              </div>
+              <.input field={f[:user_id]} type="number" label="User ID" />
             <% end %>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
-              <%= Phoenix.HTML.Form.text_input(f, :language,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :language) %>
-            </div>
+            <.input field={f[:language]} type="text" label="Language" />
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <button

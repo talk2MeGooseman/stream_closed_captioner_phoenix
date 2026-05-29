@@ -54,13 +54,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
         phx-submit="save"
       >
         <div class="space-y-4">
-          <div class="flex items-center gap-3">
-            <%= Phoenix.HTML.Form.checkbox(f, :display,
-              class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-            ) %>
-            <label class="text-sm font-medium text-gray-700">Display (show to users)</label>
-            <%= Phoenix.HTML.Form.error_tag(f, :display) %>
-          </div>
+          <.input field={f[:display]} type="checkbox" label="Display (show to users)" />
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
@@ -70,9 +64,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
               so LiveView does not clobber the DOM after Quill takes over the editor div.
             --%>
             <div phx-update="ignore" id="announcement-message-wrapper">
-              <%= Phoenix.HTML.Form.hidden_input(f, :message,
-                id: "announcement-message-value"
-              ) %>
+              <input
+                type="hidden"
+                id="announcement-message-value"
+                name={f[:message].name}
+                value={Phoenix.HTML.Form.normalize_value("hidden", f[:message].value)}
+              />
             </div>
             <div
               id="announcement-message-editor"
@@ -81,7 +78,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
               class="min-h-[160px] border border-gray-300 rounded-md bg-white"
             >
             </div>
-            <%= Phoenix.HTML.Form.error_tag(f, :message) %>
+            <.error :for={msg <- Enum.map(f[:message].errors, &StreamClosedCaptionerPhoenixWeb.CoreComponents.translate_error/1)}>
+              <%= msg %>
+            </.error>
           </div>
         </div>
 

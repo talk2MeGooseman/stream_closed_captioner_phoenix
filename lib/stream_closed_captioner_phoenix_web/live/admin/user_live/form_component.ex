@@ -55,94 +55,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.FormComponent do
       >
         <div class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <%= Phoenix.HTML.Form.text_input(f, :email,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :email) %>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-              <%= Phoenix.HTML.Form.text_input(f, :username,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :username) %>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Login</label>
-              <%= Phoenix.HTML.Form.text_input(f, :login,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :login) %>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">UID</label>
-              <%= Phoenix.HTML.Form.text_input(f, :uid,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :uid) %>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-              <%= Phoenix.HTML.Form.text_input(f, :provider,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :provider) %>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Sign-in Count</label>
-              <%= Phoenix.HTML.Form.number_input(f, :sign_in_count,
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :sign_in_count) %>
-            </div>
+            <.input field={f[:email]} type="text" label="Email" />
+            <.input field={f[:username]} type="text" label="Username" />
+            <.input field={f[:login]} type="text" label="Login" />
+            <.input field={f[:uid]} type="text" label="UID" />
+            <.input field={f[:provider]} type="text" label="Provider" />
+            <.input field={f[:sign_in_count]} type="number" label="Sign-in Count" />
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <%= Phoenix.HTML.Form.text_input(f, :description,
-              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ) %>
-            <%= Phoenix.HTML.Form.error_tag(f, :description) %>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Profile Image URL</label>
-            <%= Phoenix.HTML.Form.text_input(f, :profile_image_url,
-              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ) %>
-            <%= Phoenix.HTML.Form.error_tag(f, :profile_image_url) %>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Offline Image URL</label>
-            <%= Phoenix.HTML.Form.text_input(f, :offline_image_url,
-              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ) %>
-            <%= Phoenix.HTML.Form.error_tag(f, :offline_image_url) %>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
-            <%= Phoenix.HTML.Form.text_input(f, :access_token,
-              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ) %>
-            <%= Phoenix.HTML.Form.error_tag(f, :access_token) %>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Refresh Token</label>
-            <%= Phoenix.HTML.Form.text_input(f, :refresh_token,
-              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            ) %>
-            <%= Phoenix.HTML.Form.error_tag(f, :refresh_token) %>
-          </div>
+          <.input field={f[:description]} type="text" label="Description" />
+          <.input field={f[:profile_image_url]} type="text" label="Profile Image URL" />
+          <.input field={f[:offline_image_url]} type="text" label="Offline Image URL" />
+          <.input field={f[:access_token]} type="text" label="Access Token" />
+          <.input field={f[:refresh_token]} type="text" label="Refresh Token" />
         </div>
 
         <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-gray-100">

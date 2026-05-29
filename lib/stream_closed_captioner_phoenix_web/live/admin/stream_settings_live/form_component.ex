@@ -50,86 +50,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.StreamSettingsLive.FormComponent
         >
           <div class="space-y-4">
             <%= if @action == :new do %>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">User ID</label>
-                <%= Phoenix.HTML.Form.number_input(f, :user_id,
-                  class:
-                    "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                ) %>
-                <%= Phoenix.HTML.Form.error_tag(f, :user_id) %>
-              </div>
+              <.input field={f[:user_id]} type="number" label="User ID" />
             <% end %>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Language</label>
-              <%= Phoenix.HTML.Form.text_input(f, :language,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :language) %>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Caption Delay</label>
-              <%= Phoenix.HTML.Form.number_input(f, :caption_delay,
-                class:
-                  "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              ) %>
-              <%= Phoenix.HTML.Form.error_tag(f, :caption_delay) %>
-            </div>
+            <.input field={f[:language]} type="text" label="Language" />
+            <.input field={f[:caption_delay]} type="number" label="Caption Delay" />
             <div class="grid grid-cols-2 gap-4">
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :cc_box_size,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">CC Box Size</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :filter_profanity,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Filter Profanity</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :hide_text_on_load,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Hide Text on Load</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :pirate_mode,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Pirate Mode</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :showcase,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Showcase</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :switch_settings_position,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Switch Settings Position</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :text_uppercase,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Text Uppercase</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :turn_on_reminder,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Turn On Reminder</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <%= Phoenix.HTML.Form.checkbox(f, :auto_off_captions,
-                  class: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                ) %>
-                <label class="text-sm text-gray-700">Auto Off Captions</label>
-              </div>
+              <.input field={f[:cc_box_size]} type="checkbox" label="CC Box Size" />
+              <.input field={f[:filter_profanity]} type="checkbox" label="Filter Profanity" />
+              <.input field={f[:hide_text_on_load]} type="checkbox" label="Hide Text on Load" />
+              <.input field={f[:pirate_mode]} type="checkbox" label="Pirate Mode" />
+              <.input field={f[:showcase]} type="checkbox" label="Showcase" />
+              <.input field={f[:switch_settings_position]} type="checkbox" label="Switch Settings Position" />
+              <.input field={f[:text_uppercase]} type="checkbox" label="Text Uppercase" />
+              <.input field={f[:turn_on_reminder]} type="checkbox" label="Turn On Reminder" />
+              <.input field={f[:auto_off_captions]} type="checkbox" label="Auto Off Captions" />
             </div>
           </div>
           <div class="flex justify-end gap-2 mt-6">
