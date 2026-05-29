@@ -14,7 +14,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsFixtures do
         session: "some session",
         user_id: user_fixture().id
       })
-      |> StreamClosedCaptionerPhoenix.Transcripts.create_transcript()
+      |> StreamClosedCaptionerPhoenix.Admin.create_transcript()
 
     transcript
   end
@@ -26,7 +26,7 @@ defmodule StreamClosedCaptionerPhoenix.TranscriptsFixtures do
         text: "some text",
         transcript_id: transcript_fixture().id
       })
-      |> StreamClosedCaptionerPhoenix.Transcripts.create_message()
+      |> StreamClosedCaptionerPhoenix.Admin.create_message()
 
     message
   end

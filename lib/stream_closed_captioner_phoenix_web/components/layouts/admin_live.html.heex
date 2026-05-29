@@ -1,0 +1,25 @@
+<main role="main" class="">
+  <p
+    id="admin-flash-info"
+    class="fixed top-16 right-4 z-50 px-4 py-2 rounded shadow-lg bg-green-600 text-white text-sm hidden"
+    role="alert"
+    phx-click="lv:clear-flash"
+    phx-hook="InitToast"
+    phx-value-key="info"
+  ><%= Phoenix.Flash.get(@flash, :info) %></p>
+
+  <p
+    id="admin-flash-error"
+    class="fixed top-16 right-4 z-50 px-4 py-2 rounded shadow-lg bg-red-600 text-white text-sm hidden"
+    role="alert"
+    phx-click="lv:clear-flash"
+    phx-hook="InitToast"
+    phx-value-key="error"
+  ><%= Phoenix.Flash.get(@flash, :error) %></p>
+
+  <%= @inner_content %>
+</main>
+
+<%= if assigns[:live_action] in [:new, :edit] do %>
+  <div class="fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-sm"></div>
+<% end %>
