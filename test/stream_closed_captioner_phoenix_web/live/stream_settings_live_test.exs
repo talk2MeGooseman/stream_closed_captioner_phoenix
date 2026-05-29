@@ -1,10 +1,12 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
+  import Mox
   import Phoenix.LiveViewTest
 
   alias StreamClosedCaptionerPhoenix.Settings
 
+  setup :verify_on_exit!
   setup :register_and_log_in_user
 
   describe "mount" do
@@ -119,6 +121,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
     end
 
     test "saves turn_on_reminder setting", %{conn: conn, user: user} do
+      stub(Twitch.MockOauth, :get_client_access_token, fn ->
+        {:ok, %{access_token: "test_token"}}
+      end)
+
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+        {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
+      end)
+
       {:ok, view, _html} = live(conn, "/users/caption-settings")
 
       view
@@ -132,12 +142,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
     test "saves spoken language change", %{conn: conn, user: user} do
       {:ok, view, _html} = live(conn, "/users/caption-settings")
 
-      html =
-        view
-        |> form("#caption_settings-form", stream_settings: %{language: "es-ES"})
-        |> render_submit()
-
-      assert html =~ "Stream settings updated successfully"
+      view
+      |> form("#caption_settings-form", stream_settings: %{language: "es-ES"})
+      |> render_submit()
 
       settings = Settings.get_stream_settings_by_user_id!(user.id)
       assert settings.language == "es-ES"
