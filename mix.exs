@@ -85,7 +85,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:heartcheck, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:joken, "~> 2.6"},
-      # Admin Dashboard (upgraded to ~> 0.11 in Phase 3f — issue #257)
       {:libcluster, "~> 3.5"},
       {:libcluster_ec2, "~> 0.8"},
       {:mock, "~> 0.3", only: :test},

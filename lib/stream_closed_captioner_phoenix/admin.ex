@@ -366,7 +366,7 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   # --- Shared helpers ---
 
   defp paginate(query, page) when is_integer(page) and page > 0 do
-    query |> limit(@page_size) |> offset((page - 1) * @page_size)
+    query |> limit(@page_size) |> offset(^((page - 1) * @page_size))
   end
 
   defp paginate(query, _), do: paginate(query, 1)

@@ -70,7 +70,6 @@ config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.AuthAcc
   module: StreamClosedCaptionerPhoenix.Guardian,
   error_handler: StreamClosedCaptionerPhoenixWeb.AuthErrorHandler
 
-
 # FunWithFlags configuration
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,

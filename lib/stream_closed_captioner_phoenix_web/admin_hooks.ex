@@ -1,5 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.AdminHooks do
-  import Phoenix.LiveView
+  import Phoenix.Component, only: [assign: 3]
   alias StreamClosedCaptionerPhoenix.Accounts
 
   def on_mount(:assign_current_user, _params, %{"user_token" => token}, socket) do

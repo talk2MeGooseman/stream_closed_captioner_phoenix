@@ -1,10 +1,12 @@
 defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
+  import Mox
   import Phoenix.LiveViewTest
 
   alias StreamClosedCaptionerPhoenix.Settings
 
+  setup :verify_on_exit!
   setup :register_and_log_in_user
 
   describe "mount" do
@@ -94,6 +96,92 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
 
       settings = Settings.get_stream_settings_by_user_id!(user.id)
       assert settings.pirate_mode == true
+    end
+
+    test "saves filter_profanity setting", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+
+      view
+      |> form("#caption_settings-form", stream_settings: %{filter_profanity: true})
+      |> render_submit()
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.filter_profanity == true
+    end
+
+    test "saves hide_text_on_load setting", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+
+      view
+      |> form("#caption_settings-form", stream_settings: %{hide_text_on_load: true})
+      |> render_submit()
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.hide_text_on_load == true
+    end
+
+    test "saves turn_on_reminder setting", %{conn: conn, user: user} do
+      stub(Twitch.MockOauth, :get_client_access_token, fn ->
+        {:ok, %{access_token: "test_token"}}
+      end)
+
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+        {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
+      end)
+
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+
+      view
+      |> form("#caption_settings-form", stream_settings: %{turn_on_reminder: true})
+      |> render_submit()
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.turn_on_reminder == true
+    end
+
+    test "saves spoken language change", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+
+      view
+      |> form("#caption_settings-form", stream_settings: %{language: "es-ES"})
+      |> render_submit()
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.language == "es-ES"
+    end
+
+    test "does not save invalid caption_delay and renders errors", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+      original_settings = Settings.get_stream_settings_by_user_id!(user.id)
+
+      html =
+        view
+        |> form("#caption_settings-form", stream_settings: %{caption_delay: -5})
+        |> render_submit()
+
+      assert html =~ "must be greater than or equal to 0"
+      refute html =~ "Stream settings updated successfully"
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.caption_delay == original_settings.caption_delay
+    end
+  end
+
+  describe "form component - validate event" do
+    test "shows validation error for negative caption_delay without saving", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+      original_settings = Settings.get_stream_settings_by_user_id!(user.id)
+
+      html =
+        view
+        |> form("#caption_settings-form", stream_settings: %{caption_delay: -1})
+        |> render_change()
+
+      assert html =~ "must be greater than or equal to 0"
+      refute html =~ "Stream settings updated successfully"
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert settings.caption_delay == original_settings.caption_delay
     end
   end
 end

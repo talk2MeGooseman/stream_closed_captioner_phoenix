@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Companion docs (read these too)
 
-- **`.github/copilot-instructions.md`** — authoritative, project-specific guide: caption flow, service-provider Mox pattern, billing/translation paths, presence/tracking, caching, auth, GraphQL, Oban, Kaffy admin, factory caveats. **Start here for "how does this app work" questions.**
+- **`.github/copilot-instructions.md`** — authoritative, project-specific guide: caption flow, service-provider Mox pattern, billing/translation paths, presence/tracking, caching, auth, GraphQL, Oban, factory caveats. **Start here for "how does this app work" questions.**
 - **`AGENTS.md`** — generic Phoenix/Elixir/Ecto/LiveView usage rules (HEEx syntax, streams, form patterns, etc.). Treat as framework conventions, not project-specific.
 
 If the two conflict on a project specific topic, `.github/copilot-instructions.md` wins.
@@ -49,7 +49,7 @@ client transcribes → `CaptionsChannel` (Phoenix Channel `captions:USER_ID`) �
 - **Sensitive fields.** `User` has `@derive {Inspect, except: [...]}`; `azure_service_key` uses the `EncryptedBinary` Ecto type (AES-256-GCM, `ENCRYPTION_KEY` env var). Mutations to sensitive resources should call `StreamClosedCaptionerPhoenix.Audit.log_azure_key_action/3`.
 - **Factory associations are pre-built.** `insert(:user)` already creates `stream_settings` and `bits_balance` — update them, don't insert new ones alongside.
 - **Oban in tests is `:manual`** — jobs don't run automatically; use `perform_job/2`. Queues are `default` and `events` (10 workers each).
-- **Admin (`/admin`) is gated by `user.uid == "120750024"`** via the `:admin_protected` pipeline; Kaffy companion modules live next to their schemas (e.g., `AnnouncementAdmin`).
+- **Admin is gated by `user.uid == "120750024"`** via the `:admin_protected` pipeline (protects `/live-dashboard` and `/feature-flags`).
 - **HTTP to Azure**: use `HTTPoison.post` (not `post!`) and scrub sensitive data before logging on the error path. For new HTTP needs, `Req` is preferred (per AGENTS.md), but existing Azure code is HTTPoison-based — match the surrounding style.
 
 ## Production / deploy

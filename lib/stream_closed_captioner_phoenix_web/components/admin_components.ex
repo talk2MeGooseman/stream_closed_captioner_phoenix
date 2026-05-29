@@ -1,6 +1,5 @@
 defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
-  use Phoenix.Component
-  import Phoenix.HTML
+  use StreamClosedCaptionerPhoenixWeb, :component
 
   alias Phoenix.LiveView.JS
 
@@ -275,8 +274,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
     ~H"""
     <div
       id={@id}
-      phx-mounted={@show && show_modal(@id)}
-      phx-remove={hide_modal(@id)}
+      phx-mounted={@show && admin_show_modal(@id)}
+      phx-remove={admin_hide_modal(@id)}
       class="hidden relative z-50"
     >
       <div id={"#{@id}-bg"} class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity" aria-hidden="true" />
@@ -295,14 +294,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
     """
   end
 
-  defp show_modal(js \\ %JS{}, id) do
+  defp admin_show_modal(js \\ %JS{}, id) do
     js
     |> JS.show(to: "##{id}")
     |> JS.show(to: "##{id}-bg", transition: {"transition-opacity ease-out duration-200", "opacity-0", "opacity-100"})
     |> JS.show(to: "##{id}-container", transition: {"transition-all ease-out duration-200", "opacity-0 scale-95", "opacity-100 scale-100"})
   end
 
-  defp hide_modal(js \\ %JS{}, id) do
+  defp admin_hide_modal(js \\ %JS{}, id) do
     js
     |> JS.hide(to: "##{id}-bg", transition: {"transition-opacity ease-in duration-150", "opacity-100", "opacity-0"})
     |> JS.hide(to: "##{id}-container", transition: {"transition-all ease-in duration-150", "opacity-100 scale-100", "opacity-0 scale-95"})
