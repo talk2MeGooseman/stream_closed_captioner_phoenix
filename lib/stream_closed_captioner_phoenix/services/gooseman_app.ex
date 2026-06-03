@@ -4,17 +4,6 @@ defmodule GoosemanApp do
 
     query = """
     {
-      twitch {
-        broadcasterSubscriptions(broadcasterId: "120750024") {
-          user {
-            id
-            profileImageUrl
-            displayName
-            description
-          }
-          tier
-        }
-      }
       patreon {
         campaignMembers {
           fullName
