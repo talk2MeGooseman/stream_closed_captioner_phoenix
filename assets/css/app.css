@@ -433,3 +433,76 @@
 @media (max-width: 600px) {
   .scc-home .streams { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   Stream CC Announcements — changelog timeline (scoped under .scc-home).
+   Reuses the shared nav/footer/buttons/type/tokens and the showcase
+   `.joinbar`/`.empty`; only the timeline-feed pieces live here.
+   ============================================================ */
+
+/* page header */
+.scc-home .ann-head {
+  position: relative; overflow: hidden; padding: 60px 0 30px; border-bottom: 1px solid var(--border);
+}
+.scc-home .ann-head::before {
+  content: ""; position: absolute; inset: -44% auto auto -8%; width: 680px; height: 560px;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 60%, transparent), transparent 62%);
+  opacity: var(--glow); filter: blur(20px); pointer-events: none;
+}
+.scc-home .ann-head__in { position: relative; display: flex; flex-direction: column; gap: 18px; }
+.scc-home .ann-head h1 { max-width: 16ch; }
+.scc-home .ann-head .lede { max-width: 54ch; }
+
+/* timeline feed */
+.scc-home .feed-sec { padding: 42px 0 20px; }
+.scc-home .feed-sec--top { padding-top: 48px; }
+.scc-home .feed { position: relative; display: flex; flex-direction: column; }
+.scc-home .entry {
+  position: relative; display: grid; grid-template-columns: 170px 1fr; gap: 34px; padding: 0 0 38px 0;
+}
+.scc-home .entry__rail { position: relative; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.scc-home .entry__rail::before {
+  content: ""; position: absolute; left: 6px; top: 14px; bottom: -38px; width: 2px;
+  background: repeating-linear-gradient(var(--border-2) 0 6px, transparent 6px 12px);
+}
+.scc-home .entry:last-child .entry__rail::before { display: none; }
+.scc-home .entry__node {
+  position: absolute; left: 0; top: 6px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--surface); border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); z-index: 1;
+}
+.scc-home .entry__node::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent);
+}
+.scc-home .entry__date {
+  font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--text);
+  padding-left: 26px; line-height: 1.4;
+}
+
+.scc-home .entry__card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px 26px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.2s;
+}
+.scc-home .entry__card:hover { transform: translateY(-2px); border-color: var(--border-2); box-shadow: var(--shadow); }
+.scc-home .entry__title {
+  font-family: var(--display); font-weight: 700; font-size: 1.32rem; line-height: 1.22; letter-spacing: -0.01em;
+}
+.scc-home .entry__title a { transition: color 0.15s; }
+.scc-home .entry__card:hover .entry__title a { color: var(--accent-ink); }
+.scc-home .entry__tldr { color: var(--muted); font-size: 1rem; line-height: 1.58; margin: 0; max-width: 62ch; }
+.scc-home .entry__more {
+  display: inline-flex; align-items: center; gap: 7px; font-weight: 700; font-size: 0.94rem;
+  color: var(--accent-ink); margin-top: 2px; transition: gap 0.15s;
+}
+.scc-home .entry__more svg { width: 15px; height: 15px; transition: transform 0.15s; }
+.scc-home .entry__card:hover .entry__more { gap: 11px; }
+.scc-home .entry__card:hover .entry__more svg { transform: translateX(2px); }
+
+/* announcements responsive */
+@media (max-width: 640px) {
+  .scc-home .entry { grid-template-columns: 1fr; gap: 14px; }
+  .scc-home .entry__rail { flex-direction: row; align-items: center; gap: 12px; padding-top: 0; }
+  .scc-home .entry__rail::before { display: none; }
+  .scc-home .entry__node { position: static; }
+  .scc-home .entry__date { padding-left: 0; }
+}
