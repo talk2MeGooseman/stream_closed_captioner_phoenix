@@ -1,31 +1,128 @@
-<section class="w-full px-4 py-24 mx-auto max-w-7xl md:w-4/5">
-  <h2 class="mb-2 text-3xl font-extrabold leading-tight text-gray-900"><%= length(@data) %> Live Twitch Streams</h2>
-  <p class="mb-20 text-lg text-gray-500">Discover streamers that are using Stream Closed Captioner on their channels
-  </p>
-  <%= if Enum.empty?(@data) do %>
-  <div class="alert bg-yellow-100 text-primary alert-lg">
-    No Twitch channels are live right now.
+<header class="show-head">
+  <div class="wrap show-head__in">
+    <span class="live-eyebrow"><span class="dot" aria-hidden="true"></span>Live now</span>
+    <h1 class="h1">
+      <span class="count">{length(@data)}</span> creators are<br />captioning live
+    </h1>
+    <p class="lede">
+      Streamers running Stream CC on their channels right now. Jump in — every one of these is captioned for the whole audience.
+    </p>
   </div>
-  <% end %>
-  <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-    <%= for user_stream <- @data do %>
-    <div>
-      <a target="_blank" href={ "https://twitch.tv/" <> user_stream.user_name }>
-        <img src={set_stream_thumnail_dimensions(user_stream.thumbnail_url, "1280", "640")}
-          class="object-cover w-full h-56 mb-5 bg-center rounded" alt="Kutty" loading="lazy" />
-      </a>
-      <p class="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase"><%= user_stream.game_name %></p>
-      <h2 class="mb-2 text-xl font-bold leading-snug text-gray-900">
-        <a target="_blank" href={ "https://twitch.tv/" <> user_stream.user_name }
-          class="text-gray-900 hover:text-purple-700"><%= user_stream.title %></a>
-      </h2>
-      <a target="_blank" class="flex items-center text-gray-700" href={ "https://twitch.tv/" <> user_stream.user_name }>
-        <div>
-          <p class="text-sm font-semibold text-gray-900"><%= user_stream.user_name %></p>
-          <p class="text-sm text-gray-600">Viewers: <%= user_stream.viewer_count %></p>
-        </div>
+</header>
+
+<%= if Enum.empty?(@data) do %>
+  <section class="streams-sec">
+    <div class="wrap">
+      <div class="empty">
+        <span class="empty__mark" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="3" />
+            <path d="M11 10.2a2.3 2.3 0 0 0-3.6 1.9 2.3 2.3 0 0 0 3.6 1.9M17.5 10.2a2.3 2.3 0 0 0-3.6 1.9 2.3 2.3 0 0 0 3.6 1.9" />
+          </svg>
+        </span>
+        <h3>No channels are live right now</h3>
+        <p>
+          Nobody's streaming with Stream CC this second. Check back soon — or be the one to go live with captions on.
+        </p>
+        <a class="btn btn--primary" href="/auth/twitch">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z" />
+          </svg>
+          Start captioning
+        </a>
+      </div>
+    </div>
+  </section>
+<% else %>
+  <div class="toolbar">
+    <div class="wrap toolbar__in">
+      <form method="get" class="sort">
+        <label class="sort__lbl" for="sort">Sort</label>
+        <select id="sort" name="sort" onchange="this.form.submit()" aria-label="Sort streams">
+          <option value="views" selected={@sort == "views"}>Most viewers</option>
+          <option value="fewest" selected={@sort == "fewest"}>Fewest viewers</option>
+          <option value="az" selected={@sort == "az"}>Streamer A–Z</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <section class="streams-sec">
+    <div class="wrap">
+      <div class="streams">
+        <%= for stream <- @data do %>
+          <article class="scard">
+            <a
+              class="scard__thumb"
+              href={"https://twitch.tv/" <> stream.user_login}
+              target="_blank"
+              rel="noopener"
+              aria-label={stream.title <> " — watch on Twitch"}
+            >
+              <img
+                class="scard__img"
+                src={set_stream_thumnail_dimensions(stream.thumbnail_url, "1280", "720")}
+                alt=""
+                loading="lazy"
+              />
+              <span class="badge-live"><span class="d" aria-hidden="true"></span>LIVE</span>
+              <span class="badge-views">
+                <span class="eye" aria-hidden="true"></span>{format_viewers(stream.viewer_count)}
+              </span>
+            </a>
+            <div class="scard__meta">
+              <span
+                class="scard__avatar"
+                aria-hidden="true"
+                style={avatar_style(stream.user_name)}
+              >
+                {initials(stream.user_name)}
+              </span>
+              <div class="scard__body">
+                <span class="scard__game">{stream.game_name}</span>
+                <h3 class="scard__title">
+                  <a
+                    href={"https://twitch.tv/" <> stream.user_login}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {stream.title}
+                  </a>
+                </h3>
+                <div class="scard__by">
+                  <span class="name">{stream.user_name}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<section class="joinbar">
+  <div class="wrap">
+    <div class="joinbar__in">
+      <div>
+        <h2 class="h2">Want your stream on this page?</h2>
+        <p>
+          Turn on Stream CC and your live, captioned channel shows up here automatically — free, forever.
+        </p>
+      </div>
+      <a class="btn btn--primary" href={~p"/users/register"}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z" />
+        </svg>
+        Get started free
       </a>
     </div>
-    <% end %>
   </div>
 </section>
