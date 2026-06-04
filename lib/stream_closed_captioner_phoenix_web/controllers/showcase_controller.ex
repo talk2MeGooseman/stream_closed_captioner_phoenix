@@ -15,7 +15,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseController do
     sort = sort_param(params)
 
     conn
-    |> put_root_layout(html: {Layouts, :scc_root})
+    # Bare-tuple form so it replaces the `:browser` pipeline's root layout,
+    # which is set the same way. A `[html: ...]` form would be stored under a
+    # separate key and shadowed by the pipeline's catch-all, leaving the old
+    # nav/footer chrome in place.
+    |> put_root_layout({Layouts, :scc_root})
     |> put_layout(html: {Layouts, :scc})
     |> assign(:scc_active, "showcase")
     |> assign(:page_title, "Showcase · Live Twitch streams")

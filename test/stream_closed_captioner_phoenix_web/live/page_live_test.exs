@@ -47,6 +47,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.PageLiveTest do
     assert html =~ "Connect with Twitch"
     assert html =~ "Log in"
     refute html =~ ">Dashboard<"
+    # only the new design nav renders, not the old shared header
+    refute html =~ "darkmode#toggle"
   end
 
   describe "when logged in" do

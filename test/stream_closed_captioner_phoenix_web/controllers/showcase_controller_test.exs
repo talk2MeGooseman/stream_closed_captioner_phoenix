@@ -20,6 +20,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseControllerTest do
       # nav CTA (logged out) + footer copyright both come from the :scc layout
       assert html =~ "Connect with Twitch"
       assert html =~ "Erik Guzman"
+      # the old shared header must NOT also render (no doubled nav)
+      refute html =~ "darkmode#toggle"
     end
 
     test "shows the empty state when no channels are live", %{conn: conn} do
