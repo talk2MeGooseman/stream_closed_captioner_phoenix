@@ -6,14 +6,14 @@ import Config
 
 database_url = System.get_env("DATABASE_URL")
 
-config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
-  # ssl: true,
-  url: database_url,
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-  # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
-  # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
-  # !!! From now on, migrations should only be done from Ecto !!!
-  migration_source: "ecto_schema_migrations"
+# config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenix.Repo,
+#   # ssl: true,
+#   url: database_url,
+#   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+#   # The App was started from Rails which used the `schema_migrations` table with the same name but different schema
+#   # To continue with migrations from ecto from now on, we use choose a custom name for the ecto migrations
+#   # !!! From now on, migrations should only be done from Ecto !!!
+#   migration_source: "ecto_schema_migrations"
 
 secret_key_base = System.get_env("SECRET_KEY_BASE")
 
