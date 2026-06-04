@@ -169,24 +169,6 @@
 .scc-home .stream__video {
   position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; object-fit: cover; background: #000;
 }
-.scc-home .stream__feed {
-  position: absolute; inset: 0;
-  background: radial-gradient(120% 80% at 30% 0%, color-mix(in srgb, var(--accent) 26%, #10101a), #0a0a10 72%),
-    repeating-linear-gradient(58deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 16px);
-}
-.scc-home .stream__empty {
-  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 15px;
-}
-.scc-home .stream__playmark {
-  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.32); color: #fff;
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.scc-home .stream__playmark svg { width: 26px; height: 26px; margin-left: 3px; }
-.scc-home .stream__emptylabel {
-  font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.66);
-}
 
 /* ---------- sections ---------- */
 .scc-home .block { padding: 84px 0; }
@@ -246,10 +228,11 @@
   box-shadow: 0 0 0 5px var(--bg);
 }
 .scc-home .step__shot {
-  height: 84px; border-radius: 12px; border: 1px solid var(--border);
-  background: repeating-linear-gradient(52deg, color-mix(in srgb, var(--text) 4%, transparent) 0 2px, transparent 2px 13px), var(--surface);
-  display: grid; place-items: center; font-family: var(--mono); font-size: 10.5px; color: var(--faint);
-  text-align: center; padding: 8px;
+  aspect-ratio: 16 / 10; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface-2); overflow: hidden;
+}
+.scc-home .step__shot img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
 }
 .scc-home .step__title { font-family: var(--display); font-weight: 700; font-size: 1.1rem; }
 .scc-home .step__desc { color: var(--muted); font-size: 0.93rem; line-height: 1.5; margin: 0; }

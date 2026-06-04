@@ -56,14 +56,15 @@
         </div>
       </div>
 
-      <div class="stream stream--empty" role="img" aria-label="Product demo video — coming soon">
-        <div class="stream__feed" aria-hidden="true"></div>
-        <div class="stream__empty">
-          <span class="stream__playmark" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-          </span>
-          <span class="stream__emptylabel">Demo video</span>
-        </div>
+      <div class="stream">
+        <iframe
+          class="stream__video"
+          src="https://www.youtube.com/embed/eBtWOZcpUzQ"
+          title="Stream Closed Captioner introduction video"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        >
+        </iframe>
       </div>
     </div>
   </header>
@@ -119,7 +120,9 @@
         <%= for {step, index} <- Enum.with_index(@steps, 1) do %>
           <div class="step">
             <div class="step__num">{index}</div>
-            <div class="step__shot" aria-hidden="true">{step.shot}</div>
+            <div class="step__shot">
+              <img src={~p"/images/#{step.img}"} alt={step.alt} loading="lazy" />
+            </div>
             <h3 class="step__title">{step.title}</h3>
             <p class="step__desc">{step.desc}</p>
           </div>

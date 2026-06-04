@@ -31,6 +31,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.PageLiveTest do
     assert html =~ "+ Enhanced"
   end
 
+  test "embeds the intro video and the step screenshots", %{conn: conn} do
+    {:ok, _page_live, html} = live(conn, "/")
+
+    assert html =~ "https://www.youtube.com/embed/eBtWOZcpUzQ"
+
+    for image <- ~w(install-extension register settings captions-start) do
+      assert html =~ "/images/#{image}.png"
+    end
+  end
+
   test "logged-out nav shows the auth CTAs", %{conn: conn} do
     {:ok, _page_live, html} = live(conn, "/")
 

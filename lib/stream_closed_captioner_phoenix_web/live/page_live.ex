@@ -36,22 +36,26 @@ defmodule StreamClosedCaptionerPhoenixWeb.PageLive do
     %{
       title: "Install the extension",
       desc: "Activate Stream CC as an overlay or panel on your Twitch channel.",
-      shot: "Twitch extension install"
+      img: "install-extension.png",
+      alt: "The Stream Closed Captioner Twitch extension installation page"
     },
     %{
       title: "Sign up for an account",
       desc: "Use your Twitch login — or an e-mail for Zoom-only captions.",
-      shot: "Registration page"
+      img: "register.png",
+      alt: "The Stream Closed Captioner registration page"
     },
     %{
       title: "Get your settings right",
       desc: "Pick your native language, add a Zoom URL, set size and position.",
-      shot: "Caption settings"
+      img: "settings.png",
+      alt: "The Stream Closed Captioner caption settings page"
     },
     %{
       title: "Start Closed Captions",
       desc: "One button on your dashboard and you're captioning live.",
-      shot: "Dashboard · Start"
+      img: "captions-start.png",
+      alt: "The Stream Closed Captioner dashboard, focused on the start captions button"
     }
   ]
 
