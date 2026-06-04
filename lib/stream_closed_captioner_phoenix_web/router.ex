@@ -116,7 +116,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/", StreamClosedCaptionerPhoenixWeb do
     pipe_through(:browser)
 
-    live("/", PageLive, :index)
+    live_session :home,
+      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :home_root},
+      layout: false,
+      on_mount: [{StreamClosedCaptionerPhoenixWeb.AdminHooks, :assign_current_user}] do
+      live("/", PageLive, :index)
+    end
 
     get("/privacy", PrivacyController, :index)
     get("/terms", TermsController, :index)

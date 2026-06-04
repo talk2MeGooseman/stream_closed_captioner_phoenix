@@ -1,219 +1,237 @@
-<section class="px-4 py-24 mx-auto max-w-7xl">
-  <div class="w-full mx-auto text-left md:w-11/12 xl:w-9/12 md:text-center">
-    <h1 class="mb-6 text-4xl font-extrabold leading-none tracking-normal text-gray-900 md:text-6xl md:tracking-tight">
-      Stream Closed Captioner
-    </h1>
-    <p class="px-0 mb-6 text-lg text-gray-600 md:text-xl lg:px-24">
-      Easily add Closed Captions to your Twitch stream or Zoom meeting today with just a few clicks of the mouse.
-    </p>
-    <div class="mb-4 space-x-0 md:space-x-2 md:mb-8">
-      <%= link to: ~p"/users/register", class: "inline-flex items-center justify-center w-full mb-2 btn btn-primary btn-lg sm:w-auto sm:mb-0" do %>
-        Get Started
-        <svg
-          class="w-4 h-4 ml-1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      <% end %>
-    </div>
-  </div>
-
-  <div class="aspect-w-16 aspect-h-9">
-    <iframe
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen=""
-      frameborder="0"
-      src="https://www.youtube.com/embed/eBtWOZcpUzQ"
-      title="Stream Closed Captioner Introduction Video"
-    >
-    </iframe>
-  </div>
-</section>
-
-<section class="px-4 py-20 mx-auto text-white bg-gray-900">
-  <div class="grid items-center grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-y-32 gap-x-10 lg:gap-x-24 max-w-5xl mx-auto px-4">
-    <div>
-      <h2 class="mb-3 text-3xl font-extrabold leading-tight tracking-tight text-center sm:text-left md:text-4xl">
-        Start Using it Today
-      </h2>
-      <p class="mb-6 text-lg text-center sm:text-left md:text-xl text-gray-300">
-        Make your streams more accessiable to
-        the hard of hearing, all you have to do is create an account and you get all these awesome features.
-      </p>
-      <%= link("Create an Account",
-        to: ~p"/users/register",
-        class: "w-full btn btn-primary btn-lg sm:w-auto"
-      ) %>
-    </div>
-    <div class="flex flex-col flex-grow space-y-5">
-      <div class="flex items-start">
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          >
-          </path>
-        </svg>
-        <p class="text-lg text-gray-300">Closed Captions for your Twitch Channel</p>
-      </div>
-      <div class="flex items-start">
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          >
-          </path>
-        </svg>
-        <p class="text-lg text-gray-300">Closed Captions for your Zoom Meeting</p>
-      </div>
-      <div class="flex items-start">
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          >
-          </path>
-        </svg>
-        <p class="text-lg text-gray-300">Easy to Use Twitch Viewer Settings</p>
-      </div>
-      <div class="flex items-start">
-        <svg
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="flex-none w-5 h-5 mt-1 mr-2 text-primary"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          >
-          </path>
-        </svg>
-        <p class="text-lg text-gray-300">
-          Add Captions to your Twitch VODs using OBS WebSocket for OBS Studio
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="bg-gray-100 border-b">
-  <div class="container max-w-5xl mx-auto m-8">
-    <h2 class="w-full my-2 text-5xl font-black leading-tight text-center text-gray-800">
-      Getting Started is Easy
-    </h2>
-    <div class="w-full mb-4">
-      <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
-    </div>
-    <!-- Step 1 --->
-    <div class="flex flex-wrap">
-      <div class="w-full sm:w-1/2 p-6">
-        <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-          Install the Extension on your Twitch channel
-        </h3>
-        <p class="text-gray-600 mb-8">
-          Choose to activate it as a video overlay or panel extension for your channel, it also works on mobile.
-        </p>
+<div class="scc-home" data-theme="dark" id="top">
+  <nav class="nav">
+    <div class="wrap nav__in">
+      <a class="brand" href={~p"/"}>
+        <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
+      </a>
+      <div class="nav__links">
+        <a href={~p"/showcase"}>Showcase</a>
+        <a href={~p"/announcements"}>Announcements</a>
+        <a href={~p"/supporters"}>Supporters</a>
         <a
+          href="https://talk2megooseman.notion.site/stream-cc-faq"
           target="_blank"
-          href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-          class="w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
+          rel="noopener noreferrer"
         >
-          Click to install
+          FAQ
         </a>
       </div>
-      <div class="w-full sm:w-1/2 p-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/install-extension.png"),
-          alt: "Image of the Twitch extension installation page"
-        ) %>
+      <div class="nav__cta">
+        <%= if @current_user do %>
+          <a class="btn btn--primary btn--sm" href={~p"/dashboard"}>Dashboard</a>
+        <% else %>
+          <a class="login" href={~p"/users/log_in"}>Log in</a>
+          <a class="btn btn--primary btn--sm" href="/auth/twitch">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path d="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z" />
+            </svg>
+            Connect with Twitch
+          </a>
+        <% end %>
       </div>
     </div>
-    <!-- Step 2 --->
-    <div class="flex flex-wrap flex-col-reverse sm:flex-row">
-      <div class="w-full sm:w-1/2 p-6 mt-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/register.png"),
-          alt: "Stream Closed Captioner registration page"
-        ) %>
-      </div>
-      <div class="w-full sm:w-1/2 p-6 mt-6">
-        <div class="align-middle">
-          <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-            Sign Up for an Account
-          </h3>
-          <p class="text-gray-600 mb-8">
-            You can easily sign up using your Twitch account to get started on your channel, or sign up with e-mail if
-            you want to just use it for Zoom.
-          </p>
-          <%= link("Sign up today",
-            to: ~p"/users/register",
-            class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
-          ) %>
-        </div>
-      </div>
-    </div>
-    <!-- Step 3 --->
-    <div class="flex flex-wrap">
-      <div class="w-fukk sm:w-1/2 p-6">
-        <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-          Get your setting just right
-        </h3>
-        <p class="text-gray-600 mb-8">
-          Open up the settings panel to set your native language or your Zoom URL and more...
+  </nav>
+
+  <header class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <span class="badge">
+          <span class="badge__dot" aria-hidden="true"></span><b>Free</b>&nbsp;· open to every streamer
+        </span>
+        <h1 class="h1">Add closed captions<br />in a few clicks</h1>
+        <p class="lede">
+          Real-time captions for your Twitch stream and Zoom calls — readable, customizable, and ready for your whole audience.
         </p>
-        <%= link("Configure settings",
-          to: Routes.caption_settings_index_path(@socket, :show),
-          class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
-        ) %>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={~p"/users/register"}>Get started</a>
+          <a class="btn btn--ghost" href="#steps">See how it works</a>
+        </div>
+        <div class="platforms">
+          <span class="platforms__lbl">Works with</span>
+          <span class="platforms__list">
+            <span class="chip">Twitch</span>
+            <span class="chip">Zoom</span>
+            <span class="chip">OBS</span>
+          </span>
+        </div>
       </div>
-      <div class="w-full sm:w-1/2 p-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/settings.png"),
-          alt: "Stream Closed Captioner caption settings page"
-        ) %>
-      </div>
-    </div>
-    <!-- Step 4 --->
-    <div class="flex flex-wrap flex-col-reverse sm:flex-row">
-      <div class="w-full sm:w-1/2 p-6 mt-6">
-        <%= img_tag(Routes.static_path(@socket, "/images/captions-start.png"),
-          alt: "Stream Closed Captioner dashboard page focused on the start captions button"
-        ) %>
-      </div>
-      <div class="w-full sm:w-1/2 p-6 mt-6">
-        <div class="align-middle">
-          <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
-            Click "Start Closed Captions"
-          </h3>
-          <p class="text-gray-600 mb-8">
-            Click a single button to start Closed Captioning on your Twitch channel or Zoom meeting.
-          </p>
-          <%= link("Start using it today!",
-            to: Routes.dashboard_path(@socket, :index),
-            class: "w-full btn btn-dark btn-lg sm:w-auto dark:bg-blue-800"
-          ) %>
+
+      <div class="stream stream--empty" role="img" aria-label="Product demo video — coming soon">
+        <div class="stream__feed" aria-hidden="true"></div>
+        <div class="stream__empty">
+          <span class="stream__playmark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+          </span>
+          <span class="stream__emptylabel">Demo video</span>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </header>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Features</span>
+        <h2 class="h2">Everything your captions need</h2>
+        <p class="lede">
+          Start with the essentials that make your stream accessible — then turn on the extras when you're ready.
+        </p>
+      </div>
+      <div class="features">
+        <%= for feature <- @base_features do %>
+          <article class="card">
+            <span class="card__icon" aria-hidden="true">
+              <.feature_icon name={feature.icon} />
+            </span>
+            <h3 class="card__title">{feature.title}</h3>
+            <p class="card__desc">{feature.desc}</p>
+          </article>
+        <% end %>
+      </div>
+
+      <div class="enh-divider">
+        <span class="pill-enh">+ Enhanced</span>
+        <span class="enh-divider__line" aria-hidden="true"></span>
+      </div>
+      <div class="features features--enh">
+        <%= for feature <- @enhanced_features do %>
+          <article class="card card--enh">
+            <span class="badge-corner" aria-hidden="true">ENHANCED</span>
+            <span class="card__icon" aria-hidden="true">
+              <.feature_icon name={feature.icon} />
+            </span>
+            <h3 class="card__title">{feature.title}</h3>
+            <p class="card__desc">{feature.desc}</p>
+          </article>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <section class="block block--alt" id="steps">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">How it works</span>
+        <h2 class="h2">From install to live in four steps</h2>
+      </div>
+      <div class="steps">
+        <div class="steps__line" aria-hidden="true"></div>
+        <%= for {step, index} <- Enum.with_index(@steps, 1) do %>
+          <div class="step">
+            <div class="step__num">{index}</div>
+            <div class="step__shot" aria-hidden="true">{step.shot}</div>
+            <h3 class="step__title">{step.title}</h3>
+            <p class="step__desc">{step.desc}</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta">
+        <div>
+          <span class="cta__price">Pricing</span>
+          <h2 class="h2">Free, forever.</h2>
+          <p class="cta__sub">
+            No credit card, no trial clock, no catch. Stream CC is built to keep streams accessible for everyone.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary" href={~p"/users/register"}>Create an account</a>
+          <a class="btn btn--ghost" href="#features">Browse features</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot__grid">
+        <div class="foot__about">
+          <a class="brand" href={~p"/"}>
+            <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
+          </a>
+          <p>
+            Closed captions for live streams and calls. Built so every viewer can follow along.
+          </p>
+          <div class="foot__social">
+            <a
+              href="https://discord.gg/ZXSqzrc"
+              aria-label="Discord"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
+                <path d="M19 6a16 16 0 0 0-4-1l-.3.6a13 13 0 0 1 5.3 2.7A14 14 0 0 0 5 8.3 13 13 0 0 1 10.3 5.6L10 5a16 16 0 0 0-4 1C3.5 9.5 3 13 3.2 16.4a15 15 0 0 0 4.5 2.3l1-1.6c-.6-.2-1.1-.5-1.6-.8l.4-.3a10 10 0 0 0 9 0l.4.3c-.5.3-1 .6-1.6.8l1 1.6a15 15 0 0 0 4.5-2.3C21 13 20.5 9.5 19 6ZM9.5 14.3c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Zm5 0c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Z" />
+              </svg>
+            </a>
+            <a
+              href="https://twitter.com/talk2megooseman"
+              aria-label="Twitter / X"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
+                <path d="M17.5 4h2.6l-5.7 6.5L21 20h-5.3l-4.1-5.4L6.8 20H4.2l6-6.9L4 4h5.4l3.7 4.9L17.5 4Zm-1 14.4h1.5L8.6 5.5H7L16.5 18.4Z" />
+              </svg>
+            </a>
+            <a
+              href="https://patreon.com/talk2megooseman"
+              aria-label="Patreon"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
+                <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="foot__col">
+          <h4>Product</h4>
+          <a href={~p"/showcase"}>Showcase</a>
+          <a href={~p"/announcements"}>Announcements</a>
+          <a
+            href="https://talk2megooseman.notion.site/stream-cc-faq"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            FAQ
+          </a>
+        </div>
+        <div class="foot__col">
+          <h4>Community</h4>
+          <a href={~p"/supporters"}>Supporters</a>
+          <a href="https://discord.gg/ZXSqzrc" target="_blank" rel="noopener noreferrer">
+            Discord
+          </a>
+          <a href="https://twitter.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
+            Twitter
+          </a>
+          <a href="https://patreon.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
+            Patreon
+          </a>
+        </div>
+        <div class="foot__col">
+          <h4>Legal</h4>
+          <a href={~p"/privacy"}>Privacy</a>
+          <a href={~p"/terms"}>Terms</a>
+          <a
+            href="https://talk2megooseman.notion.site/stream-cc-faq"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Accessibility
+          </a>
+        </div>
+      </div>
+      <div class="foot__bar">
+        <span>© {Date.utc_today().year} Erik Guzman</span>
+        <span class="a11y">Built for accessibility · keyboard-friendly · WCAG AA</span>
+      </div>
+    </div>
+  </footer>
+</div>
