@@ -18,6 +18,7 @@
   --accent: #9146ff;
   --accent-2: #22d3ee;
   --live: #ff4d6a;
+  --patreon: #ff6b57;
   --maxw: 1180px;
   --radius: 18px;
   --display: "Bricolage Grotesque", "Plus Jakarta Sans", sans-serif;
@@ -106,6 +107,13 @@
 }
 .scc-home .btn--ghost { background-color: transparent; color: var(--text); border-color: var(--border-2); }
 .scc-home .btn--ghost:hover { border-color: var(--text); background-color: color-mix(in srgb, var(--text) 6%, transparent); }
+.scc-home .btn--patreon {
+  background-color: var(--patreon); color: #1a0d09;
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--patreon) 70%, transparent);
+}
+.scc-home .btn--patreon:hover {
+  transform: translateY(-2px); box-shadow: 0 16px 36px -12px color-mix(in srgb, var(--patreon) 75%, transparent);
+}
 .scc-home .btn--sm { padding: 9px 16px; font-size: 0.9rem; }
 .scc-home .btn svg { width: 18px; height: 18px; }
 
@@ -505,4 +513,173 @@
   .scc-home .entry__rail::before { display: none; }
   .scc-home .entry__node { position: static; }
   .scc-home .entry__date { padding-left: 0; }
+}
+
+/* ============================================================
+   Stream CC Supporters — patron hero + grids (scoped under .scc-home).
+   Reuses the shared nav/footer/buttons/type/tokens above; only the
+   supporters-specific pieces live here.
+   ============================================================ */
+
+/* supporter hero */
+.scc-home .sup-head {
+  position: relative; overflow: hidden; padding: 66px 0 58px; border-bottom: 1px solid var(--border);
+}
+.scc-home .sup-head::before {
+  content: ""; position: absolute; inset: -40% auto auto -8%; width: 680px; height: 560px;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 60%, transparent), transparent 62%);
+  opacity: var(--glow); filter: blur(20px); pointer-events: none;
+}
+.scc-home .sup-head__grid {
+  position: relative; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 54px; align-items: center;
+}
+.scc-home .sup-head__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+.scc-home .sup-head h1 { max-width: 15ch; }
+.scc-home .sup-head h1 em { font-style: normal; color: var(--accent-ink); }
+.scc-home .sup-head .lede { max-width: 46ch; }
+.scc-home .sup-head__actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 2px; }
+.scc-home .cancel-note { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+.scc-home .sup-stats { display: flex; gap: 30px; flex-wrap: wrap; margin-top: 4px; }
+.scc-home .sup-stat { display: flex; flex-direction: column; gap: 3px; }
+.scc-home .sup-stat__num {
+  font-family: var(--display); font-weight: 800; font-size: 1.7rem; letter-spacing: -0.02em; line-height: 1;
+}
+.scc-home .sup-stat__num em { font-style: normal; color: var(--accent-ink); }
+.scc-home .sup-stat__lbl {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--faint);
+}
+
+/* support card (right column) */
+.scc-home .supportcard {
+  position: relative; border-radius: 24px; border: 1px solid var(--border-2);
+  background:
+    radial-gradient(130% 120% at 85% 0%, color-mix(in srgb, var(--patreon) 22%, transparent), transparent 58%),
+    var(--surface);
+  padding: 30px 30px 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 20px;
+}
+.scc-home .supportcard__top { display: flex; align-items: center; gap: 13px; }
+.scc-home .supportcard__mark {
+  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0;
+  background: color-mix(in srgb, var(--patreon) 18%, transparent); color: var(--patreon);
+  border: 1px solid color-mix(in srgb, var(--patreon) 36%, transparent);
+}
+.scc-home .supportcard__mark svg { width: 25px; height: 25px; }
+.scc-home .supportcard__eyebrow {
+  font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--faint);
+}
+.scc-home .supportcard__h { font-family: var(--display); font-weight: 800; font-size: 1.32rem; letter-spacing: -0.01em; }
+.scc-home .supportcard__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 13px; }
+.scc-home .supportcard__list li {
+  display: flex; align-items: flex-start; gap: 11px; color: var(--muted); font-size: 0.97rem; line-height: 1.45;
+}
+.scc-home .supportcard__check {
+  width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0; display: grid; place-items: center; margin-top: 1px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-ink);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.scc-home .supportcard__check svg { width: 13px; height: 13px; }
+.scc-home .supportcard .btn { width: 100%; justify-content: center; }
+
+/* section blocks */
+.scc-home section.block { padding: 74px 0; }
+.scc-home .block--alt { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.scc-home .sec-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 34px;
+}
+.scc-home .sec-head__l { display: flex; flex-direction: column; gap: 12px; max-width: 54ch; }
+.scc-home .sec-head__title { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.scc-home .sec-head__title h2 { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
+.scc-home .count-pill {
+  font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 5px 13px; border-radius: 999px; color: var(--accent-ink);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+}
+.scc-home .sec-head p { color: var(--muted); margin: 0; font-size: 1.02rem; }
+
+/* active patron grid */
+.scc-home .patrons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.scc-home .pcard {
+  position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px 22px; display: flex; flex-direction: column; align-items: flex-start; gap: 15px; overflow: hidden;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.2s;
+}
+.scc-home .pcard::after {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent-2) 80%, var(--accent)));
+  opacity: 0.85;
+}
+.scc-home .pcard:hover {
+  transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 40%, transparent); box-shadow: var(--shadow);
+}
+.scc-home .pcard__avatar {
+  width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--display); font-weight: 800; font-size: 1.32rem; color: #fff; letter-spacing: -0.02em;
+  border: 1px solid var(--border-2); box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.6);
+}
+.scc-home .pcard__name {
+  font-family: var(--display); font-weight: 700; font-size: 1.12rem; letter-spacing: -0.01em; line-height: 1.2;
+  color: var(--text); overflow-wrap: anywhere;
+}
+.scc-home .pcard__tier {
+  display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); margin-top: auto;
+  padding: 5px 11px 5px 8px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+}
+.scc-home .pcard__tier svg { width: 12px; height: 12px; }
+
+/* join card (sits inside active grid) */
+.scc-home .joincard {
+  grid-column: span 1; border: 1px dashed var(--border-2); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  padding: 24px 22px; display: flex; flex-direction: column; gap: 11px; justify-content: center;
+}
+.scc-home .joincard__h { font-family: var(--display); font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em; line-height: 1.2; }
+.scc-home .joincard p { color: var(--muted); font-size: 0.92rem; margin: 0; line-height: 1.45; }
+.scc-home .joincard a {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-weight: 700; font-size: 0.95rem;
+  color: var(--accent-ink);
+}
+.scc-home .joincard a:hover { gap: 9px; }
+.scc-home .joincard a svg { width: 15px; height: 15px; transition: transform 0.15s; }
+
+/* former patrons */
+.scc-home .formers { display: flex; flex-wrap: wrap; gap: 10px; }
+.scc-home .fchip {
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 15px 8px 8px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); transition: 0.16s;
+}
+.scc-home .fchip:hover { border-color: var(--border-2); transform: translateY(-2px); background: var(--surface-2); }
+.scc-home .fchip__dot {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 700; font-size: 10.5px; color: #fff; letter-spacing: -0.02em;
+  border: 1px solid var(--border-2);
+}
+.scc-home .fchip__name { font-family: var(--body); font-weight: 600; font-size: 0.95rem; color: var(--muted); }
+.scc-home .fchip:hover .fchip__name { color: var(--text); }
+
+.scc-home .former-foot {
+  margin-top: 30px; display: flex; align-items: center; gap: 12px; color: var(--faint);
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+}
+.scc-home .former-foot::before, .scc-home .former-foot::after { content: ""; height: 1px; flex: 1; background: var(--border); }
+
+/* supporters responsive */
+@media (max-width: 980px) {
+  .scc-home .sup-head__grid { grid-template-columns: 1fr; gap: 38px; }
+  .scc-home .patrons { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 680px) {
+  .scc-home .patrons { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .scc-home section.block { padding: 54px 0; }
+  .scc-home .sup-stats { gap: 22px; }
+}
+@media (max-width: 420px) {
+  .scc-home .patrons { grid-template-columns: 1fr; }
 }
