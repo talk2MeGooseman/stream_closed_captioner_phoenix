@@ -23,7 +23,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.PageLive do
     %{
       icon: "translate",
       title: "Translation with Bits",
-      desc: "Viewers unlock captions translated into their language by spending Bits."
+      desc: "Viewers unlock captions translated into your selected language by spending Bits."
     },
     %{
       icon: "vod",
