@@ -1,229 +1,116 @@
-<div class="scc-home" data-theme="dark" id="top">
-  <nav class="nav">
-    <div class="wrap nav__in">
-      <a class="brand" href={~p"/"}>
-        <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
-      </a>
-      <div class="nav__links">
-        <a href={~p"/showcase"}>Showcase</a>
-        <a href={~p"/announcements"}>Announcements</a>
-        <a href={~p"/supporters"}>Supporters</a>
-        <a
-          href="https://talk2megooseman.notion.site/stream-cc-faq"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          FAQ
-        </a>
+<header class="hero">
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <span class="badge">
+        <span class="badge__dot" aria-hidden="true"></span><b>Free</b>&nbsp;· open to every streamer
+      </span>
+      <h1 class="h1">Add closed captions<br />in a few clicks</h1>
+      <p class="lede">
+        Real-time captions for your Twitch stream and Zoom calls — readable, customizable, and ready for your whole audience.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href={~p"/users/register"}>Get started</a>
+        <a class="btn btn--ghost" href="#steps">See how it works</a>
       </div>
-      <div class="nav__cta">
-        <%= if @current_user do %>
-          <a class="btn btn--primary btn--sm" href={~p"/dashboard"}>Dashboard</a>
-        <% else %>
-          <a class="login" href={~p"/users/log_in"}>Log in</a>
-          <a class="btn btn--primary btn--sm" href="/auth/twitch">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-              <path d="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z" />
-            </svg>
-            Connect with Twitch
-          </a>
-        <% end %>
-      </div>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <div class="wrap hero__grid">
-      <div class="hero__copy">
-        <span class="badge">
-          <span class="badge__dot" aria-hidden="true"></span><b>Free</b>&nbsp;· open to every streamer
+      <div class="platforms">
+        <span class="platforms__lbl">Works with</span>
+        <span class="platforms__list">
+          <span class="chip">Twitch</span>
+          <span class="chip">Zoom</span>
+          <span class="chip">OBS</span>
         </span>
-        <h1 class="h1">Add closed captions<br />in a few clicks</h1>
-        <p class="lede">
-          Real-time captions for your Twitch stream and Zoom calls — readable, customizable, and ready for your whole audience.
-        </p>
-        <div class="hero__actions">
-          <a class="btn btn--primary" href={~p"/users/register"}>Get started</a>
-          <a class="btn btn--ghost" href="#steps">See how it works</a>
-        </div>
-        <div class="platforms">
-          <span class="platforms__lbl">Works with</span>
-          <span class="platforms__list">
-            <span class="chip">Twitch</span>
-            <span class="chip">Zoom</span>
-            <span class="chip">OBS</span>
+      </div>
+    </div>
+
+    <div class="stream">
+      <iframe
+        class="stream__video"
+        src="https://www.youtube.com/embed/eBtWOZcpUzQ"
+        title="Stream Closed Captioner introduction video"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      >
+      </iframe>
+    </div>
+  </div>
+</header>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Features</span>
+      <h2 class="h2">Everything your captions need</h2>
+      <p class="lede">
+        Start with the essentials that make your stream accessible — then turn on the extras when you're ready.
+      </p>
+    </div>
+    <div class="features">
+      <%= for feature <- @base_features do %>
+        <article class="card">
+          <span class="card__icon" aria-hidden="true">
+            <.feature_icon name={feature.icon} />
           </span>
-        </div>
-      </div>
-
-      <div class="stream">
-        <iframe
-          class="stream__video"
-          src="https://www.youtube.com/embed/eBtWOZcpUzQ"
-          title="Stream Closed Captioner introduction video"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        >
-        </iframe>
-      </div>
+          <h3 class="card__title">{feature.title}</h3>
+          <p class="card__desc">{feature.desc}</p>
+        </article>
+      <% end %>
     </div>
-  </header>
 
-  <section class="block" id="features">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="eyebrow">Features</span>
-        <h2 class="h2">Everything your captions need</h2>
-        <p class="lede">
-          Start with the essentials that make your stream accessible — then turn on the extras when you're ready.
+    <div class="enh-divider">
+      <span class="pill-enh">+ Enhanced</span>
+      <span class="enh-divider__line" aria-hidden="true"></span>
+    </div>
+    <div class="features features--enh">
+      <%= for feature <- @enhanced_features do %>
+        <article class="card card--enh">
+          <span class="badge-corner" aria-hidden="true">ENHANCED</span>
+          <span class="card__icon" aria-hidden="true">
+            <.feature_icon name={feature.icon} />
+          </span>
+          <h3 class="card__title">{feature.title}</h3>
+          <p class="card__desc">{feature.desc}</p>
+        </article>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="block block--alt" id="steps">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2">From install to live in four steps</h2>
+    </div>
+    <div class="steps">
+      <div class="steps__line" aria-hidden="true"></div>
+      <%= for {step, index} <- Enum.with_index(@steps, 1) do %>
+        <div class="step">
+          <div class="step__num">{index}</div>
+          <div class="step__shot">
+            <img src={~p"/images/#{step.img}"} alt={step.alt} loading="lazy" />
+          </div>
+          <h3 class="step__title">{step.title}</h3>
+          <p class="step__desc">{step.desc}</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <span class="cta__price">Pricing</span>
+        <h2 class="h2">Free, forever.</h2>
+        <p class="cta__sub">
+          No credit card, no trial clock, no catch. Stream CC is built to keep streams accessible for everyone.
         </p>
       </div>
-      <div class="features">
-        <%= for feature <- @base_features do %>
-          <article class="card">
-            <span class="card__icon" aria-hidden="true">
-              <.feature_icon name={feature.icon} />
-            </span>
-            <h3 class="card__title">{feature.title}</h3>
-            <p class="card__desc">{feature.desc}</p>
-          </article>
-        <% end %>
-      </div>
-
-      <div class="enh-divider">
-        <span class="pill-enh">+ Enhanced</span>
-        <span class="enh-divider__line" aria-hidden="true"></span>
-      </div>
-      <div class="features features--enh">
-        <%= for feature <- @enhanced_features do %>
-          <article class="card card--enh">
-            <span class="badge-corner" aria-hidden="true">ENHANCED</span>
-            <span class="card__icon" aria-hidden="true">
-              <.feature_icon name={feature.icon} />
-            </span>
-            <h3 class="card__title">{feature.title}</h3>
-            <p class="card__desc">{feature.desc}</p>
-          </article>
-        <% end %>
+      <div class="cta__actions">
+        <a class="btn btn--primary" href={~p"/users/register"}>Create an account</a>
+        <a class="btn btn--ghost" href="#features">Browse features</a>
       </div>
     </div>
-  </section>
-
-  <section class="block block--alt" id="steps">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="eyebrow">How it works</span>
-        <h2 class="h2">From install to live in four steps</h2>
-      </div>
-      <div class="steps">
-        <div class="steps__line" aria-hidden="true"></div>
-        <%= for {step, index} <- Enum.with_index(@steps, 1) do %>
-          <div class="step">
-            <div class="step__num">{index}</div>
-            <div class="step__shot">
-              <img src={~p"/images/#{step.img}"} alt={step.alt} loading="lazy" />
-            </div>
-            <h3 class="step__title">{step.title}</h3>
-            <p class="step__desc">{step.desc}</p>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </section>
-
-  <section class="block">
-    <div class="wrap">
-      <div class="cta">
-        <div>
-          <span class="cta__price">Pricing</span>
-          <h2 class="h2">Free, forever.</h2>
-          <p class="cta__sub">
-            No credit card, no trial clock, no catch. Stream CC is built to keep streams accessible for everyone.
-          </p>
-        </div>
-        <div class="cta__actions">
-          <a class="btn btn--primary" href={~p"/users/register"}>Create an account</a>
-          <a class="btn btn--ghost" href="#features">Browse features</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="wrap">
-      <div class="foot__grid">
-        <div class="foot__about">
-          <a class="brand" href={~p"/"}>
-            <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
-          </a>
-          <p>
-            Closed captions for live streams and calls. Built so every viewer can follow along.
-          </p>
-          <div class="foot__social">
-            <a
-              href="https://discord.gg/ZXSqzrc"
-              aria-label="Discord"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
-                <path d="M19 6a16 16 0 0 0-4-1l-.3.6a13 13 0 0 1 5.3 2.7A14 14 0 0 0 5 8.3 13 13 0 0 1 10.3 5.6L10 5a16 16 0 0 0-4 1C3.5 9.5 3 13 3.2 16.4a15 15 0 0 0 4.5 2.3l1-1.6c-.6-.2-1.1-.5-1.6-.8l.4-.3a10 10 0 0 0 9 0l.4.3c-.5.3-1 .6-1.6.8l1 1.6a15 15 0 0 0 4.5-2.3C21 13 20.5 9.5 19 6ZM9.5 14.3c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Zm5 0c-.8 0-1.5-.8-1.5-1.7s.7-1.7 1.5-1.7 1.5.8 1.5 1.7-.7 1.7-1.5 1.7Z" />
-              </svg>
-            </a>
-            <a
-              href="https://twitter.com/talk2megooseman"
-              aria-label="Twitter / X"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
-                <path d="M17.5 4h2.6l-5.7 6.5L21 20h-5.3l-4.1-5.4L6.8 20H4.2l6-6.9L4 4h5.4l3.7 4.9L17.5 4Zm-1 14.4h1.5L8.6 5.5H7L16.5 18.4Z" />
-              </svg>
-            </a>
-            <a
-              href="https://patreon.com/talk2megooseman"
-              aria-label="Patreon"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
-                <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <div class="foot__col">
-          <h4>Product</h4>
-          <a href={~p"/showcase"}>Showcase</a>
-          <a href={~p"/announcements"}>Announcements</a>
-          <a
-            href="https://talk2megooseman.notion.site/stream-cc-faq"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            FAQ
-          </a>
-        </div>
-        <div class="foot__col">
-          <h4>Community</h4>
-          <a href={~p"/supporters"}>Supporters</a>
-          <a href="https://discord.gg/ZXSqzrc" target="_blank" rel="noopener noreferrer">
-            Discord
-          </a>
-          <a href="https://patreon.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
-            Patreon
-          </a>
-        </div>
-        <div class="foot__col">
-          <h4>Legal</h4>
-          <a href={~p"/privacy"}>Privacy</a>
-          <a href={~p"/terms"}>Terms</a>
-        </div>
-      </div>
-      <div class="foot__bar">
-        <span>© {Date.utc_today().year} Erik Guzman</span>
-      </div>
-    </div>
-  </footer>
-</div>
+  </div>
+</section>

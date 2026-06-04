@@ -117,8 +117,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     pipe_through(:browser)
 
     live_session :home,
-      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :home_root},
-      layout: false,
+      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root},
+      layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc},
       on_mount: [{StreamClosedCaptionerPhoenixWeb.AdminHooks, :assign_current_user}] do
       live("/", PageLive, :index)
     end
