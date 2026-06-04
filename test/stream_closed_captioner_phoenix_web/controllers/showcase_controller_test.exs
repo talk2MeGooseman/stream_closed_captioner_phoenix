@@ -17,9 +17,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseControllerTest do
     test "renders the shared Stream CC nav and footer chrome", %{conn: conn} do
       html = conn |> get(~p"/showcase") |> html_response(200)
 
-      # nav CTA (logged out) + footer note both come from the :scc layout
+      # nav CTA (logged out) + footer copyright both come from the :scc layout
       assert html =~ "Connect with Twitch"
-      assert html =~ "Built for accessibility"
+      assert html =~ "Erik Guzman"
     end
 
     test "shows the empty state when no channels are live", %{conn: conn} do

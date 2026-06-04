@@ -122,9 +122,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
             <a href="https://discord.gg/ZXSqzrc" target="_blank" rel="noopener noreferrer">
               Discord
             </a>
-            <a href="https://twitter.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
-              Twitter
-            </a>
             <a href="https://patreon.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
               Patreon
             </a>
@@ -133,18 +130,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
             <h4>Legal</h4>
             <a href={~p"/privacy"}>Privacy</a>
             <a href={~p"/terms"}>Terms</a>
-            <a
-              href="https://talk2megooseman.notion.site/stream-cc-faq"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Accessibility
-            </a>
           </div>
         </div>
         <div class="foot__bar">
           <span>© {Date.utc_today().year} Erik Guzman</span>
-          <span class="a11y">Built for accessibility · keyboard-friendly · WCAG AA</span>
         </div>
       </div>
     </footer>
