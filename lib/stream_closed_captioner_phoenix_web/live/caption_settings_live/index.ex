@@ -44,6 +44,23 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
   end
 
   @impl true
+  def handle_info({:caption_settings_saved, stream_settings}, socket) do
+    {:noreply,
+     socket
+     |> assign(:stream_settings, stream_settings)
+     |> put_flash(:info, "Stream settings updated successfully")}
+  end
+
+  @impl true
+  def handle_event("clear_flash", %{"key" => key}, socket) do
+    {:noreply, clear_flash(socket, key)}
+  end
+
+  def handle_event("clear_flash", _params, socket) do
+    {:noreply, clear_flash(socket)}
+  end
+
+  @impl true
   def handle_event(
         "remove_blocklist_word",
         %{"word" => word} = _params,

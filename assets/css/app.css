@@ -19,6 +19,8 @@
   --accent-2: #22d3ee;
   --live: #ff4d6a;
   --patreon: #ff6b57;
+  --ok: oklch(0.8 0.13 145);
+  --warn: oklch(0.84 0.13 75);
   --maxw: 1180px;
   --radius: 18px;
   --display: "Bricolage Grotesque", "Plus Jakarta Sans", sans-serif;
@@ -40,6 +42,7 @@
   --bg-2: oklch(0.195 0.022 286);
   --surface: oklch(0.215 0.024 286);
   --surface-2: oklch(0.255 0.028 286);
+  --inset: oklch(0.145 0.016 286);
   --border: oklch(1 0 0 / 0.09);
   --border-2: oklch(1 0 0 / 0.16);
   --text: oklch(0.975 0.004 286);
@@ -57,6 +60,7 @@
   --bg-2: oklch(0.965 0.006 286);
   --surface: oklch(1 0 0);
   --surface-2: oklch(0.975 0.006 286);
+  --inset: oklch(0.96 0.006 286);
   --border: oklch(0.2 0.02 286 / 0.12);
   --border-2: oklch(0.2 0.02 286 / 0.2);
   --text: oklch(0.22 0.02 286);
@@ -682,4 +686,170 @@
 }
 @media (max-width: 420px) {
   .scc-home .patrons { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Stream CC Settings — logged-in settings dashboard (scoped under
+   .scc-home). Reuses the shared nav/footer/buttons/type/tokens above;
+   only the settings-specific pieces live here.
+   ============================================================ */
+
+/* smooth-scroll for the in-page section nav (only on scc pages) */
+html:has(.scc-home) { scroll-behavior: smooth; }
+
+/* page header */
+.scc-home .page-head {
+  position: relative; overflow: hidden; padding: 48px 0 30px; border-bottom: 1px solid var(--border);
+}
+.scc-home .page-head::before {
+  content: ""; position: absolute; inset: -50% auto auto -6%; width: 620px; height: 520px;
+  background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 60%, transparent), transparent 62%);
+  opacity: var(--glow); filter: blur(20px); pointer-events: none;
+}
+.scc-home .page-head__in { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.scc-home .page-head h1 { margin-top: 14px; font-size: clamp(2.1rem, 3.6vw, 3rem); }
+.scc-home .page-head p { color: var(--muted); margin: 8px 0 0; max-width: 52ch; }
+
+/* two-column layout: sticky section nav + cards */
+.scc-home .settings {
+  display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: 40px;
+  align-items: start; padding: 36px 0 90px; max-width: 980px; margin: 0 auto;
+}
+.scc-home .secnav { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 2px; }
+.scc-home .secnav a {
+  display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 11px; color: var(--muted);
+  font-weight: 600; font-size: 0.92rem; transition: 0.14s; border: 1px solid transparent;
+}
+.scc-home .secnav a:hover { color: var(--text); background: var(--surface); }
+.scc-home .secnav a.active { color: var(--text); background: var(--surface); border-color: var(--border); }
+.scc-home .secnav a .ico { width: 17px; height: 17px; color: var(--faint); flex-shrink: 0; }
+.scc-home .secnav a.active .ico { color: var(--accent-ink); }
+
+/* setting cards */
+.scc-home .cards { display: flex; flex-direction: column; gap: 22px; }
+.scc-home .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.scc-home .card__head { padding: 22px 26px 16px; border-bottom: 1px solid var(--border); }
+.scc-home .card__head h2 { font-family: var(--display); font-size: 1.28rem; font-weight: 700; letter-spacing: -0.01em; }
+.scc-home .card__head p { color: var(--muted); font-size: 0.9rem; margin: 6px 0 0; max-width: 54ch; }
+.scc-home .card__head .badge {
+  float: right; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent); padding: 4px 9px; border-radius: 7px;
+}
+.scc-home .card__body { padding: 6px 26px 12px; }
+
+/* a setting row */
+.scc-home .row { display: flex; align-items: center; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.scc-home .row:last-child { border-bottom: 0; }
+.scc-home .row__txt { flex: 1; min-width: 0; }
+.scc-home .row__txt label { display: block; font-weight: 600; font-size: 0.98rem; cursor: pointer; }
+.scc-home .row__txt .desc { color: var(--muted); font-size: 0.86rem; margin-top: 3px; line-height: 1.45; }
+.scc-home .row__ctl { flex-shrink: 0; }
+
+/* toggle switch (wraps a real checkbox) */
+.scc-home .switch { position: relative; display: inline-block; width: 46px; height: 27px; cursor: pointer; }
+.scc-home .switch input {
+  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1;
+}
+.scc-home .switch__track {
+  position: absolute; inset: 0; border-radius: 999px; background: var(--surface-2);
+  box-shadow: inset 0 0 0 1.5px var(--border-2); transition: background-color 0.2s, box-shadow 0.2s;
+}
+.scc-home .switch__track::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: transform 0.2s cubic-bezier(0.3, 0.7, 0.4, 1.3);
+}
+.scc-home .switch input:checked ~ .switch__track {
+  background: var(--accent); box-shadow: inset 0 0 0 1.5px transparent, 0 4px 12px -3px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.scc-home .switch input:checked ~ .switch__track::after { transform: translateX(19px); }
+.scc-home .switch input:focus-visible ~ .switch__track { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+
+/* number stepper */
+.scc-home .stepper {
+  display: inline-flex; align-items: center; background: var(--inset); border: 1.5px solid var(--border-2);
+  border-radius: 11px; overflow: hidden;
+}
+.scc-home .stepper button {
+  width: 38px; height: 42px; border: none; background: transparent; color: var(--muted); font-size: 1.3rem;
+  cursor: pointer; display: grid; place-items: center; transition: 0.14s; font-family: var(--body);
+}
+.scc-home .stepper button:hover { background: var(--surface-2); color: var(--text); }
+.scc-home .stepper input {
+  width: 54px; height: 42px; border: none; background: transparent; color: var(--text); text-align: center;
+  font-family: var(--mono); font-size: 1rem; font-weight: 600; outline: none; -moz-appearance: textfield;
+}
+.scc-home .stepper input::-webkit-outer-spin-button, .scc-home .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.scc-home .stepper__unit { padding: 0 13px 0 4px; font-family: var(--mono); font-size: 0.8rem; color: var(--faint); }
+
+/* select */
+.scc-home .selectwrap { position: relative; display: inline-block; }
+.scc-home .selectwrap select {
+  appearance: none; -webkit-appearance: none; font-family: var(--body); font-size: 0.95rem; font-weight: 600; color: var(--text);
+  background: var(--inset); border: 1.5px solid var(--border-2); border-radius: 11px; padding: 11px 40px 11px 15px;
+  cursor: pointer; min-width: 200px; outline: none; transition: border-color 0.15s;
+}
+.scc-home .selectwrap select:focus { border-color: var(--accent); }
+.scc-home .selectwrap .chev {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px;
+  color: var(--faint); pointer-events: none;
+}
+
+/* note / alert */
+.scc-home .note {
+  display: flex; gap: 11px; padding: 13px 15px; border-radius: 12px; font-size: 0.86rem; line-height: 1.5; margin: 4px 0 16px;
+  background: color-mix(in srgb, var(--accent-2) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent-2) 26%, transparent);
+  color: var(--text);
+}
+.scc-home .note svg { width: 17px; height: 17px; color: var(--accent-2); flex-shrink: 0; margin-top: 1px; }
+
+/* blocklist chips */
+.scc-home .chips { display: flex; flex-wrap: wrap; gap: 9px; padding: 8px 0 18px; }
+.scc-home .chip {
+  display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 0.84rem; font-weight: 500;
+  padding: 7px 8px 7px 14px; border-radius: 999px; background: var(--inset); border: 1px solid var(--border-2); color: var(--text);
+}
+.scc-home .chip button {
+  width: 20px; height: 20px; border-radius: 50%; border: none; cursor: pointer; display: grid; place-items: center;
+  background: var(--surface-2); color: var(--faint); transition: 0.14s; padding: 0;
+}
+.scc-home .chip button:hover { background: var(--warn); color: #1a1205; }
+.scc-home .chip button svg { width: 11px; height: 11px; }
+.scc-home .chips__empty { font-size: 0.88rem; color: var(--faint); padding: 8px 0 18px; }
+.scc-home .addrow { display: flex; gap: 10px; padding-bottom: 18px; }
+.scc-home .addrow input {
+  flex: 1; min-width: 0; font-family: var(--body); font-size: 0.95rem; color: var(--text); background: var(--inset);
+  border: 1.5px solid var(--border-2); border-radius: 11px; padding: 11px 15px; outline: none; transition: border-color 0.15s;
+}
+.scc-home .addrow input::placeholder { color: var(--faint); }
+.scc-home .addrow input:focus { border-color: var(--accent); }
+
+/* form-bottom save bar */
+.scc-home .form-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+  margin-top: 4px; padding: 18px 22px; border-radius: var(--radius); border: 1px solid var(--border-2); background: var(--surface);
+}
+.scc-home .form-foot__status { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--muted); }
+.scc-home .form-foot__status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); flex-shrink: 0; }
+.scc-home .form-foot[data-saved="true"] .form-foot__status .dot { background: var(--ok); }
+
+/* toast (flash) */
+.scc-home .toast {
+  position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(0); z-index: 60;
+  display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 12px; padding: 12px 18px; font-weight: 600; font-size: 0.92rem; color: var(--text); box-shadow: var(--shadow);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.scc-home .toast svg { width: 18px; height: 18px; color: var(--ok); flex-shrink: 0; }
+.scc-home .toast--error svg { color: var(--live); }
+.scc-home .toast[data-hide] { opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
+
+/* settings responsive */
+@media (max-width: 1080px) {
+  .scc-home .secnav { display: none; }
+  .scc-home .settings { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .scc-home .row { flex-wrap: wrap; gap: 12px; }
+  .scc-home .selectwrap, .scc-home .selectwrap select { width: 100%; min-width: 0; }
 }

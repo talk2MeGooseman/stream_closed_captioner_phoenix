@@ -24,6 +24,64 @@ import './tailwind';
 const Hooks = {};
 Hooks.InitToast = InitToast;
 
+// Stepper: +/- buttons that adjust a sibling number input and fire phx-change.
+Hooks.Stepper = {
+  mounted() {
+    const input = this.el.querySelector('input');
+    if (!input) return;
+    this.el.querySelectorAll('[data-step]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const min = input.min !== '' ? parseInt(input.min, 10) : -Infinity;
+        const max = input.max !== '' ? parseInt(input.max, 10) : Infinity;
+        const cur = parseInt(input.value || '0', 10) || 0;
+        const next = Math.max(min, Math.min(max, cur + parseInt(btn.dataset.step, 10)));
+        input.value = next;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+  },
+};
+
+// ScrollSpy: highlight the section-nav link for the card in view.
+Hooks.ScrollSpy = {
+  mounted() {
+    const links = Array.from(this.el.querySelectorAll('[data-spy]'));
+    const byId = {};
+    links.forEach((l) => (byId[l.dataset.spy] = l));
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting && byId[e.target.id]) {
+            links.forEach((l) => l.classList.remove('active'));
+            byId[e.target.id].classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-30% 0px -60% 0px' }
+    );
+    links.forEach((l) => {
+      const target = document.getElementById(l.dataset.spy);
+      if (target) this.observer.observe(target);
+    });
+  },
+  destroyed() {
+    if (this.observer) this.observer.disconnect();
+  },
+};
+
+// Toast: auto-dismiss a flash toast, then clear the server-side flash.
+Hooks.Toast = {
+  mounted() {
+    this.timer = setTimeout(() => {
+      this.el.setAttribute('data-hide', '');
+      this.pushEvent('clear_flash', { key: this.el.dataset.key });
+    }, 3200);
+  },
+  destroyed() {
+    clearTimeout(this.timer);
+  },
+};
+
 Hooks.QuillEditor = {
   mounted() {
     if (!window.Quill) return;

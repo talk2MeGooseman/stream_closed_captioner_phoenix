@@ -1,79 +1,229 @@
-<div class="flex flex-wrap">
-  <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
-    <h2 class="text-xl font-semibold text-gray-900">Translation Settings</h2>
-    <p class="text-sm">
-      If no language is selected, the captions will not be translated.
-    </p>
-    <.form :let={f} for={@language_changeset} id="language-form" class="block" phx-submit="add">
-      <div class="mb-6">
-        <%= label(f, "Select Language To Translate to", class: "block text-sm mb-1 mt-4") %>
-        <%= select(f, :language, @translatable_language,
-          class: "form-select bg-red-100",
-          prompt: "Choose a language"
-        ) %>
-        <%= error_tag(f, :blocklist_word, class: "text-red-700 text-sm mt-1") %>
-      </div>
-
-      <div class="mt-8 mb-2">
-        <%= submit("Save",
-          phx_disable_with: "Saving...",
-          class: "btn btn-primary w-full mt-4"
-        ) %>
-      </div>
-    </.form>
-  </div>
-
-  <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
-    <h2 class="text-xl font-semibold text-gray-900">Caption Settings</h2>
-    <.live_component module={StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent}
-      id={@stream_settings.id}
-      stream_settings={@stream_settings}
-    />
-  </div>
-
-  <div class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
-    <h2 class="text-xl font-semibold text-gray-900">Captions Blocklist Words</h2>
-    <p class="text-sm">
-      All words added to your blocklist will appeared censored in your captions. This works on top of the the already existing default blocklist used in the app.
-    </p>
-
-    <div class="my-6">
-      <div class="">
-        <ul class="list">
-          <%= if Enum.empty?(assigns.stream_settings.blocklist) do %>
-            <li class="list-item flex justify-between">No words added to your blocklist.</li>
-          <% end %>
-          <%= for word <- assigns.stream_settings.blocklist do %>
-            <li class="list-item flex justify-between">
-              <%= word %>
-              <%= submit("Remove",
-                phx_disable_with: "Removing",
-                phx_click: "remove_blocklist_word",
-                phx_value_word: word,
-                class: "btn btn-icon btn-sm btn-light"
-              ) %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+<header class="page-head">
+  <div class="wrap page-head__in">
+    <div>
+      <span class="eyebrow">Account · Stream</span>
+      <h1 class="h1">Stream Settings</h1>
+      <p>
+        Tune how Stream CC captions your broadcasts — recognition, the Twitch overlay,
+        translation, and the words you never want on screen.
+      </p>
     </div>
-
-    <.form :let={f} for={@changeset} id="blocklist-form" class="block" phx-submit="add">
-      <div class="mb-6">
-        <%= label(f, "Add word to blocklist", class: "block text-sm mb-1 mt-4") %>
-        <%= text_input(f, :blocklist_word,
-          placeholder: "Add blocklist words here",
-          class: "form-input"
-        ) %>
-        <%= error_tag(f, :blocklist_word, class: "text-red-700 text-sm mt-1") %>
-      </div>
-
-      <div class="mt-8 mb-2">
-        <%= submit("Add Blocklist Word",
-          phx_disable_with: "Saving...",
-          class: "btn btn-primary w-full mt-4"
-        ) %>
-      </div>
-    </.form>
   </div>
+</header>
+
+<div class="wrap">
+  <div class="settings">
+    <aside>
+      <nav class="secnav" id="settings-secnav" phx-hook="ScrollSpy">
+        <a href="#captions" data-spy="captions">
+          <svg
+            class="ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm5 5.5H5.5M11 10.5H8.5M18.5 14.5H16M14 14.5h-2" />
+          </svg>
+          Captions
+        </a>
+        <a href="#overlay" data-spy="overlay">
+          <svg
+            class="ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 4h16v16H4V4Zm0 11h16M14 19v-4" />
+          </svg>
+          Twitch Overlay
+        </a>
+        <a href="#translate" data-spy="translate">
+          <svg
+            class="ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 5h7M7.5 5v0c0 4-2 8-4 9m1-4c1.5 1.5 3 2.5 4 3M13 19l4-9 4 9m-6.5-3h5" />
+          </svg>
+          Translation
+        </a>
+        <a href="#blocklist" data-spy="blocklist">
+          <svg
+            class="ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 5l14 14M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
+          </svg>
+          Blocklist
+        </a>
+      </nav>
+    </aside>
+
+    <main class="cards">
+      <.live_component
+        module={StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.FormComponent}
+        id={@stream_settings.id}
+        stream_settings={@stream_settings}
+      />
+
+      <section class="card">
+        <div class="card__head" id="translate">
+          <h2>Translation</h2>
+          <p>Broadcast a translated caption track alongside your spoken language.</p>
+        </div>
+        <div class="card__body">
+          <div class="note">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>
+              Leave this set to <strong>Choose a language</strong>
+              and captions stay in your spoken
+              language only.
+            </span>
+          </div>
+          <.form :let={f} for={@language_changeset} id="language-form" phx-submit="add">
+            <div class="row">
+              <div class="row__txt">
+                {label(f, :language, "Translate captions to")}
+                <div class="desc">Viewers can switch to this track from the overlay.</div>
+              </div>
+              <div class="row__ctl selectwrap">
+                {select(f, :language, @translatable_language, prompt: "Choose a language")}
+                <svg
+                  class="chev"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  aria-hidden="true"
+                >
+                  <path d="M5 8l5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="form-foot">
+              <span class="form-foot__status">
+                Pick a language, then save your translation track.
+              </span>
+              {submit("Save translation", phx_disable_with: "Saving…", class: "btn btn--primary")}
+            </div>
+          </.form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head" id="blocklist">
+          <h2>Blocklist Words</h2>
+          <p>
+            These words always appear censored in your captions, on top of the app's default
+            blocklist.
+          </p>
+        </div>
+        <div class="card__body">
+          <div :if={Enum.empty?(@stream_settings.blocklist)} class="chips__empty">
+            No words added yet — your captions use the default blocklist only.
+          </div>
+          <div :if={@stream_settings.blocklist != []} class="chips">
+            <span :for={word <- @stream_settings.blocklist} class="chip">
+              {word}
+              <button
+                type="button"
+                phx-click="remove_blocklist_word"
+                phx-value-word={word}
+                phx-disable-with="…"
+                aria-label={"Remove #{word}"}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  aria-hidden="true"
+                >
+                  <path d="M5 5l10 10M15 5 5 15" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </span>
+          </div>
+
+          <.form :let={f} for={@changeset} id="blocklist-form" phx-submit="add">
+            <div class="addrow">
+              {text_input(f, :blocklist_word,
+                placeholder: "Add a word to block…",
+                "aria-label": "Add blocklist word"
+              )}
+              {submit("Add word", phx_disable_with: "Adding…", class: "btn btn--ghost")}
+            </div>
+            {error_tag(f, :blocklist_word, class: "text-red-700 text-sm")}
+          </.form>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div
+  :if={msg = Phoenix.Flash.get(@flash, :info)}
+  id="settings-toast-info"
+  class="toast"
+  data-key="info"
+  phx-hook="Toast"
+  phx-click="clear_flash"
+  phx-value-key="info"
+  role="status"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+    <path d="M5 12l5 5L20 7" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  {msg}
+</div>
+
+<div
+  :if={msg = Phoenix.Flash.get(@flash, :error)}
+  id="settings-toast-error"
+  class="toast toast--error"
+  data-key="error"
+  phx-hook="Toast"
+  phx-click="clear_flash"
+  phx-value-key="error"
+  role="alert"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+    <path
+      d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+  {msg}
 </div>

@@ -234,7 +234,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       put("/settings", UserSettingsController, :update)
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
-      live("/caption-settings", CaptionSettingsLive.Index, :show)
+      live_session :caption_settings,
+        root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root},
+        layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc} do
+        live("/caption-settings", CaptionSettingsLive.Index, :show)
+      end
+
       live("/credit-history", CreditHistoryLive)
     end
 
