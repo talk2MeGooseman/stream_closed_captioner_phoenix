@@ -893,3 +893,186 @@ html:has(.scc-home) { scroll-behavior: smooth; }
   .scc-home .row { flex-wrap: wrap; gap: 12px; }
   .scc-home .selectwrap, .scc-home .selectwrap select { width: 100%; min-width: 0; }
 }
+
+/* ============================================================
+   Stream CC Dashboard — Console layout (scoped under .scc-home).
+   Reuses the shared nav/footer/buttons/type/tokens/page-head/toast;
+   only the console-specific pieces live here. Output toggles keep the
+   app's Stimulus on/off wiring (.js-on/.js-off swap) and the card
+   on-state is driven from it via :has().
+   ============================================================ */
+
+.scc-home .page-head__actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* layout shell */
+.scc-home .dash { max-width: 1140px; margin: 0 auto; padding: 34px 0 96px; display: flex; flex-direction: column; gap: 34px; }
+.scc-home .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: 2px; }
+.scc-home .section-label h2 { font-family: var(--display); font-size: 1.02rem; font-weight: 700; white-space: nowrap; }
+.scc-home .section-label .hint { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.04em; white-space: nowrap; }
+.scc-home .section-label__line { flex: 1; height: 1px; background: var(--border); }
+
+.scc-home .console { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(330px, 0.92fr); gap: 24px; align-items: start; }
+.scc-home .console__main { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.scc-home .console__rail { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 86px; }
+.scc-home .rail-group { display: flex; flex-direction: column; gap: 13px; }
+
+/* output destination cards */
+.scc-home .dest {
+  position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 15px 16px 13px; display: flex; flex-direction: column; gap: 11px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.scc-home .dest::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--brand, var(--accent));
+  transform: scaleX(0); transform-origin: left; transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.scc-home .dest:has(.js-on:not(.hidden)) { border-color: color-mix(in srgb, var(--brand, var(--accent)) 42%, transparent); }
+.scc-home .dest:has(.js-on:not(.hidden))::before { transform: scaleX(1); }
+.scc-home .dest__head { display: flex; align-items: flex-start; gap: 13px; }
+.scc-home .dest__icon {
+  width: 37px; height: 37px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0;
+  background: color-mix(in srgb, var(--brand, var(--accent)) 16%, transparent); color: var(--brand-ink, var(--accent-ink));
+  border: 1px solid color-mix(in srgb, var(--brand, var(--accent)) 34%, transparent);
+}
+.scc-home .dest__icon svg { width: 19px; height: 19px; }
+.scc-home .dest__ttl { flex: 1; min-width: 0; }
+.scc-home .dest__ttl h3 { font-family: var(--display); font-size: 0.96rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; }
+.scc-home .dest__ttl p { color: var(--muted); font-size: 0.78rem; margin: 3px 0 0; line-height: 1.4; }
+.scc-home .dest__sw { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; }
+.scc-home .dest__sw .hidden { display: none; }
+.scc-home .dest__statline {
+  display: flex; align-items: center; gap: 9px; margin-top: auto; padding-top: 11px; border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 10px; color: var(--faint);
+}
+.scc-home .dest__statline .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-2); transition: 0.2s; flex-shrink: 0; }
+.scc-home .dest:has(.js-on:not(.hidden)) .dest__statline .dot { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 20%, transparent); }
+.scc-home .dest:has(.js-on:not(.hidden)) .dest__statline { color: var(--muted); }
+.scc-home .dest__staton { display: none; }
+.scc-home .dest:has(.js-on:not(.hidden)) .dest__statoff { display: none; }
+.scc-home .dest:has(.js-on:not(.hidden)) .dest__staton { display: inline; }
+.scc-home .dest__err { margin-top: 4px; font-family: var(--mono); font-size: 11px; color: var(--warn); }
+.scc-home .dest__errmark { width: 20px; height: 20px; color: var(--warn); flex-shrink: 0; }
+
+/* output toggle visual (Stimulus swaps .js-off / .js-on wrappers) */
+.scc-home .oswitch {
+  position: relative; display: inline-block; width: 46px; height: 27px; border-radius: 999px;
+  background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--border-2);
+}
+.scc-home .oswitch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.scc-home .oswitch--on { background: var(--brand, var(--accent)); box-shadow: inset 0 0 0 1.5px transparent, 0 4px 12px -3px color-mix(in srgb, var(--brand, var(--accent)) 70%, transparent); }
+.scc-home .oswitch--on::after { transform: translateX(19px); }
+.scc-home .dest__state { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+
+/* labelled fields */
+.scc-home .field { display: flex; flex-direction: column; gap: 7px; }
+.scc-home .field > label { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.scc-home .field input {
+  font-family: var(--body); font-size: 0.92rem; color: var(--text); background: var(--inset);
+  border: 1.5px solid var(--border-2); border-radius: 10px; padding: 10px 13px; outline: none; transition: border-color 0.15s; width: 100%;
+}
+.scc-home .field input::placeholder { color: var(--faint); }
+.scc-home .field input:focus { border-color: var(--brand, var(--accent)); }
+.scc-home .field--pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* twitch "connect" CTA (disabled-account variant) */
+.scc-home .dest__cta { margin-top: auto; }
+
+/* translation strip */
+.scc-home .transcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.scc-home .transcard__head { display: flex; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.scc-home .transcard__head .t-ico {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0;
+  background: color-mix(in srgb, var(--accent-2) 15%, transparent); color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent);
+}
+.scc-home .transcard__head .t-ico svg { width: 18px; height: 18px; }
+.scc-home .transcard__head h3 { font-family: var(--display); font-size: 1.02rem; font-weight: 700; }
+.scc-home .help { display: inline-flex; align-items: center; gap: 7px; font-family: var(--body); font-size: 0.85rem; font-weight: 600; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.14s; padding: 0; }
+.scc-home .help:hover { color: var(--text); }
+.scc-home .help svg { width: 16px; height: 16px; color: var(--faint); }
+.scc-home .tgrid { display: flex; flex-direction: column; }
+.scc-home .tstat { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 7px; }
+.scc-home .tstat:last-child { border-bottom: 0; }
+.scc-home .tstat__lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.scc-home .tstat__val { font-family: var(--display); font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; line-height: 1.2; }
+.scc-home .tstat__val a { color: var(--accent-ink); }
+.scc-home .tpill { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; padding: 5px 11px; border-radius: 999px; width: fit-content; }
+.scc-home .tpill--off { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent); }
+.scc-home .tpill--off .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warn); }
+.scc-home .tstat--cta { background: color-mix(in srgb, var(--accent) 7%, transparent); gap: 11px; }
+.scc-home .tstat--cta p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+.scc-home .tstat--cta p strong { color: var(--text); font-weight: 700; }
+
+/* your captions live control */
+.scc-home .capctl { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.scc-home .capctl__head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.scc-home .capctl__head h3 { font-family: var(--display); font-size: 1.12rem; font-weight: 700; display: inline-flex; align-items: center; gap: 11px; }
+.scc-home .capctl__head h3 svg { width: 19px; height: 19px; color: var(--accent-ink); }
+.scc-home .capctl__lang { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: var(--inset); border: 1px solid var(--border); }
+.scc-home .capctl__lang b { color: var(--text); font-weight: 700; }
+.scc-home .capctl__actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.scc-home .capctl__stage {
+  position: relative; min-height: 268px; padding: 26px; display: flex; flex-direction: column; justify-content: center; gap: 13px;
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.25), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.022) 0 12px, transparent 12px 24px),
+    radial-gradient(120% 130% at 72% 8%, #2a2350, #13111f 78%);
+}
+.scc-home .capctl__stage .stagetag { position: absolute; top: 14px; left: 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.56); display: inline-flex; align-items: center; gap: 8px; }
+.scc-home .capctl__stage .stagetag .rec { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.28); }
+.scc-home .skel { height: 15px; border-radius: 7px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.07)); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .scc-home .skel { animation: none; } }
+.scc-home .stage-empty { display: flex; flex-direction: column; gap: 13px; }
+.scc-home .stage-empty__note { margin-top: 6px; font-family: var(--mono); font-size: 11px; color: rgba(255, 255, 255, 0.66); letter-spacing: 0.04em; }
+.scc-home .caplive { color: #fff; font-family: var(--body); font-weight: 600; font-size: 1.42rem; line-height: 1.45; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); }
+.scc-home .caplive p { margin: 0; }
+.scc-home .caplive .interim { color: rgba(255, 255, 255, 0.7); }
+.scc-home .startbtn {
+  width: 100%; border: none; cursor: pointer; font-family: var(--body); font-weight: 700; font-size: 1.06rem;
+  padding: 19px; color: #fff; background: var(--accent); display: flex; align-items: center; justify-content: center; gap: 11px; transition: filter 0.16s, background-color 0.2s;
+}
+.scc-home .startbtn svg { width: 19px; height: 19px; }
+.scc-home .startbtn:hover { filter: brightness(1.09); }
+.scc-home .startbtn:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
+/* the captions controller swaps btn-primary -> btn-warning when live */
+.scc-home .startbtn.btn-warning { background: var(--warn); color: #1a1205; }
+
+/* system status panel */
+.scc-home .sysstat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.scc-home .sysstat__head { display: flex; align-items: center; gap: 12px; padding: 15px 22px; border-bottom: 1px solid var(--border); }
+.scc-home .sysstat__head .s-ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent); }
+.scc-home .sysstat__head .s-ico svg { width: 18px; height: 18px; }
+.scc-home .sysstat__head h3 { font-family: var(--display); font-size: 1.08rem; font-weight: 700; }
+.scc-home .sysgrid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.scc-home .sysrow { display: flex; align-items: center; gap: 12px; padding: 15px 20px; border-top: 1px solid var(--border); border-right: 1px solid var(--border); min-width: 0; }
+.scc-home .sysrow .s-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: var(--border-2); }
+.scc-home .sysrow[data-state="ok"] .s-dot { background: var(--ok); }
+.scc-home .sysrow[data-state="warn"] .s-dot { background: var(--warn); }
+.scc-home .sysrow[data-state="idle"] .s-dot { background: var(--faint); }
+.scc-home .sysrow__ico { color: var(--faint); flex-shrink: 0; }
+.scc-home .sysrow__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.scc-home .sysrow__lbl { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--faint); }
+.scc-home .sysrow__val { font-weight: 600; font-size: 0.9rem; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scc-home .sysgrid .sysrow:nth-child(3n) { border-right: 0; }
+
+/* quick start collapse */
+.scc-home .quickstart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; }
+.scc-home .quickstart ul { margin: 14px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: var(--muted); font-size: 0.9rem; }
+.scc-home .quickstart a { color: var(--accent-ink); }
+.scc-home .dash-alert { background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); color: var(--text); border-radius: var(--radius); padding: 14px 18px; margin: 0 auto 24px; max-width: 1140px; }
+
+/* dashboard responsive */
+@media (max-width: 980px) {
+  .scc-home .console { grid-template-columns: 1fr; }
+  .scc-home .console__rail { position: static; }
+  .scc-home .sysgrid { grid-template-columns: 1fr 1fr; }
+  .scc-home .sysgrid .sysrow:nth-child(3n) { border-right: 1px solid var(--border); }
+  .scc-home .sysgrid .sysrow:nth-child(2n) { border-right: 0; }
+}
+@media (max-width: 560px) {
+  .scc-home .sysgrid { grid-template-columns: 1fr; }
+  .scc-home .sysgrid .sysrow { border-right: 0; }
+  .scc-home .capctl__actions { margin-left: 0; width: 100%; }
+}

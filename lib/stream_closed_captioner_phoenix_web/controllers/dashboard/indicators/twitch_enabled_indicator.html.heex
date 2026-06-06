@@ -1,30 +1,41 @@
 <div id="twitch-enabled-indicator" phx-update="ignore">
-  <div class="p-5 card shadow dark:bg-gray-800" data-controller="twitch">
-    <div class="flex flex-row items-center">
-      <div data-twitch-target="errorMarker"
-        class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="flex-none w-5 h-5">
-          <path fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd" />
+  <section class="dest" data-controller="twitch" style="--brand: #9146ff; --brand-ink: #c9b6ff;">
+    <div class="dest__head">
+      <span class="dest__icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z" />
         </svg>
+      </span>
+      <div class="dest__ttl">
+        <h3>Twitch Extension Captions</h3>
+        <p>Available and ready to turn on.</p>
       </div>
-      <div class="ml-3">
-        <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 whitespace-normal">Twitch Extension Captions
-        </h2>
-        <p class="text-sm leading-none text-gray-600">Available and ready to turn on</p>
-      </div>
-      <div class="flex-grow text-right">
-        <div data-action="mousedown->twitch#toggleOn">
-          <div class="hidden" data-twitch-target="offSwitch">
-            <%= _switch_off(assigns) %>
-          </div>
-          <div data-twitch-target="onSwitch">
-            <%= _switch_on(assigns)  %>
-          </div>
+      <div class="dest__sw" data-action="mousedown->twitch#toggleOn">
+        <div class="hidden js-off" data-twitch-target="offSwitch">
+          {_switch_off(assigns)}
+        </div>
+        <div class="js-on" data-twitch-target="onSwitch">
+          {_switch_on(assigns)}
         </div>
       </div>
     </div>
-    <div data-twitch-target="errorMessage" class="alert mt-2 hidden text-red-700 bg-red-100" role="alert"></div>
-  </div>
+    <div class="dest__statline">
+      <span class="dot"></span>
+      <span class="dest__statoff">Connected · not broadcasting</span>
+      <span class="dest__staton">Sending to your Twitch extension</span>
+    </div>
+    <div data-twitch-target="errorMarker" class="hidden">
+      <span class="dest__statline" style="color: var(--warn);">
+        <svg class="dest__errmark" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Connection problem
+      </span>
+    </div>
+    <div data-twitch-target="errorMessage" class="dest__err hidden" role="alert"></div>
+  </section>
 </div>
