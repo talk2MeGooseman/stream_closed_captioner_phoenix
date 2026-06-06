@@ -64,6 +64,16 @@
           desc="Translate your English words into pirate speak. Arr."
         />
       </div>
+      <div class="card__foot" data-saved={to_string(@saved)}>
+        <span class="card__foot__status">
+          <span class="dot"></span>
+          {if @saved, do: "Everything is saved", else: "You have unsaved changes"}
+        </span>
+        {submit(if(@saved, do: "All saved", else: "Save changes"),
+          phx_disable_with: "Saving…",
+          class: "btn btn--primary"
+        )}
+      </div>
     </section>
 
     <section class="card">
@@ -130,17 +140,16 @@
           desc="Stop captions automatically when your Twitch stream ends."
         />
       </div>
+      <div class="card__foot" data-saved={to_string(@saved)}>
+        <span class="card__foot__status">
+          <span class="dot"></span>
+          {if @saved, do: "Everything is saved", else: "You have unsaved changes"}
+        </span>
+        {submit(if(@saved, do: "All saved", else: "Save changes"),
+          phx_disable_with: "Saving…",
+          class: "btn btn--primary"
+        )}
+      </div>
     </section>
-
-    <div class="form-foot" data-saved={to_string(@saved)}>
-      <span class="form-foot__status">
-        <span class="dot"></span>
-        {if @saved, do: "Everything is saved", else: "You have unsaved changes"}
-      </span>
-      {submit(if(@saved, do: "All saved", else: "Save changes"),
-        phx_disable_with: "Saving…",
-        class: "btn btn--primary"
-      )}
-    </div>
   </.form>
 </div>

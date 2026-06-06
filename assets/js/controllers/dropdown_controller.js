@@ -1,4 +1,4 @@
-import { ApplicationController } from "stimulus-use"
+import { ApplicationController, useClickOutside } from "stimulus-use"
 
 export default class extends ApplicationController {
   get menuTarget() {
@@ -7,9 +7,14 @@ export default class extends ApplicationController {
 
   connect() {
     this.toggleClass = this.data.get("class") || "hidden"
+    useClickOutside(this)
   }
 
   toggle() {
     this.menuTarget.classList.toggle(this.toggleClass)
+  }
+
+  clickOutside() {
+    this.menuTarget.classList.add(this.toggleClass)
   }
 }

@@ -39,6 +39,59 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
         <div class="nav__cta">
           <%= if @current_user do %>
             <a class="btn btn--primary btn--sm" href={~p"/dashboard"}>Dashboard</a>
+            <div class="nav__account" data-controller="dropdown">
+              <button
+                type="button"
+                class="nav__avatar"
+                data-action="click->dropdown#toggle"
+                aria-label="Account menu"
+                aria-haspopup="true"
+              >
+                <img
+                  src={@current_user.profile_image_url || ~p"/images/user-outline.png"}
+                  alt={"#{@current_user.login || @current_user.email} profile image"}
+                />
+              </button>
+              <div class="nav__menu hidden" data-target="dropdown.menu" role="menu">
+                <p class="nav__menu-name">{@current_user.login || @current_user.email}</p>
+                <a href={~p"/users/settings"} class="nav__menu-item" role="menuitem">
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path
+                      fill-rule="evenodd"
+                      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Account Settings
+                </a>
+                <a href={~p"/users/caption-settings"} class="nav__menu-item" role="menuitem">
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10c0 3.866-3.582 7-8 7a8.84 8.84 0 01-2.62-.39 5.77 5.77 0 01-3.064 1.378c-.193.025-.36-.13-.34-.327.024-.213.073-.42.146-.62.1-.27.227-.526.378-.766C3.06 14.74 2 12.5 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0H9v2h6V9z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Caption Settings
+                </a>
+                <span class="nav__menu-divider" aria-hidden="true"></span>
+                <.link
+                  href={~p"/users/log_out"}
+                  method="delete"
+                  class="nav__menu-item"
+                  role="menuitem"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path
+                      fill-rule="evenodd"
+                      d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Log out
+                </.link>
+              </div>
+            </div>
           <% else %>
             <a class="login" href={~p"/users/log_in"}>Log in</a>
             <a class="btn btn--primary btn--sm" href="/auth/twitch">
