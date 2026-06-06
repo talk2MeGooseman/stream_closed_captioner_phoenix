@@ -74,6 +74,15 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
     |> validate_password(opts)
   end
 
+  @doc """
+  Changeset for refreshing only a user's Twitch OAuth tokens, without touching
+  (or requiring) the rest of the provider profile fields.
+  """
+  def oauth_token_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:access_token, :refresh_token])
+  end
+
   def oauth_update_changeset(user, attrs) do
     user
     |> cast(attrs, [

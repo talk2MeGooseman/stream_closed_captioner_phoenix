@@ -12,10 +12,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardHTML do
   attr :value, :string, required: true
   attr :state, :string, default: "ok"
   attr :icon, :string, required: true
+  attr :key, :string, default: nil
 
   def sys_row(assigns) do
     ~H"""
-    <div class="sysrow" data-state={@state}>
+    <div class="sysrow" data-state={@state} data-status-key={@key} data-status-target={@key && "row"}>
       <span class="s-dot"></span>
       <svg
         class="sysrow__ico"

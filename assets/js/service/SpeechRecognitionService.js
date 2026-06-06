@@ -29,6 +29,7 @@ export default class SpeechRecognitionService {
   constructor() {
     this.onSpeechInterimCallback = null;
     this.onSpeechFinalCallback = null;
+    this.onErrorCallback = null;
 
     this.recognitionService = this.initSpeechRecognition();
 
@@ -38,6 +39,7 @@ export default class SpeechRecognitionService {
 
     this.recognitionService.onresult = (event) => this.onRecognitionResult(event);
     this.recognitionService.onend = () => this.onRecognitionEnd();
+    this.recognitionService.onerror = (event) => this.onRecognitionError(event);
 
     this.throttledPublishInterim = throttle(this.publishInterimText, INTERVAL_THROTTLE)
   }
@@ -69,6 +71,13 @@ export default class SpeechRecognitionService {
   onRecognitionEnd() {
     if (this.speechToTextActive) {
       this.recognitionService.start();
+    }
+  }
+
+  onRecognitionError(event) {
+    debug("Recognition error", event?.error)
+    if (this.onErrorCallback) {
+      this.onErrorCallback(event);
     }
   }
 

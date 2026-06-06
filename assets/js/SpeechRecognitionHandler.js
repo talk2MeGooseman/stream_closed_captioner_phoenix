@@ -15,7 +15,7 @@ const debug = debugLogger("cc:speech-handler")
  * }} SpeechInterval
  */
 
-const EVENT_TYPES = ["started", "stopped", "interim", "final"]
+const EVENT_TYPES = ["started", "stopped", "interim", "final", "error"]
 
 export default class SpeechRecognitionHandler {
   delayTime = 0
@@ -30,6 +30,7 @@ export default class SpeechRecognitionHandler {
     this.speechRecogService.onSpeechFinalCallback = this.onEndIntervals.bind(
       this
     )
+    this.speechRecogService.onErrorCallback = this.onError.bind(this)
 
     /**
      * Array of tuples containing the speech interval data and when
@@ -130,6 +131,20 @@ export default class SpeechRecognitionHandler {
       createdOn: Date.now(),
       topic: "final",
     })
+  }
+
+  /**
+   * Callback method to receive recognition errors from the
+   * SpeechRecognitionService and forward them to subscribers
+   *
+   * @private
+   * @param {{ error: string }} event
+   */
+  onError(event) {
+    debug("Recognition error", event?.error)
+    if (this.eventSubscribers["error"]) {
+      this.eventSubscribers["error"](event)
+    }
   }
 
   /**

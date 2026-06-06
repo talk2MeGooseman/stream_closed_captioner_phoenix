@@ -81,6 +81,11 @@ export default class extends Controller {
       this.removeEvents.push(
         this.speechRecognitionHandler.onEvent("interim", this.receiveInterimMessage.bind(this))
       )
+      this.removeEvents.push(
+        this.speechRecognitionHandler.onEvent("error", (event) =>
+          this.dispatch("error", { detail: { error: event?.error } })
+        )
+      )
 
       this.initBrowserChannelMessageListener()
       this.initOBSChannelListener()
@@ -162,6 +167,8 @@ export default class extends Controller {
     window.onbeforeunload = () =>
       "Navigating away will stop Closed Captioning, are you sure?"
 
+    this.dispatch("started")
+
     this.cachedButtonText = this.startTarget.textContent
     this.startTarget.textContent = "Click to Stop Captions"
     this.startTarget.classList.remove("btn-primary")
@@ -170,6 +177,8 @@ export default class extends Controller {
 
   recognitionStopped = () => {
     window.onbeforeunload = null
+
+    this.dispatch("stopped")
 
     this.startTarget.classList.add("btn-primary")
     this.startTarget.classList.remove("btn-warning")

@@ -20,11 +20,13 @@ export default class extends ApplicationController {
     this.attemptCount = 1
     this.retryTimeout = null
 
-    // this.fetchExtensionStatus()
     // Defer to next tick: captions_controller registers its `twitch:state` listener
     // on connect, and Stimulus connects controllers in DOM order — twitch is mounted
     // above captions, so a synchronous dispatch fires before the listener attaches.
-    queueMicrotask(() => this.enableExtension())
+    // fetchExtensionStatus dispatches from an async callback (already post-connect),
+    // but we keep the defer so its synchronous error/disable paths land after the
+    // listener attaches too.
+    queueMicrotask(() => this.fetchExtensionStatus())
   }
 
   fetchExtensionStatus = () => {
@@ -36,18 +38,33 @@ export default class extends ApplicationController {
           this.attemptCount = 0
           this.clearRetryTimeout()
           this.clearErrorMessage()
+          this.dispatchInstalledStatus("installed")
           return this.enableExtension()
         }
+        this.dispatchInstalledStatus("not-installed")
         this.disableExtension()
         this.displayErrorMessage("You do not have the Stream Closed Captioner Extension installed, please visit the 'Quick Starts Instructions' to learn how.")
         return this.scheduleExtensionStatusRetry()
 
       })
       .catch(() => {
+        this.dispatchInstalledStatus("error")
         this.disableExtension()
         this.displayErrorMessage("Could not verify Twitch extension status. Check your connection and try again.")
         return this.scheduleExtensionStatusRetry()
       })
+  }
+
+  // Broadcasts the verified install status so the dashboard "System Status"
+  // section (status_controller) can reflect it. Separate from the `state`
+  // event, which tracks the on/off toggle rather than install presence.
+  //
+  // NOTE: this controller extends stimulus-use's ApplicationController, whose
+  // `dispatch(name, detail)` takes the detail object as the second positional
+  // arg (event name is auto-prefixed with the "twitch" identifier). This is a
+  // different signature from base Stimulus' `dispatch(name, { detail })`.
+  dispatchInstalledStatus(status) {
+    this.dispatch("installed", { status })
   }
 
   disconnect() {
