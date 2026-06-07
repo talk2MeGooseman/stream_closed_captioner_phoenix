@@ -32,13 +32,14 @@ export default class extends ApplicationController {
   fetchExtensionStatus = () => {
     appClient.request(GET_ME)
       .then(({ me }) => {
-        this.extensionInstalled = !isNil(me) && me.extensionInstalled
+        const placements = (!isNil(me) && me.extensionPlacements) || []
+        this.extensionInstalled = placements.length > 0
 
         if (this.extensionInstalled) {
           this.attemptCount = 0
           this.clearRetryTimeout()
           this.clearErrorMessage()
-          this.dispatchInstalledStatus("installed")
+          this.dispatchInstalledStatus("installed", placements[0])
           return this.enableExtension()
         }
         this.dispatchInstalledStatus("not-installed")
@@ -63,8 +64,11 @@ export default class extends ApplicationController {
   // `dispatch(name, detail)` takes the detail object as the second positional
   // arg (event name is auto-prefixed with the "twitch" identifier). This is a
   // different signature from base Stimulus' `dispatch(name, { detail })`.
-  dispatchInstalledStatus(status) {
-    this.dispatch("installed", { status })
+  //
+  // `placement` is the primary Twitch placement type (e.g. "overlay") when
+  // installed, or null otherwise — status_controller maps it to a label.
+  dispatchInstalledStatus(status, placement = null) {
+    this.dispatch("installed", { status, placement })
   }
 
   disconnect() {
@@ -111,27 +115,29 @@ export default class extends ApplicationController {
   }
 
   clearErrorMessage() {
+    if (!this.hasErrorMessageTarget) return
     this.errorMessageTarget.classList.add("hidden")
     this.errorMessageTarget.textContent = ""
   }
 
   displayErrorMessage(text) {
+    if (!this.hasErrorMessageTarget) return
     this.errorMessageTarget.classList.remove("hidden")
     this.errorMessageTarget.textContent = text
   }
 
   enableExtension() {
-    this.onSwitchTarget.classList.remove("hidden")
-    this.offSwitchTarget.classList.add("hidden")
-    this.errorMarkerTarget.classList.add("hidden")
+    if (this.hasOnSwitchTarget) this.onSwitchTarget.classList.remove("hidden")
+    if (this.hasOffSwitchTarget) this.offSwitchTarget.classList.add("hidden")
+    if (this.hasErrorMarkerTarget) this.errorMarkerTarget.classList.add("hidden")
     this.enabled = true
     this.dispatch("state", { enabled: this.enabled })
   }
 
   disableExtension() {
-    this.onSwitchTarget.classList.add("hidden")
-    this.offSwitchTarget.classList.remove("hidden")
-    this.errorMarkerTarget.classList.add("hidden")
+    if (this.hasOnSwitchTarget) this.onSwitchTarget.classList.add("hidden")
+    if (this.hasOffSwitchTarget) this.offSwitchTarget.classList.remove("hidden")
+    if (this.hasErrorMarkerTarget) this.errorMarkerTarget.classList.add("hidden")
     this.enabled = false
     this.dispatch("state", { enabled: this.enabled })
   }

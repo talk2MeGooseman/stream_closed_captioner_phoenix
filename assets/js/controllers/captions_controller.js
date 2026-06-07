@@ -25,6 +25,7 @@ export default class extends Controller {
     "realOutput",
     "finalOutput",
     "interimOutput",
+    "translationOutput",
     "start",
     "warning"
   ]
@@ -236,6 +237,45 @@ export default class extends Controller {
 
     this.interimOutputTarget.textContent = captions.interim
     this.finalOutputTarget.textContent = captions.final
+
+    this.displayTranslations(captions)
+  }
+
+  // Mirror the translated text in the preview, below the original caption.
+  // Frame-type aware: interim frames (final === "") carry no translations and must keep
+  // the last translation on screen; a final caption with no translations clears stale text.
+  displayTranslations = (captions) => {
+    if (!this.hasTranslationOutputTarget) return
+
+    const translations = captions.translations
+    if (translations && Object.keys(translations).length > 0) {
+      this.translationOutputTarget.replaceChildren()
+
+      for (const lang in translations) {
+        const { name, text } = translations[lang]
+        const p = document.createElement("p")
+        p.className = "caplive__t"
+        p.textContent = `${name}: ${text}`
+        this.translationOutputTarget.appendChild(p)
+      }
+    } else if (captions.translation_error) {
+      // Surface genuine failures (atoms serialize to JSON strings: "timeout" / "failed")
+      this.translationOutputTarget.replaceChildren()
+      const p = document.createElement("p")
+      p.className = "caplive__t caplive__t--error"
+      p.textContent = "Translations temporarily unavailable"
+      this.translationOutputTarget.appendChild(p)
+    } else if (captions.final) {
+      this.translationOutputTarget.replaceChildren()
+    } else if (
+      this.translationOutputTarget.querySelector(".caplive__t--error")
+    ) {
+      // Interim frame (no translations, no error, not final): if the previous
+      // frame left an error banner on screen, clear it so a transient failure
+      // self-heals once captions resume. A good translation (no error node) is
+      // left untouched, preserving the last on-screen text.
+      this.translationOutputTarget.replaceChildren()
+    }
   }
 
 }

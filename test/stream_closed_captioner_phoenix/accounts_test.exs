@@ -570,4 +570,38 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
     end
   end
 
+  describe "extension_placements/1" do
+    @extension_id "h1ekceo16erc49snp0sine3k9ccbh9"
+
+    defp active(placement_slots) do
+      Map.new(placement_slots, fn {slot, id} ->
+        {slot, %{"active" => true, "id" => id, "name" => "Stream Closed Captioner"}}
+      end)
+    end
+
+    test "returns [\"overlay\"] when active in the overlay placement only" do
+      result = %{"overlay" => active(%{"1" => @extension_id})}
+
+      assert Accounts.extension_placements(result) == ["overlay"]
+    end
+
+    test "returns placements in priority order (overlay, panel, component)" do
+      result = %{
+        "panel" => active(%{"2" => @extension_id}),
+        "component" => active(%{"1" => @extension_id})
+      }
+
+      assert Accounts.extension_placements(result) == ["panel", "component"]
+    end
+
+    test "returns [] when only a different extension id is present" do
+      result = %{"overlay" => active(%{"1" => "some-other-extension-id"})}
+
+      assert Accounts.extension_placements(result) == []
+    end
+
+    test "returns [] when the Twitch API is unavailable (nil)" do
+      assert Accounts.extension_placements(nil) == []
+    end
+  end
 end

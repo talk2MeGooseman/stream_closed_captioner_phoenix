@@ -31,7 +31,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
     case result do
       {:ok, record} ->
         send(self(), {:saved, record})
-        {:noreply, socket |> put_flash(:info, "Announcement saved successfully.") |> push_patch(to: socket.assigns.patch)}
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Announcement saved successfully.")
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = cs} ->
         {:noreply, assign(socket, :changeset, cs)}
@@ -43,7 +47,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
     ~H"""
     <div class="p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-5">
-        <%= if @action == :new, do: "New Announcement", else: "Edit Announcement" %>
+        {if @action == :new, do: "New Announcement", else: "Edit Announcement"}
       </h2>
 
       <.form
@@ -60,8 +64,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
             <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
             <%!--
               Quill rich-text editor hook.
-              The hidden input carries the value; its wrapper has phx-update="ignore"
-              so LiveView does not clobber the DOM after Quill takes over the editor div.
+              The hidden input carries the value AND the editor div must both live
+              inside the phx-update="ignore" wrapper. Quill mutates this subtree
+              (turns the editor into .ql-container and injects a .ql-toolbar sibling),
+              so anything left outside the ignored region gets clobbered by morphdom
+              on the next phx-change="validate" patch — which the hook itself triggers
+              on every keystroke. The label and error stay outside so validation
+              messages still update.
             --%>
             <div phx-update="ignore" id="announcement-message-wrapper">
               <input
@@ -70,16 +79,22 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
                 name={f[:message].name}
                 value={Phoenix.HTML.Form.normalize_value("hidden", f[:message].value)}
               />
+              <div
+                id="announcement-message-editor"
+                phx-hook="QuillEditor"
+                data-input-id="announcement-message-value"
+                class="min-h-[160px] border border-gray-300 rounded-md bg-white"
+              >
+              </div>
             </div>
-            <div
-              id="announcement-message-editor"
-              phx-hook="QuillEditor"
-              data-input-id="announcement-message-value"
-              class="min-h-[160px] border border-gray-300 rounded-md bg-white"
-            >
-            </div>
-            <.error :for={msg <- Enum.map(f[:message].errors, &StreamClosedCaptionerPhoenixWeb.CoreComponents.translate_error/1)}>
-              <%= msg %>
+            <.error :for={
+              msg <-
+                Enum.map(
+                  f[:message].errors,
+                  &StreamClosedCaptionerPhoenixWeb.CoreComponents.translate_error/1
+                )
+            }>
+              {msg}
             </.error>
           </div>
         </div>

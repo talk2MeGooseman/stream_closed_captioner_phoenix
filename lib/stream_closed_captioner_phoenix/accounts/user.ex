@@ -2,7 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Inspect, except: [:password, :encrypted_password]}
+  @derive {Inspect, except: [:password, :encrypted_password, :access_token, :refresh_token]}
   @derive {Jason.Encoder,
            only: [:email, :provider, :uid, :username, :login, :profile_image_url, :description]}
 
@@ -81,6 +81,7 @@ defmodule StreamClosedCaptionerPhoenix.Accounts.User do
   def oauth_token_changeset(user, attrs) do
     user
     |> cast(attrs, [:access_token, :refresh_token])
+    |> validate_required([:access_token])
   end
 
   def oauth_update_changeset(user, attrs) do

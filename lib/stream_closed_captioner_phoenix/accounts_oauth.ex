@@ -46,6 +46,10 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
       {:ok, %User{}}
 
   """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {User, user.uid}
+            )
   def update_user_oauth_tokens(%User{} = user, attrs) do
     user
     |> User.oauth_token_changeset(attrs)

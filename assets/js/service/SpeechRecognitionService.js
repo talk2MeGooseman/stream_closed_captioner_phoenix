@@ -74,8 +74,15 @@ export default class SpeechRecognitionService {
     }
   }
 
+  // Benign codes that are part of normal operation: "aborted" fires on every
+  // stop()/abort(), and "no-speech" on silence. They must NOT surface as a
+  // captions:error event. Lifecycle handling (auto-restart via onend, etc.)
+  // is independent of this callback, so suppressing it here is safe.
+  static BENIGN_ERRORS = ["aborted", "no-speech"];
+
   onRecognitionError(event) {
     debug("Recognition error", event?.error)
+    if (SpeechRecognitionService.BENIGN_ERRORS.includes(event?.error)) return;
     if (this.onErrorCallback) {
       this.onErrorCallback(event);
     }

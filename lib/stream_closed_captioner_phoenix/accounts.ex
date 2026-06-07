@@ -124,6 +124,27 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
     |> Enum.into(%{})
   end
 
+  # Twitch placement types, in priority order. The first matching placement is
+  # treated as the "primary" one for display purposes.
+  @extension_placement_keys ~w(overlay panel component)
+
+  @doc """
+  Returns the active placement types (in priority order) where the Stream Closed
+  Captioner extension is installed for the user.
+
+  Returns an empty list when the extension is not installed in any placement, or
+  when the Twitch API is unavailable (fail-closed).
+
+  ## Examples
+      iex> user_extension_placements(user)
+      ["overlay"]
+  """
+  def user_extension_placements(%User{} = user) do
+    user
+    |> Twitch.get_users_active_extensions()
+    |> extension_placements()
+  end
+
   @doc """
   Returns true if the user has the extension enabled.
 
@@ -132,10 +153,19 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
       true
   """
   def user_has_extension_installed?(%User{} = user) do
-    result = Twitch.get_users_active_extensions(user)
+    user_extension_placements(user) != []
+  end
 
-    check_for_extension_in(result, "overlay") || check_for_extension_in(result, "panel") ||
-      check_for_extension_in(result, "component")
+  @doc """
+  Pure parser: given the raw map returned by `Twitch.get_users_active_extensions/1`,
+  returns the placement types (in priority order) the extension is active in.
+
+  Returns `[]` for a `nil` result (fail-closed when the Twitch API is unavailable).
+  """
+  def extension_placements(nil), do: []
+
+  def extension_placements(result) do
+    Enum.filter(@extension_placement_keys, &check_for_extension_in(result, &1))
   end
 
   # Fail-closed: if the API call failed (nil result), deny access to avoid

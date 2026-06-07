@@ -16,7 +16,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardHTML do
 
   def sys_row(assigns) do
     ~H"""
-    <div class="sysrow" data-state={@state} data-status-key={@key} data-status-target={@key && "row"}>
+    <div class="sysrow" data-state={@state} data-status-key={@key}>
       <span class="s-dot"></span>
       <svg
         class="sysrow__ico"

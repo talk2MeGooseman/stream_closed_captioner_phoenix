@@ -257,6 +257,32 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
       assert %{balance: 0} = StreamClosedCaptionerPhoenix.Bits.get_bits_balance!(user)
     end
 
+    test "interim frames (blank final) are not translated and make no backend call" do
+      user =
+        insert(:user,
+          bits_balance: build(:bits_balance, balance: 0, user: nil),
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      insert(:bits_balance_debit, user: user)
+
+      # No Azure.MockCognitive expectation set: verify_on_exit! fails if translate is called.
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "Hello",
+          "final" => "",
+          "session" => "disf12f3"
+        })
+
+      assert {:ok,
+              %Twitch.Extension.CaptionsPayload{
+                final: "",
+                interim: "Hello",
+                translations: nil,
+                translation_error: nil
+              }} = result
+    end
+
     test "when Azure returns a network error, pipeline still returns ok with no translations" do
       user =
         insert(:user,
@@ -271,7 +297,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       assert {:ok,
               %Twitch.Extension.CaptionsPayload{
-                translations: nil
+                translations: nil,
+                translation_error: :failed
               }} =
                CaptionsPipeline.pipeline_to(:twitch, user, %{
                  "interim" => "",
@@ -297,7 +324,8 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       assert {:ok,
               %Twitch.Extension.CaptionsPayload{
-                translations: nil
+                translations: nil,
+                translation_error: :failed
               }} =
                CaptionsPipeline.pipeline_to(:twitch, user, %{
                  "interim" => "",

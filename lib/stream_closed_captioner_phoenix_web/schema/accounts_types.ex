@@ -16,6 +16,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
     field :extension_installed, :boolean do
       resolve(&has_extension_installed?/3)
     end
+
+    field :extension_placements, list_of(:string) do
+      resolve(&extension_placements/3)
+    end
   end
 
   object :accounts_queries do
@@ -29,5 +33,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema.AccountsTypes do
   def has_extension_installed?(user, _args, _resolution) do
     status = StreamClosedCaptionerPhoenix.Accounts.user_has_extension_installed?(user)
     {:ok, status}
+  end
+
+  # Return the placement types (panel/overlay/component) the extension is active in
+  def extension_placements(user, _args, _resolution) do
+    {:ok, StreamClosedCaptionerPhoenix.Accounts.user_extension_placements(user)}
   end
 end

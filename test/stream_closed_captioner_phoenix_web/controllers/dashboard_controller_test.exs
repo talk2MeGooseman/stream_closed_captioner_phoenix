@@ -24,6 +24,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardControllerTest do
       assert html =~ ~s(data-captions-target="start")
       assert html =~ ~s(data-action="click->captions#startCaptions")
       assert html =~ ~s(data-captions-target="outputOutline")
+      assert html =~ ~s(data-captions-target="translationOutput")
       # the output destinations keep their controllers
       assert html =~ ~s(data-controller="zoom")
       assert html =~ ~s(data-controller="obs")
@@ -49,6 +50,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.DashboardControllerTest do
     test "shows the connect-twitch output for non-twitch accounts", %{conn: conn} do
       html = conn |> get(~p"/dashboard") |> html_response(200)
       assert html =~ "Connect with Twitch"
+    end
+
+    test "translation card keeps its status/balance but no longer renders a captions display section",
+         %{conn: conn} do
+      html = conn |> get(~p"/dashboard") |> html_response(200)
+
+      {:ok, doc} = Floki.parse_document(html)
+      [card] = Floki.find(doc, ~s([data-controller="translations"]))
+      card_html = Floki.raw_html(card)
+
+      # status + balance stats stay in the card
+      assert [_] = Floki.find(card, ~s([data-translations-target="translationStatus"]))
+      assert [_] = Floki.find(card, ~s([data-translations-target="bitsBalance"]))
+
+      # the translated-captions display section (now shown in the Preview stage) is gone
+      assert [] = Floki.find(card, ~s([data-translations-target="displayTranslations"]))
+      assert [] = Floki.find(card, ~s([data-translations-target="translationsList"]))
+
+      # and the old kutty/Alpine collapse must not have crept back
+      refute card_html =~ ~s|x-data="collapse()"|
+      refute card_html =~ "x-cloak"
     end
   end
 end

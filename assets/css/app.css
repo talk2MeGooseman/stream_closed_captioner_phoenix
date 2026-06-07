@@ -138,9 +138,7 @@
   font-size: 1.22rem; letter-spacing: -0.02em;
 }
 .scc-home .brand__mark {
-  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
-  background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #000));
-  color: #fff; font-family: var(--mono); font-weight: 700; font-size: 14px; letter-spacing: -0.04em;
+  width: 34px; height: 34px; border-radius: 10px; object-fit: cover; display: block;
   box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 80%, transparent);
 }
 .scc-home .nav__links { display: flex; gap: 26px; margin-left: 14px; }
@@ -847,6 +845,8 @@ html:has(.scc-home) { scroll-behavior: smooth; }
   color: var(--text);
 }
 .scc-home .note svg { width: 17px; height: 17px; color: var(--accent-2); flex-shrink: 0; margin-top: 1px; }
+.scc-home .note--error { background: color-mix(in srgb, var(--live) 9%, transparent); border-color: color-mix(in srgb, var(--live) 26%, transparent); }
+.scc-home .note--error svg { color: var(--live); }
 
 /* blocklist chips */
 .scc-home .chips { display: flex; flex-wrap: wrap; gap: 9px; padding: 8px 0 18px; }
@@ -1035,6 +1035,10 @@ html:has(.scc-home) { scroll-behavior: smooth; }
 .scc-home .caplive { color: #fff; font-family: var(--body); font-weight: 600; font-size: 1.42rem; line-height: 1.45; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); }
 .scc-home .caplive p { margin: 0; }
 .scc-home .caplive .interim { color: rgba(255, 255, 255, 0.7); }
+.scc-home .caplive__translations { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.12); display: flex; flex-direction: column; gap: 4px; }
+.scc-home .caplive__translations:empty { display: none; }
+.scc-home .caplive__t { margin: 0; font-size: 1.05rem; font-weight: 500; color: rgba(255, 255, 255, 0.8); }
+.scc-home .caplive__t--error { color: var(--warn); font-style: italic; }
 .scc-home .startbtn {
   width: 100%; border: none; cursor: pointer; font-family: var(--body); font-weight: 700; font-size: 1.06rem;
   padding: 19px; color: #fff; background: var(--accent); display: flex; align-items: center; justify-content: center; gap: 11px; transition: filter 0.16s, background-color 0.2s;

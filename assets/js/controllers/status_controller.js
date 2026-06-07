@@ -5,13 +5,20 @@ import debugLogger from "debug"
 
 const debug = debugLogger("cc:status-controller")
 
+// Maps a raw Twitch placement key to its official display label.
+const PLACEMENT_LABELS = {
+  overlay: "Video Overlay",
+  panel: "Panel",
+  component: "Video Component",
+}
+
 /**
  * Drives the dashboard "System Status" section. Each live row is addressed by
  * its `data-status-key` and updated in place (value text + the `data-state`
  * attribute that colours the status dot). Valid states: "ok" | "warn" | "idle".
  */
 export default class extends Controller {
-  static targets = ["row"]
+  static targets = []
 
   socketRefs = []
   micPermissionStatus = null
@@ -53,10 +60,14 @@ export default class extends Controller {
   // install status via GraphQL. Until then the row shows the server-rendered
   // "Checking…" placeholder (or "Not connected" when not signed in with Twitch).
   onExtensionStatus(event) {
-    switch (event?.detail?.status) {
-      case "installed":
-        this.setRow("extension", "Installed", "ok")
+    const { status, placement } = event?.detail || {}
+    switch (status) {
+      case "installed": {
+        // The green "ok" dot already signals installed; show just the placement
+        // (e.g. "Video Overlay") to stay within the box's 1–2 word copy style.
+        this.setRow("extension", PLACEMENT_LABELS[placement] || "Installed", "ok")
         break
+      }
       case "not-installed":
         this.setRow("extension", "Not installed", "warn")
         break

@@ -4,9 +4,10 @@ defmodule Twitch.Extension.CaptionsPayload do
           interim: String.t(),
           final: String.t(),
           delay: float(),
-          translations: map()
+          translations: map(),
+          translation_error: atom() | nil
         }
-  defstruct interim: "", final: "", delay: 0, translations: nil
+  defstruct interim: "", final: "", delay: 0, translations: nil, translation_error: nil
 
   use ExConstructor
 end

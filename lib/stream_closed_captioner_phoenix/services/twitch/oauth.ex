@@ -85,10 +85,20 @@ defmodule Twitch.Oauth do
        when is_binary(refresh_token) do
     case refresh_users_access_token(refresh_token) do
       {:ok, %{access_token: new_access_token} = tokens} when is_binary(new_access_token) ->
-        AccountsOauth.update_user_oauth_tokens(user, %{
-          access_token: new_access_token,
-          refresh_token: tokens[:refresh_token] || refresh_token
-        })
+        # Persist the refreshed pair. If the DB write fails we deliberately log a
+        # FIXED, token-free message (a failed changeset carries the token in its
+        # changes — never inspect/log it) and still proceed with the freshly
+        # refreshed in-memory token so the current request can succeed.
+        case AccountsOauth.update_user_oauth_tokens(user, %{
+               access_token: new_access_token,
+               refresh_token: tokens[:refresh_token] || refresh_token
+             }) do
+          {:ok, _user} ->
+            :ok
+
+          {:error, _changeset} ->
+            Logger.warning("Failed to persist refreshed Twitch tokens for user #{user.id}")
+        end
 
         build_credentials(new_access_token)
 

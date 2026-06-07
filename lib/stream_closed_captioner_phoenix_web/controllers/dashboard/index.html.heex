@@ -157,6 +157,7 @@
                 >
                   <p data-captions-target="finalOutput"></p>
                   <p class="interim" data-captions-target="interimOutput"></p>
+                  <div class="caplive__translations" data-captions-target="translationOutput"></div>
                 </div>
                 <div
                   class="stage-empty__note"
@@ -249,14 +250,14 @@
               icon="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
             />
             <.sys_row
-              label="Auto-Off When Offline"
+              label="Auto-Off"
               value={on_off(@stream_settings.auto_off_captions)}
               state={if @stream_settings.auto_off_captions, do: "ok", else: "idle"}
               icon="M12 3v8M7.8 6.5a7 7 0 1 0 8.4 0"
             />
             <.sys_row
               label="In-Chat Reminder"
-              value={if @stream_settings.turn_on_reminder, do: "On · ~5 min", else: "Off"}
+              value={if @stream_settings.turn_on_reminder, do: "On", else: "Off"}
               state={if @stream_settings.turn_on_reminder, do: "ok", else: "idle"}
               icon="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Zm4 10a2 2 0 0 0 4 0"
             />
@@ -403,11 +404,7 @@
             <span class="section-label__line"></span>
           </div>
 
-          <section
-            class="transcard"
-            data-controller="translations"
-            data-action="captions:payload@window->translations#onCaptionsReceived"
-          >
+          <section class="transcard" data-controller="translations">
             <div class="transcard__head">
               <span class="t-ico">
                 <svg
@@ -497,34 +494,6 @@
                   </svg>
                   How credits work
                 </a>
-              </div>
-            </div>
-            <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
-              <div
-                x-spread="trigger"
-                class="tstat"
-                role="button"
-                aria-controls="translation-toggle"
-                aria-expanded="false"
-                style="cursor: pointer; flex-direction: row; align-items: center; justify-content: space-between;"
-              >
-                Toggle viewing translated captions
-                <svg
-                  x-bind:class="{ 'rotate-180': open }"
-                  class="transition transform h-4 w-4 flex-none"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </div>
-              <div x-spread="collapse" x-cloak id="translation-toggle">
-                <ul data-translations-target="translationsList" class="tstat" style="gap: 8px;">
-                </ul>
               </div>
             </div>
           </section>

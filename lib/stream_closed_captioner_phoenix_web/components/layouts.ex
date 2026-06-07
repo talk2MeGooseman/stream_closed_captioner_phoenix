@@ -18,7 +18,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
     <nav class="nav">
       <div class="wrap nav__in">
         <a class="brand" href={~p"/"}>
-          <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
+          <img class="brand__mark" src={~p"/images/cc100x100.png"} alt="Stream Closed Captioner logo" />Stream&nbsp;CC
         </a>
         <div class="nav__links">
           <a href={~p"/showcase"} aria-current={if @active == "showcase", do: "page"}>Showcase</a>
@@ -118,7 +118,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
         <div class="foot__grid">
           <div class="foot__about">
             <a class="brand" href={~p"/"}>
-              <span class="brand__mark" aria-hidden="true">CC</span>Stream&nbsp;CC
+              <img class="brand__mark" src={~p"/images/cc100x100.png"} alt="Stream Closed Captioner logo" />Stream&nbsp;CC
             </a>
             <p>
               Closed captions for live streams and calls. Built so every viewer can follow along.
