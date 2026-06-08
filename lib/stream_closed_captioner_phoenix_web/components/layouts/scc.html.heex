@@ -1,6 +1,6 @@
 <div class="scc-home" data-theme="dark" id="top">
   <a class="scc-skip-link" href="#maincontent">Skip to content</a>
   <.scc_nav current_user={assigns[:current_user]} active={assigns[:scc_active]} />
-  <main id="maincontent">{@inner_content}</main>
+  <main id="maincontent" tabindex="-1">{@inner_content}</main>
   <.scc_footer />
 </div>

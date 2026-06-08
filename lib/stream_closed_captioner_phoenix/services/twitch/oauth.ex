@@ -97,6 +97,10 @@ defmodule Twitch.Oauth do
           {:ok, _user} ->
             :ok
 
+          # Intentionally defensive: a DB persist failure on an otherwise-valid
+          # token is hard to trigger without a real constraint, so this branch is
+          # not unit-covered. Don't re-introduce a blank-token seam to test it —
+          # blank tokens are now rejected by the guard above before reaching here.
           {:error, _changeset} ->
             Logger.warning("Failed to persist refreshed Twitch tokens for user #{user.id}")
         end
