@@ -1,369 +1,553 @@
-<section class="px-4 pb-12 mx-auto max-w-7xl">
-  <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
-    <!-- Twitch Indicator -->
-    <%= if @twitch_enabled do %>
-      <.twitch_enabled_indicator settings={@stream_settings} />
-    <% else %>
-      <.twitch_disabled_indicator settings={@stream_settings} />
-    <% end %>
-    <!-- Zoom Indicator -->
+<%!-- Globals the captions Phoenix channel needs (scc_root doesn't inject them). --%>
+<script>
+  window.userId = "<%= @current_user.id %>";
+  window.userToken = "<%= @socket_token %>";
+</script>
+
+<header class="page-head">
+  <div class="wrap page-head__in">
     <div>
-      <div class="p-5 card shadow dark:bg-gray-800" data-controller="zoom">
-        <div class="flex flex-row items-center">
-          <div
-            data-zoom-target="errorMarker"
-            class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              class="flex-none w-5 h-5"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-          <div class="ml-3">
-            <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 whitespace-normal">
-              Zoom Meeting Captions
-            </h2>
-            <p class="text-sm leading-none text-gray-600">Send captions to your Zoom meeting.</p>
-          </div>
-          <div class="flex-grow text-right">
-            <div data-action="click->zoom#enable">
-              <div data-zoom-target="offButton">
-                <%= _switch_off(assigns) %>
-              </div>
-              <div class="hidden" data-zoom-target="onButton">
-                <%= _switch_on(assigns) %>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-row items-center mt-2">
-          <span class="flex-auto p-1">
-            <label class="block text-xs mb-1" for="zoom-url">Zoom Captions URL</label>
-            <input
-              class="form-input form-input-sm"
-              id="zoom-url"
-              placeholder="https://..."
-              data-action="zoom#onUrlChange"
-            />
-          </span>
-        </div>
-        <div
-          data-zoom-target="errorMessage"
-          class="alert mt-2 hidden text-red-700 bg-red-100"
-          role="alert"
-        >
-        </div>
-      </div>
+      <span class="eyebrow">Account · Dashboard</span>
+      <h1 class="h1">Dashboard</h1>
+      <p>
+        Your live control up front, every signal at a glance, and your caption outputs within
+        reach in the rail.
+      </p>
     </div>
-    <!-- OBS Indicator -->
-    <div>
-      <div
-        class="p-5 card shadow dark:bg-gray-800"
-        data-controller="obs"
-        data-action="captions:payload@window->obs#onCaptionsReceived"
+    <div class="page-head__actions">
+      <a
+        href="https://talk2megooseman.notion.site/stream-cc-faq"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--ghost"
       >
-        <div class="flex flex-row items-center">
-          <!-- X svg -->
-          <div
-            data-obs-target="errorMarker"
-            class="hidden flex items-center justify-center w-10 h-10 text-red-700 bg-red-100 rounded"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              class="flex-none w-5 h-5"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-          <div class="ml-3">
-            <h2 class="mb-1 text-lg font-bold leading-none text-gray-900 whitespace-normal">
-              OBS Websocket
-            </h2>
-            <p class="text-sm leading-none text-gray-600">Send captions directly to OBS</p>
-          </div>
-          <div class="flex-grow text-right">
-            <div data-action="click->obs#connectToOBS">
-              <div data-obs-target="offButton">
-                <%= _switch_off(assigns) %>
-              </div>
-              <div class="hidden" data-obs-target="onButton">
-                <%= _switch_on(assigns) %>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-row items-center mt-2">
-          <span class="flex-auto p-1">
-            <label class="block text-xs mb-1" for="port">Port</label>
-            <input
-              class="form-input form-input-sm"
-              id="part"
-              value="4455"
-              data-action="obs#onPortChange"
-            />
-          </span>
-          <span class="flex-auto p-1">
-            <label class="block text-xs mb-1" for="password">Password</label>
-            <input
-              type="password"
-              class="form-input form-input-sm"
-              placeholder="Password69"
-              id="password"
-              data-action="obs#onPasswordChange"
-            />
-          </span>
-        </div>
-        <div
-          data-obs-target="errorMessage"
-          class="alert mt-2 hidden text-red-700 bg-red-100"
-          role="alert"
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          aria-hidden="true"
         >
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- Translation Sections -->
-<section class="px-4 pb-12">
-  <div class="card shadow dark:bg-gray-800">
-    <div class="card-header">
-      <h5 class="card-title">
-        Twitch Translation Information
-      </h5>
-      <a href="https://www.notion.so/talk2megooseman/How-Translations-Work-d6b58b0356de41a5aa5f73cf908a7531">
-        <span class="flex flex-row">
-          <svg
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            class="flex-none w-6 h-6 mr-1 text-gray-700"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            >
-            </path>
-          </svg>
-          Help
-        </span>
+          <path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2V5Zm16 0a2 2 0 0 0-2-2h-4v16h4a2 2 0 0 1 2 2V5Z" />
+        </svg>
+        Help &amp; FAQ
       </a>
     </div>
-    <div
-      data-controller="translations"
-      data-action="captions:payload@window->translations#onCaptionsReceived"
-    >
-      <div class="card-header divide-x text-center">
-        <div class="flex-1 p-2">
-          <h5 class="text-sm font-bold text-gray-900" data-translations-target="translationStatus">
-            <%= display_translation_status(@translation_active) %>
-          </h5>
-          <p class="text-sm font-medium leading-none text-gray-600">Translations Status</p>
-        </div>
-        <div class="flex-1 p-2">
-          <h5 class="text-sm font-bold text-gray-900" data-translations-target="bitsBalance">
-            <%= @bits_balance %>
-          </h5>
-          <p class="text-sm font-medium leading-none text-gray-600">Translation Credit Balance</p>
-        </div>
-        <div class="flex-1 p-2">
-          <h5 class="text-sm font-bold text-gray-900">
-            <%= if Enum.empty?(@translate_languages) do %>
-              <.link navigate={~p"/users/caption-settings"} class="text-red-500 mx-5">
-                You must select a translation language in your Caption Settings to activate translations
-              </.link>
-            <% else %>
-              <%= Map.values(@translate_languages) |> Enum.join(", ") %>
-            <% end %>
-          </h5>
-          <p class="text-sm font-medium leading-none text-gray-600">
-            Selected Translation Language
-          </p>
-        </div>
-        <div class="flex-1 p-2">
-          <p class="text-sm font-medium leading-none text-gray-600">
-            500 credits are required for to activate translations
-            for 24 hours
-          </p>
-        </div>
-      </div>
-      <div data-translations-target="displayTranslations" class="hidden" x-data="collapse()">
-        <div
-          x-spread="trigger"
-          class="p-3 flex justify-between items-center bg-green-100"
-          role="button"
-          aria-controls="translation-toggle"
-          aria-expanded="false"
-        >
-          Click here to toggle viewing translated captions
-          <svg
-            x-bind:class="{ 'rotate-180': open }"
-            class="transition transform h-4 w-4 flex-none"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-        <div x-spread="collapse" x-cloak class="" id="translation-toggle">
-          <ul data-translations-target="translationsList" class="list"></ul>
-        </div>
-      </div>
-    </div>
   </div>
-</section>
-<!-- Instructions -->
-<section class="px-4 pb-4">
-  <div x-data="collapse()">
-    <button
-      class="btn btn-primary"
-      aria-controls="basicCollapse"
-      aria-expanded="false"
-      x-spread="trigger"
-    >
-      Quick Start
-      Instructions
-    </button>
-    <div class="grid gap-3 bg-white" id="basicCollapse" x-spread="collapse" x-cloak>
-      <ul class="list">
-        <li class="list-item">
+</header>
+
+<%= if @announcement && @announcement.display do %>
+  <div class="wrap">
+    <div class="dash-alert" role="alert">{raw(@announcement.message)}</div>
+  </div>
+<% end %>
+
+<div class="wrap">
+  <div class="dash">
+    <details class="quickstart">
+      <summary>Quick Start Instructions</summary>
+      <ul>
+        <li>
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href="https://dashboard.twitch.tv/extensions/h1ekceo16erc49snp0sine3k9ccbh9"
-            class="text-blue-600"
           >
-            1. Install
-            the Twitch Extension, if you're streaming on Twitch
+            1. Install the Twitch Extension, if you're streaming on Twitch
           </a>
         </li>
-        <li class="list-item">
-          <%= link("2. Update your language in your caption settings",
-            to: ~p"/users/caption-settings",
-            class: "text-blue-600"
-          ) %>
+        <li>
+          <.link navigate={~p"/users/caption-settings"}>
+            2. Update your language in your caption settings
+          </.link>
         </li>
-        <li class="list-item">
-          3. When your're ready to start sending captions, click "Click to Start Captions"
-        </li>
-        <li class="list-item">4. Allow microphone permissions if prompted next to address bar</li>
-        <li class="list-item">5. Double check you have the correct microphone selected.</li>
-        <li class="list-item">
+        <li>3. When you're ready to start sending captions, click "Click to Start Captions"</li>
+        <li>4. Allow microphone permissions if prompted next to the address bar</li>
+        <li>5. Double check you have the correct microphone selected</li>
+        <li>
           <a
             target="_blank"
-            class="text-blue-600"
+            rel="noopener noreferrer"
             href="https://talk2megooseman.notion.site/stream-cc-faq"
           >
-            Click here for more details instructions or additional help.
+            More detailed instructions &amp; additional help
           </a>
         </li>
       </ul>
-    </div>
-  </div>
-</section>
-<!-- Captions Sections -->
-<%= if @announcement && @announcement.display do %>
-  <div class="alert bg-primary-light text-primary text-left" role="alert">
-    <div>
-      <%= raw(@announcement.message) %>
-    </div>
-  </div>
-<% end %>
-<section class="px-4 pb-12">
-  <div class="card shadow dark:bg-gray-800">
-    <div class="card-header">
-      <h5 class="card-title">
-        Your Captions
-      </h5>
-      <div class="flex items-center">
-        <span>Selected Language: <%= @stream_settings.language %></span>
-        <.link navigate={~p"/users/caption-settings"} class="flex btn btn-outline-primary mx-5">
-          <svg
-            class="shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span>Caption Settings</span>
-        </.link>
-        <a href="https://talk2megooseman.notion.site/stream-cc-faq">
-          <span class="flex flex-row">
-            <svg
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              class="flex-none w-6 h-6 mr-1 text-gray-700"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              >
-              </path>
-            </svg>
-            Help
-          </span>
-        </a>
-      </div>
-    </div>
-    <div id="caption-actions">
-      <div
-        data-controller="captions"
-        data-captions-language-value={@stream_settings.language}
-        data-action="twitch:state@window->captions#onTwitchChange zoom:state@window->captions#onZoomChange"
-      >
-        <div class="p-4">
-          <div class="space-y-2" data-captions-target="outputOutline">
-            <div class="w-9/12 h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div class="w-11/12 h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div class="w-8/12 h-4 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-          <div class="space-y-2 hidden" data-captions-target="realOutput">
-            <p class="uppercase" data-captions-target="finalOutput"></p>
-            <p class="uppercase" data-captions-target="interimOutput"></p>
-          </div>
-          <div class=" text-red-900" data-captions-target="warning"></div>
+    </details>
+
+    <div class="console">
+      <div class="console__main">
+        <div class="section-label">
+          <h2>Live Session</h2>
+          <span class="hint">Start &amp; stop your captions</span>
+          <span class="section-label__line"></span>
         </div>
-        <button
-          class="w-full btn btn-primary"
-          data-captions-target="start"
-          data-action="click->captions#startCaptions"
-          disabled
+
+        <section class="capctl capctl--hero">
+          <div class="capctl__head">
+            <h3>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                aria-hidden="true"
+              >
+                <path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2V5Zm16 0a2 2 0 0 0-2-2h-4v16h4a2 2 0 0 1 2 2V5Z" />
+              </svg>
+              Your Captions
+            </h3>
+            <span class="capctl__lang">Language: <b>{@stream_settings.language}</b></span>
+            <div class="capctl__actions">
+              <.link navigate={~p"/users/caption-settings"} class="btn btn--ghost btn--sm">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  aria-hidden="true"
+                >
+                  <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm8 3a8 8 0 0 0-.2-1.7l2-1.6-2-3.4-2.4 1a8 8 0 0 0-3-1.7L14 2h-4l-.4 2.6a8 8 0 0 0-3 1.7l-2.4-1-2 3.4 2 1.6A8 8 0 0 0 4 12c0 .6.1 1.1.2 1.7l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 3 1.7L10 22h4l.4-2.6a8 8 0 0 0 3-1.7l2.4 1 2-3.4-2-1.6c.1-.6.2-1.1.2-1.7Z" />
+                </svg>
+                Caption Settings
+              </.link>
+              <a
+                class="help"
+                href="https://talk2megooseman.notion.site/stream-cc-faq"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  aria-hidden="true"
+                >
+                  <path d="M12 17h.01M9.2 9a3 3 0 1 1 4.3 3c-.9.6-1.5 1.2-1.5 2.2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
+                </svg>
+                Help
+              </a>
+            </div>
+          </div>
+
+          <div id="caption-actions">
+            <div
+              data-controller="captions"
+              data-captions-language-value={@stream_settings.language}
+              data-action="twitch:state@window->captions#onTwitchChange zoom:state@window->captions#onZoomChange"
+            >
+              <div class="capctl__stage">
+                <span class="stagetag"><span class="rec"></span>Preview</span>
+                <div class="stage-empty" data-captions-target="outputOutline">
+                  <div class="skel" style="width: 82%"></div>
+                  <div class="skel" style="width: 94%"></div>
+                  <div class="skel" style="width: 61%"></div>
+                  <div class="stage-empty__note">
+                    Captions will appear here once you start a session.
+                  </div>
+                </div>
+                <div
+                  class="caplive hidden"
+                  data-captions-target="realOutput"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <p data-captions-target="finalOutput"></p>
+                  <p class="interim" data-captions-target="interimOutput"></p>
+                  <div class="caplive__translations" data-captions-target="translationOutput">
+                  </div>
+                </div>
+                <div
+                  class="stage-empty__note"
+                  style="color: var(--warn)"
+                  data-captions-target="warning"
+                >
+                </div>
+              </div>
+              <button
+                class="startbtn btn-primary"
+                data-captions-target="start"
+                data-action="click->captions#startCaptions"
+                disabled
+              >
+                Click to Start Captions
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="sysstat"
+          data-controller="status"
+          data-action="captions:started@window->status#onSpeechStarted captions:stopped@window->status#onSpeechStopped captions:error@window->status#onSpeechError twitch:installed@window->status#onExtensionStatus"
         >
-          Click to Start Captions
-        </button>
-        <div></div>
+          <div class="sysstat__head">
+            <span class="s-ico">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 12h4l2.5-7 5 14L17 12h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <h3>System Status</h3>
+          </div>
+          <div class="sysgrid">
+            <.sys_row
+              label="Speech Engine"
+              value="Idle"
+              state="idle"
+              key="speech"
+              icon="M3 12h4l2.5-7 5 14L17 12h4"
+            />
+            <.sys_row
+              label="Microphone"
+              value="—"
+              state="idle"
+              key="mic"
+              icon="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Zm-6 9a6 6 0 0 0 12 0M12 18v3"
+            />
+            <.sys_row
+              label="Browser"
+              value="Checking…"
+              state="idle"
+              key="browser"
+              icon="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 0c2.5 2.5 2.5 15.5 0 18M3 12h18M4.5 7.5h15M4.5 16.5h15"
+            />
+            <.sys_row
+              label="Realtime Link"
+              value="Connecting…"
+              state="idle"
+              key="realtime"
+              icon="M9 15l6-6M10 6l1-1a4 4 0 0 1 6 6l-1 1M14 18l-1 1a4 4 0 0 1-6-6l1-1"
+            />
+            <.sys_row
+              label="Twitch Extension"
+              value={if @twitch_enabled, do: "Checking…", else: "Not connected"}
+              state="idle"
+              key="extension"
+              icon="M4 3 3 7v12h4v3h3l3-3h4l5-5V3H4Zm16 9-3 3h-4l-3 3v-3H7V5h13v7ZM15 8h2v4h-2V8Zm-5 0h2v4h-2V8Z"
+            />
+            <.sys_row
+              label="Recognition Language"
+              value={@stream_settings.language}
+              state="ok"
+              icon="M4 5h7M7.5 5c0 4-2 8-4 9m1-4c1.5 1.5 3 2.5 4 3M13 19l4-9 4 9m-6.5-3h5"
+            />
+            <.sys_row
+              label="Caption Delay"
+              value={"#{@stream_settings.caption_delay} sec"}
+              state="idle"
+              icon="M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+            />
+            <.sys_row
+              label="Auto-Off"
+              value={on_off(@stream_settings.auto_off_captions)}
+              state={if @stream_settings.auto_off_captions, do: "ok", else: "idle"}
+              icon="M12 3v8M7.8 6.5a7 7 0 1 0 8.4 0"
+            />
+            <.sys_row
+              label="In-Chat Reminder"
+              value={if @stream_settings.turn_on_reminder, do: "On", else: "Off"}
+              state={if @stream_settings.turn_on_reminder, do: "ok", else: "idle"}
+              icon="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Zm4 10a2 2 0 0 0 4 0"
+            />
+          </div>
+        </section>
       </div>
+
+      <aside class="console__rail">
+        <div class="rail-group">
+          <div class="section-label">
+            <h2>Outputs</h2>
+            <span class="section-label__line"></span>
+          </div>
+
+          <%= if @twitch_enabled do %>
+            <.twitch_enabled_indicator settings={@stream_settings} />
+          <% else %>
+            <.twitch_disabled_indicator settings={@stream_settings} />
+          <% end %>
+
+          <section
+            class="dest"
+            data-controller="zoom"
+            style="--brand: #2d8cff; --brand-ink: #a9cdff;"
+          >
+            <div class="dest__head">
+              <span class="dest__icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h9A1.5 1.5 0 0 1 15 7.5v9A1.5 1.5 0 0 1 13.5 18h-9A1.5 1.5 0 0 1 3 16.5v-9Zm12 3 5-3v9l-5-3v-3Z" />
+                </svg>
+              </span>
+              <div class="dest__ttl">
+                <h3>Zoom Meeting Captions</h3>
+                <p>Send captions to your Zoom meeting.</p>
+              </div>
+              <div class="dest__sw" data-action="click->zoom#enable">
+                <div class="js-off" data-zoom-target="offButton">{_switch_off(assigns)}</div>
+                <div class="hidden js-on" data-zoom-target="onButton">{_switch_on(assigns)}</div>
+              </div>
+            </div>
+            <div class="dest__body">
+              <div class="field">
+                <label for="zoom-url">Zoom Captions URL</label>
+                <input
+                  id="zoom-url"
+                  type="url"
+                  placeholder="https://…"
+                  data-action="zoom#onUrlChange"
+                />
+              </div>
+            </div>
+            <div class="dest__statline">
+              <span class="dot"></span>
+              <span class="dest__statoff">Paste a URL to connect</span>
+              <span class="dest__staton">Streaming to your Zoom session</span>
+            </div>
+            <div data-zoom-target="errorMarker" class="hidden">
+              <span class="dest__statline" style="color: var(--warn)">
+                <svg
+                  class="dest__errmark"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Connection problem
+              </span>
+            </div>
+            <div data-zoom-target="errorMessage" class="dest__err hidden" role="alert"></div>
+          </section>
+
+          <section
+            class="dest"
+            data-controller="obs"
+            data-action="captions:payload@window->obs#onCaptionsReceived"
+            style="--brand: #21b5c9; --brand-ink: #9ce6ef;"
+          >
+            <div class="dest__head">
+              <span class="dest__icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+                </svg>
+              </span>
+              <div class="dest__ttl">
+                <h3>OBS Websocket</h3>
+                <p>Send captions directly to OBS.</p>
+              </div>
+              <div class="dest__sw" data-action="click->obs#connectToOBS">
+                <div class="js-off" data-obs-target="offButton">{_switch_off(assigns)}</div>
+                <div class="hidden js-on" data-obs-target="onButton">{_switch_on(assigns)}</div>
+              </div>
+            </div>
+            <div class="dest__body">
+              <div class="field field--pair">
+                <div class="field">
+                  <label for="obs-port">Port</label>
+                  <input id="obs-port" type="text" value="4455" data-action="obs#onPortChange" />
+                </div>
+                <div class="field">
+                  <label for="obs-password">Password</label>
+                  <input
+                    id="obs-password"
+                    type="password"
+                    placeholder="Password"
+                    data-action="obs#onPasswordChange"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="dest__statline">
+              <span class="dot"></span>
+              <span class="dest__statoff">Enter your websocket details</span>
+              <span class="dest__staton">Connected to OBS</span>
+            </div>
+            <div data-obs-target="errorMarker" class="hidden">
+              <span class="dest__statline" style="color: var(--warn)">
+                <svg
+                  class="dest__errmark"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Connection problem
+              </span>
+            </div>
+            <div data-obs-target="errorMessage" class="dest__err hidden" role="alert"></div>
+          </section>
+        </div>
+
+        <div class="rail-group">
+          <div class="section-label">
+            <h2>Translation</h2>
+            <span class="section-label__line"></span>
+          </div>
+
+          <section class="transcard" data-controller="translations">
+            <div class="transcard__head">
+              <span class="t-ico">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 5h7M7.5 5v0c0 4-2 8-4 9m1-4c1.5 1.5 3 2.5 4 3M13 19l4-9 4 9m-6.5-3h5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <h3>Twitch Translation</h3>
+              <a
+                class="help"
+                style="margin-left: auto"
+                href="https://www.notion.so/talk2megooseman/How-Translations-Work-d6b58b0356de41a5aa5f73cf908a7531"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  aria-hidden="true"
+                >
+                  <path d="M12 17h.01M9.2 9a3 3 0 1 1 4.3 3c-.9.6-1.5 1.2-1.5 2.2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
+                </svg>
+                Help
+              </a>
+            </div>
+            <div class="tgrid">
+              <div class="tstat">
+                <span class="tstat__lbl">Translations Status</span>
+                <span class="tpill tpill--off">
+                  <span class="dot"></span>
+                  <span data-translations-target="translationStatus">
+                    {display_translation_status(@translation_active)}
+                  </span>
+                </span>
+              </div>
+              <div class="tstat">
+                <span class="tstat__lbl">Credit Balance</span>
+                <span class="tstat__val" data-translations-target="bitsBalance">
+                  {@bits_balance}
+                </span>
+              </div>
+              <div class="tstat">
+                <span class="tstat__lbl">Selected Language</span>
+                <span class="tstat__val">
+                  <%= if Enum.empty?(@translate_languages) do %>
+                    <.link navigate={~p"/users/caption-settings"}>
+                      Choose in Caption Settings
+                    </.link>
+                  <% else %>
+                    {Map.values(@translate_languages) |> Enum.join(", ")}
+                  <% end %>
+                </span>
+              </div>
+              <div class="tstat tstat--cta">
+                <p>
+                  <strong>500 credits</strong> are required to activate translations for 24 hours.
+                </p>
+                <a
+                  class="btn btn--ghost btn--sm"
+                  href="https://www.notion.so/talk2megooseman/How-Translations-Work-d6b58b0356de41a5aa5f73cf908a7531"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M13 2 4 14h7l-1 8 9-12h-7l1-6Z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  How credits work
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="rail-group">
+          <div class="section-label">
+            <h2>Support</h2>
+            <span class="section-label__line"></span>
+          </div>
+
+          <section class="supportmini">
+            <p>
+              Stream CC is free for everyone. If it helps your stream, you can chip in to keep the
+              servers running.
+            </p>
+            <a
+              class="btn btn--kofi btn--block"
+              href="https://ko-fi.com/talk2megooseman"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493 1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182 2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195-1.09-2-1.298-4.155-1.298-7.506 0-2.181.857-3.402 3.012-3.714 1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545 1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142 0 1.533.858 2.857 1.949 3.897.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896 1.117-1.039 1.974-2.364 1.974-3.897 0-1.662-1.247-3.142-3.039-3.142-1.065 0-1.792.545-2.338 1.298-.493-.753-1.246-1.298-2.312-1.298" />
+              </svg>
+              Buy me a coffee
+            </a>
+            <a
+              class="btn btn--patreon btn--block"
+              href="https://patreon.com/talk2megooseman"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
+              </svg>
+              Become a Supporter
+            </a>
+          </section>
+        </div>
+      </aside>
     </div>
   </div>
-</section>
+</div>

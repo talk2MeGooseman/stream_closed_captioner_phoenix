@@ -13,7 +13,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
     test "renders the reset password page", %{conn: conn} do
       conn = get(conn, Routes.user_reset_password_path(conn, :new))
       response = html_response(conn, 200)
-      assert response =~ "Forgot your password?</h5>"
+      assert response =~ "Forgot your password?</h1>"
     end
   end
 
@@ -55,7 +55,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
 
     test "renders reset password", %{conn: conn, token: token} do
       conn = get(conn, Routes.user_reset_password_path(conn, :edit, token))
-      assert html_response(conn, 200) =~ "Reset Password</h5>"
+      assert html_response(conn, 200) =~ "Choose a new password</h1>"
     end
 
     test "does not render reset password with invalid token", %{conn: conn} do
@@ -100,7 +100,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Reset Password</h5>"
+      assert response =~ "Choose a new password</h1>"
       assert response =~ "should be at least 6 character(s)"
       assert response =~ "does not match password"
     end

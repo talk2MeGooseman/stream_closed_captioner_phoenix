@@ -35,6 +35,28 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
   end
 
   @doc """
+  Persists a freshly-refreshed Twitch OAuth token pair on the user.
+
+  Used by `Twitch.Oauth` when a stored access token has expired and was renewed
+  via the refresh token.
+
+  ## Examples
+
+      iex> update_user_oauth_tokens(user, %{access_token: "new", refresh_token: "rot"})
+      {:ok, %User{}}
+
+  """
+  @decorate cache_evict(
+              cache: Cache,
+              key: {User, user.uid}
+            )
+  def update_user_oauth_tokens(%User{} = user, attrs) do
+    user
+    |> User.oauth_token_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for changing the user's provider.
 
   ## Examples

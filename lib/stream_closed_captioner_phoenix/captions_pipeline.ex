@@ -48,7 +48,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
           _ ->
             Logger.warning("Translation timed out or failed, passing through untranslated")
-            censored
+            %{censored | translation_error: :timeout}
         end
 
       payload = apply_pirate_mode(translated, stream_settings)

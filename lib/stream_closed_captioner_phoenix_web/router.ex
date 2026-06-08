@@ -116,7 +116,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   scope "/", StreamClosedCaptionerPhoenixWeb do
     pipe_through(:browser)
 
-    live("/", PageLive, :index)
+    live_session :home,
+      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root},
+      layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc},
+      on_mount: [{StreamClosedCaptionerPhoenixWeb.AdminHooks, :assign_current_user}] do
+      live("/", PageLive, :index)
+    end
 
     get("/privacy", PrivacyController, :index)
     get("/terms", TermsController, :index)
@@ -200,7 +205,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
-    pipe_through([:browser, :redirect_if_user_is_authenticated, :put_session_layout])
+    pipe_through([:browser, :redirect_if_user_is_authenticated, :put_auth_layout])
 
     get("/users/register", UserRegistrationController, :new)
     post("/users/register", UserRegistrationController, :create)
@@ -213,7 +218,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope "/auth", StreamClosedCaptionerPhoenixWeb do
-    pipe_through([:browser, :put_session_layout])
+    pipe_through([:browser, :put_auth_layout])
 
     get("/:provider", UserSessionController, :request)
     get("/:provider/callback", UserSessionController, :callback)
@@ -229,7 +234,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       put("/settings", UserSettingsController, :update)
       get("/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
-      live("/caption-settings", CaptionSettingsLive.Index, :show)
+      live_session :caption_settings,
+        root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root},
+        layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc} do
+        live("/caption-settings", CaptionSettingsLive.Index, :show)
+      end
+
       live("/credit-history", CreditHistoryLive)
     end
 

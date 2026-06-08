@@ -1,77 +1,199 @@
-<h1 class="text-5xl mb-8">Supporters</h1>
-
 <% {active, former} = partition_patrons(get_in(@data, ["patreon", "campaignMembers"]) || []) %>
 
-<section class="mb-12 overflow-hidden rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 p-8 shadow-lg sm:p-10 nightwind-prevent">
-  <div class="max-w-3xl">
-    <h2 class="text-3xl font-bold text-white sm:text-4xl nightwind-prevent">
-      Help keep the captions flowing
-    </h2>
-    <p class="mt-4 text-lg text-rose-50 nightwind-prevent">
-      Stream Closed Captioner is free for everyone thanks to supporters like the
-      wonderful people below. Your support covers server costs and helps keep the lights on.
-    </p>
-    <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+<header class="sup-head">
+  <div class="wrap sup-head__grid">
+    <div class="sup-head__copy">
+      <span class="eyebrow">Community · Supporters</span>
+      <h1 class="h1">Help keep the <em>captions</em> flowing</h1>
+      <p class="lede">
+        Stream CC is free for everyone — and stays that way thanks to the people below.
+        Your support covers server costs and keeps every caption running.
+      </p>
+      <div class="sup-stats">
+        <div class="sup-stat">
+          <span class="sup-stat__num"><em>{length(active)}</em></span>
+          <span class="sup-stat__lbl">Active patrons</span>
+        </div>
+        <div class="sup-stat">
+          <span class="sup-stat__num">{length(active) + length(former)}</span>
+          <span class="sup-stat__lbl">Supporters all-time</span>
+        </div>
+        <div class="sup-stat">
+          <span class="sup-stat__num">100%</span>
+          <span class="sup-stat__lbl">Free, forever</span>
+        </div>
+      </div>
+      <div class="sup-head__actions">
+        <a
+          class="btn btn--patreon"
+          href="https://patreon.com/talk2megooseman"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
+          </svg>
+          Become a Supporter
+        </a>
+        <a
+          class="btn btn--kofi"
+          href="https://ko-fi.com/talk2megooseman"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493 1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182 2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195-1.09-2-1.298-4.155-1.298-7.506 0-2.181.857-3.402 3.012-3.714 1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545 1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142 0 1.533.858 2.857 1.949 3.897.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896 1.117-1.039 1.974-2.364 1.974-3.897 0-1.662-1.247-3.142-3.039-3.142-1.065 0-1.792.545-2.338 1.298-.493-.753-1.246-1.298-2.312-1.298" />
+          </svg>
+          Buy me a coffee
+        </a>
+        <span class="cancel-note">
+          Patreon is monthly · Ko-fi is a one-time tip. Cancel anytime.
+        </span>
+      </div>
+    </div>
+
+    <aside class="supportcard">
+      <div class="supportcard__top">
+        <span class="supportcard__mark">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
+          </svg>
+        </span>
+        <div>
+          <div class="supportcard__eyebrow">Support on Patreon</div>
+          <div class="supportcard__h">Keep the lights on</div>
+        </div>
+      </div>
+      <ul class="supportcard__list">
+        <li>
+          <span class="supportcard__check">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m5 12.5 4.5 4.5L19 6.5" />
+            </svg>
+          </span>
+          Cover servers that caption thousands of live hours
+        </li>
+        <li>
+          <span class="supportcard__check">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m5 12.5 4.5 4.5L19 6.5" />
+            </svg>
+          </span>
+          Your name on this page, with my gratitude
+        </li>
+        <li>
+          <span class="supportcard__check">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m5 12.5 4.5 4.5L19 6.5" />
+            </svg>
+          </span>
+          Keep Stream CC free for every streamer
+        </li>
+      </ul>
       <a
+        class="btn btn--patreon"
         href="https://patreon.com/talk2megooseman"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-base font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 focus:outline-none focus:ring-4 focus:ring-white/50 nightwind-prevent"
       >
-        <img src={~p"/images/patreon.svg"} alt="" class="h-5 w-5 rounded" />
-        Become a Supporter on Patreon
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path d="M15.4 3c-4 0-7.2 3.2-7.2 7.2 0 3.9 3.2 7.1 7.2 7.1 3.9 0 7.1-3.2 7.1-7.1C22.5 6.2 19.3 3 15.4 3ZM2 21V3h3.3v18H2Z" />
+        </svg>
+        Become a Supporter
       </a>
-      <span class="text-sm text-rose-100 nightwind-prevent">Cancel anytime.</span>
+      <span class="cancel-note" style="text-align: center">Prefer a one-time tip?</span>
+      <a
+        class="btn btn--kofi"
+        href="https://ko-fi.com/talk2megooseman"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path d="M11.351 2.715c-2.7 0-4.986.025-6.83.26C2.078 3.285 0 5.154 0 8.61c0 3.506.182 6.13 1.585 8.493 1.584 2.701 4.233 4.182 7.662 4.182h.83c4.209 0 6.494-2.234 7.637-4a9.5 9.5 0 0 0 1.091-2.338C21.792 14.688 24 12.22 24 9.208v-.415c0-3.247-2.13-5.507-5.792-5.87-1.558-.156-2.65-.208-6.857-.208m0 1.947c4.208 0 5.09.052 6.571.182 2.624.311 4.13 1.584 4.13 4v.39c0 2.156-1.792 3.844-3.87 3.844h-.935l-.156.649c-.208 1.013-.597 1.818-1.039 2.546-.909 1.428-2.545 3.064-5.922 3.064h-.805c-2.571 0-4.831-.883-6.078-3.195-1.09-2-1.298-4.155-1.298-7.506 0-2.181.857-3.402 3.012-3.714 1.533-.233 3.559-.26 6.39-.26m6.547 2.287c-.416 0-.65.234-.65.546v2.935c0 .311.234.545.65.545 1.324 0 2.051-.754 2.051-2s-.727-2.026-2.052-2.026m-10.39.182c-1.818 0-3.013 1.48-3.013 3.142 0 1.533.858 2.857 1.949 3.897.727.701 1.87 1.429 2.649 1.896a1.47 1.47 0 0 0 1.507 0c.78-.467 1.922-1.195 2.623-1.896 1.117-1.039 1.974-2.364 1.974-3.897 0-1.662-1.247-3.142-3.039-3.142-1.065 0-1.792.545-2.338 1.298-.493-.753-1.246-1.298-2.312-1.298" />
+        </svg>
+        Buy me a coffee
+      </a>
+    </aside>
+  </div>
+</header>
+
+<section :if={active != []} class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head__l">
+        <div class="sec-head__title">
+          <h2 class="h2">Active patrons</h2>
+          <span class="count-pill">{length(active)}</span>
+        </div>
+        <p>
+          A heartfelt thank-you to everyone keeping the lights on — you make this project possible. 💜
+        </p>
+      </div>
+    </div>
+    <div class="patrons">
+      <.patron_card :for={patron <- active} patron={patron} />
+      <div class="joincard">
+        <div class="joincard__h">Want to see your name here?</div>
+        <p>Become a supporter and help keep the captions running.</p>
+        <a href="https://patreon.com/talk2megooseman" target="_blank" rel="noopener noreferrer">
+          Become a supporter
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
 </section>
 
-<section :if={active != []} class="mb-12">
-  <div class="flex items-baseline gap-3 mb-4">
-    <h2 class="text-4xl">Active Patrons</h2>
-    <span class="text-lg text-gray-500">{length(active)}</span>
-  </div>
-  <p class="text-gray-500 mb-4">
-    A heartfelt thank-you to everyone keeping the lights on — you make this project possible. 💜
-  </p>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-    <.patron_card :for={patron <- active} patron={patron} />
-  </div>
-</section>
-
-<section
-  :if={active != [] or former != []}
-  class="mb-12 rounded-2xl border border-rose-100 bg-white p-6 shadow-sm dark:border-rose-900/40 dark:bg-gray-800"
->
-  <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-    <div>
-      <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        Want to see your name here?
-      </p>
-      <p class="text-sm text-gray-500">Become a supporter and help keep the captions running.</p>
+<section :if={former != []} class="block block--alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head__l">
+        <div class="sec-head__title">
+          <h2 class="h2">Former patrons</h2>
+          <span class="count-pill">{length(former)}</span>
+        </div>
+        <p>
+          Thank you for your past support — it carried this project through its early years. 💜
+        </p>
+      </div>
     </div>
-    <a
-      href="https://patreon.com/talk2megooseman"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-r from-rose-500 to-pink-500 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:from-rose-600 hover:to-pink-600 focus:outline-none focus:ring-4 focus:ring-rose-300 nightwind-prevent"
-    >
-      Become a Supporter <span aria-hidden="true">→</span>
-    </a>
+    <div class="formers">
+      <.patron_chip :for={patron <- former} patron={patron} />
+    </div>
+    <div class="former-foot">Every name here helped caption a stream</div>
   </div>
 </section>
-
-<section :if={former != []} class="mb-8">
-  <div class="flex items-baseline gap-3 mb-4">
-    <h2 class="text-4xl">Former Patrons</h2>
-    <span class="text-lg text-gray-500">{length(former)}</span>
-  </div>
-  <p class="text-gray-500 mb-4">Thank you for your past support. 💜</p>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-    <.patron_card :for={patron <- former} patron={patron} />
-  </div>
-</section>
-
-<p :if={active == [] and former == []} class="text-gray-500">
-  No patrons to show right now.
-</p>

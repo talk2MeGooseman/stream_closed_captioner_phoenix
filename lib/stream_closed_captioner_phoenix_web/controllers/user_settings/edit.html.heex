@@ -1,81 +1,224 @@
-<div class="px-0 mx-auto max-w-7xl sm:px-4">
-  <div
-    class="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 bg-white rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 sm:px-6">
-    <h1 class="mb-4 text-lg font-semibold text-left text-gray-900">Account Settings</h1>
-    <%= form_for @email_changeset, ~p"/users/settings", fn f -> %>
-    <%= if @email_changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+<header class="page-head">
+  <div class="wrap page-head__in">
+    <div>
+      <span class="eyebrow">Account · Security</span>
+      <h1 class="h1">Account Settings</h1>
+      <p>
+        Manage the email and password you sign in with, your connected Twitch
+        account, and your Stream CC account itself.
+      </p>
     </div>
-    <% end %>
+  </div>
+</header>
 
-    <div class="mb-6">
-      <%= label f, :email, class: "form-label" %>
-      <%= text_input f, :email, required: true, class: "form-input" %>
-      <%= error_tag f, :email %>
+<div class="wrap">
+  <div class="cards" style="max-width: 680px; margin: 0 auto; padding: 36px 0 90px;">
+    <div :if={msg = Phoenix.Flash.get(@flash, :info)} class="note" role="status">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{msg}</span>
+    </div>
+    <div :if={msg = Phoenix.Flash.get(@flash, :error)} class="note note--error" role="alert">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{msg}</span>
     </div>
 
-    <div class="mb-6">
-      <%= label f, :current_password, for: "current_password_for_email" %>
-      <%= password_input f, :current_password, required: true, name: "current_password", id: "current_password_for_email", class: "form-input" %>
-      <%= error_tag f, :current_password %>
-    </div>
+    <section class="card">
+      <div class="card__head">
+        <h2>Email</h2>
+        <p>
+          Update the address you use to sign in. We'll email a confirmation link to the new address before the change takes effect.
+        </p>
+      </div>
+      <%= form_for @email_changeset, ~p"/users/settings", fn f -> %>
+        <div class="card__body">
+          <div :if={@email_changeset.action} class="note note--error" role="alert">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Oops, something went wrong! Please check the errors below.</span>
+          </div>
+          <div style="display: grid; gap: 16px; padding: 6px 0 4px;">
+            <div class="field">
+              {label(f, :email)}
+              {text_input(f, :email, required: true)}
+              {error_tag(f, :email)}
+            </div>
+            <div class="field">
+              {label(f, :current_password, "Current password", for: "current_password_for_email")}
+              {password_input(f, :current_password,
+                required: true,
+                name: "current_password",
+                id: "current_password_for_email"
+              )}
+              {error_tag(f, :current_password)}
+            </div>
+          </div>
+          {hidden_input(f, :action, value: "update_email", name: "action")}
+        </div>
+        <div class="card__foot">
+          <span class="card__foot__status">
+            A confirmation link will be sent to the new address.
+          </span>
+          {submit("Change e-mail", class: "btn btn--primary btn--sm")}
+        </div>
+      <% end %>
+    </section>
 
-    <%= hidden_input(f, :action, value: "update_email", name: "action" ) %>
-    <div class="mt-8 mb-2">
-      <%= submit "Change e-mail", class: "btn btn-primary btn-sm" %>
-    </div>
-    <% end %>
-
-    <section>
-      <h4 class="text-2xl">Change password</h4>
+    <section class="card">
+      <div class="card__head">
+        <h2>Password</h2>
+        <p>Choose a new password. You'll need your current password to confirm the change.</p>
+      </div>
       <%= form_for @password_changeset, ~p"/users/settings", fn f -> %>
-      <%= if @password_changeset.action do %>
-      <div class="alert alert-danger">
-        <p>Oops, something went wrong! Please check the errors below.</p>
-      </div>
-      <% end %>
-
-      <div class="mb-6">
-        <%= label f, :password, "New password", class: "form-label" %>
-        <%= password_input f, :password, required: true, class: "form-input" %>
-        <%= error_tag f, :password %>
-      </div>
-
-      <div class="mb-6">
-        <%= label f, :password_confirmation, "Confirm new password", class: "form-label" %>
-        <%= password_input f, :password_confirmation, required: true, class: "form-input" %>
-        <%= error_tag f, :password_confirmation %>
-      </div>
-
-      <div class="mb-6">
-        <%= label f, :current_password, for: "current_password_for_password", class: "form-label" %>
-        <%= password_input f, :current_password, required: true, name: "current_password", id: "current_password_for_password", class: "form-input" %>
-        <%= error_tag f, :current_password %>
-      </div>
-
-      <div class="mt-8 mb-2">
-        <%= hidden_input(f, :action, value: "update_password", name: "action" ) %>
-        <%= submit "Change password", class: "btn btn-primary btn-sm" %>
-      </div>
+        <div class="card__body">
+          <div :if={@password_changeset.action} class="note note--error" role="alert">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Oops, something went wrong! Please check the errors below.</span>
+          </div>
+          <div style="display: grid; gap: 16px; padding: 6px 0 4px;">
+            <div class="field">
+              {label(f, :password, "New password")}
+              {password_input(f, :password, required: true)}
+              {error_tag(f, :password)}
+            </div>
+            <div class="field">
+              {label(f, :password_confirmation, "Confirm new password")}
+              {password_input(f, :password_confirmation, required: true)}
+              {error_tag(f, :password_confirmation)}
+            </div>
+            <div class="field">
+              {label(f, :current_password, "Current password",
+                for: "current_password_for_password"
+              )}
+              {password_input(f, :current_password,
+                required: true,
+                name: "current_password",
+                id: "current_password_for_password"
+              )}
+              {error_tag(f, :current_password)}
+            </div>
+          </div>
+          {hidden_input(f, :action, value: "update_password", name: "action")}
+        </div>
+        <div class="card__foot">
+          <span class="card__foot__status">
+            You'll stay signed in after changing your password.
+          </span>
+          {submit("Change password", class: "btn btn--primary btn--sm")}
+        </div>
       <% end %>
     </section>
 
-    <section>
-      <h4 class="text-2xl">Connected Accounts</h4>
-      <%= if @current_user.provider == "twitch" do %>
-      <%= form_for @provider_changeset, ~p"/users/settings", fn f -> %>
-      <div class="flex flex-row flex-initial">
-        <%= hidden_input(f, :action, value: "remove_provider", name: "action" ) %>
-        <%= submit "Disconnect your Twitch account", class: "btn btn-primary btn-sm" %>
+    <section class="card">
+      <div class="card__head">
+        <h2>Connected Accounts</h2>
+        <p>Link your Twitch account to enable the Twitch extension overlay and bits.</p>
       </div>
-      <% end %>
-      <% else %>
-      <%= link "Connect your Twitch Account", to: "/auth/twitch", class: "btn btn-sm btn-link" %>
-      <% end %>
+      <div class="card__body">
+        <div class="note">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>
+            <%= if @current_user.provider == "twitch" do %>
+              Your Twitch account is connected.
+            <% else %>
+              No Twitch account is connected yet.
+            <% end %>
+          </span>
+        </div>
+      </div>
+      <div class="card__foot">
+        <%= if @current_user.provider == "twitch" do %>
+          <span class="card__foot__status">
+            Disconnecting removes the Twitch overlay and bits features.
+          </span>
+          <%= form_for @provider_changeset, ~p"/users/settings", fn f -> %>
+            {hidden_input(f, :action, value: "remove_provider", name: "action")}
+            {submit("Disconnect Twitch", class: "btn btn--ghost btn--sm")}
+          <% end %>
+        <% else %>
+          <span class="card__foot__status">Connect to unlock the Twitch extension overlay.</span>
+          <a class="btn btn--primary btn--sm" href="/auth/twitch">Connect your Twitch account</a>
+        <% end %>
+      </div>
     </section>
-    <section class="mt-10">
-      <%= link "Click here to delete account", to: ~p"/users/register", method: :delete, data: [confirm: "Are you sure you want to delete your account?"] %>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>Delete account</h2>
+        <p>
+          Permanently delete your Stream CC account and all of its data. This cannot be undone.
+        </p>
+      </div>
+      <div class="card__foot">
+        <span class="card__foot__status">This action is permanent.</span>
+        <.link
+          href={~p"/users/register"}
+          method="delete"
+          data-confirm="Are you sure you want to delete your account?"
+          class="btn btn--ghost btn--sm"
+          style="color: var(--live); border-color: color-mix(in srgb, var(--live) 45%, transparent);"
+        >
+          Delete account
+        </.link>
+      </div>
     </section>
   </div>
 </div>

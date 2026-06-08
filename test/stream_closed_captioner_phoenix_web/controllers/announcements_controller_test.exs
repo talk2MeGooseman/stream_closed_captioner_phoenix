@@ -15,6 +15,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.AnnouncementsControllerTest do
     :ok
   end
 
+  defp page(id, name, published) do
+    %{
+      "id" => id,
+      "properties" => %{
+        "Name" => %{"title" => [%{"plain_text" => name}]},
+        "Published" => %{"date" => %{"start" => published}},
+        "tldr" => %{"rich_text" => [%{"plain_text" => "summary"}]}
+      }
+    }
+  end
+
   describe "GET /announcements" do
     test "renders the announcements page with pages returned from Notion", %{conn: conn} do
       pages = [
@@ -36,10 +47,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.AnnouncementsControllerTest do
       conn = get(conn, ~p"/announcements")
 
       assert conn.status == 200
+      # timeline entry: title links to Notion, date formatted on the rail
       assert conn.resp_body =~ "My Announcement"
+      assert conn.resp_body =~ "Jan 15, 2024"
+      assert conn.resp_body =~ "A short summary"
+      assert conn.resp_body =~ "Continue reading"
     end
 
-    test "renders the announcements page with an empty list when Notion fails", %{conn: conn} do
+    test "renders the changelog header and empty state when Notion fails", %{conn: conn} do
       Notion.MockDatabase
       |> expect(:query_database, fn @notion_db_id, %{} ->
         {:error, :timeout}
@@ -48,7 +63,41 @@ defmodule StreamClosedCaptionerPhoenixWeb.AnnouncementsControllerTest do
       conn = get(conn, ~p"/announcements")
 
       assert conn.status == 200
-      assert conn.resp_body =~ "Annoucements and News"
+      # new design header + graceful empty state (no entries to show)
+      assert conn.resp_body =~ "Changelog"
+      assert conn.resp_body =~ "No announcements yet"
+    end
+
+    test "renders the shared Stream CC nav and footer chrome", %{conn: conn} do
+      Notion.MockDatabase
+      |> expect(:query_database, fn @notion_db_id, %{} ->
+        {:ok, %{"results" => []}}
+      end)
+
+      html = conn |> get(~p"/announcements") |> html_response(200)
+
+      # nav highlights Announcements; CTA + footer come from the :scc layout
+      assert html =~ "aria-current=\"page\""
+      assert html =~ "Connect with Twitch"
+      assert html =~ "Erik Guzman"
+      # the old shared header must NOT also render (no doubled nav)
+      refute html =~ "darkmode#toggle"
+    end
+
+    test "orders the timeline newest-first regardless of Notion's order", %{conn: conn} do
+      pages = [
+        page("older", "Older Post", "2024-01-01"),
+        page("newer", "Newer Post", "2024-03-01")
+      ]
+
+      Notion.MockDatabase
+      |> expect(:query_database, fn @notion_db_id, %{} ->
+        {:ok, %{"results" => pages}}
+      end)
+
+      body = conn |> get(~p"/announcements") |> html_response(200)
+
+      assert :binary.match(body, "Newer Post") < :binary.match(body, "Older Post")
     end
 
     test "does not hit Notion on a second request within the cache TTL", %{conn: conn} do

@@ -12,6 +12,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
   def maybe_translate(payload, key, %User{} = user) do
     text = Map.get(payload, key)
 
+    # Interim frames carry an empty `:final`; translating blank text just burns an API
+    # call and returns an empty `translations` map that wipes the displayed translation on
+    # the client. Skip it and leave `translations` untouched (nil).
+    if blank?(text) do
+      payload
+    else
+      do_maybe_translate(payload, text, user)
+    end
+  end
+
+  defp do_maybe_translate(payload, text, %User{} = user) do
     if Bits.user_active_debit_exists?(user.id) do
       case get_translations(user, text) do
         {:ok, %Translations{translations: translations}} ->
@@ -19,7 +30,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
 
         {:error, reason} ->
           Logger.warning("Translation failed for user #{user.id}: #{inspect(reason)}")
-          payload
+          %{payload | translation_error: :failed}
       end
     else
       to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
@@ -45,13 +56,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
               "Translation failed after activation for user #{user.id}: #{inspect(reason)}"
             )
 
-            payload
+            %{payload | translation_error: :failed}
         end
 
       _ ->
         payload
     end
   end
+
+  defp blank?(nil), do: true
+  defp blank?(text) when is_binary(text), do: String.trim(text) == ""
+  defp blank?(_), do: true
 
   defp get_translations(%User{} = user, text) do
     {:ok, stream_settings} = Settings.get_stream_settings_by_user_id(user.id)

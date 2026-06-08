@@ -2,52 +2,80 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersHTML do
   use StreamClosedCaptionerPhoenixWeb, :html
   embed_templates("supporters/*")
 
+  # Monogram-avatar palette, mirrored from the supporters design.
+  @avatar_palette ~w(#9146FF #22D3EE #F59E0B #34D399 #F472B6 #60A5FA)
+
   @doc """
-  Renders a single patron card. Active patrons get a filled, colored heart and
-  a green status badge; former patrons get a muted outline heart and a dimmed card.
+  Renders an active patron as a card: gradient monogram avatar, name, and the
+  "Active Patron" heart tier.
   """
   attr :patron, :map, required: true
 
   def patron_card(assigns) do
-    assigns = assign(assigns, :active?, active_patron?(assigns.patron))
+    assigns = assign(assigns, :name, assigns.patron["fullName"])
 
     ~H"""
-    <div class={[
-      "group relative flex items-center gap-4 overflow-hidden rounded-2xl border bg-white p-5 shadow-sm",
-      "transition duration-200 hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800",
-      if(@active?,
-        do: "border-rose-100 dark:border-rose-900/40",
-        else: "border-gray-100 dark:border-gray-700"
-      )
-    ]}>
-      <span class={[
-        "absolute inset-y-0 left-0 w-1.5",
-        if(@active?,
-          do: "bg-gradient-to-b from-rose-400 to-pink-500",
-          else: "bg-gray-200 dark:bg-gray-600"
-        )
-      ]} />
-
-      <div class="min-w-0">
-        <div class="truncate text-lg font-semibold text-gray-900 dark:text-gray-100">
-          {@patron["fullName"]}
-        </div>
-        <span class={[
-          "mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-          if(@active?,
-            do: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-            else: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-          )
-        ]}>
-          <span class={[
-            "h-1.5 w-1.5 rounded-full",
-            if(@active?, do: "bg-green-500", else: "bg-gray-400")
-          ]} />
-          {get_polite_status(@patron["currentlyEntitledAmountCents"])}
-        </span>
-      </div>
-    </div>
+    <article class="pcard">
+      <span class="pcard__avatar" aria-hidden="true" style={avatar_style(@name)}>
+        {initials(@name)}
+      </span>
+      <h3 class="pcard__name">{@name}</h3>
+      <span class="pcard__tier">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 20.3 4.3 12.6a4.6 4.6 0 0 1 0-6.5 4.6 4.6 0 0 1 6.5 0l1.2 1.2 1.2-1.2a4.6 4.6 0 0 1 6.5 0 4.6 4.6 0 0 1 0 6.5L12 20.3Z" />
+        </svg>
+        Active Patron
+      </span>
+    </article>
     """
+  end
+
+  @doc "Renders a former patron as a compact chip: monogram dot + name."
+  attr :patron, :map, required: true
+
+  def patron_chip(assigns) do
+    assigns = assign(assigns, :name, assigns.patron["fullName"])
+
+    ~H"""
+    <span class="fchip">
+      <span class="fchip__dot" aria-hidden="true" style={avatar_style(@name)}>{initials(@name)}</span>
+      <span class="fchip__name">{@name}</span>
+    </span>
+    """
+  end
+
+  @doc """
+  Up to two uppercase initials for a patron name, ignoring punctuation. Falls
+  back to a star when a name has no alphanumeric characters.
+  """
+  @spec initials(any()) :: String.t()
+  def initials(name) do
+    cleaned = name |> to_string() |> String.replace(~r/[^A-Za-z0-9\s]/u, "") |> String.trim()
+
+    case String.split(cleaned, ~r/\s+/, trim: true) do
+      [first, second | _] -> String.upcase(String.first(first) <> String.first(second))
+      [only] -> only |> String.slice(0, 2) |> String.upcase()
+      [] -> "★"
+    end
+  end
+
+  @doc "Inline gradient background for a monogram avatar, deterministic per name."
+  @spec avatar_style(any()) :: String.t()
+  def avatar_style(name) do
+    color = Enum.at(@avatar_palette, :erlang.phash2(name, length(@avatar_palette)))
+    "background: linear-gradient(150deg, #{color}, color-mix(in srgb, #{color} 50%, #000));"
+  end
+
+  @doc """
+  Splits a list of patrons into `{active, former}` based on whether they are
+  currently contributing (`currentlyEntitledAmountCents > 0`), keeping only
+  those who have ever contributed.
+  """
+  @spec partition_patrons(list()) :: {list(), list()}
+  def partition_patrons(patrons) do
+    patrons
+    |> filter_patreon_subscribers()
+    |> Enum.split_with(&active_patron?/1)
   end
 
   @spec filter_patreon_subscribers(list()) :: list()
@@ -57,26 +85,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.SupportersHTML do
     end)
   end
 
-  @doc """
-  Splits a list of patrons into `{active, former}` based on whether they are
-  currently contributing (`currentlyEntitledAmountCents > 0`).
-  """
-  @spec partition_patrons(list()) :: {list(), list()}
-  def partition_patrons(patrons) do
-    patrons
-    |> filter_patreon_subscribers()
-    |> Enum.split_with(&active_patron?/1)
-  end
-
   @spec active_patron?(map()) :: boolean()
   def active_patron?(patron) do
     (patron["currentlyEntitledAmountCents"] || 0) > 0
-  end
-
-  def get_polite_status(support_value) do
-    case support_value > 0 do
-      true -> "Active Patron"
-      _ -> "Former Patron"
-    end
   end
 end

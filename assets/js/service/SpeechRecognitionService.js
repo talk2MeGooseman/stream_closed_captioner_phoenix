@@ -29,6 +29,7 @@ export default class SpeechRecognitionService {
   constructor() {
     this.onSpeechInterimCallback = null;
     this.onSpeechFinalCallback = null;
+    this.onErrorCallback = null;
 
     this.recognitionService = this.initSpeechRecognition();
 
@@ -38,6 +39,7 @@ export default class SpeechRecognitionService {
 
     this.recognitionService.onresult = (event) => this.onRecognitionResult(event);
     this.recognitionService.onend = () => this.onRecognitionEnd();
+    this.recognitionService.onerror = (event) => this.onRecognitionError(event);
 
     this.throttledPublishInterim = throttle(this.publishInterimText, INTERVAL_THROTTLE)
   }
@@ -69,6 +71,20 @@ export default class SpeechRecognitionService {
   onRecognitionEnd() {
     if (this.speechToTextActive) {
       this.recognitionService.start();
+    }
+  }
+
+  // Benign codes that are part of normal operation: "aborted" fires on every
+  // stop()/abort(), and "no-speech" on silence. They must NOT surface as a
+  // captions:error event. Lifecycle handling (auto-restart via onend, etc.)
+  // is independent of this callback, so suppressing it here is safe.
+  static BENIGN_ERRORS = ["aborted", "no-speech"];
+
+  onRecognitionError(event) {
+    debug("Recognition error", event?.error)
+    if (SpeechRecognitionService.BENIGN_ERRORS.includes(event?.error)) return;
+    if (this.onErrorCallback) {
+      this.onErrorCallback(event);
     }
   }
 

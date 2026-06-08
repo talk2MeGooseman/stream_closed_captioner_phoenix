@@ -10,12 +10,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   setup :register_and_log_in_user
 
   describe "mount" do
-    test "renders the caption settings page", %{conn: conn} do
+    test "renders the caption settings page in the new design", %{conn: conn} do
       {:ok, _view, html} = live(conn, "/users/caption-settings")
 
+      # page header + the four section cards
+      assert html =~ "Stream Settings"
       assert html =~ "Caption Settings"
-      assert html =~ "Captions Blocklist Words"
-      assert html =~ "No words added to your blocklist."
+      assert html =~ "Twitch Overlay"
+      assert html =~ "Translation"
+      assert html =~ "Blocklist Words"
+      assert html =~ "No words added yet"
+    end
+
+    test "uses the shared scc chrome, not the old app sidebar", %{conn: conn} do
+      html = conn |> get("/users/caption-settings") |> html_response(200)
+
+      assert html =~ "scc-home"
+      assert html =~ "Erik Guzman"
+      assert html =~ ">Dashboard</a>"
+      refute html =~ "sideBar"
     end
   end
 
@@ -38,7 +51,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
       html = render_hook(view, "add", %{"stream_settings" => %{"blocklist_word" => ""}})
 
       refute html =~ "Blocklist word added successfully."
-      assert html =~ "No words added to your blocklist."
+      assert html =~ "No words added yet"
     end
 
     test "removes a word from the blocklist", %{conn: conn, user: user} do
@@ -125,7 +138,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
         {:ok, %{access_token: "test_token"}}
       end)
 
-      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds,
+                                                     _transport,
+                                                     type,
+                                                     _version,
+                                                     _condition ->
         {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
       end)
 
@@ -168,7 +185,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
   end
 
   describe "form component - validate event" do
-    test "shows validation error for negative caption_delay without saving", %{conn: conn, user: user} do
+    test "shows validation error for negative caption_delay without saving", %{
+      conn: conn,
+      user: user
+    } do
       {:ok, view, _html} = live(conn, "/users/caption-settings")
       original_settings = Settings.get_stream_settings_by_user_id!(user.id)
 

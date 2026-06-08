@@ -2,12 +2,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   alias StreamClosedCaptionerPhoenix.{Accounts, AccountsOauth, AuditLog}
-  alias StreamClosedCaptionerPhoenixWeb.UserAuth
+  alias StreamClosedCaptionerPhoenixWeb.{Layouts, UserAuth}
 
   plug :assign_email_and_password_changesets
 
   def edit(conn, _params) do
-    render(conn, "edit.html")
+    conn
+    |> put_scc_layout()
+    |> render("edit.html")
   end
 
   def update(conn, %{"action" => "update_email"} = params) do
@@ -33,7 +35,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
       {:error, changeset} ->
         AuditLog.warn("user_settings.email_update_request_failed", %{user_id: user.id})
-        render(conn, "edit.html", email_changeset: changeset)
+
+        conn
+        |> put_scc_layout()
+        |> render("edit.html", email_changeset: changeset)
     end
   end
 
@@ -52,7 +57,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
       {:error, changeset} ->
         AuditLog.warn("user_settings.password_change_failed", %{user_id: user.id})
-        render(conn, "edit.html", password_changeset: changeset)
+
+        conn
+        |> put_scc_layout()
+        |> render("edit.html", password_changeset: changeset)
     end
   end
 
@@ -73,7 +81,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
           provider: "twitch"
         })
 
-        render(conn, "edit.html", password_changeset: changeset)
+        conn
+        |> put_scc_layout()
+        |> render("edit.html", password_changeset: changeset)
     end
   end
 
@@ -89,6 +99,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
         |> put_flash(:error, "Email change link is invalid or it has expired.")
         |> redirect(to: Routes.user_settings_path(conn, :edit))
     end
+  end
+
+  # Render the account settings page in the Stream CC design language. Bare-tuple
+  # `put_root_layout` so it replaces the `:logged_in` pipeline's root layout (a
+  # `[html: ...]` form would be shadowed by the pipeline's catch-all). Mirrors
+  # DashboardController.index. No `:scc_active` — "settings" isn't a nav item.
+  defp put_scc_layout(conn) do
+    conn
+    |> put_root_layout({Layouts, :scc_root})
+    |> put_layout(html: {Layouts, :scc})
+    |> assign(:page_title, "Account Settings")
   end
 
   defp assign_email_and_password_changesets(conn, _opts) do

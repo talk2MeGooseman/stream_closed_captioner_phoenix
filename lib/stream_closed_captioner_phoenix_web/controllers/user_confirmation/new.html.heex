@@ -1,15 +1,28 @@
-<h1>Resend confirmation instructions</h1>
-
-<%= form_for :user, ~p"/users/confirm", fn f -> %>
-  <%= label f, :email %>
-  <%= text_input f, :email, required: true %>
-
-  <div>
-    <%= submit "Resend confirmation instructions" %>
+<header class="page-head">
+  <div class="wrap page-head__in">
+    <div>
+      <span class="eyebrow">Account · Confirm</span>
+      <h1 class="h1">Resend confirmation</h1>
+      <p>Enter your email and we'll send a fresh confirmation link your way.</p>
+    </div>
   </div>
-<% end %>
+</header>
 
-<p>
-  <%= link "Register", to: ~p"/users/register" %> |
-  <%= link "Log in", to: ~p"/users/log_in" %>
-</p>
+<div class="wrap">
+  <section class="auth card">
+    <div class="card__body">
+      <.form :let={f} for={%{}} as={:user} action={~p"/users/confirm"} class="auth__form">
+        <div class="field">
+          {label(f, :email, "Email")}
+          {email_input(f, :email, required: true, placeholder: "you@example.com")}
+        </div>
+        {submit("Resend confirmation instructions", class: "btn btn--primary btn--block")}
+      </.form>
+
+      <div class="auth__links">
+        <.link navigate={~p"/users/log_in"}>Back to sign in</.link>
+        <.link navigate={~p"/users/register"}>Create an account</.link>
+      </div>
+    </div>
+  </section>
+</div>
