@@ -146,7 +146,8 @@ defmodule StreamClosedCaptionerPhoenix.Accounts do
   end
 
   @doc """
-  Returns true if the user has the extension enabled.
+  Returns true if the user has the extension installed (active in at least one
+  placement). This reflects install presence, not the on/off toggle state.
 
   ## Examples
       iex> user_has_extension_installed?(user)

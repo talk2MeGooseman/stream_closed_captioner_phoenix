@@ -85,6 +85,16 @@
 .scc-home img { max-width: 100%; }
 .scc-home :focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
+/* Bypass-blocks skip link: off-screen until focused, then pinned top-left. */
+.scc-home .scc-skip-link {
+  position: absolute; left: 12px; top: -120px; z-index: 1000;
+  padding: 10px 16px; border-radius: 8px;
+  background: var(--accent); color: var(--bg);
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  transition: top 0.15s ease;
+}
+.scc-home .scc-skip-link:focus { top: 12px; }
+
 .scc-home .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 
 /* ---------- type ---------- */

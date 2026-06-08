@@ -12,7 +12,7 @@
 </header>
 
 <div class="wrap">
-  <main class="cards" style="max-width: 680px; margin: 0 auto; padding: 36px 0 90px;">
+  <div class="cards" style="max-width: 680px; margin: 0 auto; padding: 36px 0 90px;">
     <div :if={msg = Phoenix.Flash.get(@flash, :info)} class="note" role="status">
       <svg
         viewBox="0 0 24 24"
@@ -220,5 +220,5 @@
         </.link>
       </div>
     </section>
-  </main>
+  </div>
 </div>

@@ -84,7 +84,8 @@ defmodule Twitch.Oauth do
   defp refresh_and_persist(%User{refresh_token: refresh_token} = user)
        when is_binary(refresh_token) do
     case refresh_users_access_token(refresh_token) do
-      {:ok, %{access_token: new_access_token} = tokens} when is_binary(new_access_token) ->
+      {:ok, %{access_token: new_access_token} = tokens}
+      when is_binary(new_access_token) and byte_size(new_access_token) > 0 ->
         # Persist the refreshed pair. If the DB write fails we deliberately log a
         # FIXED, token-free message (a failed changeset carries the token in its
         # changes — never inspect/log it) and still proceed with the freshly

@@ -3,8 +3,8 @@ defmodule Twitch.Extension.CaptionsPayload do
   @type t :: %__MODULE__{
           interim: String.t(),
           final: String.t(),
-          delay: float(),
-          translations: map(),
+          delay: number(),
+          translations: map() | nil,
           translation_error: atom() | nil
         }
   defstruct interim: "", final: "", delay: 0, translations: nil, translation_error: nil
