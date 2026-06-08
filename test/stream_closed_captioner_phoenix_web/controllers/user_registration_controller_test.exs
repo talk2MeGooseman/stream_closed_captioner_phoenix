@@ -7,7 +7,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
     test "renders registration page", %{conn: conn} do
       conn = get(conn, Routes.user_registration_path(conn, :new))
       response = html_response(conn, 200)
-      assert response =~ "Sign Up"
+      assert response =~ "Create your account</h1>"
     end
 
     test "redirects if already logged in", %{conn: conn} do
@@ -42,7 +42,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Sign Up"
+      assert response =~ "Create your account</h1>"
       assert response =~ "must have the @ sign and no spaces"
       assert response =~ "should be at least 6 character"
     end

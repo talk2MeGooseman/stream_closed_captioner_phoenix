@@ -1,69 +1,70 @@
-<section class="px-4 py-24 mx-auto max-w-7xl">
-  <div class="w-full mx-auto space-y-5 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12">
-    <h1 class="text-4xl font-semibold text-center text-gray-900">Sign Up</h1>
-    <div class="pb-6 space-y-2 border-b border-gray-200">
-      <a href="/auth/twitch" class="w-full py-3 btn btn-icon btn-primary">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-          x="0px" y="0px" viewBox="0 0 2400 2800" style="enable-background:new 0 0 2400 2800;" xml:space="preserve">
-          <style type="text/css">
-            .st0 {
-              fill: #FFFFFF;
-            }
+<header class="page-head">
+  <div class="wrap page-head__in">
+    <div>
+      <span class="eyebrow">Account · Sign up</span>
+      <h1 class="h1">Create your account</h1>
+      <p>Add live captions to your stream in minutes — start with Twitch or your email.</p>
+    </div>
+  </div>
+</header>
 
-            .st1 {
-              fill: #9146FF;
-            }
-          </style>
+<div class="wrap">
+  <section class="auth card">
+    <div class="card__body">
+      <a href="/auth/twitch" class="btn btn--primary btn--block">
+        <svg version="1.1" viewBox="0 0 2400 2800" fill="currentColor" aria-hidden="true">
           <title>Twitch Glitch</title>
-          <g>
-            <polygon class="st0"
-              points="2200,1300 1800,1700 1400,1700 1050,2050 1050,1700 600,1700 600,200 2200,200 	" />
-            <g>
-              <g id="Layer_1-2">
-                <path class="st1" d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600
-				V1300z" />
-                <rect x="1700" y="550" class="st1" width="200" height="600" />
-                <rect x="1150" y="550" class="st1" width="200" height="600" />
-              </g>
-            </g>
-          </g>
+          <path d="M500,0L0,500v1800h600v500l500-500h400l900-900V0H500z M2200,1300l-400,400h-400l-350,350v-350H600V200h1600V1300z" />
+          <rect x="1700" y="550" width="200" height="600" />
+          <rect x="1150" y="550" width="200" height="600" />
         </svg>
         Continue with Twitch
       </a>
-    </div>
-    <%= form_for @changeset, ~p"/users/register", [class: "space-y-4"], fn f -> %>
-    <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <small>Oops, something went wrong! Please check the errors below.</small>
-    </div>
-    <% end %>
 
-    <%= label class: "block" do %>
-    <span class="block mb-1 text-xs font-medium text-gray-700">Your Email</span>
-    <%= text_input f, :email, required: true, class: "form-input" %>
-    <%= error_tag f, :email %>
-    <% end %>
+      <div class="auth__divider"><span>or use your email</span></div>
 
-    <%= label class: "block" do %>
-    <span class="block mb-1 text-xs font-medium text-gray-700">Create a Password</span>
-    <%= password_input f, :password, required: true, class: "form-input" %>
-    <%= error_tag f, :password %>
-    <% end %>
-
-    <%= submit "Sign Up", class: "w-full btn btn-primary btn-lg" %>
-    <% end %>
-
-    <div class="mt-3 text-center text-gray-600">
-      <%= link to: ~p"/users/log_in", class: "btn btn-link btn-sm dark:text-blue-500" do %>
-      <small>Already have an account?</small>
+      <%= if @changeset.action do %>
+        <div class="note note--error" role="alert">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Oops, something went wrong! Please check the errors below.</span>
+        </div>
       <% end %>
-    </div>
 
-    <p class="my-8 text-xs font-medium text-center text-gray-700">
-      By clicking "Sign Up" you agree to our
-      <a href="/terms" class="text-purple-700 hover:text-purple-900">Terms of Service</a>
-      and
-      <a href="/privacy" class="text-purple-700 hover:text-purple-900">Privacy Policy</a>.
-    </p>
-  </div>
-</section>
+      <.form :let={f} for={@changeset} action={~p"/users/register"} class="auth__form">
+        <div class="field">
+          {label(f, :email, "Email")}
+          {email_input(f, :email, required: true, placeholder: "you@example.com")}
+          {error_tag(f, :email, class: "field__error")}
+        </div>
+        <div class="field">
+          {label(f, :password, "Password")}
+          {password_input(f, :password, required: true, placeholder: "••••••••")}
+          {error_tag(f, :password, class: "field__error")}
+        </div>
+        {submit("Sign up", class: "btn btn--ghost btn--block")}
+      </.form>
+
+      <p class="auth__legal">
+        By clicking "Sign up" you agree to our
+        <.link navigate={~p"/terms"}>Terms of Service</.link>
+        and <.link navigate={~p"/privacy"}>Privacy Policy</.link>.
+      </p>
+
+      <div class="auth__links">
+        <.link navigate={~p"/users/log_in"}>Already have an account?</.link>
+      </div>
+    </div>
+  </section>
+</div>

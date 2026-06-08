@@ -19,6 +19,7 @@
   --accent-2: #22d3ee;
   --live: #ff4d6a;
   --patreon: #ff6b57;
+  --kofi: #72a5f2; /* official Ko-fi brand blue — distinct from Patreon coral side-by-side */
   --ok: oklch(0.8 0.13 145);
   --warn: oklch(0.84 0.13 75);
   /* shared status-dot states (theme-adaptive via --faint / --ok) */
@@ -122,6 +123,13 @@
 }
 .scc-home .btn--patreon:hover {
   transform: translateY(-2px); box-shadow: 0 16px 36px -12px color-mix(in srgb, var(--patreon) 75%, transparent);
+}
+.scc-home .btn--kofi {
+  background-color: var(--kofi); color: #0a1626;
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--kofi) 70%, transparent);
+}
+.scc-home .btn--kofi:hover {
+  transform: translateY(-2px); box-shadow: 0 16px 36px -12px color-mix(in srgb, var(--kofi) 75%, transparent);
 }
 .scc-home .btn--sm { padding: 9px 16px; font-size: 0.9rem; }
 .scc-home .btn svg { width: 18px; height: 18px; }
@@ -889,6 +897,26 @@ html:has(.scc-home) { scroll-behavior: smooth; }
 .scc-home .toast--error svg { color: var(--live); }
 .scc-home .toast[data-hide] { opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
 
+/* ---------- auth (login / register / password / confirm) ---------- */
+.scc-home .auth { max-width: 460px; margin: 8px auto 0; }
+.scc-home .auth.card:hover { transform: none; } /* suppress the .card hover lift on a static form */
+.scc-home .auth .card__body { display: flex; flex-direction: column; gap: 18px; padding: 26px; }
+.scc-home .btn--block { width: 100%; justify-content: center; }
+.scc-home .auth__form { display: flex; flex-direction: column; gap: 16px; }
+.scc-home .auth__divider {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--faint);
+}
+.scc-home .auth__divider::before,
+.scc-home .auth__divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.scc-home .auth__links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 0.92rem; }
+.scc-home .auth__links a { color: var(--accent-ink); }
+.scc-home .auth__links a:hover { text-decoration: underline; }
+.scc-home .auth__legal { color: var(--faint); font-size: 0.8rem; text-align: center; margin: 0; }
+.scc-home .auth__legal a { color: var(--accent-ink); }
+.scc-home .field__error { color: var(--live); font-size: 0.8rem; }
+
 /* settings responsive */
 @media (max-width: 1080px) {
   .scc-home .secnav { display: none; }
@@ -985,6 +1013,9 @@ html:has(.scc-home) { scroll-behavior: smooth; }
 .scc-home .dest__cta { margin-top: auto; }
 
 /* translation strip */
+.scc-home .supportmini { display: flex; flex-direction: column; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.scc-home .supportmini p { color: var(--muted); font-size: 0.92rem; margin: 0; line-height: 1.45; }
+
 .scc-home .transcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .scc-home .transcard__head { display: flex; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--border); }
 .scc-home .transcard__head .t-ico {

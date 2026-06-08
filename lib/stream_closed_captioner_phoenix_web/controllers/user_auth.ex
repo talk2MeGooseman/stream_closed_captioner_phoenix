@@ -173,9 +173,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
 
   defp signed_in_path(_conn), do: "/dashboard"
 
-  def put_session_layout(conn, _opts) do
+  def put_auth_layout(conn, _opts) do
     conn
-    |> put_layout(false)
-    |> put_root_layout({StreamClosedCaptionerPhoenixWeb.Layouts, :session})
+    |> put_layout(html: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc})
+    |> put_root_layout({StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root})
   end
 end

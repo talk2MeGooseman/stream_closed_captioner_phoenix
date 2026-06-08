@@ -14,9 +14,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
     test "renders log in page", %{conn: conn} do
       conn = get(conn, Routes.user_session_path(conn, :new))
       response = html_response(conn, 200)
-      assert response =~ "Login</h1>"
+      assert response =~ "Welcome back</h1>"
       assert response =~ "Forgot your password?</a>"
-      assert response =~ "Register</a>"
+      assert response =~ "Create an account</a>"
     end
 
     test "redirects if already logged in", %{conn: conn, user: user} do
@@ -105,7 +105,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSessionControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Login</h1>"
+      assert response =~ "Welcome back</h1>"
       assert response =~ "Invalid email or password"
     end
   end

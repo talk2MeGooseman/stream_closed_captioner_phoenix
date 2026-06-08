@@ -205,7 +205,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope "/", StreamClosedCaptionerPhoenixWeb do
-    pipe_through([:browser, :redirect_if_user_is_authenticated, :put_session_layout])
+    pipe_through([:browser, :redirect_if_user_is_authenticated, :put_auth_layout])
 
     get("/users/register", UserRegistrationController, :new)
     post("/users/register", UserRegistrationController, :create)
@@ -218,7 +218,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
   end
 
   scope "/auth", StreamClosedCaptionerPhoenixWeb do
-    pipe_through([:browser, :put_session_layout])
+    pipe_through([:browser, :put_auth_layout])
 
     get("/:provider", UserSessionController, :request)
     get("/:provider/callback", UserSessionController, :callback)

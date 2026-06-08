@@ -2,9 +2,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationController do
   use StreamClosedCaptionerPhoenixWeb, :controller
 
   alias StreamClosedCaptionerPhoenix.Accounts
+  alias StreamClosedCaptionerPhoenixWeb.Layouts
 
   def new(conn, _params) do
-    render(conn, "new.html")
+    conn
+    # This route lives in the `:browser`-only scope (not `:put_auth_layout`),
+    # so set the SCC layout explicitly here — mirrors AnnouncementsController.
+    |> put_root_layout({Layouts, :scc_root})
+    |> put_layout(html: {Layouts, :scc})
+    |> render("new.html")
   end
 
   def create(conn, %{"user" => %{"email" => email}}) do
