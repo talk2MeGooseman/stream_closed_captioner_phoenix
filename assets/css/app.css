@@ -159,6 +159,10 @@
   width: 34px; height: 34px; border-radius: 10px; object-fit: cover; display: block;
   box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 80%, transparent);
 }
+.scc-home .brand-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+.scc-home .brand__by { color: var(--muted); font-size: 0.72rem; font-weight: 500; white-space: nowrap; padding-left: 45px; line-height: 1; }
+.scc-home .brand__by a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.scc-home .brand__by a:hover { color: var(--accent); text-decoration: underline; }
 .scc-home .nav__links { display: flex; gap: 26px; margin-left: 14px; }
 .scc-home .nav__links a { color: var(--muted); font-weight: 500; font-size: 0.98rem; transition: color 0.15s; }
 .scc-home .nav__links a:hover { color: var(--text); }
@@ -356,6 +360,7 @@
 @media (max-width: 600px) {
   .scc-home { font-size: 16px; }
   .scc-home .nav__links { display: none; }
+  .scc-home .brand__by { display: none; }
   .scc-home .features, .scc-home .features--enh { grid-template-columns: 1fr; }
   .scc-home .cta { padding: 36px 26px; }
   .scc-home .foot__grid { grid-template-columns: 1fr; }

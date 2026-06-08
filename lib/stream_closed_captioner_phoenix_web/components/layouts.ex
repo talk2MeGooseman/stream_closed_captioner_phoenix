@@ -17,9 +17,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
     ~H"""
     <nav class="nav">
       <div class="wrap nav__in">
-        <a class="brand" href={~p"/"}>
-          <img class="brand__mark" src={~p"/images/cc100x100.png"} alt="Stream Closed Captioner logo" />Stream&nbsp;CC
-        </a>
+        <div class="brand-wrap">
+          <a class="brand" href={~p"/"}>
+            <img class="brand__mark" src={~p"/images/cc100x100.png"} alt="Stream Closed Captioner logo" />Stream&nbsp;CC
+          </a>
+          <span class="brand__by">
+            by
+            <a href="https://twitch.tv/talk2megooseman" target="_blank" rel="noopener noreferrer">
+              Talk2meGooseman
+            </a>
+          </span>
+        </div>
         <div class="nav__links">
           <a href={~p"/showcase"} aria-current={if @active == "showcase", do: "page"}>Showcase</a>
           <a href={~p"/announcements"} aria-current={if @active == "announcements", do: "page"}>
