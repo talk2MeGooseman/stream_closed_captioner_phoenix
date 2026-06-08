@@ -79,6 +79,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.PageLive do
     <%= case @name do %>
       <% "twitch" -> %>
         <svg
+          aria-hidden="true"
+          focusable="false"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
