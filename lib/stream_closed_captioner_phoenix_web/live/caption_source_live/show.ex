@@ -31,25 +31,39 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
 
   @impl true
   def mount(%{"token" => token}, _session, socket) do
-    stream_settings = Settings.get_stream_settings_by_caption_source_token!(token)
+    case Settings.get_stream_settings_by_caption_source_token(token) do
+      nil ->
+        # Render a visible notice instead of a 404: in an OBS browser source a
+        # 404 just looks like captions silently not working.
+        {:ok,
+         socket
+         |> assign(:invalid_token, true)
+         |> assign(:page_title, "Captions")}
 
-    if connected?(socket) do
-      Phoenix.PubSub.subscribe(
-        StreamClosedCaptionerPhoenix.PubSub,
-        "caption_source:#{stream_settings.user_id}"
-      )
+      stream_settings ->
+        if connected?(socket) do
+          Phoenix.PubSub.subscribe(
+            StreamClosedCaptionerPhoenix.PubSub,
+            "caption_source:#{stream_settings.user_id}"
+          )
+        end
+
+        {:ok,
+         socket
+         |> assign(:invalid_token, false)
+         |> assign(:stream_settings, stream_settings)
+         |> assign(:page_title, "Captions")
+         |> assign(:interim, "")
+         |> assign(:final_text, "")
+         |> assign(:style, build_style(%{}, stream_settings))}
     end
-
-    {:ok,
-     socket
-     |> assign(:stream_settings, stream_settings)
-     |> assign(:page_title, "Captions")
-     |> assign(:interim, "")
-     |> assign(:final_text, "")
-     |> assign(:style, build_style(%{}, stream_settings))}
   end
 
   @impl true
+  def handle_params(_params, _url, %{assigns: %{invalid_token: true}} = socket) do
+    {:noreply, socket}
+  end
+
   def handle_params(params, _url, socket) do
     {:noreply, assign(socket, :style, build_style(params, socket.assigns.stream_settings))}
   end

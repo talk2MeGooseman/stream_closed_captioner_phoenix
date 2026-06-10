@@ -339,6 +339,13 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     do: Repo.get_by!(StreamSettings, caption_source_token: token)
 
   @doc """
+  Gets a single stream_setting by its caption source token, returning `nil`
+  if no stream settings has the given token (e.g. the token was regenerated).
+  """
+  def get_stream_settings_by_caption_source_token(token) when is_binary(token),
+    do: Repo.get_by(StreamSettings, caption_source_token: token)
+
+  @doc """
   Returns the stream settings with a caption source token present, generating
   and persisting one if the user doesn't have one yet.
   """

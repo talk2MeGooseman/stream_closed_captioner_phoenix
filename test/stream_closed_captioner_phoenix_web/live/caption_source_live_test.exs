@@ -34,10 +34,23 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       refute has_element?(view, "#caption-box")
     end
 
-    test "raises 404 for an unknown token", %{conn: conn} do
-      assert_raise Ecto.NoResultsError, fn ->
-        live(conn, "/captions/not-a-real-token")
-      end
+    test "renders an invalid-URL notice for an unknown token", %{conn: conn} do
+      {:ok, _view, html} = live(conn, "/captions/not-a-real-token")
+
+      assert html =~ "caption source URL is no longer valid"
+      assert html =~ "caption settings"
+    end
+
+    test "regenerating the token invalidates the old URL with a visible notice", %{
+      conn: conn,
+      stream_settings: stream_settings,
+      token: old_token
+    } do
+      {:ok, _stream_settings} = Settings.regenerate_caption_source_token(stream_settings)
+
+      {:ok, _view, html} = live(conn, "/captions/#{old_token}")
+
+      assert html =~ "caption source URL is no longer valid"
     end
 
     test "does not render site chrome", %{conn: conn, token: token} do
