@@ -65,7 +65,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
 
       {:error, _changeset} ->
         {:noreply,
-         put_flash(socket, :error, "Could not regenerate the caption source URL. Please try again.")}
+         put_flash(
+           socket,
+           :error,
+           "Could not regenerate the caption source URL. Please try again."
+         )}
     end
   end
 

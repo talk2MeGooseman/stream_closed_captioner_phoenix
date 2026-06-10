@@ -275,5 +275,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
 
     assert_reply ref, :error, "Issue sending captions."
   end
-
 end
