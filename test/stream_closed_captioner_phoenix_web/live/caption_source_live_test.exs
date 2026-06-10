@@ -30,8 +30,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       {:ok, view, html} = live(conn, "/captions/#{token}")
 
       assert html =~ "caption-source"
+      refute html =~ "no longer valid"
       # no caption box until the first payload arrives
       refute has_element?(view, "#caption-box")
+    end
+
+    test "a regenerated token renders the overlay at its new URL", %{
+      conn: conn,
+      stream_settings: stream_settings
+    } do
+      {:ok, stream_settings} = Settings.regenerate_caption_source_token(stream_settings)
+
+      {:ok, _view, html} = live(conn, "/captions/#{stream_settings.caption_source_token}")
+
+      assert html =~ "caption-source"
+      refute html =~ "no longer valid"
     end
 
     test "renders an invalid-URL notice for an unknown token", %{conn: conn} do
@@ -71,7 +84,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
     } do
       {:ok, view, _html} = live(conn, "/captions/#{token}")
 
-      broadcast_caption(stream_settings, %CaptionsPayload{interim: "and then", final: "hello world"})
+      broadcast_caption(stream_settings, %CaptionsPayload{
+        interim: "and then",
+        final: "hello world"
+      })
 
       assert render(view) =~ "hello world"
       assert render(view) =~ "and then"
@@ -192,7 +208,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       token: token,
       stream_settings: stream_settings
     } do
-      {:ok, view, _html} = live(conn, "/captions/#{token}?lines=3")
+      # lines=2 rather than the parse_int default of 3, so this fails if the
+      # param stops being plumbed through.
+      {:ok, view, _html} = live(conn, "/captions/#{token}?lines=2")
       broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "hi"})
       render(view)
 
@@ -200,10 +218,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       # caption box lets the tail of an extra line paint inside the top
       # padding; the clip container must be an unpadded element sized to
       # exactly N line-heights.
-      assert has_element?(view, ~s{#caption-clip[style*="max-height: calc(3 * 1.4em)"]})
+      assert has_element?(view, ~s{#caption-clip[style*="max-height: calc(2 * 1.4em)"]})
       assert has_element?(view, ~s{#caption-clip[style*="overflow: hidden"]})
+      refute has_element?(view, ~s{#caption-clip[style*="padding"]})
       refute has_element?(view, ~s{#caption-box[style*="overflow: hidden"]})
       refute has_element?(view, ~s{#caption-box[style*="max-height"]})
+    end
+
+    test "clamps lines to the 1..10 bounds", %{
+      conn: conn,
+      token: token,
+      stream_settings: stream_settings
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}?lines=0")
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "hi"})
+      render(view)
+      assert has_element?(view, ~s{#caption-clip[style*="max-height: calc(1 * 1.4em)"]})
+
+      {:ok, view, _html} = live(conn, "/captions/#{token}?lines=99")
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "hi"})
+      render(view)
+      assert has_element?(view, ~s{#caption-clip[style*="max-height: calc(10 * 1.4em)"]})
     end
 
     test "uppercase defaults from the streamer's text_uppercase setting", %{conn: conn} do
