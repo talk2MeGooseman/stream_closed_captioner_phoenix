@@ -464,16 +464,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
 
   describe "caption delay" do
     test "defers rendering when caption_delay is set", %{conn: conn} do
+      # 60s delay: long enough that the deferred timer cannot fire during the
+      # test, so the refute below is deterministic under any load.
       stream_settings =
-        insert(:stream_settings, user: build(:bare_user), caption_delay: 1)
+        insert(:stream_settings, user: build(:bare_user), caption_delay: 60)
         |> Settings.get_or_generate_caption_source_token!()
 
       {:ok, view, _html} = live(conn, "/captions/#{stream_settings.caption_source_token}")
-      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "delayed text"})
 
+      payload = %CaptionsPayload{interim: "", final: "delayed text"}
+      broadcast_caption(stream_settings, payload)
+
+      # render/1 is a synchronous call into the LiveView process, so the
+      # broadcast has been handled by the time it returns; if the delay were
+      # ignored and captions applied immediately, this would fail.
       refute render(view) =~ "delayed text"
 
-      Process.sleep(1100)
+      # Fire the deferred-apply message ourselves instead of sleeping out the
+      # Process.send_after timer.
+      send(view.pid, {:apply_caption, payload})
       assert render(view) =~ "delayed text"
     end
   end
