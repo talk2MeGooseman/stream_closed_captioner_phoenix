@@ -49,6 +49,15 @@ Issues found → implementer fixes → code quality reviewer re-reviews. Repeat 
 ```
 Implementer → ✅ Spec Reviewer → ✅ Code Quality Reviewer → task complete
 ```
+
+---
+
+### Project Docs (always consult)
+Before reviewing, read the project's companion docs and judge the code against them:
+- `.github/copilot-instructions.md` — **authoritative project-specific guide** (caption pipeline, service-provider Mox pattern, caching, auth, GraphQL, Oban). Wins on any project-specific conflict.
+- `AGENTS.md` — Phoenix/Elixir/Ecto/LiveView framework conventions (HEEx, streams, forms).
+- `CLAUDE.md` — project quirks (`created_at` timestamps, renamed migration table, encrypted fields, pre-built factory associations).
+Flag deviations from these documented patterns (e.g. `inserted_at` instead of `created_at`, bypassing the behaviour-injected API clients, new HTTPoison code where Req is preferred) and cite the doc in your finding.
 </your_assigned_role>
 
 <working_directory>
