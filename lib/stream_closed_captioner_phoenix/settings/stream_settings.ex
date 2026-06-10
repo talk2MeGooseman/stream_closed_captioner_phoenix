@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Inspect, except: [:caption_source_token]}
   schema "stream_settings" do
     field(:blocklist, {:array, :string}, default: [])
     field(:caption_delay, :integer)

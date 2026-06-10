@@ -321,26 +321,17 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     do: Repo.get_by!(StreamSettings, user_id: user_id)
 
   @doc """
-  Gets a single stream_setting by its caption source token.
-
-  Raises `Ecto.NoResultsError` if no stream settings has the given token,
-  which renders as a 404 for the public caption source page.
+  Gets a single stream_setting by its caption source token, returning `nil`
+  if no stream settings has the given token (e.g. the token was regenerated).
 
   ## Examples
 
-      iex> get_stream_settings_by_caption_source_token!("abc123")
+      iex> get_stream_settings_by_caption_source_token("abc123")
       %StreamSettings{}
 
-      iex> get_stream_settings_by_caption_source_token!("unknown")
-      ** (Ecto.NoResultsError)
+      iex> get_stream_settings_by_caption_source_token("unknown")
+      nil
 
-  """
-  def get_stream_settings_by_caption_source_token!(token) when is_binary(token),
-    do: Repo.get_by!(StreamSettings, caption_source_token: token)
-
-  @doc """
-  Gets a single stream_setting by its caption source token, returning `nil`
-  if no stream settings has the given token (e.g. the token was regenerated).
   """
   def get_stream_settings_by_caption_source_token(token) when is_binary(token),
     do: Repo.get_by(StreamSettings, caption_source_token: token)
@@ -349,7 +340,9 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   Returns the stream settings with a caption source token present, generating
   and persisting one if the user doesn't have one yet.
   """
-  def get_or_generate_caption_source_token!(%StreamSettings{caption_source_token: nil} = stream_settings) do
+  def get_or_generate_caption_source_token!(
+        %StreamSettings{caption_source_token: nil} = stream_settings
+      ) do
     {:ok, stream_settings} = put_caption_source_token(stream_settings)
     stream_settings
   end
@@ -471,7 +464,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp enable_or_disable_eventsub_subscriptions(user, subscription_name, status)
        when status == true do
     with nil <- Accounts.fetch_user_eventsub_subscriptions(user, subscription_name),
-         {:ok, %{"data" => [%{"id" => id}]}} <- Twitch.event_subscribe(subscription_name, user.uid) do
+         {:ok, %{"data" => [%{"id" => id}]}} <-
+           Twitch.event_subscribe(subscription_name, user.uid) do
       Accounts.create_eventsub_subscription(user, %{
         type: subscription_name,
         subscription_id: id

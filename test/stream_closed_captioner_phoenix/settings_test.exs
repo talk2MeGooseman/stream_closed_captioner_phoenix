@@ -12,9 +12,15 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
     setup do
-      stub(Twitch.MockOauth, :get_client_access_token, fn -> {:ok, %{access_token: "test_token"}} end)
+      stub(Twitch.MockOauth, :get_client_access_token, fn ->
+        {:ok, %{access_token: "test_token"}}
+      end)
 
-      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds,
+                                                     _transport,
+                                                     type,
+                                                     _version,
+                                                     _condition ->
         {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
       end)
 
@@ -251,23 +257,19 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
       assert regenerated.caption_source_token != stream_settings.caption_source_token
     end
 
-    test "get_stream_settings_by_caption_source_token!/1 returns the stream_settings" do
+    test "get_stream_settings_by_caption_source_token/1 returns the stream_settings" do
       stream_settings =
         insert(:stream_settings, user: build(:bare_user))
         |> Settings.get_or_generate_caption_source_token!()
 
       found =
-        Settings.get_stream_settings_by_caption_source_token!(
-          stream_settings.caption_source_token
-        )
+        Settings.get_stream_settings_by_caption_source_token(stream_settings.caption_source_token)
 
       assert found.id == stream_settings.id
     end
 
-    test "get_stream_settings_by_caption_source_token!/1 raises for an unknown token" do
-      assert_raise Ecto.NoResultsError, fn ->
-        Settings.get_stream_settings_by_caption_source_token!("unknown-token")
-      end
+    test "get_stream_settings_by_caption_source_token/1 returns nil for an unknown token" do
+      assert Settings.get_stream_settings_by_caption_source_token("unknown-token") == nil
     end
   end
 

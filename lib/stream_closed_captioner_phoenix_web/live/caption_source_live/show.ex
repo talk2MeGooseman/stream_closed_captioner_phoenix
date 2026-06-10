@@ -155,6 +155,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     |> Enum.join("; ")
   end
 
+  defp invalid_notice_style do
+    [
+      "background: rgba(0, 0, 0, 0.7)",
+      "color: rgb(255, 255, 255)",
+      "font-family: #{@font_stacks["sans"]}",
+      "font-size: 20px",
+      "line-height: 1.4",
+      "border-radius: 4px",
+      "padding: 0.6em 0.8em",
+      "max-width: 100%",
+      "text-align: center"
+    ]
+    |> Enum.join("; ")
+  end
+
   # overflow: hidden clips at the padding box, so the clip container must be
   # a separate unpadded element sized to exactly N line-heights — clipping on
   # the padded caption box lets the tail of an extra line paint inside the
