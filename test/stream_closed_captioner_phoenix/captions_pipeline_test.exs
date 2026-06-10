@@ -338,6 +338,34 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     end
   end
 
+  describe "pipeline_to(:zoom) censoring" do
+    test "censors interim and final text with the user's blocklist" do
+      user =
+        insert(:user,
+          stream_settings: build(:stream_settings, filter_profanity: true, blocklist: ["poopy"])
+        )
+
+      expect(Zoom.MockCaptions, :send_captions_to, fn _url, _text, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200}}
+      end)
+
+      {:ok, payload} =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "Hello poopy head",
+          "final" => "Bye poopy head",
+          "session" => "abc123",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "https://us02web.zoom.us/closedcaption?id=1",
+            "seq" => 1
+          }
+        })
+
+      assert payload.interim == "Hello ***** head"
+      assert payload.final == "Bye ***** head"
+    end
+  end
+
   describe "pipeline_to(:zoom) URL validation" do
     test "rejects non-Zoom host URL" do
       user = insert(:user)

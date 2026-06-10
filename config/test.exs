@@ -37,6 +37,7 @@ config :stream_closed_captioner_phoenix, twitch_oauth_client: Twitch.MockOauth
 config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.MockCognitive
 config :stream_closed_captioner_phoenix, gemini_cognitive_client: Gemini.MockCognitive
 config :stream_closed_captioner_phoenix, notion_database_client: Notion.MockDatabase
+config :stream_closed_captioner_phoenix, zoom_captions_client: Zoom.MockCaptions
 
 config :stream_closed_captioner_phoenix, Oban, testing: :manual
 

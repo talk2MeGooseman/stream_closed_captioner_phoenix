@@ -90,5 +90,6 @@ config :stream_closed_captioner_phoenix, twitch_extension_client: Twitch.Extensi
 config :stream_closed_captioner_phoenix, twitch_helix_client: Twitch.Helix
 config :stream_closed_captioner_phoenix, azure_cognitive_client: Azure.Cognitive
 config :stream_closed_captioner_phoenix, gemini_cognitive_client: Gemini.Cognitive
+config :stream_closed_captioner_phoenix, zoom_captions_client: Zoom.Captions
 
 import_config "dev.secret.exs"

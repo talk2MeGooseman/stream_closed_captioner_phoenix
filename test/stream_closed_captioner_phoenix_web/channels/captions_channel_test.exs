@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
   # async: false required because channel process makes DB calls through the pipeline
   use StreamClosedCaptionerPhoenixWeb.ChannelCase
 
+  import Mox
   import StreamClosedCaptionerPhoenix.Factory
 
   setup do
@@ -206,6 +207,56 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
 
       assert_reply ref, :error, "Issue sending captions."
       refute_receive {:caption_source_payload, _}
+    end
+  end
+
+  describe "zoom path caption source broadcast" do
+    setup :set_mox_global
+    setup :verify_on_exit!
+
+    test "never broadcasts uncensored interim text to the overlay" do
+      stream_settings =
+        insert(:stream_settings,
+          user: build(:bare_user),
+          filter_profanity: true,
+          blocklist: ["poopy"]
+        )
+
+      Phoenix.PubSub.subscribe(
+        StreamClosedCaptionerPhoenix.PubSub,
+        "caption_source:#{stream_settings.user.id}"
+      )
+
+      expect(Zoom.MockCaptions, :send_captions_to, fn _url, _text, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200}}
+      end)
+
+      {:ok, _, socket} =
+        StreamClosedCaptionerPhoenixWeb.UserSocket
+        |> socket("user_id", %{current_user: stream_settings.user})
+        |> subscribe_and_join(
+          StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+          "captions:#{stream_settings.user.id}"
+        )
+
+      ref =
+        push(socket, "publishFinal", %{
+          "interim" => "hello poopy head",
+          "final" => "bye poopy head",
+          "session" => "abc",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "https://us02web.zoom.us/closedcaption?id=1",
+            "seq" => 1
+          }
+        })
+
+      assert_reply ref, :ok
+
+      assert_receive {:caption_source_payload, %Twitch.Extension.CaptionsPayload{} = payload}
+      refute payload.interim =~ "poopy"
+      refute payload.final =~ "poopy"
+      assert payload.interim == "hello ***** head"
     end
   end
 

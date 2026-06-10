@@ -67,10 +67,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         lang: stream_settings.language
       }
 
+      # Censor both keys: only :final goes to Zoom, but the whole payload is
+      # broadcast to the public caption source overlay.
       payload =
         CaptionsPayload.new(message)
-        |> apply_users_blocklist_for(:final, stream_settings)
-        |> maybe_additional_censoring_for(:final, stream_settings)
+        |> apply_censoring(stream_settings)
         |> maybe_pirate_mode_for(:final, stream_settings)
 
       zoom_text = Map.get(payload, :final)
