@@ -14,7 +14,7 @@ Your URL contains a private token that is unique to you. Treat it like a passwor
 
 If your URL ever leaks (for example, it appeared on stream), click **Regenerate** on the same card to get a fresh one.
 
-> **Warning:** Regenerating immediately invalidates your old URL *everywhere you've pasted it* — OBS browser sources, bookmarks, anywhere. After regenerating, you must update OBS with the new URL. A stale URL is the most common reason captions "silently stop showing." If that happens, the overlay page now shows a notice telling you the URL is no longer valid, so check your OBS source for that message first.
+> **Warning:** Regenerating immediately invalidates your old URL *everywhere you've pasted it* — OBS browser sources, bookmarks, anywhere. After regenerating, you must update OBS with the new URL. A stale URL is the most common reason captions "silently stop showing." If that happens, the overlay page shows a notice telling you the URL is no longer valid, so check your OBS source for that message first.
 
 ## Adding the overlay to OBS
 
@@ -38,7 +38,7 @@ You don't have to touch the URL by hand — there's a built-in settings tool:
 
 Close the panel (✕) and the sample text disappears; your real captions take over.
 
-The gear button only appears in normal browsers — it stays hidden inside OBS automatically, so it will never show on stream.
+The gear button only appears in normal browsers — inside OBS it stays hidden automatically. If you want it guaranteed off on stream (the automatic hiding can briefly flash the gear when a browser source reloads, such as on scene switches), add `settings=0` to the URL in your OBS source.
 
 ## Appearance settings reference
 
@@ -71,11 +71,11 @@ One extra option controls the settings tool itself:
 | `settings=1`   | Gear is always available — even inside OBS, so you can tweak the overlay by interacting with the browser source directly |
 | `settings=0`   | Gear is always hidden, everywhere                                          |
 
-Tip: if you use `settings=1` to style your overlay from inside OBS, remember to remove it (re-copy the URL from the panel, which drops it when you didn't force it) before going live.
+Tip: if you use `settings=1` to style your overlay from inside OBS, remember to remove it before going live — the copied URL keeps `settings=1` while you're using it. Delete `settings=1` from the URL in your OBS source, or simply add `settings=0` to the end of the URL (it wins over an earlier `settings=1`).
 
 ## Caption delay
 
-If you've set a caption delay in your stream settings (for example, to sync captions with your stream's broadcast delay), the overlay honors it: captions appear in the overlay that many seconds after you speak, matching what your viewers see.
+If you've set a caption delay with the **Caption delay** control on the **Caption Settings** page (for example, to sync captions with your stream's broadcast delay), the overlay honors it: captions appear in the overlay that many seconds after you speak, matching what your viewers see.
 
 ## Troubleshooting
 
