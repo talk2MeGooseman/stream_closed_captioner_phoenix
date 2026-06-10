@@ -253,6 +253,181 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
     end
   end
 
+  describe "settings tool visibility" do
+    setup :create_caption_source
+
+    test "gear button is available by default in a normal browser", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      assert has_element?(view, "#settings-gear")
+    end
+
+    test "settings=0 hides the tool entirely", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}?settings=0")
+
+      refute has_element?(view, "#caption-settings-ui")
+      refute has_element?(view, "#settings-gear")
+    end
+
+    test "obs detection hides the tool by default", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      render_hook(view, "obs_detected", %{})
+
+      refute has_element?(view, "#settings-gear")
+    end
+
+    test "settings=1 keeps the tool available even when OBS is detected", %{
+      conn: conn,
+      token: token
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}?settings=1")
+
+      render_hook(view, "obs_detected", %{})
+
+      assert has_element?(view, "#settings-gear")
+    end
+
+    test "obs detection closes an already-open panel", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+      assert has_element?(view, "#settings-panel")
+
+      render_hook(view, "obs_detected", %{})
+
+      refute has_element?(view, "#settings-panel")
+    end
+  end
+
+  describe "settings panel dummy text" do
+    setup :create_caption_source
+
+    test "dummy text never renders while the panel is closed", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      refute render(view) =~ "quick brown fox"
+      refute has_element?(view, "#caption-box")
+    end
+
+    test "opening the panel shows dummy caption text in the caption box", %{
+      conn: conn,
+      token: token
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      assert has_element?(view, "#settings-panel")
+      assert has_element?(view, "#caption-box")
+      assert render(view) =~ "quick brown fox"
+    end
+
+    test "real captions are held back while the panel is open and restored on close", %{
+      conn: conn,
+      token: token,
+      stream_settings: stream_settings
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "hello world"})
+
+      html = render(view)
+      assert html =~ "quick brown fox"
+      refute html =~ "hello world"
+
+      view |> element("#settings-close") |> render_click()
+
+      html = render(view)
+      refute html =~ "quick brown fox"
+      assert html =~ "hello world"
+    end
+  end
+
+  describe "settings panel URL sync" do
+    setup :create_caption_source
+
+    test "changing a setting patches the URL and applies the style", %{
+      conn: conn,
+      token: token
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      view
+      |> element("#settings-form")
+      |> render_change(%{"font_size" => "48", "color" => "#00ff00"})
+
+      path = assert_patch(view)
+      assert path =~ "font_size=48"
+      assert path =~ "color=00FF00"
+
+      html = render(view)
+      assert html =~ "font-size: 48px"
+      assert html =~ "rgb(0, 255, 0)"
+    end
+
+    test "default values are omitted from the patched URL", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      view
+      |> element("#settings-form")
+      |> render_change(%{
+        "font_size" => "48",
+        "color" => "#ffffff",
+        "bg" => "#000000",
+        "bg_opacity" => "70",
+        "align" => "left",
+        "lines" => "3",
+        "font" => "sans",
+        "uppercase" => "false"
+      })
+
+      path = assert_patch(view)
+      assert path =~ "font_size=48"
+      refute path =~ "color="
+      refute path =~ "bg="
+      refute path =~ "align="
+      refute path =~ "lines="
+      refute path =~ "font="
+      refute path =~ "uppercase="
+    end
+
+    test "the settings=1 override survives setting changes", %{conn: conn, token: token} do
+      {:ok, view, _html} = live(conn, "/captions/#{token}?settings=1")
+
+      view |> element("#settings-gear") |> render_click()
+
+      view
+      |> element("#settings-form")
+      |> render_change(%{"font_size" => "48"})
+
+      path = assert_patch(view)
+      assert path =~ "settings=1"
+      assert has_element?(view, "#settings-panel")
+    end
+
+    test "the panel offers a copy button wired to the CopyToClipboard hook", %{
+      conn: conn,
+      token: token
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      assert has_element?(view, "#overlay-url")
+
+      assert has_element?(
+               view,
+               ~s{#overlay-url-copy[phx-hook="CopyToClipboard"][data-copy-target="overlay-url"]}
+             )
+    end
+  end
+
   describe "caption delay" do
     test "defers rendering when caption_delay is set", %{conn: conn} do
       stream_settings =

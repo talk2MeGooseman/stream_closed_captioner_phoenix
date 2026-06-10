@@ -20,15 +20,151 @@
   style="position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: transparent; padding: 0 2vw 2vh 2vw;"
 >
   <div
-    :if={@final_text != "" or @interim != ""}
+    :if={@panel_open or @final_text != "" or @interim != ""}
     id="caption-box"
     style={caption_box_style(@style)}
   >
     <div id="caption-clip" style={caption_clip_style(@style)}>
       <p style="margin: 0;">
-        <span id="caption-final">{@final_text}</span>
-        <span :if={@interim != ""} id="caption-interim" style="opacity: 0.8;">{@interim}</span>
+        <span id="caption-final">{display_final(assigns)}</span>
+        <span
+          :if={display_interim(assigns) != ""}
+          id="caption-interim"
+          style="opacity: 0.8;"
+        >
+          {display_interim(assigns)}
+        </span>
       </p>
+    </div>
+  </div>
+</div>
+<div
+  :if={!@invalid_token and @settings_available}
+  id="caption-settings-ui"
+  phx-hook="ObsDetect"
+  class="nightwind-prevent-block fixed top-2 right-2 z-10 font-sans"
+>
+  <button
+    :if={!@panel_open}
+    id="settings-gear"
+    type="button"
+    phx-click="toggle_panel"
+    aria-label="Open caption settings"
+    class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900/80 text-lg text-white shadow hover:bg-gray-700"
+  >
+    ⚙
+  </button>
+  <div
+    :if={@panel_open}
+    id="settings-panel"
+    class="w-72 rounded-lg bg-gray-900 p-4 text-sm text-white shadow-xl"
+  >
+    <div class="mb-3 flex items-center justify-between">
+      <h2 class="font-semibold">Caption appearance</h2>
+      <button
+        id="settings-close"
+        type="button"
+        phx-click="toggle_panel"
+        aria-label="Close caption settings"
+        class="rounded px-2 py-1 text-gray-300 hover:bg-gray-700 hover:text-white"
+      >
+        ✕
+      </button>
+    </div>
+    <form id="settings-form" phx-change="update_settings" class="space-y-3">
+      <label class="block">
+        <span class="mb-1 block text-gray-300">Font size ({@style.font_size}px)</span>
+        <input
+          type="range"
+          name="font_size"
+          min="10"
+          max="120"
+          value={@style.font_size}
+          class="w-full"
+        />
+      </label>
+      <div class="flex gap-3">
+        <label class="block flex-1">
+          <span class="mb-1 block text-gray-300">Text color</span>
+          <input
+            type="color"
+            name="color"
+            value={"#" <> @style.color_hex}
+            class="h-8 w-full cursor-pointer rounded"
+          />
+        </label>
+        <label class="block flex-1">
+          <span class="mb-1 block text-gray-300">Background</span>
+          <input
+            type="color"
+            name="bg"
+            value={"#" <> @style.bg_hex}
+            class="h-8 w-full cursor-pointer rounded"
+          />
+        </label>
+      </div>
+      <label class="block">
+        <span class="mb-1 block text-gray-300">
+          Background opacity ({@style.bg_opacity}%)
+        </span>
+        <input
+          type="range"
+          name="bg_opacity"
+          min="0"
+          max="100"
+          value={@style.bg_opacity}
+          class="w-full"
+        />
+      </label>
+      <div class="flex gap-3">
+        <label class="block flex-1">
+          <span class="mb-1 block text-gray-300">Align</span>
+          <select name="align" class="w-full rounded bg-gray-800 px-2 py-1">
+            <option value="left" selected={@style.align == "left"}>Left</option>
+            <option value="center" selected={@style.align == "center"}>Center</option>
+            <option value="right" selected={@style.align == "right"}>Right</option>
+          </select>
+        </label>
+        <label class="block flex-1">
+          <span class="mb-1 block text-gray-300">Font</span>
+          <select name="font" class="w-full rounded bg-gray-800 px-2 py-1">
+            <option value="sans" selected={@style.font == "sans"}>Sans</option>
+            <option value="serif" selected={@style.font == "serif"}>Serif</option>
+            <option value="mono" selected={@style.font == "mono"}>Mono</option>
+          </select>
+        </label>
+      </div>
+      <label class="block">
+        <span class="mb-1 block text-gray-300">Lines ({@style.lines})</span>
+        <input type="range" name="lines" min="1" max="10" value={@style.lines} class="w-full" />
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="hidden" name="uppercase" value="false" />
+        <input type="checkbox" name="uppercase" value="true" checked={@style.uppercase} />
+        <span class="text-gray-300">Uppercase</span>
+      </label>
+    </form>
+    <div class="mt-4 border-t border-gray-700 pt-3">
+      <span class="mb-1 block text-gray-300">OBS browser source URL</span>
+      <div class="flex gap-2">
+        <input
+          id="overlay-url"
+          type="text"
+          readonly
+          value={@current_url}
+          onclick="this.select()"
+          class="w-full rounded bg-gray-800 px-2 py-1 text-xs"
+        />
+        <button
+          id="overlay-url-copy"
+          type="button"
+          phx-hook="CopyToClipboard"
+          data-copy-target="overlay-url"
+          class="shrink-0 rounded bg-gray-700 px-2 py-1 hover:bg-gray-600"
+        >
+          Copy
+        </button>
+      </div>
     </div>
   </div>
 </div>

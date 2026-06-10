@@ -16,6 +16,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
 
   Every value is validated/clamped server-side and re-emitted from parsed
   primitives, so raw params never reach the style attribute.
+
+  A `settings` param controls the interactive settings tool: `1` forces it
+  available everywhere (including OBS), `0` hides it entirely, and when absent
+  the tool is available except inside OBS (detected client-side via
+  `window.obsstudio` by the ObsDetect hook). The tool is pure client/URL
+  state — it mutates nothing server-side and exposes nothing beyond what the
+  token already grants.
   """
   use StreamClosedCaptionerPhoenixWeb, :live_view
 
@@ -27,6 +34,23 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     "sans" => "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     "serif" => "Georgia, 'Times New Roman', Times, serif",
     "mono" => "'JetBrains Mono', 'Courier New', monospace"
+  }
+
+  # Long enough to overflow the line clamp at default settings, so every
+  # control's effect is visible while previewing.
+  @sample_final "The quick brown fox jumps over the lazy dog while the streamer fine-tunes caption styling. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump! Sphinx of black quartz, judge my vow."
+  @sample_interim "and this interim text is still being recognized"
+
+  # Defaults for emitted URL params; values matching these are omitted so the
+  # copied URL stays minimal. Must mirror the defaults in build_style/2.
+  @param_defaults %{
+    "font_size" => "32",
+    "color" => "FFFFFF",
+    "bg" => "000000",
+    "bg_opacity" => "70",
+    "align" => "left",
+    "lines" => "3",
+    "font" => "sans"
   }
 
   @impl true
@@ -55,6 +79,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
          |> assign(:page_title, "Captions")
          |> assign(:interim, "")
          |> assign(:final_text, "")
+         |> assign(:panel_open, false)
+         |> assign(:obs_detected, false)
+         |> assign(:settings_mode, :auto)
+         |> assign(:settings_available, true)
+         |> assign(:current_url, "")
          |> assign(:style, build_style(%{}, stream_settings))}
     end
   end
@@ -64,9 +93,92 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     {:noreply, socket}
   end
 
-  def handle_params(params, _url, socket) do
-    {:noreply, assign(socket, :style, build_style(params, socket.assigns.stream_settings))}
+  def handle_params(params, url, socket) do
+    settings_mode = parse_settings_mode(params["settings"])
+    available = settings_available?(settings_mode, socket.assigns.obs_detected)
+
+    {:noreply,
+     socket
+     |> assign(:style, build_style(params, socket.assigns.stream_settings))
+     |> assign(:settings_mode, settings_mode)
+     |> assign(:settings_available, available)
+     |> assign(:panel_open, socket.assigns.panel_open and available)
+     |> assign(:current_url, url)}
   end
+
+  @impl true
+  def handle_event("toggle_panel", _params, socket) do
+    open? = not socket.assigns.panel_open and socket.assigns.settings_available
+    {:noreply, assign(socket, :panel_open, open?)}
+  end
+
+  def handle_event("obs_detected", _params, socket) do
+    available = settings_available?(socket.assigns.settings_mode, true)
+
+    {:noreply,
+     socket
+     |> assign(:obs_detected, true)
+     |> assign(:settings_available, available)
+     |> assign(:panel_open, socket.assigns.panel_open and available)}
+  end
+
+  def handle_event("update_settings", params, socket) do
+    stream_settings = socket.assigns.stream_settings
+    query = overlay_query(params, stream_settings, socket.assigns.settings_mode)
+
+    {:noreply,
+     push_patch(socket, to: ~p"/captions/#{stream_settings.caption_source_token}?#{query}")}
+  end
+
+  defp parse_settings_mode("1"), do: :forced
+  defp parse_settings_mode("0"), do: :disabled
+  defp parse_settings_mode(_), do: :auto
+
+  defp settings_available?(:forced, _obs_detected), do: true
+  defp settings_available?(:disabled, _obs_detected), do: false
+  defp settings_available?(:auto, obs_detected), do: not obs_detected
+
+  # Re-emits only the known params, dropping any that match the defaults, so
+  # the URL in the address bar stays as small as the pasted OBS URL needs to
+  # be. Values are not interpreted here — build_style stays the only parser.
+  defp overlay_query(form_params, stream_settings, settings_mode) do
+    base =
+      Enum.flat_map(@param_defaults, fn {key, default} ->
+        case normalize_param(key, Map.get(form_params, key)) do
+          nil -> []
+          ^default -> []
+          value -> [{key, value}]
+        end
+      end)
+
+    # uppercase defaults to the streamer's text_uppercase setting, not a
+    # static value, so its "omit when default" comparison is dynamic.
+    uppercase_default = to_string(stream_settings.text_uppercase)
+
+    uppercase =
+      case Map.get(form_params, "uppercase") do
+        value when value in ["true", "false"] and value != uppercase_default ->
+          [{"uppercase", value}]
+
+        _ ->
+          []
+      end
+
+    forced = if settings_mode == :forced, do: [{"settings", "1"}], else: []
+
+    Map.new(base ++ uppercase ++ forced)
+  end
+
+  defp normalize_param(key, value) when key in ["color", "bg"] and is_binary(value),
+    do: value |> String.trim_leading("#") |> String.upcase()
+
+  defp normalize_param(_key, value), do: value
+
+  defp display_final(%{panel_open: true}), do: @sample_final
+  defp display_final(assigns), do: assigns.final_text
+
+  defp display_interim(%{panel_open: true}), do: @sample_interim
+  defp display_interim(assigns), do: assigns.interim
 
   @impl true
   def handle_info({:caption_source_payload, payload}, socket) do
@@ -120,7 +232,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     bg_opacity = parse_int(params["bg_opacity"], 70, 0, 100)
     align = parse_enum(params["align"], ~w(left center right), "left")
     lines = parse_int(params["lines"], 3, 1, 10)
-    font_stack = Map.get(@font_stacks, params["font"], @font_stacks["sans"])
+    font = parse_enum(params["font"], Map.keys(@font_stacks), "sans")
 
     uppercase? =
       case params["uppercase"] do
@@ -129,15 +241,30 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
         _ -> stream_settings.text_uppercase
       end
 
+    # The *_hex / bg_opacity / font / uppercase keys are the same validated
+    # primitives echoed back for the settings form controls — not a second
+    # parsing path.
     %{
       font_size: font_size,
       color: "rgb(#{r}, #{g}, #{b})",
+      color_hex: to_hex(r, g, b),
       background: "rgba(#{bg_r}, #{bg_g}, #{bg_b}, #{bg_opacity / 100})",
+      bg_hex: to_hex(bg_r, bg_g, bg_b),
+      bg_opacity: bg_opacity,
       align: align,
       lines: lines,
-      font_stack: font_stack,
+      font: font,
+      font_stack: @font_stacks[font],
+      uppercase: uppercase?,
       text_transform: if(uppercase?, do: "uppercase", else: "none")
     }
+  end
+
+  defp to_hex(r, g, b) do
+    Enum.map_join([r, g, b], fn component ->
+      component |> Integer.to_string(16) |> String.pad_leading(2, "0")
+    end)
+    |> String.upcase()
   end
 
   defp caption_box_style(style) do

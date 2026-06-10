@@ -109,6 +109,16 @@ Hooks.CopyToClipboard = {
   },
 };
 
+// ObsDetect: hide the caption overlay settings tool inside OBS browser
+// sources. OBS injects window.obsstudio and brands its user agent.
+Hooks.ObsDetect = {
+  mounted() {
+    if (window.obsstudio || navigator.userAgent.includes('OBS')) {
+      this.pushEvent('obs_detected', {});
+    }
+  },
+};
+
 Hooks.QuillEditor = {
   mounted() {
     if (!window.Quill) return;
