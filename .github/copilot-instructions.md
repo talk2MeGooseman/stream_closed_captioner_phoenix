@@ -40,18 +40,26 @@ Translation uses Azure Cognitive Services. Two paths exist in `CaptionsPipeline.
 
 ### Service Providers (Mox pattern)
 
-External services (`Azure`, `Twitch.Extension`, `Twitch.Helix`) are accessed via behaviour modules resolved at runtime from application config:
+External services (`Azure`, `Gemini`, `Zoom`, `Twitch.Extension`, `Twitch.Helix`) are accessed via behaviour modules resolved at runtime from application config:
 
 ```elixir
 Azure.api_client()         # → Azure.CognitiveProvider behaviour
+Gemini.api_client()        # → Gemini.CognitiveProvider behaviour
+Zoom.api_client()          # → Zoom.CaptionsProvider behaviour
 Twitch.ext_api_client()    # → Twitch.ExtensionProvider behaviour
 Twitch.helix_api_client()  # → Twitch.HelixProvider behaviour
 ```
 
+(Twitch OAuth and Notion follow the same config pattern via module-private accessors.)
+
 In tests, these are swapped for Mox mocks:
 - `Azure.MockCognitive`
+- `Gemini.MockCognitive`
+- `Notion.MockDatabase`
 - `Twitch.MockExtension`
 - `Twitch.MockHelix`
+- `Twitch.MockOauth`
+- `Zoom.MockCaptions`
 
 ### Presence & Activity Tracking
 
@@ -124,7 +132,7 @@ Repo.update!(StreamSettings.changeset(user.stream_settings, %{language: "es-ES"}
 
 ### Mox setup
 
-All three mocks (`Azure.MockCognitive`, `Twitch.MockExtension`, `Twitch.MockHelix`) are defined in `test/test_helper.exs`. Add `import Mox` and `setup :verify_on_exit!` in any test that uses them.
+All mocks (`Azure.MockCognitive`, `Gemini.MockCognitive`, `Notion.MockDatabase`, `Twitch.MockExtension`, `Twitch.MockHelix`, `Twitch.MockOauth`, `Zoom.MockCaptions`) are defined in `test/test_helper.exs`. Add `import Mox` and `setup :verify_on_exit!` in any test that uses them.
 
 ### LiveView flash caveat
 

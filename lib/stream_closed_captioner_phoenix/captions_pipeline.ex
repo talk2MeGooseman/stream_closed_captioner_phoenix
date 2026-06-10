@@ -68,7 +68,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
       }
 
       # Censor both keys: only :final goes to Zoom, but the whole payload is
-      # broadcast to the public caption source overlay.
+      # broadcast to the public caption source overlay. Pirate mode stays
+      # :final-only here — a known pre-existing asymmetry with the :default
+      # and :twitch paths (which pirate both keys). Unlike censoring it is
+      # purely cosmetic, so un-pirated interim reaching the overlay is
+      # acceptable and not worth a behavior change on the Zoom path.
       payload =
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings)
