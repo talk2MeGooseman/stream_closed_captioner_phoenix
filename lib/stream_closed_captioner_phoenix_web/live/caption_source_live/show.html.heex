@@ -24,9 +24,11 @@
     id="caption-box"
     style={caption_box_style(@style)}
   >
-    <p style="margin: 0;">
-      <span id="caption-final">{@final_text}</span>
-      <span :if={@interim != ""} id="caption-interim" style="opacity: 0.8;">{@interim}</span>
-    </p>
+    <div id="caption-clip" style={caption_clip_style(@style)}>
+      <p style="margin: 0;">
+        <span id="caption-final">{@final_text}</span>
+        <span :if={@interim != ""} id="caption-interim" style="opacity: 0.8;">{@interim}</span>
+      </p>
+    </div>
   </div>
 </div>

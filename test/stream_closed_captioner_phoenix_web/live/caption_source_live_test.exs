@@ -187,6 +187,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       refute html =~ "display:none"
     end
 
+    test "clips text on a padding-free inner element so no partial extra line shows", %{
+      conn: conn,
+      token: token,
+      stream_settings: stream_settings
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}?lines=3")
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "hi"})
+      render(view)
+
+      # overflow: hidden clips at the padding box, so clipping on the padded
+      # caption box lets the tail of an extra line paint inside the top
+      # padding; the clip container must be an unpadded element sized to
+      # exactly N line-heights.
+      assert has_element?(view, ~s{#caption-clip[style*="max-height: calc(3 * 1.4em)"]})
+      assert has_element?(view, ~s{#caption-clip[style*="overflow: hidden"]})
+      refute has_element?(view, ~s{#caption-box[style*="overflow: hidden"]})
+      refute has_element?(view, ~s{#caption-box[style*="max-height"]})
+    end
+
     test "uppercase defaults from the streamer's text_uppercase setting", %{conn: conn} do
       stream_settings =
         insert(:stream_settings, user: build(:bare_user), text_uppercase: true)

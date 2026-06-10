@@ -148,17 +148,27 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
       "font-size: #{style.font_size}px",
       "text-align: #{style.align}",
       "text-transform: #{style.text_transform}",
+      "border-radius: 4px",
+      "padding: 0.4em 0.6em",
+      "max-width: 100%"
+    ]
+    |> Enum.join("; ")
+  end
+
+  # overflow: hidden clips at the padding box, so the clip container must be
+  # a separate unpadded element sized to exactly N line-heights — clipping on
+  # the padded caption box lets the tail of an extra line paint inside the
+  # box's top padding.
+  defp caption_clip_style(style) do
+    [
       "line-height: 1.4",
-      "max-height: calc(#{style.lines} * 1.4em + 0.8em)",
+      "max-height: calc(#{style.lines} * 1.4em)",
       "overflow: hidden",
       "display: flex",
       "flex-direction: column",
       "justify-content: flex-end",
       "overflow-wrap: break-word",
-      "word-break: break-word",
-      "border-radius: 4px",
-      "padding: 0.4em 0.6em",
-      "max-width: 100%"
+      "word-break: break-word"
     ]
     |> Enum.join("; ")
   end
