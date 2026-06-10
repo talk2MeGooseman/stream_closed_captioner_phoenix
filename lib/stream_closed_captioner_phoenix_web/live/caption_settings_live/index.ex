@@ -56,13 +56,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
 
   @impl true
   def handle_event("regenerate_caption_source_token", _params, socket) do
-    stream_settings =
-      Settings.regenerate_caption_source_token!(socket.assigns.stream_settings)
+    case Settings.regenerate_caption_source_token(socket.assigns.stream_settings) do
+      {:ok, stream_settings} ->
+        {:noreply,
+         socket
+         |> assign(:stream_settings, stream_settings)
+         |> put_flash(:info, "Caption source URL regenerated — update your OBS browser source.")}
 
-    {:noreply,
-     socket
-     |> assign(:stream_settings, stream_settings)
-     |> put_flash(:info, "Caption source URL regenerated — update your OBS browser source.")}
+      {:error, _changeset} ->
+        {:noreply,
+         put_flash(socket, :error, "Could not regenerate the caption source URL. Please try again.")}
+    end
   end
 
   @impl true

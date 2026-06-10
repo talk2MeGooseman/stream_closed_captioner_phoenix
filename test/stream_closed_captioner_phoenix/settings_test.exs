@@ -240,12 +240,12 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                stream_settings.caption_source_token
     end
 
-    test "regenerate_caption_source_token!/1 replaces the token" do
+    test "regenerate_caption_source_token/1 replaces the token" do
       stream_settings =
         insert(:stream_settings, user: build(:bare_user))
         |> Settings.get_or_generate_caption_source_token!()
 
-      regenerated = Settings.regenerate_caption_source_token!(stream_settings)
+      assert {:ok, regenerated} = Settings.regenerate_caption_source_token(stream_settings)
 
       assert is_binary(regenerated.caption_source_token)
       assert regenerated.caption_source_token != stream_settings.caption_source_token

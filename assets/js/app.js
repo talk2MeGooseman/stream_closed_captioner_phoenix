@@ -88,11 +88,23 @@ Hooks.CopyToClipboard = {
     this.el.addEventListener('click', () => {
       const target = document.getElementById(this.el.dataset.copyTarget);
       if (!target) return;
-      navigator.clipboard.writeText(target.value).then(() => {
+      const flash = (msg) => {
         const original = this.el.textContent;
-        this.el.textContent = 'Copied!';
+        this.el.textContent = msg;
         setTimeout(() => (this.el.textContent = original), 1500);
-      });
+      };
+      // Clipboard API needs a secure context and permission; fall back to
+      // selecting the text so the user can copy manually.
+      const fallback = () => {
+        target.focus();
+        target.select();
+        flash('Press Ctrl+C');
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(target.value).then(() => flash('Copied!'), fallback);
+      } else {
+        fallback();
+      }
     });
   },
 };

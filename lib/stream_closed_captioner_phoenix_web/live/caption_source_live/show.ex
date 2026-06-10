@@ -45,7 +45,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
      |> assign(:stream_settings, stream_settings)
      |> assign(:page_title, "Captions")
      |> assign(:interim, "")
-     |> assign(:final_text, "")}
+     |> assign(:final_text, "")
+     |> assign(:style, build_style(%{}, stream_settings))}
   end
 
   @impl true

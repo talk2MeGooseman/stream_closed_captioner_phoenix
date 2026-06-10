@@ -354,10 +354,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   Replaces the caption source token with a freshly generated one, invalidating
   the previous caption source URL.
   """
-  def regenerate_caption_source_token!(%StreamSettings{} = stream_settings) do
-    {:ok, stream_settings} = put_caption_source_token(stream_settings)
-    stream_settings
-  end
+  def regenerate_caption_source_token(%StreamSettings{} = stream_settings),
+    do: put_caption_source_token(stream_settings)
 
   @doc false
   @decorate cache_put(
