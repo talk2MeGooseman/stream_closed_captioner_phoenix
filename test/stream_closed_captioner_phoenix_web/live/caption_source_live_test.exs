@@ -269,10 +269,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       refute has_element?(view, "#settings-gear")
     end
 
+    # Routing render_hook through the element pins phx-hook="ObsDetect" in the
+    # rendered HTML — the testable half of the OBS-hiding boundary (the JS
+    # side of the hook is not reachable from ExUnit).
     test "obs detection hides the tool by default", %{conn: conn, token: token} do
       {:ok, view, _html} = live(conn, "/captions/#{token}")
 
-      render_hook(view, "obs_detected", %{})
+      view
+      |> element(~s{#caption-settings-ui[phx-hook="ObsDetect"]})
+      |> render_hook("obs_detected", %{})
 
       refute has_element?(view, "#settings-gear")
     end
@@ -283,7 +288,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
     } do
       {:ok, view, _html} = live(conn, "/captions/#{token}?settings=1")
 
-      render_hook(view, "obs_detected", %{})
+      view
+      |> element(~s{#caption-settings-ui[phx-hook="ObsDetect"]})
+      |> render_hook("obs_detected", %{})
 
       assert has_element?(view, "#settings-gear")
     end
@@ -294,7 +301,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       view |> element("#settings-gear") |> render_click()
       assert has_element?(view, "#settings-panel")
 
-      render_hook(view, "obs_detected", %{})
+      view
+      |> element(~s{#caption-settings-ui[phx-hook="ObsDetect"]})
+      |> render_hook("obs_detected", %{})
 
       refute has_element?(view, "#settings-panel")
     end
@@ -367,6 +376,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       html = render(view)
       assert html =~ "font-size: 48px"
       assert html =~ "rgb(0, 255, 0)"
+
+      # the copy-URL field must hold the freshly patched URL
+      assert has_element?(view, ~s{#overlay-url[value*="font_size=48"]})
     end
 
     test "default values are omitted from the patched URL", %{conn: conn, token: token} do
@@ -395,6 +407,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       refute path =~ "lines="
       refute path =~ "font="
       refute path =~ "uppercase="
+    end
+
+    test "switching off uppercase for an uppercase-default streamer emits uppercase=false", %{
+      conn: conn
+    } do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user), text_uppercase: true)
+        |> Settings.get_or_generate_caption_source_token!()
+
+      {:ok, view, _html} = live(conn, "/captions/#{stream_settings.caption_source_token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      view
+      |> element("#settings-form")
+      |> render_change(%{"uppercase" => "false"})
+
+      # the default is the streamer's text_uppercase, not a static false, so
+      # turning uppercase off is a non-default value and must be in the URL
+      path = assert_patch(view)
+      assert path =~ "uppercase=false"
+      assert render(view) =~ "text-transform: none"
     end
 
     test "the settings=1 override survives setting changes", %{conn: conn, token: token} do

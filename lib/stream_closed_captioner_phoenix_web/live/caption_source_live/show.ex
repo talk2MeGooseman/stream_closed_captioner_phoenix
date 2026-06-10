@@ -41,18 +41,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
   @sample_final "The quick brown fox jumps over the lazy dog while the streamer fine-tunes caption styling. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump! Sphinx of black quartz, judge my vow."
   @sample_interim "and this interim text is still being recognized"
 
-  # Defaults for emitted URL params; values matching these are omitted so the
-  # copied URL stays minimal. Must mirror the defaults in build_style/2.
-  @param_defaults %{
-    "font_size" => "32",
-    "color" => "FFFFFF",
-    "bg" => "000000",
-    "bg_opacity" => "70",
-    "align" => "left",
-    "lines" => "3",
-    "font" => "sans"
-  }
-
   @impl true
   def mount(%{"token" => token}, _session, socket) do
     case Settings.get_stream_settings_by_caption_source_token(token) do
@@ -138,47 +126,186 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
   defp settings_available?(:disabled, _obs_detected), do: false
   defp settings_available?(:auto, obs_detected), do: not obs_detected
 
-  # Re-emits only the known params, dropping any that match the defaults, so
-  # the URL in the address bar stays as small as the pasted OBS URL needs to
-  # be. Values are not interpreted here — build_style stays the only parser.
+  # Runs the proposed form params through build_style and emits only the
+  # validated primitives that differ from the empty-params style, so the URL
+  # stays minimal, always holds clamped/valid values, and build_style remains
+  # the single source of truth for both parsing and defaults (including the
+  # streamer-dependent uppercase default).
   defp overlay_query(form_params, stream_settings, settings_mode) do
-    base =
-      Enum.flat_map(@param_defaults, fn {key, default} ->
-        case normalize_param(key, Map.get(form_params, key)) do
-          nil -> []
-          ^default -> []
-          value -> [{key, value}]
-        end
+    proposed = build_style(form_params, stream_settings)
+    defaults = build_style(%{}, stream_settings)
+
+    params =
+      [
+        {"font_size", proposed.font_size, defaults.font_size},
+        {"color", proposed.color_hex, defaults.color_hex},
+        {"bg", proposed.bg_hex, defaults.bg_hex},
+        {"bg_opacity", proposed.bg_opacity, defaults.bg_opacity},
+        {"align", proposed.align, defaults.align},
+        {"lines", proposed.lines, defaults.lines},
+        {"font", proposed.font, defaults.font},
+        {"uppercase", proposed.uppercase, defaults.uppercase}
+      ]
+      |> Enum.flat_map(fn
+        {_key, value, value} -> []
+        {key, value, _default} -> [{key, to_string(value)}]
       end)
-
-    # uppercase defaults to the streamer's text_uppercase setting, not a
-    # static value, so its "omit when default" comparison is dynamic.
-    uppercase_default = to_string(stream_settings.text_uppercase)
-
-    uppercase =
-      case Map.get(form_params, "uppercase") do
-        value when value in ["true", "false"] and value != uppercase_default ->
-          [{"uppercase", value}]
-
-        _ ->
-          []
-      end
 
     forced = if settings_mode == :forced, do: [{"settings", "1"}], else: []
 
-    Map.new(base ++ uppercase ++ forced)
+    Map.new(params ++ forced)
   end
 
-  defp normalize_param(key, value) when key in ["color", "bg"] and is_binary(value),
-    do: value |> String.trim_leading("#") |> String.upcase()
+  defp display_final(true = _panel_open, _final_text), do: @sample_final
+  defp display_final(false = _panel_open, final_text), do: final_text
 
-  defp normalize_param(_key, value), do: value
+  defp display_interim(true = _panel_open, _interim), do: @sample_interim
+  defp display_interim(false = _panel_open, interim), do: interim
 
-  defp display_final(%{panel_open: true}), do: @sample_final
-  defp display_final(assigns), do: assigns.final_text
+  attr(:panel_open, :boolean, required: true)
+  attr(:style, :map, required: true)
+  attr(:current_url, :string, required: true)
 
-  defp display_interim(%{panel_open: true}), do: @sample_interim
-  defp display_interim(assigns), do: assigns.interim
+  defp settings_tool(assigns) do
+    ~H"""
+    <div
+      id="caption-settings-ui"
+      phx-hook="ObsDetect"
+      class="nightwind-prevent-block fixed top-2 right-2 z-10 font-sans"
+    >
+      <button
+        :if={!@panel_open}
+        id="settings-gear"
+        type="button"
+        phx-click="toggle_panel"
+        aria-label="Open caption settings"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900/80 text-lg text-white shadow hover:bg-gray-700"
+      >
+        ⚙
+      </button>
+      <div
+        :if={@panel_open}
+        id="settings-panel"
+        class="w-72 rounded-lg bg-gray-900 p-4 text-sm text-white shadow-xl"
+      >
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="font-semibold">Caption appearance</h2>
+          <button
+            id="settings-close"
+            type="button"
+            phx-click="toggle_panel"
+            aria-label="Close caption settings"
+            class="rounded px-2 py-1 text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+        <.form for={%{}} id="settings-form" phx-change="update_settings" class="space-y-3">
+          <label class="block">
+            <span class="mb-1 block text-gray-300">Font size ({@style.font_size}px)</span>
+            <input
+              type="range"
+              name="font_size"
+              min="10"
+              max="120"
+              value={@style.font_size}
+              class="w-full"
+            />
+          </label>
+          <div class="flex gap-3">
+            <label class="block flex-1">
+              <span class="mb-1 block text-gray-300">Text color</span>
+              <input
+                type="color"
+                name="color"
+                value={"#" <> @style.color_hex}
+                class="h-8 w-full cursor-pointer rounded"
+              />
+            </label>
+            <label class="block flex-1">
+              <span class="mb-1 block text-gray-300">Background</span>
+              <input
+                type="color"
+                name="bg"
+                value={"#" <> @style.bg_hex}
+                class="h-8 w-full cursor-pointer rounded"
+              />
+            </label>
+          </div>
+          <label class="block">
+            <span class="mb-1 block text-gray-300">
+              Background opacity ({@style.bg_opacity}%)
+            </span>
+            <input
+              type="range"
+              name="bg_opacity"
+              min="0"
+              max="100"
+              value={@style.bg_opacity}
+              class="w-full"
+            />
+          </label>
+          <div class="flex gap-3">
+            <label class="block flex-1">
+              <span class="mb-1 block text-gray-300">Align</span>
+              <select name="align" class="w-full rounded bg-gray-800 px-2 py-1">
+                <option value="left" selected={@style.align == "left"}>Left</option>
+                <option value="center" selected={@style.align == "center"}>Center</option>
+                <option value="right" selected={@style.align == "right"}>Right</option>
+              </select>
+            </label>
+            <label class="block flex-1">
+              <span class="mb-1 block text-gray-300">Font</span>
+              <select name="font" class="w-full rounded bg-gray-800 px-2 py-1">
+                <option value="sans" selected={@style.font == "sans"}>Sans</option>
+                <option value="serif" selected={@style.font == "serif"}>Serif</option>
+                <option value="mono" selected={@style.font == "mono"}>Mono</option>
+              </select>
+            </label>
+          </div>
+          <label class="block">
+            <span class="mb-1 block text-gray-300">Lines ({@style.lines})</span>
+            <input
+              type="range"
+              name="lines"
+              min="1"
+              max="10"
+              value={@style.lines}
+              class="w-full"
+            />
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="hidden" name="uppercase" value="false" />
+            <input type="checkbox" name="uppercase" value="true" checked={@style.uppercase} />
+            <span class="text-gray-300">Uppercase</span>
+          </label>
+        </.form>
+        <div class="mt-4 border-t border-gray-700 pt-3">
+          <span class="mb-1 block text-gray-300">OBS browser source URL</span>
+          <div class="flex gap-2">
+            <input
+              id="overlay-url"
+              type="text"
+              readonly
+              value={@current_url}
+              onclick="this.select()"
+              class="w-full rounded bg-gray-800 px-2 py-1 text-xs"
+            />
+            <button
+              id="overlay-url-copy"
+              type="button"
+              phx-hook="CopyToClipboard"
+              data-copy-target="overlay-url"
+              class="shrink-0 rounded bg-gray-700 px-2 py-1 hover:bg-gray-600"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
 
   @impl true
   def handle_info({:caption_source_payload, payload}, socket) do
