@@ -22,6 +22,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
     case StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:zoom, user, payload) do
       {:ok, sent_payload} ->
+        broadcast_caption_source(user, sent_payload)
         NewRelic.stop_transaction()
 
         {:reply, {:ok, sent_payload}, socket}
@@ -49,6 +50,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
           new_twitch_caption: user.uid
         )
 
+        broadcast_caption_source(user, sent_payload)
+
         new_relic_track(:ok, user, sent_on_time)
         {:reply, {:ok, sent_payload}, socket}
 
@@ -74,6 +77,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
     case safe_pipeline_to(:default, user, payload) do
       {:ok, sent_payload} ->
+        broadcast_caption_source(user, sent_payload)
         {:reply, {:ok, sent_payload}, socket}
 
       {:error, reason} ->
@@ -86,6 +90,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   def handle_info(:after_join, socket) do
     track_user(socket.assigns.current_user.uid)
     {:noreply, socket}
+  end
+
+  # Feeds the public OBS caption source page (CaptionSourceLive).
+  defp broadcast_caption_source(user, payload) do
+    Phoenix.PubSub.broadcast(
+      StreamClosedCaptionerPhoenix.PubSub,
+      "caption_source:#{user.id}",
+      {:caption_source_payload, payload}
+    )
   end
 
   defp track_user(uid) when is_binary(uid) do

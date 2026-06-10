@@ -321,6 +321,62 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     do: Repo.get_by!(StreamSettings, user_id: user_id)
 
   @doc """
+  Gets a single stream_setting by its caption source token.
+
+  Raises `Ecto.NoResultsError` if no stream settings has the given token,
+  which renders as a 404 for the public caption source page.
+
+  ## Examples
+
+      iex> get_stream_settings_by_caption_source_token!("abc123")
+      %StreamSettings{}
+
+      iex> get_stream_settings_by_caption_source_token!("unknown")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_stream_settings_by_caption_source_token!(token) when is_binary(token),
+    do: Repo.get_by!(StreamSettings, caption_source_token: token)
+
+  @doc """
+  Returns the stream settings with a caption source token present, generating
+  and persisting one if the user doesn't have one yet.
+  """
+  def get_or_generate_caption_source_token!(%StreamSettings{caption_source_token: nil} = stream_settings) do
+    {:ok, stream_settings} = put_caption_source_token(stream_settings)
+    stream_settings
+  end
+
+  def get_or_generate_caption_source_token!(%StreamSettings{} = stream_settings),
+    do: stream_settings
+
+  @doc """
+  Replaces the caption source token with a freshly generated one, invalidating
+  the previous caption source URL.
+  """
+  def regenerate_caption_source_token!(%StreamSettings{} = stream_settings) do
+    {:ok, stream_settings} = put_caption_source_token(stream_settings)
+    stream_settings
+  end
+
+  @doc false
+  @decorate cache_put(
+              cache: Cache,
+              key: {StreamSettings, stream_settings.user_id}
+            )
+  def put_caption_source_token(%StreamSettings{} = stream_settings) do
+    stream_settings
+    |> StreamSettings.caption_source_token_changeset(%{
+      caption_source_token: generate_caption_source_token()
+    })
+    |> Repo.update()
+  end
+
+  defp generate_caption_source_token do
+    :crypto.strong_rand_bytes(24) |> Base.url_encode64(padding: false)
+  end
+
+  @doc """
   Gets a single stream_setting by user id.
 
   ## Examples

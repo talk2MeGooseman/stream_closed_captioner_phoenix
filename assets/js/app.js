@@ -82,6 +82,21 @@ Hooks.Toast = {
   },
 };
 
+// CopyToClipboard: copy the value of the input named by data-copy-target.
+Hooks.CopyToClipboard = {
+  mounted() {
+    this.el.addEventListener('click', () => {
+      const target = document.getElementById(this.el.dataset.copyTarget);
+      if (!target) return;
+      navigator.clipboard.writeText(target.value).then(() => {
+        const original = this.el.textContent;
+        this.el.textContent = 'Copied!';
+        setTimeout(() => (this.el.textContent = original), 1500);
+      });
+    });
+  },
+};
+
 Hooks.QuillEditor = {
   mounted() {
     if (!window.Quill) return;

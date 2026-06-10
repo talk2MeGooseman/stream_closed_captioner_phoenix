@@ -120,6 +120,95 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
     assert_reply ref, :error, "Issue sending captions."
   end
 
+  describe "caption source broadcasts" do
+    setup %{user: user} do
+      Phoenix.PubSub.subscribe(
+        StreamClosedCaptionerPhoenix.PubSub,
+        "caption_source:#{user.id}"
+      )
+
+      :ok
+    end
+
+    test "default path broadcasts the payload", %{socket: socket} do
+      ref =
+        push(socket, "publishFinal", %{
+          "interim" => "hello",
+          "final" => "world",
+          "session" => "abc"
+        })
+
+      assert_reply ref, :ok
+
+      assert_receive {:caption_source_payload,
+                      %Twitch.Extension.CaptionsPayload{interim: "hello", final: "world"}}
+    end
+
+    test "interim publishes on the default path broadcast too", %{socket: socket} do
+      ref =
+        push(socket, "publishInterim", %{
+          "interim" => "typing...",
+          "final" => "",
+          "session" => "abc"
+        })
+
+      assert_reply ref, :ok
+
+      assert_receive {:caption_source_payload,
+                      %Twitch.Extension.CaptionsPayload{interim: "typing...", final: ""}}
+    end
+
+    test "twitch path broadcasts the payload", %{socket: socket} do
+      ref =
+        push(socket, "publishFinal", %{
+          "interim" => "hello",
+          "final" => "world",
+          "session" => "abc",
+          "twitch" => %{"enabled" => true}
+        })
+
+      assert_reply ref, :ok
+
+      assert_receive {:caption_source_payload,
+                      %Twitch.Extension.CaptionsPayload{interim: "hello", final: "world"}}
+    end
+
+    test "no broadcast when the pipeline fails" do
+      bad_user = insert(:user, stream_settings: nil)
+
+      import Ecto.Query
+
+      StreamClosedCaptionerPhoenix.Repo.delete_all(
+        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
+          where: ss.user_id == ^bad_user.id
+        )
+      )
+
+      Phoenix.PubSub.subscribe(
+        StreamClosedCaptionerPhoenix.PubSub,
+        "caption_source:#{bad_user.id}"
+      )
+
+      {:ok, _, bad_socket} =
+        StreamClosedCaptionerPhoenixWeb.UserSocket
+        |> socket("user_id", %{current_user: bad_user})
+        |> subscribe_and_join(
+          StreamClosedCaptionerPhoenixWeb.CaptionsChannel,
+          "captions:#{bad_user.id}"
+        )
+
+      ref =
+        push(bad_socket, "publishFinal", %{
+          "interim" => "hello",
+          "final" => "world",
+          "session" => "abc"
+        })
+
+      assert_reply ref, :error, "Issue sending captions."
+      refute_receive {:caption_source_payload, _}
+    end
+  end
+
   test "publishFinal with zoom enabled and non-HTTPS URL replies error", %{socket: socket} do
     ref =
       push(socket, "publishFinal", %{

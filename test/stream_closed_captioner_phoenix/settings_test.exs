@@ -221,6 +221,56 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     end
   end
 
+  describe "caption_source_token" do
+    test "get_or_generate_caption_source_token!/1 generates a token when missing" do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      assert stream_settings.caption_source_token == nil
+
+      updated = Settings.get_or_generate_caption_source_token!(stream_settings)
+      assert is_binary(updated.caption_source_token)
+      assert byte_size(updated.caption_source_token) >= 32
+    end
+
+    test "get_or_generate_caption_source_token!/1 keeps an existing token" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      assert Settings.get_or_generate_caption_source_token!(stream_settings).caption_source_token ==
+               stream_settings.caption_source_token
+    end
+
+    test "regenerate_caption_source_token!/1 replaces the token" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      regenerated = Settings.regenerate_caption_source_token!(stream_settings)
+
+      assert is_binary(regenerated.caption_source_token)
+      assert regenerated.caption_source_token != stream_settings.caption_source_token
+    end
+
+    test "get_stream_settings_by_caption_source_token!/1 returns the stream_settings" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      found =
+        Settings.get_stream_settings_by_caption_source_token!(
+          stream_settings.caption_source_token
+        )
+
+      assert found.id == stream_settings.id
+    end
+
+    test "get_stream_settings_by_caption_source_token!/1 raises for an unknown token" do
+      assert_raise Ecto.NoResultsError, fn ->
+        Settings.get_stream_settings_by_caption_source_token!("unknown-token")
+      end
+    end
+  end
+
   describe "translate_languages" do
     alias StreamClosedCaptionerPhoenix.Settings.TranslateLanguage
 
