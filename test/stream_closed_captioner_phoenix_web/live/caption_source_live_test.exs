@@ -485,5 +485,42 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       send(view.pid, {:apply_caption, payload})
       assert render(view) =~ "delayed text"
     end
+
+    test "the scheduled timer itself applies captions after the delay", %{conn: conn} do
+      # Companion to the test above: that one pins the deferred-message
+      # handler, this one pins the scheduling — if the delay branch dropped
+      # the payload instead of calling Process.send_after, only this fails.
+      # The generous assert-side wait has no refute-style race; it can only
+      # flake if the machine stalls for 3s+.
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user), caption_delay: 1)
+        |> Settings.get_or_generate_caption_source_token!()
+
+      {:ok, view, _html} = live(conn, "/captions/#{stream_settings.caption_source_token}")
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "delayed text"})
+
+      unless render_eventually?(view, "delayed text", 3_000) do
+        flunk("expected the deferred caption to render within 3s of the broadcast")
+      end
+    end
+  end
+
+  defp render_eventually?(view, text, timeout_ms) do
+    deadline = System.monotonic_time(:millisecond) + timeout_ms
+    poll_render(view, text, deadline)
+  end
+
+  defp poll_render(view, text, deadline) do
+    cond do
+      render(view) =~ text ->
+        true
+
+      System.monotonic_time(:millisecond) >= deadline ->
+        false
+
+      true ->
+        Process.sleep(50)
+        poll_render(view, text, deadline)
+    end
   end
 end
