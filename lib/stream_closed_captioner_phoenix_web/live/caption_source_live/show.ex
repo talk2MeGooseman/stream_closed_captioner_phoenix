@@ -281,7 +281,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
           </label>
         </.form>
         <div class="mt-4 border-t border-gray-700 pt-3">
-          <span class="mb-1 block text-gray-300">OBS browser source URL</span>
+          <label for="overlay-url" class="mb-1 block text-gray-300">OBS browser source URL</label>
           <div class="flex gap-2">
             <input
               id="overlay-url"

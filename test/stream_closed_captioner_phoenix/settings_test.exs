@@ -246,6 +246,18 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
                stream_settings.caption_source_token
     end
 
+    test "get_or_generate_caption_source_token!/1 adopts the winner's token when racing a stale struct" do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      generated = Settings.get_or_generate_caption_source_token!(stream_settings)
+
+      # simulate the race: another process still holds the pre-generation
+      # struct (nil token) and calls get_or_generate after the winner wrote
+      stale = %{stream_settings | caption_source_token: nil}
+      adopted = Settings.get_or_generate_caption_source_token!(stale)
+
+      assert adopted.caption_source_token == generated.caption_source_token
+    end
+
     test "regenerate_caption_source_token/1 replaces the token" do
       stream_settings =
         insert(:stream_settings, user: build(:bare_user))

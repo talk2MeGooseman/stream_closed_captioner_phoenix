@@ -8,7 +8,9 @@ defmodule Zoom.Captions do
       {"Content-Type", "text/plain"}
     ]
 
-    (url <> "&" <> URI.encode_query(%{seq: seq, lang: lang}))
+    separator = if String.contains?(url, "?"), do: "&", else: "?"
+
+    (url <> separator <> URI.encode_query(%{seq: seq, lang: lang}))
     |> HTTPoison.post(text, headers)
   end
 end

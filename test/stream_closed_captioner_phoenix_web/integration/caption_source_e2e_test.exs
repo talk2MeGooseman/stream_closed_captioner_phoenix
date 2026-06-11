@@ -39,6 +39,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceE2ETest do
 
     assert_reply ref, :ok
 
-    assert render(view) =~ "hello overlay"
+    # The PubSub delivery to the LiveView and this render call come from
+    # different processes, so poll briefly rather than assume an ordering.
+    assert eventually(fn -> render(view) =~ "hello overlay" end)
+  end
+
+  defp eventually(fun, attempts \\ 50) do
+    cond do
+      fun.() -> true
+      attempts <= 1 -> fun.()
+      true ->
+        Process.sleep(10)
+        eventually(fun, attempts - 1)
+    end
   end
 end

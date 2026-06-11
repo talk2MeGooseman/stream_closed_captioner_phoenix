@@ -343,17 +343,33 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def get_or_generate_caption_source_token!(
         %StreamSettings{caption_source_token: nil} = stream_settings
       ) do
-    case put_caption_source_token(stream_settings) do
-      {:ok, stream_settings} ->
-        stream_settings
-
-      {:error, changeset} ->
-        raise Ecto.InvalidChangesetError, action: :update, changeset: changeset
-    end
+    {:ok, stream_settings} = generate_caption_source_token_if_missing(stream_settings)
+    stream_settings
   end
 
   def get_or_generate_caption_source_token!(%StreamSettings{} = stream_settings),
     do: stream_settings
+
+  # Concurrent first visits can race to backfill the token. The conditional
+  # update_all lets exactly one writer win; losers match zero rows and adopt
+  # the winner's token from the re-read, so a URL already shown in another
+  # tab is never invalidated.
+  @doc false
+  @decorate cache_put(
+              cache: Cache,
+              key: {StreamSettings, stream_settings.user_id}
+            )
+  def generate_caption_source_token_if_missing(%StreamSettings{} = stream_settings) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    StreamSettings
+    |> where([ss], ss.id == ^stream_settings.id and is_nil(ss.caption_source_token))
+    |> Repo.update_all(
+      set: [caption_source_token: generate_caption_source_token(), updated_at: now]
+    )
+
+    {:ok, Repo.get!(StreamSettings, stream_settings.id)}
+  end
 
   @doc """
   Replaces the caption source token with a freshly generated one, invalidating
