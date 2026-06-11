@@ -431,6 +431,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
       assert render(view) =~ "text-transform: none"
     end
 
+    test "uppercase submitted as a list (hidden input + checked checkbox) uses the last value", %{
+      conn: conn,
+      token: token
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      view |> element("#settings-gear") |> render_click()
+
+      render_change(view, "update_settings", %{"uppercase" => ["false", "true"]})
+
+      path = assert_patch(view)
+      assert path =~ "uppercase=true"
+      assert render(view) =~ "text-transform: uppercase"
+    end
+
     test "the settings=1 override survives setting changes", %{conn: conn, token: token} do
       {:ok, view, _html} = live(conn, "/captions/#{token}?settings=1")
 

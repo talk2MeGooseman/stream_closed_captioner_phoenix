@@ -343,8 +343,13 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   def get_or_generate_caption_source_token!(
         %StreamSettings{caption_source_token: nil} = stream_settings
       ) do
-    {:ok, stream_settings} = put_caption_source_token(stream_settings)
-    stream_settings
+    case put_caption_source_token(stream_settings) do
+      {:ok, stream_settings} ->
+        stream_settings
+
+      {:error, changeset} ->
+        raise Ecto.InvalidChangesetError, action: :update, changeset: changeset
+    end
   end
 
   def get_or_generate_caption_source_token!(%StreamSettings{} = stream_settings),

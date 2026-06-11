@@ -361,12 +361,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     lines = parse_int(params["lines"], 3, 1, 10)
     font = parse_enum(params["font"], Map.keys(@font_stacks), "sans")
 
-    uppercase? =
-      case params["uppercase"] do
-        value when value in ["true", "1"] -> true
-        value when value in ["false", "0"] -> false
-        _ -> stream_settings.text_uppercase
-      end
+    uppercase? = parse_bool(params["uppercase"], stream_settings.text_uppercase)
 
     # The *_hex / bg_opacity / font / uppercase keys are the same validated
     # primitives echoed back for the settings form controls — not a second
@@ -450,6 +445,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
   end
 
   defp parse_int(_value, default, _min, _max), do: default
+
+  defp parse_bool(value, _default) when value in ["true", "1"], do: true
+  defp parse_bool(value, _default) when value in ["false", "0"], do: false
+
+  # Duplicate params (e.g. the hidden+checkbox pair for uppercase in the
+  # settings form) can decode as a list — the last value wins, matching how
+  # Plug resolves repeated keys.
+  defp parse_bool([_ | _] = values, default), do: parse_bool(List.last(values), default)
+  defp parse_bool(_value, default), do: default
 
   defp parse_enum(value, allowed, default) do
     if value in allowed, do: value, else: default
