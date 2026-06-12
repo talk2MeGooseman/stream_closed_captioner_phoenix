@@ -109,8 +109,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # phoenix_live_view (upgraded to 1.x in Phase 3g — issue #259)
       {:phoenix_live_view, "~> 1.1"},
       {:phoenix_view, "~> 2.0.2"},
-      # Phoenix (upgrade to 1.8 in Phase 3h — issue #258)
-      {:phoenix, "~> 1.7.7"},
+      # Phoenix (upgraded to 1.8 in Phase 3h — issue #258)
+      {:phoenix, "~> 1.8"},
       {:plug_cowboy, "~> 2.8"},
       {:poison, "~> 6.0"},
       # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)

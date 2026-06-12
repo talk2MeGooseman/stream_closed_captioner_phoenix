@@ -11,8 +11,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordController do
 
   def create(conn, %{"user" => %{"email" => email}}) do
     if user = Accounts.get_user_by_email(email) do
-      uri = %URI{scheme: "https", host: "stream-cc.gooseman.codes"}
-
       Accounts.deliver_user_reset_password_instructions(
         user,
         &url(~p"/users/reset_password/#{&1}")

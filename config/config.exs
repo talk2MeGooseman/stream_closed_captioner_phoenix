@@ -54,8 +54,7 @@ config :phoenix, :filter_parameters, [
   "client_secret",
   "default_signer",
   "token_secret",
-  "Authorization",
-  ""
+  "Authorization"
 ]
 
 # Use Jason for JSON parsing in Phoenix
