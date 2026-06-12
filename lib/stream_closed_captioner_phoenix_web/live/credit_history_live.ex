@@ -68,7 +68,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
   end
 
   def convert_timestamp_to_human_readable(timestamp) do
-    Timex.to_datetime(timestamp, "Etc/UTC")
-    |> Timex.format!("{UNIX}")
+    timestamp
+    |> DateTime.from_naive!("Etc/UTC")
+    |> Calendar.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
 end

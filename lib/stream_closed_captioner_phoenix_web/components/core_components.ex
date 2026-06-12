@@ -11,7 +11,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import StreamClosedCaptionerPhoenixWeb.Gettext
+  use Gettext, backend: StreamClosedCaptionerPhoenixWeb.Gettext
 
   @doc """
   Renders a modal.

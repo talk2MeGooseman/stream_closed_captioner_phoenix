@@ -16,5 +16,5 @@ defmodule StreamClosedCaptionerPhoenixWeb.Resolvers.Settings do
   end
 
   defp format_datetime(time) when is_nil(time), do: nil
-  defp format_datetime(time), do: Timex.to_datetime(time, "Etc/UTC")
+  defp format_datetime(time), do: DateTime.from_naive!(time, "Etc/UTC")
 end

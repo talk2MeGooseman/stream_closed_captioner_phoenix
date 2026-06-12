@@ -49,14 +49,12 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:dataloader, "~> 2.0"},
       # Bamboo for Emailing (upgrade to 2.x in Phase 3b — issue #252)
       {:bamboo, "~> 2.5"},
-      {:bamboo_phoenix, "~> 1.0"},
       {:bypass, "~> 2.1"},
       # Cachex (upgrade to 4.x in Phase 3c — issue #254)
       {:cachex, "~> 4.1"},
       {:cors_plug, "~> 3.0"},
       {:excoveralls, "~> 0.18", only: :test},
       {:circular_buffer, "~> 0.3"},
-      {:premailex, "~> 0.3"},
       {:floki, ">= 0.30.0"},
       {:flop, "~> 0.26"},
       {:flop_phoenix, "~> 0.26"},
@@ -76,8 +74,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:exsync, "~> 0.2", only: :dev},
       {:fun_with_flags_ui, "~> 1.1.0"},
       {:fun_with_flags, "~> 1.13"},
-      # Gettext (upgrade to 1.0 in Phase 3a — issue #253)
-      {:gettext, "~> 0.26"},
+      # Gettext (upgraded to 1.0 in Phase 3a — issue #253)
+      {:gettext, "~> 1.0"},
       {:guardian, "~> 2.4"},
       {:hackney, "~> 1.9"},
       # Rate limiting (upgrade to 7.x in Phase 3d — issue #255)
@@ -108,7 +106,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       # phoenix_live_view (upgraded to 1.x in Phase 3g — issue #259)
       {:phoenix_live_view, "~> 1.1"},
-      {:phoenix_view, "~> 2.0.2"},
       # Phoenix (upgraded to 1.8 in Phase 3h — issue #258)
       {:phoenix, "~> 1.8"},
       {:plug_cowboy, "~> 2.8"},
@@ -122,7 +119,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # telemetry_metrics (upgrade in Phase 3e — issue #256)
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.3"},
-      {:timex, "~> 3.7"},
       {:ueberauth_twitch, "~> 0.2.0"},
       {:ueberauth, "~> 0.10"},
       {:websockex, "~> 0.4.3"},

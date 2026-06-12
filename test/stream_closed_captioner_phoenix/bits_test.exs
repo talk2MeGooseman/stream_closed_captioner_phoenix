@@ -121,7 +121,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
 
     test "get_user_active_debit/1 returns no record if debit is older than 24 hours" do
-      created_at = Timex.today() |> Timex.shift(days: -3) |> Timex.to_naive_datetime()
+      created_at = Date.utc_today() |> Date.add(-3) |> NaiveDateTime.new!(~T[00:00:00])
 
       bits_balance_debit = insert(:bits_balance_debit, created_at: created_at)
 

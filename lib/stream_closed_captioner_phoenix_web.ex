@@ -115,11 +115,9 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
 
       import StreamClosedCaptionerPhoenixWeb.ErrorHelpers
-      import StreamClosedCaptionerPhoenixWeb.Gettext
+      use Gettext, backend: StreamClosedCaptionerPhoenixWeb.Gettext
 
 
       unquote(verified_routes())
