@@ -26,7 +26,6 @@ defmodule StreamClosedCaptionerPhoenixWeb do
 
       import Plug.Conn
 
-      alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
       unquote(verified_routes())
     end
   end
@@ -84,7 +83,7 @@ defmodule StreamClosedCaptionerPhoenixWeb do
 
   def router do
     quote do
-      use Phoenix.Router, helpers: true
+      use Phoenix.Router, helpers: false
 
       import Plug.Conn
       import Phoenix.Controller
@@ -122,7 +121,6 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       import StreamClosedCaptionerPhoenixWeb.ErrorHelpers
       import StreamClosedCaptionerPhoenixWeb.Gettext
 
-      alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
 
       unquote(verified_routes())
     end

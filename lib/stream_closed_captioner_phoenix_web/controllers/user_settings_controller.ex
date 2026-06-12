@@ -23,7 +23,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
         Accounts.deliver_update_email_instructions(
           applied_user,
           user.email,
-          &Routes.user_settings_url(conn, :confirm_email, &1)
+          &url(~p"/users/settings/confirm_email/#{&1}")
         )
 
         conn
@@ -31,7 +31,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
           :info,
           "A link to confirm your email change has been sent to the new address."
         )
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       {:error, changeset} ->
         AuditLog.warn("user_settings.email_update_request_failed", %{user_id: user.id})
@@ -52,7 +52,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
         conn
         |> put_flash(:info, "Password updated successfully.")
-        |> put_session(:user_return_to, Routes.user_settings_path(conn, :edit))
+        |> put_session(:user_return_to, ~p"/users/settings")
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
@@ -73,7 +73,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
 
         conn
         |> put_flash(:info, "Twitch connection successfully removed.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       {:error, changeset} ->
         AuditLog.warn("user_settings.provider_unlink_failed", %{
@@ -92,12 +92,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsController do
       :ok ->
         conn
         |> put_flash(:info, "Email changed successfully.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
 
       :error ->
         conn
         |> put_flash(:error, "Email change link is invalid or it has expired.")
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
     end
   end
 

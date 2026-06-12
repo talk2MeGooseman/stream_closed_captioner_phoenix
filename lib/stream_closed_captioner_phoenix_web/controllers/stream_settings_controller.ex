@@ -19,7 +19,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.StreamSettingsController do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Stream settings updated successfully.")
-        |> redirect(to: Routes.caption_settings_index_path(conn, :index))
+        |> redirect(to: ~p"/users/caption-settings")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", stream_settings: stream_settings, changeset: changeset)

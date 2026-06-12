@@ -9,15 +9,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
   describe "GET /users/settings" do
     test "renders settings page", %{conn: conn} do
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      conn = get(conn, ~p"/users/settings")
       response = html_response(conn, 200)
       assert response =~ "Settings</h1>"
     end
 
     test "redirects if user is not logged in" do
       conn = build_conn()
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
-      assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+      conn = get(conn, ~p"/users/settings")
+      assert redirected_to(conn) == ~p"/users/log_in"
     end
   end
 
@@ -25,7 +25,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
     test "updates the user password and resets tokens", %{conn: conn, user: user} do
       new_password_conn =
         capture_audit_events(fn ->
-          put(conn, Routes.user_settings_path(conn, :update), %{
+          put(conn, ~p"/users/settings", %{
             "action" => "update_password",
             "current_password" => valid_user_password(),
             "user" => %{
@@ -35,7 +35,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
           })
         end)
 
-      assert redirected_to(new_password_conn) == Routes.user_settings_path(conn, :edit)
+      assert redirected_to(new_password_conn) == ~p"/users/settings"
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
 
       assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~
@@ -47,7 +47,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
     test "does not update password on invalid data", %{conn: conn} do
       old_password_conn =
-        put(conn, Routes.user_settings_path(conn, :update), %{
+        put(conn, ~p"/users/settings", %{
           "action" => "update_password",
           "current_password" => "invalid",
           "user" => %{
@@ -70,12 +70,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
     test "removes the user's Twitch provider", %{conn: conn, user: user} do
       conn =
         capture_audit_events(fn ->
-          put(conn, Routes.user_settings_path(conn, :update), %{
+          put(conn, ~p"/users/settings", %{
             "action" => "remove_provider"
           })
         end)
 
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      assert redirected_to(conn) == ~p"/users/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "Twitch connection successfully removed"
@@ -90,20 +90,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
     test "updates the user email", %{conn: conn, user: user} do
       conn =
-        put(conn, Routes.user_settings_path(conn, :update), %{
+        put(conn, ~p"/users/settings", %{
           "action" => "update_email",
           "current_password" => valid_user_password(),
           "user" => %{"email" => unique_user_email()}
         })
 
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      assert redirected_to(conn) == ~p"/users/settings"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "A link to confirm your email"
       assert Accounts.get_user_by_email(user.email)
     end
 
     test "does not update email on invalid data", %{conn: conn} do
       conn =
-        put(conn, Routes.user_settings_path(conn, :update), %{
+        put(conn, ~p"/users/settings", %{
           "action" => "update_email",
           "current_password" => "invalid",
           "user" => %{"email" => "with spaces"}
@@ -129,22 +129,22 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
     end
 
     test "updates the user email once", %{conn: conn, user: user, token: token, email: email} do
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      conn = get(conn, ~p"/users/settings/confirm_email/#{token}")
+      assert redirected_to(conn) == ~p"/users/settings"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Email changed successfully"
       refute Accounts.get_user_by_email(user.email)
       assert Accounts.get_user_by_email(email)
 
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      conn = get(conn, ~p"/users/settings/confirm_email/#{token}")
+      assert redirected_to(conn) == ~p"/users/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
                "Email change link is invalid or it has expired"
     end
 
     test "does not update email with invalid token", %{conn: conn, user: user} do
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, "oops"))
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      conn = get(conn, ~p"/users/settings/confirm_email/#{"oops"}")
+      assert redirected_to(conn) == ~p"/users/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
                "Email change link is invalid or it has expired"
@@ -154,8 +154,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
     test "redirects if user is not logged in", %{token: token} do
       conn = build_conn()
-      conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
-      assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+      conn = get(conn, ~p"/users/settings/confirm_email/#{token}")
+      assert redirected_to(conn) == ~p"/users/log_in"
     end
   end
 

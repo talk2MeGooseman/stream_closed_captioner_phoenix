@@ -1,9 +1,10 @@
 defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
+  use StreamClosedCaptionerPhoenixWeb, :verified_routes
+
   import Plug.Conn
   import Phoenix.Controller
 
   alias StreamClosedCaptionerPhoenix.Accounts
-  alias StreamClosedCaptionerPhoenixWeb.Router.Helpers, as: Routes
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -160,7 +161,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: Routes.user_session_path(conn, :new))
+      |> redirect(to: ~p"/users/log_in")
       |> halt()
     end
   end

@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordController do
 
       Accounts.deliver_user_reset_password_instructions(
         user,
-        &Routes.user_reset_password_url(uri, :edit, &1)
+        &url(~p"/users/reset_password/#{&1}")
       )
     end
 
@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserResetPasswordController do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Password reset successfully.")
-        |> redirect(to: Routes.user_session_path(conn, :new))
+        |> redirect(to: ~p"/users/log_in")
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)

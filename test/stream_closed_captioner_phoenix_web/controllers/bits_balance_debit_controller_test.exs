@@ -6,7 +6,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
 
   describe "index" do
     test "lists all bits_balance_debits", %{conn: conn} do
-      conn = get(conn, Routes.bits_balance_debit_path(conn, :index))
+      conn = get(conn, ~p"/bits_balance_debits")
       assert html_response(conn, 200) =~ "Listing Bits balance debits"
     end
   end
@@ -18,7 +18,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.BitsBalanceDebitControllerTest do
       conn: conn,
       bits_balance_debit: bits_balance_debit
     } do
-      conn = get(conn, Routes.bits_balance_debit_path(conn, :show, bits_balance_debit.id))
+      conn = get(conn, ~p"/bits_balance_debits/#{bits_balance_debit.id}")
       assert html_response(conn, 200) =~ "Show Bits balance debit"
     end
   end
