@@ -31,7 +31,7 @@ Production migrations: `bin/stream_closed_captioner_phoenix eval "StreamClosedCa
 
 ## Architecture at a glance
 
-Phoenix 1.7 app split into the standard two trees under `lib/`:
+Phoenix 1.8 app split into the standard two trees under `lib/`:
 
 - **`stream_closed_captioner_phoenix/`** — contexts and domain (Accounts, Bits, Settings, Transcripts, CaptionsPipeline, Jobs, Services, Cache).
 - **`stream_closed_captioner_phoenix_web/`** — controllers, channels, LiveViews, GraphQL (Absinthe) schema/resolvers, plugs, components.
