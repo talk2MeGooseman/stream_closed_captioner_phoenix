@@ -41,8 +41,10 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # Absinthe for GraphQL (upgrade to 1.10 in Phase 2 — issue #251)
-      {:absinthe, "~> 1.10"},
+      # Absinthe for GraphQL. Capped below 1.11 — absinthe 1.11 requires
+      # Elixir ~> 1.17 and this app builds on Elixir 1.16 / OTP 25 (see the
+      # jose pin below). Lift the cap when the toolchain is upgraded.
+      {:absinthe, "~> 1.10.0"},
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
@@ -94,7 +96,6 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # Graphql Client
       {:neuron, "~> 5.0"},
       {:new_relic_agent, "~> 1.40"},
-      {:new_relic_absinthe, "~> 0.0.4"},
       {:oban, "~> 2.18"},
       {:new_relic_oban, "~> 0.0.1"},
       {:observer_cli, "~> 1.8"},

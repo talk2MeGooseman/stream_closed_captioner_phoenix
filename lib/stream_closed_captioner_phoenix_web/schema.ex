@@ -6,10 +6,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
   alias StreamClosedCaptionerPhoenix.Repo
   alias StreamClosedCaptionerPhoenixWeb.{Resolvers, Schema}
 
-  # def middleware(middleware, _field, _object) do
-  #   [NewRelic.Absinthe.Middleware | middleware]
-  # end
-
   def plugins do
     [
       StreamClosedCaptionerPhoenixWeb.Schema.Middleware.AuthorizedIntrospection,
