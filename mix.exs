@@ -5,14 +5,19 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
     [
       app: :stream_closed_captioner_phoenix,
       version: "0.1.0",
-      elixir: "~> 1.16",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:yecc] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
+      test_coverage: [tool: ExCoveralls]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -41,10 +46,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # Absinthe for GraphQL. Capped below 1.11 — absinthe 1.11 requires
-      # Elixir ~> 1.17 and this app builds on Elixir 1.16 / OTP 25 (see the
-      # jose pin below). Lift the cap when the toolchain is upgraded.
-      {:absinthe, "~> 1.10.0"},
+      # Absinthe for GraphQL
+      {:absinthe, "~> 1.11"},
       {:absinthe_phoenix, "~> 2.0"},
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_security, "~> 0.1"},
@@ -89,7 +92,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:libcluster_ec2, "~> 0.8"},
       {:mock, "~> 0.3", only: :test},
       {:mox, "~> 1.0", only: :test},
-      {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false},
+      {:mix_test_interactive, "~> 5.1", only: :dev, runtime: false},
       # Cache
       {:nebulex, "~> 2.5"},
       {:decorator, "~> 1.4"},
@@ -128,11 +131,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       # LiveView 1.x test requirement
       {:lazy_html, ">= 0.1.0", only: :test},
-      # Cap below 1.11.10 — newer jose uses the OTP 26 `dynamic()` type,
-      # but the Nixpacks build runs OTP 25 (elixir_1_16's default BEAM
-      # pair at the pinned nixpkgsArchive). Compile fails on
-      # `type dynamic() undefined` in jose_json.erl otherwise.
-      {:jose, "~> 1.11.0 and < 1.11.10"}
+      {:jose, "~> 1.11"}
     ]
   end
 

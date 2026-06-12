@@ -1,29 +1,27 @@
 # Nixpacks build config for Coolify deploys.
-# Pinned to .tool-versions (elixir 1.16.0, erlang 26.0, nodejs 22.21.1).
+# Pinned to .tool-versions (elixir 1.19.5-otp-27, erlang 27.3.4.9,
+# nodejs 22.21.1).
 #
-# nixpkgsArchive note: current nixpkgs unstable has removed elixir_1_16 and
-# erlang_26 as EOL. Pin to the Nixpacks-internal archive where these attrs
-# still resolve:
-#   elixir_1_16 -> 1.16.3 (paired with Erlang 26 via the phoenix provider)
-#   nodejs_22   -> 22.9.0
-# (Patch-level drift from .tool-versions is acceptable; node 22.9 vs 22.21.1
-# is a wider gap but produces deterministic asset builds via package-lock.json.)
+# nixpkgsArchive is the nixpkgs-unstable channel revision from 2026-06,
+# where beam.packages.erlang_27.elixir_1_19 and nodejs_22 all resolve.
 #
-# We let the elixir provider handle the [phases.setup] block. It pairs
-# Elixir and Erlang correctly (via beam.packages.<erlang>.elixir_1_16) and
-# includes build tools (gcc, gnumake) needed for NIF compilation in
-# bcrypt_elixir. Manually pinning `elixir_1_16` + `erlang_26` separately in
-# nixPkgs leaks Erlang 25 (Elixir 1.16's default BEAM pair at this archive)
-# into the env, which then collides with the explicit Erlang 26.
+# We pin the exact BEAM pair via the scoped beam.packages attribute instead
+# of letting the elixir provider choose. The provider's version map tops out
+# at elixir_1_17 and would otherwise fall back to the archive's default
+# `elixir` attribute, which is paired with the default Erlang (28 at this
+# archive) — an OTP we don't test against. A single scoped attribute also
+# avoids the Erlang-leak problem that pinning `elixir_X_Y` + `erlang_XX`
+# separately had: the elixir package brings its own matching Erlang.
+#
+# Because we override nixPkgs (no "..."), the provider's gcc/gnumake
+# additions are dropped, so they are listed explicitly — bcrypt_elixir
+# compiles a NIF. Node comes from the same archive so the libstdc++ ABI
+# matches the toolchain's gcc.
 providers = ["elixir"]
-nixpkgsArchive = "c5702bd28cbde41a191a9c2a00501f18941efbd0"
+nixpkgsArchive = "8c91a71d13451abc40eb9dae8910f972f979852f"
 
 [phases.setup]
-# Add Node from the same nixpkgsArchive as the elixir provider so libstdc++
-# ABI matches. Using the `node` provider pulls a newer Node (22.14) from a
-# different archive, causing CXXABI_1.3.15 mismatch against the elixir
-# provider's gcc-13 libstdc++.
-nixPkgs = ["...", "nodejs_22"]
+nixPkgs = ["beam.packages.erlang_27.elixir_1_19", "gcc", "gnumake", "nodejs_22"]
 
 [phases.install]
 cmds = [
