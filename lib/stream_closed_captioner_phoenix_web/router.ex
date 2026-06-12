@@ -123,6 +123,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       live("/", PageLive, :index)
     end
 
+    live_session :caption_source,
+      root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :overlay_root},
+      layout: false do
+      live("/captions/:token", CaptionSourceLive.Show, :show)
+    end
+
     get("/privacy", PrivacyController, :index)
     get("/terms", TermsController, :index)
     get("/showcase", ShowcaseController, :index)

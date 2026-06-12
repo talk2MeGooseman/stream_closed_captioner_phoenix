@@ -321,6 +321,90 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
     do: Repo.get_by!(StreamSettings, user_id: user_id)
 
   @doc """
+  Gets a single stream_setting by its caption source token, returning `nil`
+  if no stream settings has the given token (e.g. the token was regenerated).
+
+  ## Examples
+
+      iex> get_stream_settings_by_caption_source_token("abc123")
+      %StreamSettings{}
+
+      iex> get_stream_settings_by_caption_source_token("unknown")
+      nil
+
+  """
+  def get_stream_settings_by_caption_source_token(token) when is_binary(token),
+    do: Repo.get_by(StreamSettings, caption_source_token: token)
+
+  @doc """
+  Returns the stream settings with a caption source token present, generating
+  and persisting one if the user doesn't have one yet.
+  """
+  def get_or_generate_caption_source_token!(
+        %StreamSettings{caption_source_token: nil} = stream_settings
+      ) do
+    {:ok, stream_settings} = generate_caption_source_token_if_missing(stream_settings)
+    stream_settings
+  end
+
+  def get_or_generate_caption_source_token!(%StreamSettings{} = stream_settings),
+    do: stream_settings
+
+  # Concurrent first visits can race to backfill the token. The conditional
+  # update_all lets exactly one writer win; losers match zero rows and adopt
+  # the winner's token from the re-read, so a URL already shown in another
+  # tab is never invalidated.
+  @doc false
+  @decorate cache_put(
+              cache: Cache,
+              key: {StreamSettings, stream_settings.user_id}
+            )
+  def generate_caption_source_token_if_missing(%StreamSettings{} = stream_settings) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    StreamSettings
+    |> where([ss], ss.id == ^stream_settings.id and is_nil(ss.caption_source_token))
+    |> Repo.update_all(
+      set: [caption_source_token: generate_caption_source_token(), updated_at: now]
+    )
+
+    # Re-read only the token and merge it into the caller's struct so loaded
+    # associations (e.g. user) survive — a full Repo.get! would hand back
+    # NotLoaded associations to callers that had them preloaded.
+    token =
+      StreamSettings
+      |> where([ss], ss.id == ^stream_settings.id)
+      |> select([ss], ss.caption_source_token)
+      |> Repo.one!()
+
+    {:ok, %{stream_settings | caption_source_token: token}}
+  end
+
+  @doc """
+  Replaces the caption source token with a freshly generated one, invalidating
+  the previous caption source URL.
+  """
+  def regenerate_caption_source_token(%StreamSettings{} = stream_settings),
+    do: put_caption_source_token(stream_settings)
+
+  @doc false
+  @decorate cache_put(
+              cache: Cache,
+              key: {StreamSettings, stream_settings.user_id}
+            )
+  def put_caption_source_token(%StreamSettings{} = stream_settings) do
+    stream_settings
+    |> StreamSettings.caption_source_token_changeset(%{
+      caption_source_token: generate_caption_source_token()
+    })
+    |> Repo.update()
+  end
+
+  defp generate_caption_source_token do
+    :crypto.strong_rand_bytes(24) |> Base.url_encode64(padding: false)
+  end
+
+  @doc """
   Gets a single stream_setting by user id.
 
   ## Examples
@@ -410,7 +494,8 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
   defp enable_or_disable_eventsub_subscriptions(user, subscription_name, status)
        when status == true do
     with nil <- Accounts.fetch_user_eventsub_subscriptions(user, subscription_name),
-         {:ok, %{"data" => [%{"id" => id}]}} <- Twitch.event_subscribe(subscription_name, user.uid) do
+         {:ok, %{"data" => [%{"id" => id}]}} <-
+           Twitch.event_subscribe(subscription_name, user.uid) do
       Accounts.create_eventsub_subscription(user, %{
         type: subscription_name,
         subscription_id: id

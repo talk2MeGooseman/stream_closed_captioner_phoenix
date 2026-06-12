@@ -75,6 +75,21 @@
           </svg>
           Blocklist
         </a>
+        <a href="#caption-source" data-spy="caption-source">
+          <svg
+            class="ico"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm4 14h8" />
+          </svg>
+          OBS Caption Source
+        </a>
       </nav>
     </aside>
 
@@ -186,6 +201,90 @@
             </div>
             {error_tag(f, :blocklist_word, class: "text-red-700 text-sm")}
           </.form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head" id="caption-source">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h2>OBS Caption Source</h2>
+              <span class="badge">Beta</span>
+            </div>
+            <a
+              class="help"
+              href="https://app.notion.com/p/talk2megooseman/How-to-Use-The-Caption-Overlay-37c5805b05158048a905da379074da9e"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                aria-hidden="true"
+              >
+                <path d="M12 17h.01M9.2 9a3 3 0 1 1 4.3 3c-.9.6-1.5 1.2-1.5 2.2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
+              </svg>
+              Help
+            </a>
+          </div>
+          <p>
+            Embed captions directly in your stream — add this URL to OBS as a Browser source.
+          </p>
+        </div>
+        <div class="card__body">
+          <div class="addrow">
+            <input
+              type="text"
+              readonly
+              id="caption-source-url"
+              aria-label="Caption source URL"
+              value={url(~p"/captions/#{@stream_settings.caption_source_token}")}
+              onclick="this.select()"
+            />
+            <button
+              type="button"
+              id="caption-source-copy"
+              class="btn btn--ghost"
+              phx-hook="CopyToClipboard"
+              data-copy-target="caption-source-url"
+            >
+              Copy
+            </button>
+            <button
+              type="button"
+              class="btn btn--ghost"
+              phx-click="regenerate_caption_source_token"
+              phx-disable-with="Regenerating…"
+              data-confirm="Regenerate the caption source URL? The current URL will stop working and you'll need to update your OBS browser source."
+            >
+              Regenerate
+            </button>
+          </div>
+          <div class="note">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.9"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>
+              Anyone with this URL can watch your captions — keep it secret, or regenerate it
+              if it leaks. Customize the look with query params:
+              <code>?font_size=40&amp;align=center&amp;bg_opacity=50</code>
+              (also <code>color</code>, <code>bg</code>, <code>uppercase</code>, <code>lines</code>, and
+              <code>font</code>
+              — sans, serif, or mono).
+            </span>
+          </div>
         </div>
       </section>
     </div>

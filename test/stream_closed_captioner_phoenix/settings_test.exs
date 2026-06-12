@@ -12,9 +12,15 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     alias StreamClosedCaptionerPhoenix.Settings.StreamSettings
 
     setup do
-      stub(Twitch.MockOauth, :get_client_access_token, fn -> {:ok, %{access_token: "test_token"}} end)
+      stub(Twitch.MockOauth, :get_client_access_token, fn ->
+        {:ok, %{access_token: "test_token"}}
+      end)
 
-      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds, _transport, type, _version, _condition ->
+      stub(Twitch.MockHelix, :eventsub_subscribe, fn _creds,
+                                                     _transport,
+                                                     type,
+                                                     _version,
+                                                     _condition ->
         {:ok, %{"data" => [%{"id" => "sub_#{type}"}]}}
       end)
 
@@ -218,6 +224,64 @@ defmodule StreamClosedCaptionerPhoenix.SettingsTest do
     test "change_stream_settings/1 returns a stream_settings changeset" do
       stream_settings = insert(:stream_settings)
       assert %Ecto.Changeset{} = Settings.change_stream_settings(stream_settings)
+    end
+  end
+
+  describe "caption_source_token" do
+    test "get_or_generate_caption_source_token!/1 generates a token when missing" do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      assert stream_settings.caption_source_token == nil
+
+      updated = Settings.get_or_generate_caption_source_token!(stream_settings)
+      assert is_binary(updated.caption_source_token)
+      assert byte_size(updated.caption_source_token) >= 32
+    end
+
+    test "get_or_generate_caption_source_token!/1 keeps an existing token" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      assert Settings.get_or_generate_caption_source_token!(stream_settings).caption_source_token ==
+               stream_settings.caption_source_token
+    end
+
+    test "get_or_generate_caption_source_token!/1 adopts the winner's token when racing a stale struct" do
+      stream_settings = insert(:stream_settings, user: build(:bare_user))
+      generated = Settings.get_or_generate_caption_source_token!(stream_settings)
+
+      # simulate the race: another process still holds the pre-generation
+      # struct (nil token) and calls get_or_generate after the winner wrote
+      stale = %{stream_settings | caption_source_token: nil}
+      adopted = Settings.get_or_generate_caption_source_token!(stale)
+
+      assert adopted.caption_source_token == generated.caption_source_token
+    end
+
+    test "regenerate_caption_source_token/1 replaces the token" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      assert {:ok, regenerated} = Settings.regenerate_caption_source_token(stream_settings)
+
+      assert is_binary(regenerated.caption_source_token)
+      assert regenerated.caption_source_token != stream_settings.caption_source_token
+    end
+
+    test "get_stream_settings_by_caption_source_token/1 returns the stream_settings" do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user))
+        |> Settings.get_or_generate_caption_source_token!()
+
+      found =
+        Settings.get_stream_settings_by_caption_source_token(stream_settings.caption_source_token)
+
+      assert found.id == stream_settings.id
+    end
+
+    test "get_stream_settings_by_caption_source_token/1 returns nil for an unknown token" do
+      assert Settings.get_stream_settings_by_caption_source_token("unknown-token") == nil
     end
   end
 

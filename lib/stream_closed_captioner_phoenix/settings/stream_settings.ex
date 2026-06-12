@@ -2,6 +2,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Inspect, except: [:caption_source_token]}
   schema "stream_settings" do
     field(:blocklist, {:array, :string}, default: [])
     field(:caption_delay, :integer)
@@ -15,6 +16,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     field(:text_uppercase, :boolean, default: false)
     field(:turn_on_reminder, :boolean, default: false)
     field(:auto_off_captions, :boolean, default: false)
+    field(:caption_source_token, :string)
     belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
 
     timestamps(inserted_at: :created_at)
@@ -101,6 +103,18 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     |> unique_constraint(:user_id, name: "index_stream_settings_on_user_id")
     |> validate_number(:caption_delay, greater_than_or_equal_to: 0)
     |> validate_word_list(:blocklist)
+  end
+
+  @doc """
+  Changeset for setting the caption source token. Kept separate from the
+  user-facing changesets so the token can never be mass-assigned through the
+  settings form.
+  """
+  def caption_source_token_changeset(stream_settings, attrs) do
+    stream_settings
+    |> cast(attrs, [:caption_source_token])
+    |> validate_required([:caption_source_token])
+    |> unique_constraint(:caption_source_token)
   end
 
   defp validate_word_list(changeset, field) when is_atom(field) do

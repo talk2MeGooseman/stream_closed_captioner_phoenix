@@ -11,6 +11,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
       session_current_user(session)
       |> Repo.preload([:stream_settings, :translate_languages])
 
+    stream_settings =
+      Settings.get_or_generate_caption_source_token!(current_user.stream_settings)
+
     language =
       if Enum.empty?(current_user.translate_languages) do
         %Settings.TranslateLanguage{}
@@ -20,14 +23,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
 
     socket =
       assign(socket, :current_user, current_user)
-      |> assign(:changeset, Settings.change_stream_settings(current_user.stream_settings))
+      |> assign(:changeset, Settings.change_stream_settings(stream_settings))
       |> assign(
         :language_changeset,
         Settings.change_translate_language(language)
       )
       |> assign(:translatable_language, Settings.translateable_language_list())
       |> assign(:live_socket_id, Map.get(session, "live_socket_id"))
-      |> assign(:stream_settings, current_user.stream_settings)
+      |> assign(:stream_settings, stream_settings)
       |> assign(:selected_language, language)
 
     {:ok, socket}
@@ -49,6 +52,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLive.Index do
      socket
      |> assign(:stream_settings, stream_settings)
      |> put_flash(:info, "Stream settings updated successfully")}
+  end
+
+  @impl true
+  def handle_event("regenerate_caption_source_token", _params, socket) do
+    case Settings.regenerate_caption_source_token(socket.assigns.stream_settings) do
+      {:ok, stream_settings} ->
+        {:noreply,
+         socket
+         |> assign(:stream_settings, stream_settings)
+         |> put_flash(:info, "Caption source URL regenerated — update your OBS browser source.")}
+
+      {:error, _changeset} ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           "Could not regenerate the caption source URL. Please try again."
+         )}
+    end
   end
 
   @impl true

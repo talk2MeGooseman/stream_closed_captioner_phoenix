@@ -1,0 +1,46 @@
+<h1 style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;">
+  Live captions
+</h1>
+<div
+  :if={@invalid_token}
+  id="caption-source-invalid"
+  role="alert"
+  style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: transparent; padding: 2vh 2vw;"
+>
+  <div style={invalid_notice_style()}>
+    This caption source URL is no longer valid. Copy the current URL from your
+    caption settings page and update this browser source.
+  </div>
+</div>
+<div
+  :if={!@invalid_token}
+  id="caption-source"
+  role="status"
+  aria-live="polite"
+  style="position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: transparent; padding: 0 2vw 2vh 2vw;"
+>
+  <div
+    :if={@panel_open or @final_text != "" or @interim != ""}
+    id="caption-box"
+    style={caption_box_style(@style)}
+  >
+    <div id="caption-clip" style={caption_clip_style(@style)}>
+      <p style="margin: 0;">
+        <span id="caption-final">{display_final(@panel_open, @final_text)}</span>
+        <span
+          :if={display_interim(@panel_open, @interim) != ""}
+          id="caption-interim"
+          style="opacity: 0.8;"
+        >
+          {display_interim(@panel_open, @interim)}
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+<.settings_tool
+  :if={!@invalid_token and @settings_available}
+  panel_open={@panel_open}
+  style={@style}
+  current_url={@current_url}
+/>

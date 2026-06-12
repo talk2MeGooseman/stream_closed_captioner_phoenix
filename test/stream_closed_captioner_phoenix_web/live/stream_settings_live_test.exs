@@ -184,6 +184,35 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSettingsLiveTest do
     end
   end
 
+  describe "OBS caption source" do
+    test "generates and shows the caption source URL", %{conn: conn, user: user} do
+      {:ok, _view, html} = live(conn, "/users/caption-settings")
+
+      settings = Settings.get_stream_settings_by_user_id!(user.id)
+      assert is_binary(settings.caption_source_token)
+      assert html =~ "OBS Caption Source"
+      assert html =~ "/captions/#{settings.caption_source_token}"
+    end
+
+    test "regenerating swaps the token in the page and the database", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, "/users/caption-settings")
+
+      original = Settings.get_stream_settings_by_user_id!(user.id).caption_source_token
+
+      html =
+        view
+        |> element("button[phx-click=regenerate_caption_source_token]")
+        |> render_click()
+
+      updated = Settings.get_stream_settings_by_user_id!(user.id).caption_source_token
+
+      assert updated != original
+      assert html =~ "/captions/#{updated}"
+      refute html =~ "/captions/#{original}"
+      assert html =~ "Caption source URL regenerated"
+    end
+  end
+
   describe "form component - validate event" do
     test "shows validation error for negative caption_delay without saving", %{
       conn: conn,

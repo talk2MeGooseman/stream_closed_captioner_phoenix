@@ -82,6 +82,43 @@ Hooks.Toast = {
   },
 };
 
+// CopyToClipboard: copy the value of the input named by data-copy-target.
+Hooks.CopyToClipboard = {
+  mounted() {
+    this.el.addEventListener('click', () => {
+      const target = document.getElementById(this.el.dataset.copyTarget);
+      if (!target) return;
+      const flash = (msg) => {
+        const original = this.el.textContent;
+        this.el.textContent = msg;
+        setTimeout(() => (this.el.textContent = original), 1500);
+      };
+      // Clipboard API needs a secure context and permission; fall back to
+      // selecting the text so the user can copy manually.
+      const fallback = () => {
+        target.focus();
+        target.select();
+        flash('Press Ctrl+C');
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(target.value).then(() => flash('Copied!'), fallback);
+      } else {
+        fallback();
+      }
+    });
+  },
+};
+
+// ObsDetect: hide the caption overlay settings tool inside OBS browser
+// sources. OBS injects window.obsstudio and brands its user agent.
+Hooks.ObsDetect = {
+  mounted() {
+    if (window.obsstudio || navigator.userAgent.includes('OBS')) {
+      this.pushEvent('obs_detected', {});
+    }
+  },
+};
+
 Hooks.QuillEditor = {
   mounted() {
     if (!window.Quill) return;
