@@ -368,7 +368,16 @@ defmodule StreamClosedCaptionerPhoenix.Settings do
       set: [caption_source_token: generate_caption_source_token(), updated_at: now]
     )
 
-    {:ok, Repo.get!(StreamSettings, stream_settings.id)}
+    # Re-read only the token and merge it into the caller's struct so loaded
+    # associations (e.g. user) survive — a full Repo.get! would hand back
+    # NotLoaded associations to callers that had them preloaded.
+    token =
+      StreamSettings
+      |> where([ss], ss.id == ^stream_settings.id)
+      |> select([ss], ss.caption_source_token)
+      |> Repo.one!()
+
+    {:ok, %{stream_settings | caption_source_token: token}}
   end
 
   @doc """
