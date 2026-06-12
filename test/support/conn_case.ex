@@ -25,7 +25,6 @@ defmodule StreamClosedCaptionerPhoenixWeb.ConnCase do
       import Phoenix.ConnTest
       import StreamClosedCaptionerPhoenixWeb.ConnCase
 
-
       # The default endpoint for testing
       @endpoint StreamClosedCaptionerPhoenixWeb.Endpoint
     end

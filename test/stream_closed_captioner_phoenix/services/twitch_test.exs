@@ -27,8 +27,8 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
     test "returns {:ok, payload} on 204 response" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
-                                                                 _channel_id,
-                                                                 _payload ->
+                                                                _channel_id,
+                                                                _payload ->
         {:ok, %HTTPoison.Response{status_code: 204, body: ""}}
       end)
 
@@ -37,8 +37,8 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
     test "returns {:error, message} on 400 response" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
-                                                                 _channel_id,
-                                                                 _payload ->
+                                                                _channel_id,
+                                                                _payload ->
         {:ok, %HTTPoison.Response{status_code: 400, body: "Bad Request"}}
       end)
 
@@ -48,8 +48,8 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
     test "returns {:error, message} on 500 response" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
-                                                                 _channel_id,
-                                                                 _payload ->
+                                                                _channel_id,
+                                                                _payload ->
         {:ok, %HTTPoison.Response{status_code: 500, body: "Internal Server Error"}}
       end)
 
@@ -59,8 +59,8 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
     test "returns {:error, message} on 502 response" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
-                                                                 _channel_id,
-                                                                 _payload ->
+                                                                _channel_id,
+                                                                _payload ->
         {:ok, %HTTPoison.Response{status_code: 502, body: "Bad Gateway"}}
       end)
 
@@ -70,8 +70,8 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
     test "returns {:error, reason} on HTTPoison.Error" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
-                                                                 _channel_id,
-                                                                 _payload ->
+                                                                _channel_id,
+                                                                _payload ->
         {:error, %HTTPoison.Error{reason: :timeout}}
       end)
 
@@ -109,6 +109,7 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
 
       expect(Twitch.MockHelix, :get_streams, 1, fn creds, ^user_ids, nil ->
         assert creds == @credentials
+
         [
           %Stream{user_id: "200", viewer_count: 200},
           %Stream{user_id: "100", viewer_count: 100}

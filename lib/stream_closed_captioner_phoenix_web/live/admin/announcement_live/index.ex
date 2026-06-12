@@ -77,11 +77,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by message..." />
 
     <.admin_table id="announcements-table" rows={@records} row_id={fn r -> "announcement-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="Display"><.bool_badge value={r.display || false} /></:col>
       <:col :let={r} label="Message">
         <span class="truncate max-w-xs block" title={r.message}>
-          <%= truncate(r.message, 80) %>
+          {truncate(r.message, 80)}
         </span>
       </:col>
       <:col :let={r} label="">

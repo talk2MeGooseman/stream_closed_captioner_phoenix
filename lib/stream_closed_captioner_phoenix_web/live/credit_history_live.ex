@@ -30,21 +30,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= row[:action] %>
+                  {row[:action]}
                 </span>
               </div>
             </td>
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= row[:amount] %>
+                  {row[:amount]}
                 </span>
               </div>
             </td>
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= convert_timestamp_to_human_readable(row[:time]) %>
+                  {convert_timestamp_to_human_readable(row[:time])}
                 </span>
               </div>
             </td>

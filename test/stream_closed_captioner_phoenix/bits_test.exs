@@ -67,10 +67,16 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
         end)
 
       results = [Task.await(task1), Task.await(task2)]
+
       assert Enum.any?(results, &match?({:ok, _}, &1)),
-        "Expected one task to succeed"
-      assert Enum.any?(results, &match?({:error, :bits_balance_check, :insufficient_balance, _}, &1)),
-        "Expected one task to fail with :insufficient_balance"
+             "Expected one task to succeed"
+
+      assert Enum.any?(
+               results,
+               &match?({:error, :bits_balance_check, :insufficient_balance, _}, &1)
+             ),
+             "Expected one task to fail with :insufficient_balance"
+
       assert Bits.get_bits_balance!(user).balance == 0
     end
 
@@ -343,7 +349,9 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert %BitsBalance{} = cached_balance
 
       # Update balance directly in DB, bypassing cache eviction
-      Repo.update!(Ecto.Changeset.change(user.bits_balance, balance: cached_balance.balance + 999))
+      Repo.update!(
+        Ecto.Changeset.change(user.bits_balance, balance: cached_balance.balance + 999)
+      )
 
       # Cache is still warm: returns stale value
       assert Bits.get_bits_balance_for_user(user).balance == cached_balance.balance
@@ -501,7 +509,6 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
     end
   end
 
-
   # ===== BROADCAST TESTS (Critical Gaps) =====
 
   describe "broadcast behavior" do
@@ -516,9 +523,10 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       # Assert that the broadcast was received with the correct event and payload
       assert_receive %Phoenix.Socket.Broadcast{
-        event: "translationActivated",
-        payload: %{enabled: true, balance: balance}
-      }, 1000
+                       event: "translationActivated",
+                       payload: %{enabled: true, balance: balance}
+                     },
+                     1000
 
       # Verify the balance in the broadcast payload matches the updated balance
       assert balance == updated_balance.balance
@@ -534,7 +542,8 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       :ok = StreamClosedCaptionerPhoenixWeb.Endpoint.subscribe("captions:#{user.id}")
 
       # Call activate_translations_for - should fail
-      {:error, :bits_balance_check, :insufficient_balance, _} = Bits.activate_translations_for(user)
+      {:error, :bits_balance_check, :insufficient_balance, _} =
+        Bits.activate_translations_for(user)
 
       # Assert NO broadcast is received (phantom broadcast prevention)
       refute_receive %Phoenix.Socket.Broadcast{event: "translationActivated"}, 500
@@ -568,9 +577,10 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       # Assert that the broadcast was received with the correct event and payload
       assert_receive %Phoenix.Socket.Broadcast{
-        event: "transaction",
-        payload: %{balance: broadcast_balance}
-      }, 1000
+                       event: "transaction",
+                       payload: %{balance: broadcast_balance}
+                     },
+                     1000
 
       # Verify the balance in the broadcast payload matches the updated balance
       assert broadcast_balance == updated_balance.balance
@@ -585,14 +595,19 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       user = insert(:user)
 
       # Create 3 debits
-      _debits = Enum.map(1..3, fn _i ->
-        insert(:bits_balance_debit, user: user)
-      end)
+      _debits =
+        Enum.map(1..3, fn _i ->
+          insert(:bits_balance_debit, user: user)
+        end)
 
       # Create 2 transactions with unique transaction_ids
-      _transactions = Enum.map(1..2, fn i ->
-        insert(:bits_transaction, user: user, transaction_id: "tx-unique-#{user.id}-#{i}-#{System.monotonic_time()}")
-      end)
+      _transactions =
+        Enum.map(1..2, fn i ->
+          insert(:bits_transaction,
+            user: user,
+            transaction_id: "tx-unique-#{user.id}-#{i}-#{System.monotonic_time()}"
+          )
+        end)
 
       # Total should be 5 records
       result = Bits.bits_transactions_and_debits_for_user(user.id, 0, 10)
@@ -605,14 +620,16 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       user = insert(:user)
 
       # Create 5 debits
-      _debits = Enum.map(1..5, fn _i ->
-        insert(:bits_balance_debit, user: user)
-      end)
+      _debits =
+        Enum.map(1..5, fn _i ->
+          insert(:bits_balance_debit, user: user)
+        end)
 
       # Create 3 transactions with unique transaction_ids (using counter to ensure uniqueness)
-      _transactions = Enum.map(1..3, fn i ->
-        insert(:bits_transaction, user: user, transaction_id: "tx-offset-#{user.id}-#{i}")
-      end)
+      _transactions =
+        Enum.map(1..3, fn i ->
+          insert(:bits_transaction, user: user, transaction_id: "tx-offset-#{user.id}-#{i}")
+        end)
 
       # Total: 8 records
 
@@ -692,5 +709,4 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
       assert active_debit.id == debit.id
     end
   end
-
 end

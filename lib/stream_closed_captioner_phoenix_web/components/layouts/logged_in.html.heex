@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <%= csrf_meta_tag() %>
+    {csrf_meta_tag()}
     <.live_title suffix=" · Closed Captions">
-      <%= assigns[:page_title] || "Stream Closed Captioner" %>
+      {assigns[:page_title] || "Stream Closed Captioner"}
     </.live_title>
-    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+    {render_tags_all(assigns[:meta_tags] || %{})}
     <link rel="icon" href={~p"/images/favicon-32x32.png"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script>
@@ -29,10 +29,10 @@
         @click.away="sideBar = false"
       >
         <a href="/" class="flex items-center px-4 py-5">
-          <%= img_tag(~p"/images/cc100x100.png",
+          {img_tag(~p"/images/cc100x100.png",
             alt: "Stream Closed Captioner Logo",
             class: "w-20 rounded"
-          ) %>
+          )}
         </a>
         <a
           href="https://twitter.com/talk2megooseman"
@@ -95,10 +95,10 @@
             class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
             href="https://patreon.com/talk2megooseman"
           >
-            <%= img_tag(~p"/images/patreon.svg",
+            {img_tag(~p"/images/patreon.svg",
               alt: "Patreon Logo",
               class: "shrink-0 w-5 h-5 mr-2 text-gray-400 transition group-hover:text-gray-300"
-            ) %>
+            )}
             <span>Become a Supporter</span>
           </a>
           <a
@@ -212,14 +212,14 @@
                 </svg>
               </button>
             </div>
-            <%= _user_dropdown(assigns) %>
+            {_user_dropdown(assigns)}
           </div>
         </header>
         <div class="p-4">
           <!-- Add content here, remove div below -->
-          <%= @inner_content %>
+          {@inner_content}
         </div>
-        <%= _footer(assigns) %>
+        {_footer(assigns)}
       </div>
       <!-- Sidebar Backdrop -->
       <div

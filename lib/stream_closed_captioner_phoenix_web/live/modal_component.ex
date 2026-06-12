@@ -18,9 +18,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.ModalComponent do
       <div class="relative w-auto pointer-events-none max-w-lg my-8 mx-auto px-4 sm:px-0 shadow-lg">
         <div class="relative flex flex-col w-full pointer-events-auto bg-white border border-gray-300 rounded-lg">
           <div class="flex items-start justify-between p-4 border-b border-gray-300 rounded-t">
-            <h5 class="mb-0 text-lg leading-normal"><%= @title %></h5>
+            <h5 class="mb-0 text-lg leading-normal">{@title}</h5>
             <.link navigate={@return_to} class="text-gray-500 hover:text-gray-600 font-bold text-lg">
-              <%= raw("&times;") %>
+              {raw("&times;")}
             </.link>
           </div>
           <div class="relative flex-auto p-4">

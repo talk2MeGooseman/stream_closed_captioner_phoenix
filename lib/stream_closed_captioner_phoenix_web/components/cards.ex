@@ -15,7 +15,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Cards do
       @border && "border border-gray-200 dark:border-gray-700",
       @shadow && "shadow"
     ]}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end

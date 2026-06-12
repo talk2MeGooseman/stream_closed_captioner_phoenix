@@ -4,7 +4,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.FormCom
 
   @impl true
   def update(%{record: record} = assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign(changeset: Admin.change_eventsub_subscription(record))}
+    {:ok,
+     socket |> assign(assigns) |> assign(changeset: Admin.change_eventsub_subscription(record))}
   end
 
   @impl true
@@ -38,32 +39,32 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.FormCom
   def render(assigns) do
     ~H"""
     <div class="p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">
-          <%= if @action == :new, do: "New Eventsub Subscription", else: "Edit Eventsub Subscription" %>
-        </h2>
-        <.form
-          :let={f}
-          for={@changeset}
-          phx-target={@myself}
-          phx-change="validate"
-          phx-submit="save"
-        >
-          <div class="space-y-4">
-            <.input field={f[:user_id]} type="number" label="User ID" />
-            <.input field={f[:type]} type="text" label="Type" />
-            <.input field={f[:subscription_id]} type="text" label="Subscription ID" />
-          </div>
-          <div class="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              phx-click={JS.patch(@patch)}
-              class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <.button type="submit">Save</.button>
-          </div>
-        </.form>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        {if @action == :new, do: "New Eventsub Subscription", else: "Edit Eventsub Subscription"}
+      </h2>
+      <.form
+        :let={f}
+        for={@changeset}
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <div class="space-y-4">
+          <.input field={f[:user_id]} type="number" label="User ID" />
+          <.input field={f[:type]} type="text" label="Type" />
+          <.input field={f[:subscription_id]} type="text" label="Subscription ID" />
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button
+            type="button"
+            phx-click={JS.patch(@patch)}
+            class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <.button type="submit">Save</.button>
+        </div>
+      </.form>
     </div>
     """
   end

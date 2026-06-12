@@ -111,8 +111,13 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
 
   def get_announcement!(id), do: Repo.get!(Announcement, id)
   def change_announcement(%Announcement{} = a, attrs \\ %{}), do: Announcement.changeset(a, attrs)
-  def create_announcement(attrs), do: %Announcement{} |> Announcement.changeset(attrs) |> Repo.insert()
-  def update_announcement(%Announcement{} = a, attrs), do: a |> Announcement.changeset(attrs) |> Repo.update()
+
+  def create_announcement(attrs),
+    do: %Announcement{} |> Announcement.changeset(attrs) |> Repo.insert()
+
+  def update_announcement(%Announcement{} = a, attrs),
+    do: a |> Announcement.changeset(attrs) |> Repo.update()
+
   def delete_announcement(%Announcement{} = a), do: Repo.delete(a)
 
   defp search_announcements(query, nil), do: query
@@ -140,8 +145,13 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
 
   def get_bits_balance!(id), do: Repo.get!(BitsBalance, id) |> Repo.preload(:user)
   def change_bits_balance(%BitsBalance{} = b, attrs \\ %{}), do: BitsBalance.changeset(b, attrs)
-  def create_bits_balance(attrs), do: %BitsBalance{} |> BitsBalance.changeset(attrs) |> Repo.insert()
-  def update_bits_balance(%BitsBalance{} = b, attrs), do: b |> BitsBalance.update_changeset(attrs) |> Repo.update()
+
+  def create_bits_balance(attrs),
+    do: %BitsBalance{} |> BitsBalance.changeset(attrs) |> Repo.insert()
+
+  def update_bits_balance(%BitsBalance{} = b, attrs),
+    do: b |> BitsBalance.update_changeset(attrs) |> Repo.update()
+
   def delete_bits_balance(%BitsBalance{} = b), do: Repo.delete(b)
 
   # --- BitsTransaction ---
@@ -164,9 +174,16 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   end
 
   def get_bits_transaction!(id), do: Repo.get!(BitsTransaction, id) |> Repo.preload(:user)
-  def change_bits_transaction(%BitsTransaction{} = b, attrs \\ %{}), do: BitsTransaction.changeset(b, attrs)
-  def create_bits_transaction(attrs), do: %BitsTransaction{} |> BitsTransaction.changeset(attrs) |> Repo.insert()
-  def update_bits_transaction(%BitsTransaction{} = b, attrs), do: b |> BitsTransaction.changeset(attrs) |> Repo.update()
+
+  def change_bits_transaction(%BitsTransaction{} = b, attrs \\ %{}),
+    do: BitsTransaction.changeset(b, attrs)
+
+  def create_bits_transaction(attrs),
+    do: %BitsTransaction{} |> BitsTransaction.changeset(attrs) |> Repo.insert()
+
+  def update_bits_transaction(%BitsTransaction{} = b, attrs),
+    do: b |> BitsTransaction.changeset(attrs) |> Repo.update()
+
   def delete_bits_transaction(%BitsTransaction{} = b), do: Repo.delete(b)
 
   # --- BitsBalanceDebit ---
@@ -189,9 +206,16 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   end
 
   def get_bits_balance_debit!(id), do: Repo.get!(BitsBalanceDebit, id) |> Repo.preload(:user)
-  def change_bits_balance_debit(%BitsBalanceDebit{} = b, attrs \\ %{}), do: BitsBalanceDebit.changeset(b, attrs)
-  def create_bits_balance_debit(attrs), do: %BitsBalanceDebit{} |> BitsBalanceDebit.changeset(attrs) |> Repo.insert()
-  def update_bits_balance_debit(%BitsBalanceDebit{} = b, attrs), do: b |> BitsBalanceDebit.changeset(attrs) |> Repo.update()
+
+  def change_bits_balance_debit(%BitsBalanceDebit{} = b, attrs \\ %{}),
+    do: BitsBalanceDebit.changeset(b, attrs)
+
+  def create_bits_balance_debit(attrs),
+    do: %BitsBalanceDebit{} |> BitsBalanceDebit.changeset(attrs) |> Repo.insert()
+
+  def update_bits_balance_debit(%BitsBalanceDebit{} = b, attrs),
+    do: b |> BitsBalanceDebit.changeset(attrs) |> Repo.update()
+
   def delete_bits_balance_debit(%BitsBalanceDebit{} = b), do: Repo.delete(b)
 
   # --- Transcripts ---
@@ -216,7 +240,10 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   def get_transcript!(id), do: Repo.get!(Transcript, id) |> Repo.preload([:user, :messages])
   def change_transcript(%Transcript{} = t, attrs \\ %{}), do: Transcript.changeset(t, attrs)
   def create_transcript(attrs), do: %Transcript{} |> Transcript.changeset(attrs) |> Repo.insert()
-  def update_transcript(%Transcript{} = t, attrs), do: t |> Transcript.update_changeset(attrs) |> Repo.update()
+
+  def update_transcript(%Transcript{} = t, attrs),
+    do: t |> Transcript.update_changeset(attrs) |> Repo.update()
+
   def delete_transcript(%Transcript{} = t), do: Repo.delete(t)
 
   defp search_transcripts(query, nil), do: query
@@ -247,7 +274,10 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   def get_message!(id), do: Repo.get!(Message, id) |> Repo.preload(:transcript)
   def change_message(%Message{} = m, attrs \\ %{}), do: Message.changeset(m, attrs)
   def create_message(attrs), do: %Message{} |> Message.changeset(attrs) |> Repo.insert()
-  def update_message(%Message{} = m, attrs), do: m |> Message.update_changeset(attrs) |> Repo.update()
+
+  def update_message(%Message{} = m, attrs),
+    do: m |> Message.update_changeset(attrs) |> Repo.update()
+
   def delete_message(%Message{} = m), do: Repo.delete(m)
 
   defp search_messages(query, nil), do: query
@@ -274,9 +304,16 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   end
 
   def get_stream_settings!(id), do: Repo.get!(StreamSettings, id) |> Repo.preload(:user)
-  def change_stream_settings(%StreamSettings{} = s, attrs \\ %{}), do: StreamSettings.changeset(s, attrs)
-  def create_stream_settings(attrs), do: %StreamSettings{} |> StreamSettings.create_changeset(attrs) |> Repo.insert()
-  def update_stream_settings(%StreamSettings{} = s, attrs), do: s |> StreamSettings.update_changeset(attrs) |> Repo.update()
+
+  def change_stream_settings(%StreamSettings{} = s, attrs \\ %{}),
+    do: StreamSettings.changeset(s, attrs)
+
+  def create_stream_settings(attrs),
+    do: %StreamSettings{} |> StreamSettings.create_changeset(attrs) |> Repo.insert()
+
+  def update_stream_settings(%StreamSettings{} = s, attrs),
+    do: s |> StreamSettings.update_changeset(attrs) |> Repo.update()
+
   def delete_stream_settings(%StreamSettings{} = s), do: Repo.delete(s)
 
   # --- TranslateLanguage ---
@@ -299,9 +336,16 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
   end
 
   def get_translate_language!(id), do: Repo.get!(TranslateLanguage, id) |> Repo.preload(:user)
-  def change_translate_language(%TranslateLanguage{} = t, attrs \\ %{}), do: TranslateLanguage.changeset(t, attrs)
-  def create_translate_language(attrs), do: %TranslateLanguage{} |> TranslateLanguage.changeset(attrs) |> Repo.insert()
-  def update_translate_language(%TranslateLanguage{} = t, attrs), do: t |> TranslateLanguage.update_changeset(attrs) |> Repo.update()
+
+  def change_translate_language(%TranslateLanguage{} = t, attrs \\ %{}),
+    do: TranslateLanguage.changeset(t, attrs)
+
+  def create_translate_language(attrs),
+    do: %TranslateLanguage{} |> TranslateLanguage.changeset(attrs) |> Repo.insert()
+
+  def update_translate_language(%TranslateLanguage{} = t, attrs),
+    do: t |> TranslateLanguage.update_changeset(attrs) |> Repo.update()
+
   def delete_translate_language(%TranslateLanguage{} = t), do: Repo.delete(t)
 
   # --- EventsubSubscription ---
@@ -323,10 +367,18 @@ defmodule StreamClosedCaptionerPhoenix.Admin do
     |> Repo.aggregate(:count)
   end
 
-  def get_eventsub_subscription!(id), do: Repo.get!(EventsubSubscription, id) |> Repo.preload(:user)
-  def change_eventsub_subscription(%EventsubSubscription{} = e, attrs \\ %{}), do: EventsubSubscription.changeset(e, attrs)
-  def create_eventsub_subscription(attrs), do: %EventsubSubscription{} |> EventsubSubscription.changeset(attrs) |> Repo.insert()
-  def update_eventsub_subscription(%EventsubSubscription{} = e, attrs), do: e |> EventsubSubscription.changeset(attrs) |> Repo.update()
+  def get_eventsub_subscription!(id),
+    do: Repo.get!(EventsubSubscription, id) |> Repo.preload(:user)
+
+  def change_eventsub_subscription(%EventsubSubscription{} = e, attrs \\ %{}),
+    do: EventsubSubscription.changeset(e, attrs)
+
+  def create_eventsub_subscription(attrs),
+    do: %EventsubSubscription{} |> EventsubSubscription.changeset(attrs) |> Repo.insert()
+
+  def update_eventsub_subscription(%EventsubSubscription{} = e, attrs),
+    do: e |> EventsubSubscription.changeset(attrs) |> Repo.update()
+
   def delete_eventsub_subscription(%EventsubSubscription{} = e), do: Repo.delete(e)
 
   defp search_eventsub(query, nil), do: query

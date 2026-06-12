@@ -59,7 +59,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
       # When not logged in
       conn = get(conn, ~p"/users/confirm/#{token}")
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Account confirmation link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Account confirmation link is invalid or it has expired"
 
       # When logged in
       conn =
@@ -74,7 +76,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserConfirmationControllerTest do
     test "does not confirm email with invalid token", %{conn: conn, user: _user} do
       conn = get(conn, ~p"/users/confirm/#{"oops"}")
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Account confirmation link is invalid or it has expired"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Account confirmation link is invalid or it has expired"
     end
   end
 end

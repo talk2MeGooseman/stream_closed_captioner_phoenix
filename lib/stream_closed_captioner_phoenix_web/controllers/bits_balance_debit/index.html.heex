@@ -10,15 +10,15 @@
     </tr>
   </thead>
   <tbody>
-<%= for bits_balance_debit <- @bits_balance_debits do %>
-    <tr>
-      <td><%= bits_balance_debit.user_id %></td>
-      <td><%= bits_balance_debit.amount %></td>
+    <%= for bits_balance_debit <- @bits_balance_debits do %>
+      <tr>
+        <td>{bits_balance_debit.user_id}</td>
+        <td>{bits_balance_debit.amount}</td>
 
-      <td>
-        <span><%= link "Show", to: ~p"/bits_balance_debits/#{bits_balance_debit}" %></span>
-      </td>
-    </tr>
-<% end %>
+        <td>
+          <span>{link("Show", to: ~p"/bits_balance_debits/#{bits_balance_debit}")}</span>
+        </td>
+      </tr>
+    <% end %>
   </tbody>
 </table>

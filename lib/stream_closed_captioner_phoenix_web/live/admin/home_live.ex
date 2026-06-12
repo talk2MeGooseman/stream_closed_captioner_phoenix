@@ -95,18 +95,35 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.HomeLive do
     >
       <div class="flex items-start gap-3">
         <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 flex items-center justify-center transition-colors">
-          <svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          <svg
+            class="w-5 h-5 text-indigo-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 10h16M4 14h16M4 18h16"
+            />
           </svg>
         </div>
         <div class="min-w-0">
           <h2 class="text-sm font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">
-            <%= @title %>
+            {@title}
           </h2>
-          <p class="mt-0.5 text-xs text-gray-500"><%= @description %></p>
+          <p class="mt-0.5 text-xs text-gray-500">{@description}</p>
         </div>
         <div class="ml-auto flex-shrink-0 text-gray-300 group-hover:text-indigo-400 transition-colors">
-          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            class="w-4 h-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>

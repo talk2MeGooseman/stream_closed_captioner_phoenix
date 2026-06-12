@@ -144,5 +144,4 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Transaction do
       })
     end
   end
-
 end

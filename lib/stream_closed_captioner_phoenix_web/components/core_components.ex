@@ -52,7 +52,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       phx-remove={hide_modal(@id)}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="fixed bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="fixed bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 transition-opacity"
+        aria-hidden="true"
+      />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -83,22 +87,25 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
               </div>
               <header :if={@title != []} class="p-4 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                  <%= render_slot(@title) %>
+                  {render_slot(@title)}
                 </h3>
                 <p
                   :if={@subtitle != []}
                   id={"#{@id}-description"}
                   class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400"
                 >
-                  <%= render_slot(@subtitle) %>
+                  {render_slot(@subtitle)}
                 </p>
               </header>
 
               <div id={"#{@id}-content"} class="p-6 space-y-6">
-                <%= render_slot(@inner_block) %>
+                {render_slot(@inner_block)}
               </div>
 
-              <div :if={@confirm != [] or @cancel != []} class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+              <div
+                :if={@confirm != [] or @cancel != []}
+                class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
+              >
                 <.button
                   :for={confirm <- @confirm}
                   id={"#{@id}-confirm"}
@@ -106,14 +113,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
                   phx-disable-with
                   class="py-2 px-3"
                 >
-                  <%= render_slot(confirm) %>
+                  {render_slot(confirm)}
                 </.button>
                 <.link
                   :for={cancel <- @cancel}
                   phx-click={hide_modal(@on_cancel, @id)}
                   class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
                 >
-                  <%= render_slot(cancel) %>
+                  {render_slot(cancel)}
                 </.link>
               </div>
             </.focus_wrap>
@@ -160,9 +167,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       <p :if={@title} class="flex items-center text-sm gap-1.5 font-semibold leading-6">
         <.icon :if={@kind == :info} name="hero-information-circle-mini" class="w-4 h-4" />
         <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="w-4 h-4" />
-        <%= @title %>
+        {@title}
       </p>
-      <p class="mt-2 text-xs leading-5"><%= msg %></p>
+      <p class="mt-2 text-xs leading-5">{msg}</p>
       <button
         :if={@close}
         type="button"
@@ -230,9 +237,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="space-y-8">
-        <%= render_slot(@inner_block, f) %>
+        {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
-          <%= render_slot(action, f) %>
+          {render_slot(action, f)}
         </div>
       </div>
     </.form>
@@ -263,12 +270,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       type={@type}
       class={[
         "font-medium rounded-lg text-sm px-5 py-2.5 focus:ring-4 inline-flex items-center gap-2 focus:outline-none phx-submit-loading:opacity-75",
-        @default && "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
+        @default &&
+          "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
         @class
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -335,9 +343,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           {@rest}
         />
-        <%= @label %>
+        {@label}
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -345,7 +353,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
   def input(%{type: "select"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name} class="space-y-1">
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <select
         id={@id}
         name={@name}
@@ -358,10 +366,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
         multiple={@multiple}
         {@rest}
       >
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -369,7 +377,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
   def input(%{type: "textarea"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name} class="space-y-2">
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <textarea
         id={@id || @name}
         name={@name}
@@ -379,11 +387,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
           "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
           "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
           "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
-          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+          @errors != [] &&
+            "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -391,7 +400,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div phx-feedback-for={@name} class="space-y-2">
-      <.label for={@id}><%= @label %></.label>
+      <.label for={@id}>{@label}</.label>
       <input
         type={@type}
         name={@name}
@@ -403,11 +412,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
           "dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500/5 dark:focus:border-blue-500",
           "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-blue-500 phx-no-feedback:focus:ring-blue-500/5",
           "phx-no-feedback:dark:border-gray-600 phx-no-feedback:dark:focus:border-blue-500 phx-no-feedback:dark:focus:ring-blue-500/5",
-          @errors != [] && "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+          @errors != [] &&
+            "text-red-900 placeholder-red-700 border-red-500 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
         ]}
         {@rest}
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -421,7 +431,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
   def label(assigns) do
     ~H"""
     <label for={@for} class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </label>
     """
   end
@@ -435,7 +445,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm text-red-600 dark:text-red-500">
       <.icon name="hero-exclamation-circle-mini" class="mt-0.5 w-5 h-5 flex-none" />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -454,13 +464,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
     <header class={[@actions != [] && "flex items-center justify-between gap-6", "mb-12", @class]}>
       <div>
         <h1 class="text-lg font-semibold leading-8 text-gray-900 dark:text-white">
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
-          <%= render_slot(@subtitle) %>
+          {render_slot(@subtitle)}
         </p>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <div class="flex-none">{render_slot(@actions)}</div>
     </header>
     """
   end
@@ -502,15 +512,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th :for={col <- @col} class="px-6 py-3"><%= col[:label] %></th>
-            <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
+            <th :for={col <- @col} class="px-6 py-3">{col[:label]}</th>
+            <th class="relative p-0 pb-4"><span class="sr-only">{gettext("Actions")}</span></th>
           </tr>
         </thead>
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+          >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
@@ -520,7 +534,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
                 @row_click && "hover:cursor-pointer"
               ]}
             >
-              <%= render_slot(col, @row_item.(row)) %>
+              {render_slot(col, @row_item.(row))}
             </td>
             <td :if={@action != []} class="px-6 py-4 w-14">
               <div class="space-x-2 relative whitespace-nowrap py-4 text-right text-sm font-medium">
@@ -528,7 +542,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
                   :for={action <- @action}
                   class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 >
-                  <%= render_slot(action, @row_item.(row)) %>
+                  {render_slot(action, @row_item.(row))}
                 </span>
               </div>
             </td>
@@ -557,8 +571,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
     ~H"""
     <dl class="-my-4 divide-y divide-gray-200 dark:divide-gray-700">
       <div :for={item <- @item} class="flex gap-4 py-4 sm:gap-8">
-        <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-gray-500 dark:text-gray-400"><%= item.title %></dt>
-        <dd class="text-sm leading-6 text-gray-900 dark:text-white"><%= render_slot(item) %></dd>
+        <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-gray-500 dark:text-gray-400">
+          {item.title}
+        </dt>
+        <dd class="text-sm leading-6 text-gray-900 dark:text-white">{render_slot(item)}</dd>
       </div>
     </dl>
     """
@@ -582,7 +598,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CoreComponents do
         class="flex items-center gap-2 mr-8 text-sm text-gray-500 transition-colors duration-200 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
       >
         <.icon name="hero-arrow-left-solid" class="w-4 h-4" />
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </.link>
     </div>
     """

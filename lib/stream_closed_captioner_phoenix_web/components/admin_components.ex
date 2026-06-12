@@ -12,13 +12,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
     ~H"""
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-baseline gap-3">
-        <h1 class="text-xl font-bold text-gray-900"><%= @title %></h1>
+        <h1 class="text-xl font-bold text-gray-900">{@title}</h1>
         <%= if @count do %>
-          <span class="text-sm text-gray-500"><%= @count %> records</span>
+          <span class="text-sm text-gray-500">{@count} records</span>
         <% end %>
       </div>
       <div class="flex items-center gap-2">
-        <%= render_slot(@actions) %>
+        {render_slot(@actions)}
       </div>
     </div>
     """
@@ -33,8 +33,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
     <form phx-submit="search" phx-change="search" class="mb-4">
       <div class="relative max-w-sm">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <svg
+            class="h-4 w-4 text-gray-400"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
         </div>
         <input
@@ -68,7 +79,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
           <tr>
             <%= for col <- @col do %>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                <%= col[:label] %>
+                {col[:label]}
               </th>
             <% end %>
           </tr>
@@ -82,7 +93,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
             >
               <%= for col <- @col do %>
                 <td class="px-4 py-3 text-gray-700 max-w-xs truncate">
-                  <%= render_slot(col, row) %>
+                  {render_slot(col, row)}
                 </td>
               <% end %>
             </tr>
@@ -109,7 +120,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
     ~H"""
     <%= if @total_pages > 1 do %>
       <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-        <span>Page <%= @page %> of <%= @total_pages %></span>
+        <span>Page {@page} of {@total_pages}</span>
         <div class="flex items-center gap-1">
           <button
             phx-click="paginate"
@@ -128,10 +139,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
                 phx-value-page={p}
                 class={[
                   "px-3 py-1.5 rounded border transition-colors",
-                  if(p == @page, do: "bg-indigo-600 border-indigo-600 text-white", else: "border-gray-300 bg-white hover:bg-gray-50")
+                  if(p == @page,
+                    do: "bg-indigo-600 border-indigo-600 text-white",
+                    else: "border-gray-300 bg-white hover:bg-gray-50"
+                  )
                 ]}
               >
-                <%= p %>
+                {p}
               </button>
             <% end %>
           <% end %>
@@ -155,9 +169,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
   def user_link(assigns) do
     ~H"""
     <%= if @user do %>
-      <.link navigate={~p"/admin/users/#{@user.id}"} class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors whitespace-nowrap">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
-        <%= @user.username || @user.email || "##{@user.id}" %>
+      <.link
+        navigate={~p"/admin/users/#{@user.id}"}
+        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors whitespace-nowrap"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        ><path
+          fill-rule="evenodd"
+          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+          clip-rule="evenodd"
+        /></svg>
+        {@user.username || @user.email || "##{@user.id}"}
       </.link>
     <% else %>
       <span class="text-gray-400 text-xs">—</span>
@@ -171,8 +197,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
   def transcript_link(assigns) do
     ~H"""
     <%= if @transcript do %>
-      <.link navigate={~p"/admin/transcripts/#{@transcript.id}"} class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors whitespace-nowrap">
-        <%= @transcript.name || "##{@transcript.id}" %>
+      <.link
+        navigate={~p"/admin/transcripts/#{@transcript.id}"}
+        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors whitespace-nowrap"
+      >
+        {@transcript.name || "##{@transcript.id}"}
       </.link>
     <% else %>
       <span class="text-gray-400 text-xs">—</span>
@@ -208,14 +237,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
         class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
         {@rest}
       >
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </.link>
     <% else %>
       <button
         class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
         {@rest}
       >
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </button>
     <% end %>
     """
@@ -231,7 +260,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
       class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded text-red-700 hover:bg-red-50 transition-colors border border-red-200"
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -278,7 +307,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
       phx-remove={admin_hide_modal(@id)}
       class="hidden relative z-50"
     >
-      <div id={"#{@id}-bg"} class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity"
+        aria-hidden="true"
+      />
       <div class="fixed inset-0 overflow-y-auto flex min-h-full items-center justify-center p-4">
         <div
           id={"#{@id}-container"}
@@ -287,7 +320,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
           phx-key="escape"
           class="w-full max-w-2xl bg-white rounded-xl shadow-xl ring-1 ring-gray-200"
         >
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </div>
       </div>
     </div>
@@ -297,14 +330,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
   defp admin_show_modal(js \\ %JS{}, id) do
     js
     |> JS.show(to: "##{id}")
-    |> JS.show(to: "##{id}-bg", transition: {"transition-opacity ease-out duration-200", "opacity-0", "opacity-100"})
-    |> JS.show(to: "##{id}-container", transition: {"transition-all ease-out duration-200", "opacity-0 scale-95", "opacity-100 scale-100"})
+    |> JS.show(
+      to: "##{id}-bg",
+      transition: {"transition-opacity ease-out duration-200", "opacity-0", "opacity-100"}
+    )
+    |> JS.show(
+      to: "##{id}-container",
+      transition:
+        {"transition-all ease-out duration-200", "opacity-0 scale-95", "opacity-100 scale-100"}
+    )
   end
 
   defp admin_hide_modal(js \\ %JS{}, id) do
     js
-    |> JS.hide(to: "##{id}-bg", transition: {"transition-opacity ease-in duration-150", "opacity-100", "opacity-0"})
-    |> JS.hide(to: "##{id}-container", transition: {"transition-all ease-in duration-150", "opacity-100 scale-100", "opacity-0 scale-95"})
+    |> JS.hide(
+      to: "##{id}-bg",
+      transition: {"transition-opacity ease-in duration-150", "opacity-100", "opacity-0"}
+    )
+    |> JS.hide(
+      to: "##{id}-container",
+      transition:
+        {"transition-all ease-in duration-150", "opacity-100 scale-100", "opacity-0 scale-95"}
+    )
     |> JS.hide(to: "##{id}", transition: {"block", "block", "block"})
   end
 

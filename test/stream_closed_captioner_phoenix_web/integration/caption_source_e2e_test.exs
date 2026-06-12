@@ -46,8 +46,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceE2ETest do
 
   defp eventually(fun, attempts \\ 50) do
     cond do
-      fun.() -> true
-      attempts <= 1 -> fun.()
+      fun.() ->
+        true
+
+      attempts <= 1 ->
+        fun.()
+
       true ->
         Process.sleep(10)
         eventually(fun, attempts - 1)

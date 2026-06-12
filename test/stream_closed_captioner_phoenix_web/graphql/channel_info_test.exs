@@ -26,7 +26,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoTest do
   describe "channelInfo query" do
     test "returns uid and bits_balance via Dataloader integration" do
       user = insert(:user, provider: "twitch")
-      Repo.update!(StreamClosedCaptionerPhoenix.Bits.BitsBalance.changeset(user.bits_balance, %{balance: 750}))
+
+      Repo.update!(
+        StreamClosedCaptionerPhoenix.Bits.BitsBalance.changeset(user.bits_balance, %{balance: 750})
+      )
 
       {:ok, result} =
         Absinthe.run(@query, Schema,

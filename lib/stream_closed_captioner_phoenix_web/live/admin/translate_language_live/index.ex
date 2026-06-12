@@ -24,7 +24,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
-    socket |> assign(page_title: "Edit Translate Language", record: Admin.get_translate_language!(id))
+    socket
+    |> assign(page_title: "Edit Translate Language", record: Admin.get_translate_language!(id))
   end
 
   @impl true
@@ -68,11 +69,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.Index do
 
     <.admin_search search={@search || ""} placeholder="Search by username..." />
 
-    <.admin_table id="translate-languages-table" rows={@records} row_id={fn r -> "translate-language-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+    <.admin_table
+      id="translate-languages-table"
+      rows={@records}
+      row_id={fn r -> "translate-language-#{r.id}" end}
+    >
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="User"><.user_link user={r.user} /></:col>
-      <:col :let={r} label="Language"><%= r.language %></:col>
-      <:col :let={r} label="Created At"><%= r.created_at %></:col>
+      <:col :let={r} label="Language">{r.language}</:col>
+      <:col :let={r} label="Created At">{r.created_at}</:col>
       <:col :let={r} label="">
         <div class="flex items-center gap-1">
           <.edit_button patch={~p"/admin/translate-languages/#{r.id}/edit"} />
@@ -90,7 +95,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.admin_modal id="translate-language-form-modal" show={true} on_cancel={JS.patch(~p"/admin/translate-languages")}>
+      <.admin_modal
+        id="translate-language-form-modal"
+        show={true}
+        on_cancel={JS.patch(~p"/admin/translate-languages")}
+      >
         <.live_component
           module={FormComponent}
           id={(@record && @record.id) || :new}

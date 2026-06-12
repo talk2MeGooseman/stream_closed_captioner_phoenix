@@ -115,10 +115,8 @@ defmodule StreamClosedCaptionerPhoenixWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
-
       import StreamClosedCaptionerPhoenixWeb.ErrorHelpers
       use Gettext, backend: StreamClosedCaptionerPhoenixWeb.Gettext
-
 
       unquote(verified_routes())
     end

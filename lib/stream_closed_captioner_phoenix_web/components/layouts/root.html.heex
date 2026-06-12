@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <%= csrf_meta_tag() %>
+    {csrf_meta_tag()}
     <.live_title suffix=" · Closed Captions">
-      <%= assigns[:page_title] || "Stream Closed Captioner" %>
+      {assigns[:page_title] || "Stream Closed Captioner"}
     </.live_title>
-     <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+    {render_tags_all(assigns[:meta_tags] || %{})}
     <link rel="icon" href={~p"/images/favicon-32x32.png"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
@@ -16,10 +16,10 @@
   </head>
 
   <body class="h-full bg-gray-100 dark:bg-gray-900 dark:text-white">
-    <%= _header(assigns) %>
-    <%= @inner_content %>
+    {_header(assigns)}
+    {@inner_content}
 
-    <%= _footer(assigns) %>
+    {_footer(assigns)}
     <script src="https://cdn.jsdelivr.net/npm/kutty@latest/dist/dropdown.min.js">
     </script>
     <script

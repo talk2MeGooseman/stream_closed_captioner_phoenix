@@ -67,12 +67,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by message text..." />
 
     <.admin_table id="messages" rows={@records} row_id={fn r -> "message-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="Transcript"><.transcript_link transcript={r.transcript} /></:col>
       <:col :let={r} label="Text">
-        <%= if r.text, do: String.slice(r.text, 0, 80) <> if(String.length(r.text) > 80, do: "…", else: ""), else: "—" %>
+        {if r.text,
+          do: String.slice(r.text, 0, 80) <> if(String.length(r.text) > 80, do: "…", else: ""),
+          else: "—"}
       </:col>
-      <:col :let={r} label="Created At"><%= r.created_at %></:col>
+      <:col :let={r} label="Created At">{r.created_at}</:col>
       <:col :let={r} label="Actions">
         <div class="flex items-center gap-1">
           <.edit_button patch={~p"/admin/messages/#{r.id}/edit"} />

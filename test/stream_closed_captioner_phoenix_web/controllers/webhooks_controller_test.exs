@@ -286,6 +286,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
       conn = post_signed(conn, "notification", params)
 
       assert conn.status == 200
+
       refute_receive %Phoenix.Socket.Broadcast{topic: "captions:" <> _, event: "stream.offline"},
                      500
     end

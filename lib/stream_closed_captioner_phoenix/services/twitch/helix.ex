@@ -49,7 +49,10 @@ defmodule Twitch.Helix do
         end
 
       {:ok, %{status_code: status, body: body}} ->
-        Logger.warning("Twitch Helix get_streams returned HTTP #{status}: #{String.slice(body, 0, 200)}")
+        Logger.warning(
+          "Twitch Helix get_streams returned HTTP #{status}: #{String.slice(body, 0, 200)}"
+        )
+
         []
 
       {:error, %{reason: reason}} ->
@@ -68,14 +71,19 @@ defmodule Twitch.Helix do
          |> HTTPoison.get(headers, @http_timeout) do
       {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
-          {:ok, data} -> Enum.map(get_in(data, ["data"]) || [], &Transaction.new/1)
+          {:ok, data} ->
+            Enum.map(get_in(data, ["data"]) || [], &Transaction.new/1)
+
           {:error, reason} ->
             Logger.warning("Twitch Helix get_transactions decode failed: #{inspect(reason)}")
             []
         end
 
       {:ok, %{status_code: status, body: body}} ->
-        Logger.warning("Twitch Helix get_transactions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        Logger.warning(
+          "Twitch Helix get_transactions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
+        )
+
         []
 
       {:error, %{reason: reason}} ->
@@ -92,7 +100,8 @@ defmodule Twitch.Helix do
          |> HTTPoison.get(headers, @http_timeout) do
       {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
-          {:ok, data} -> Map.get(data, "data")
+          {:ok, data} ->
+            Map.get(data, "data")
 
           {:error, reason} ->
             Logger.warning(
@@ -103,7 +112,10 @@ defmodule Twitch.Helix do
         end
 
       {:ok, %{status_code: status, body: body}} ->
-        Logger.warning("Twitch Helix get_users_active_extensions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        Logger.warning(
+          "Twitch Helix get_users_active_extensions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
+        )
+
         nil
 
       {:error, %{reason: reason}} ->
@@ -180,7 +192,10 @@ defmodule Twitch.Helix do
         end
 
       {:ok, %{status_code: status, body: body}} ->
-        Logger.warning("Twitch Helix get_live_channels returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        Logger.warning(
+          "Twitch Helix get_live_channels returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
+        )
+
         []
 
       {:error, %{reason: reason}} ->
@@ -339,7 +354,10 @@ defmodule Twitch.Helix do
         end
 
       {:ok, %{status_code: status, body: body}} ->
-        Logger.warning("Twitch Helix get_eventsub_subscriptions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}")
+        Logger.warning(
+          "Twitch Helix get_eventsub_subscriptions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
+        )
+
         []
 
       {:error, %{reason: reason}} ->

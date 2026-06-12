@@ -158,5 +158,4 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert redirected_to(conn) == ~p"/users/log_in"
     end
   end
-
 end

@@ -68,15 +68,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Show do
       <div class="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
         <div>
           <span class="text-gray-500 font-medium">ID</span>
-          <span class="ml-2 text-gray-900"><%= @transcript.id %></span>
+          <span class="ml-2 text-gray-900">{@transcript.id}</span>
         </div>
         <div>
           <span class="text-gray-500 font-medium">Name</span>
-          <span class="ml-2 text-gray-900"><%= @transcript.name || "—" %></span>
+          <span class="ml-2 text-gray-900">{@transcript.name || "—"}</span>
         </div>
         <div>
           <span class="text-gray-500 font-medium">Session</span>
-          <span class="ml-2 text-gray-900 font-mono text-xs"><%= @transcript.session || "—" %></span>
+          <span class="ml-2 text-gray-900 font-mono text-xs">{@transcript.session || "—"}</span>
         </div>
         <div>
           <span class="text-gray-500 font-medium">User</span>
@@ -84,7 +84,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Show do
         </div>
         <div>
           <span class="text-gray-500 font-medium">Created</span>
-          <span class="ml-2 text-gray-900"><%= format_dt(@transcript.created_at) %></span>
+          <span class="ml-2 text-gray-900">{format_dt(@transcript.created_at)}</span>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Show do
         <div class="flex items-center gap-2">
           <h2 class="text-sm font-semibold text-gray-900">Messages</h2>
           <span class="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">
-            <%= length(@transcript.messages) %>
+            {length(@transcript.messages)}
           </span>
         </div>
         <.admin_button navigate={~p"/admin/messages/new"}>+ New Message</.admin_button>
@@ -105,9 +105,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Show do
           rows={@transcript.messages}
           row_id={fn m -> "message-#{m.id}" end}
         >
-          <:col :let={m} label="ID"><%= m.id %></:col>
-          <:col :let={m} label="Text"><%= m.text %></:col>
-          <:col :let={m} label="Created At"><%= format_dt(m.created_at) %></:col>
+          <:col :let={m} label="ID">{m.id}</:col>
+          <:col :let={m} label="Text">{m.text}</:col>
+          <:col :let={m} label="Created At">{format_dt(m.created_at)}</:col>
           <:col :let={m} label="Actions">
             <div class="flex items-center gap-1">
               <.edit_button patch={~p"/admin/messages/#{m.id}/edit"} />
