@@ -18,10 +18,10 @@
 # compiles a NIF. Node comes from the same archive so the libstdc++ ABI
 # matches the toolchain's gcc.
 providers = ["elixir"]
-nixpkgsArchive = "8837df679f5e015f7ddd924e89b45a217fd34723"
 
 [phases.setup]
 nixPkgs = ["beam.packages.erlang_27.elixir_1_19", "gcc", "gnumake", "nodejs_22"]
+nixpkgsArchive = "8837df679f5e015f7ddd924e89b45a217fd34723"
 
 [phases.install]
 cmds = [
