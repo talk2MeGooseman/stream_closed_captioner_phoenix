@@ -204,9 +204,9 @@ export default class extends Controller {
 
   receiveFinalMessage = (data) => {
     debug('final', data)
-    // Confidence is dashboard-only; keep it off the channel payload
+    // Confidence is dashboard-only; keep it off the channel payload and apply
+    // it on the "ok" reply so the chip lands together with the rendered caption.
     const { confidence, ...speechData } = data
-    this.displayConfidence(confidence)
 
     if (this.zoomData.enabled) {
       const publishData = {
@@ -222,6 +222,7 @@ export default class extends Controller {
         .receive("ok", (response) => {
           const seq = getZoomSequence(this.zoomData.url) + 1
           setZoomSequence(this.zoomData.url, seq)
+          this.displayConfidence(confidence)
         })
     } else {
       const publishData = {
@@ -232,7 +233,7 @@ export default class extends Controller {
 
       this.captionsChannel
         .push("publishFinal", publishData, 5000)
-        .receive("ok", (response) => this.displayCaptions(response))
+        .receive("ok", (response) => this.displayCaptions(response, confidence))
     }
   }
 
@@ -251,7 +252,9 @@ export default class extends Controller {
     this.confidencePctTarget.textContent = `${pct}%`
   }
 
-  displayCaptions = (captions) => {
+  // confidence is only passed for final results; interim calls leave it null
+  // so the chip keeps its last value rather than flickering between captions.
+  displayCaptions = (captions, confidence = null) => {
     this.dispatch("payload", { detail: { ...captions } })
 
     this.outputOutlineTarget.classList.add("hidden")
@@ -259,6 +262,8 @@ export default class extends Controller {
 
     this.interimOutputTarget.textContent = captions.interim
     this.finalOutputTarget.textContent = captions.final
+
+    this.displayConfidence(confidence)
 
     this.displayTranslations(captions)
   }
