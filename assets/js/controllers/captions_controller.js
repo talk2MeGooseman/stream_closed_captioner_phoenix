@@ -222,7 +222,7 @@ export default class extends Controller {
         .receive("ok", (response) => {
           const seq = getZoomSequence(this.zoomData.url) + 1
           setZoomSequence(this.zoomData.url, seq)
-          this.displayConfidence(confidence)
+          this.displayCaptions(response, confidence)
         })
     } else {
       const publishData = {
