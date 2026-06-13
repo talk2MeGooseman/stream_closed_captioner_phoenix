@@ -9,8 +9,14 @@ defmodule Zoom.Captions do
     ]
 
     separator = if String.contains?(url, "?"), do: "&", else: "?"
+    full_url = url <> separator <> URI.encode_query(%{seq: seq, lang: lang})
 
-    (url <> separator <> URI.encode_query(%{seq: seq, lang: lang}))
-    |> HTTPoison.post(text, headers)
+    case Req.post(full_url, body: text, headers: headers, decode_body: false, retry: false) do
+      {:ok, %{status: status, body: response_body}} ->
+        {:ok, %{status: status, body: response_body}}
+
+      {:error, exception} ->
+        {:error, exception}
+    end
   end
 end

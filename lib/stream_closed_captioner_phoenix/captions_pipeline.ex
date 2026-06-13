@@ -82,14 +82,14 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
       with {:ok, url} <- validate_zoom_url(get_in(message, ["zoom", "url"])) do
         case Zoom.send_captions_to(url, zoom_text, params) do
-          {:ok, %HTTPoison.Response{status_code: 200}} ->
+          {:ok, %{status: 200}} ->
             {:ok, payload}
 
-          {:ok, %HTTPoison.Response{status_code: code, body: body}} ->
+          {:ok, %{status: code, body: body}} ->
             Logger.debug("Request was rejected code: #{code} body: #{body}")
             {:error, body}
 
-          {:error, %HTTPoison.Error{reason: reason}} ->
+          {:error, %{reason: reason}} ->
             Logger.debug("Request was error")
             {:error, reason}
         end

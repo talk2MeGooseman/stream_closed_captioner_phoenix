@@ -115,6 +115,8 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix, "~> 1.8"},
       {:plug_cowboy, "~> 2.8"},
       {:poison, "~> 6.0"},
+      # HTTP client — preferred over :httpoison for new/migrated service adapters
+      {:req, "~> 0.5"},
       # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)
       {:postgrex, "~> 0.19"},
       {:secure_random, "~> 0.5.1"},

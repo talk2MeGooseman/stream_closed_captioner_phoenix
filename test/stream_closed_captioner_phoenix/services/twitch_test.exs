@@ -29,7 +29,7 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
                                                                 _channel_id,
                                                                 _payload ->
-        {:ok, %HTTPoison.Response{status_code: 204, body: ""}}
+        {:ok, %{status: 204, body: ""}}
       end)
 
       assert {:ok, @payload} = Twitch.send_pubsub_message(@payload, @channel_id)
@@ -39,7 +39,7 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
                                                                 _channel_id,
                                                                 _payload ->
-        {:ok, %HTTPoison.Response{status_code: 400, body: "Bad Request"}}
+        {:ok, %{status: 400, body: "Bad Request"}}
       end)
 
       assert {:error, "Request was rejected"} =
@@ -50,7 +50,7 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
                                                                 _channel_id,
                                                                 _payload ->
-        {:ok, %HTTPoison.Response{status_code: 500, body: "Internal Server Error"}}
+        {:ok, %{status: 500, body: "Internal Server Error"}}
       end)
 
       assert {:error, "500, Twitch throwing errors for some reason."} =
@@ -61,18 +61,18 @@ defmodule StreamClosedCaptionerPhoenix.Services.TwitchTest do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
                                                                 _channel_id,
                                                                 _payload ->
-        {:ok, %HTTPoison.Response{status_code: 502, body: "Bad Gateway"}}
+        {:ok, %{status: 502, body: "Bad Gateway"}}
       end)
 
       assert {:error, "502, cant reach Twitch atm."} =
                Twitch.send_pubsub_message(@payload, @channel_id)
     end
 
-    test "returns {:error, reason} on HTTPoison.Error" do
+    test "returns {:error, reason} on transport error" do
       expect(Twitch.MockExtension, :send_pubsub_message_for, fn _credentials,
                                                                 _channel_id,
                                                                 _payload ->
-        {:error, %HTTPoison.Error{reason: :timeout}}
+        {:error, %{reason: :timeout}}
       end)
 
       assert {:error, :timeout} = Twitch.send_pubsub_message(@payload, @channel_id)

@@ -228,7 +228,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
       )
 
       expect(Zoom.MockCaptions, :send_captions_to, fn _url, _text, _params ->
-        {:ok, %HTTPoison.Response{status_code: 200}}
+        {:ok, %{status: 200}}
       end)
 
       {:ok, _, socket} =

@@ -51,7 +51,7 @@ defmodule Azure.Cognitive do
       "https://api.cognitive.microsofttranslator.com/translate"
       |> encode_url_and_params(params)
 
-    case HTTPoison.post(url, body, headers) do
+    case Req.post(url, body: body, headers: headers, decode_body: false, retry: false) do
       {:ok, %{body: raw_body}} ->
         case Jason.decode(raw_body) do
           {:ok, [translations]} ->

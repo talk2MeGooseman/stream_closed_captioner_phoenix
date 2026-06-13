@@ -10,8 +10,15 @@ defmodule Twitch.Oauth do
 
   @behaviour Twitch.OauthProvider
 
-  # Connect and receive timeouts applied to every Twitch identity endpoint call.
-  @http_timeout [timeout: 5_000, recv_timeout: 10_000]
+  # Shared Req options for every Twitch identity endpoint call. `retry: false`
+  # preserves the previous HTTPoison no-retry behaviour; `decode_body: false` keeps
+  # response bodies as raw strings for the existing Jason.decode/1 handling.
+  @req_options [
+    retry: false,
+    decode_body: false,
+    receive_timeout: 10_000,
+    connect_options: [timeout: 5_000]
+  ]
 
   # Base URL for Twitch's identity service. Overridable in tests (e.g. to a
   # Bypass server) via `config :stream_closed_captioner_phoenix, :twitch_id_endpoint`.
@@ -41,8 +48,8 @@ defmodule Twitch.Oauth do
 
     url = encode_url_and_params("#{id_endpoint()}/oauth2/token", params)
 
-    case HTTPoison.post(url, "", headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+    case Req.post(url, [body: "", headers: headers] ++ @req_options) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             access_token = get_in(data, ["access_token"])
@@ -53,7 +60,7 @@ defmodule Twitch.Oauth do
             {:error, {:json_decode, reason}}
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch OAuth: Token request returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -153,8 +160,8 @@ defmodule Twitch.Oauth do
 
     url = encode_url_and_params("#{id_endpoint()}/oauth2/token", params)
 
-    case HTTPoison.post(url, "", headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+    case Req.post(url, [body: "", headers: headers] ++ @req_options) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             {:ok,
@@ -168,7 +175,7 @@ defmodule Twitch.Oauth do
             {:error, {:json_decode, reason}}
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch OAuth: Refresh request returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -191,7 +198,7 @@ defmodule Twitch.Oauth do
     ]
 
     encode_url_and_params("#{id_endpoint()}/oauth2/validate")
-    |> HTTPoison.get(headers, @http_timeout)
+    |> Req.get([headers: headers] ++ @req_options)
     |> Parser.parse()
   end
 

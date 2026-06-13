@@ -14,13 +14,13 @@ defmodule Twitch.Parser do
   Parses the response from API calls
   """
   @spec parse(tuple) :: response
-  def parse({:ok, %HTTPoison.Response{body: body, headers: _, status_code: status}})
+  def parse({:ok, %Req.Response{body: body, status: status}})
       when status in [200, 201],
       do: {:ok, parse_response_body(body)}
 
-  def parse({:error, %HTTPoison.Error{id: _, reason: reason}}), do: {:error, %{reason: reason}}
+  def parse({:error, %{reason: reason}}), do: {:error, %{reason: reason}}
 
-  def parse({:ok, %HTTPoison.Response{body: body, headers: _, status_code: status}}),
+  def parse({:ok, %Req.Response{body: body, status: status}}),
     do: {:error, parse_response_body(body), status}
 
   def parse(response), do: response
