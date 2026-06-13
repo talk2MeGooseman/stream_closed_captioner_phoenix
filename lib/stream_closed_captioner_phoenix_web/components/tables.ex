@@ -77,9 +77,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
     ~H"""
     <div :if={@meta.total_count != 0} class="flex flex-col items-center my-4 space-y-4">
       <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        Showing <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.current_offset + 1 %></span>
-        <span :if={@meta.total_pages != 1}>to <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.next_offset || @meta.total_count %></span></span>
-        of <span class="font-semibold text-gray-900 dark:text-white"><%= @meta.total_count %></span> Entries
+        Showing
+        <span class="font-semibold text-gray-900 dark:text-white">{@meta.current_offset + 1}</span>
+        <span :if={@meta.total_pages != 1}>to
+        <span class="font-semibold text-gray-900 dark:text-white">{@meta.next_offset ||
+          @meta.total_count}</span></span>
+        of <span class="font-semibold text-gray-900 dark:text-white">{@meta.total_count}</span>
+        Entries
       </div>
       <Flop.Phoenix.pagination
         :if={@meta.total_pages != 1}
@@ -87,9 +91,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
         path={@path}
         page_list_attrs={[class: "hidden"]}
         page_link_attrs={[class: "flex items-center"]}
-        disabled_link_attrs={[class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50"]}
+        disabled_link_attrs={[
+          class: "cursor-not-allowed no-underline hover:no-underline text-opacity-50"
+        ]}
       >
-        <:previous attrs={[class: "text-sm font-semibold text-gray-900 dark:text-white"]}>Previous</:previous>
+        <:previous attrs={[class: "text-sm font-semibold text-gray-900 dark:text-white"]}>
+          Previous
+        </:previous>
         <:next attrs={[class: "text-sm font-semibold text-gray-900 dark:text-white"]}>Next</:next>
       </Flop.Phoenix.pagination>
     </div>

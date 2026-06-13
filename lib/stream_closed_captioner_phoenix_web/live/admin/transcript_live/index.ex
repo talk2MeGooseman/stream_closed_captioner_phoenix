@@ -67,11 +67,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by name or username..." />
 
     <.admin_table id="transcripts" rows={@records} row_id={fn r -> "transcript-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="User"><.user_link user={r.user} /></:col>
-      <:col :let={r} label="Name"><%= r.name %></:col>
-      <:col :let={r} label="Session"><%= r.session %></:col>
-      <:col :let={r} label="Created At"><%= r.created_at %></:col>
+      <:col :let={r} label="Name">{r.name}</:col>
+      <:col :let={r} label="Session">{r.session}</:col>
+      <:col :let={r} label="Created At">{r.created_at}</:col>
       <:col :let={r} label="Actions">
         <div class="flex items-center gap-1">
           <.view_button navigate={~p"/admin/transcripts/#{r.id}"} />
@@ -90,7 +90,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.admin_modal id="transcript-form-modal" show={true} on_cancel={JS.patch(~p"/admin/transcripts")}>
+      <.admin_modal
+        id="transcript-form-modal"
+        show={true}
+        on_cancel={JS.patch(~p"/admin/transcripts")}
+      >
         <.live_component
           module={StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent}
           id={if @record.id, do: "edit-transcript-#{@record.id}", else: "new-transcript"}

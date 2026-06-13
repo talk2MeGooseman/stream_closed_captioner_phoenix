@@ -53,7 +53,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.Index do
   defp load_records(socket) do
     %{search: s, page: page} = socket.assigns
     count = Admin.count_users(s)
-    assign(socket, records: Admin.list_users(s, page), total_count: count, total_pages: max(1, ceil(count / Admin.page_size())))
+
+    assign(socket,
+      records: Admin.list_users(s, page),
+      total_count: count,
+      total_pages: max(1, ceil(count / Admin.page_size()))
+    )
   end
 
   @impl true
@@ -68,13 +73,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by username, email, or uid..." />
 
     <.admin_table id="users-table" rows={@records} row_id={fn u -> "user-#{u.id}" end}>
-      <:col :let={u} label="ID"><%= u.id %></:col>
-      <:col :let={u} label="Username"><%= u.username %></:col>
-      <:col :let={u} label="Email"><%= u.email %></:col>
-      <:col :let={u} label="UID"><span class="font-mono text-xs"><%= u.uid %></span></:col>
-      <:col :let={u} label="Provider"><%= u.provider %></:col>
-      <:col :let={u} label="Sign-ins"><%= u.sign_in_count %></:col>
-      <:col :let={u} label="Created"><%= format_dt(u.created_at) %></:col>
+      <:col :let={u} label="ID">{u.id}</:col>
+      <:col :let={u} label="Username">{u.username}</:col>
+      <:col :let={u} label="Email">{u.email}</:col>
+      <:col :let={u} label="UID"><span class="font-mono text-xs">{u.uid}</span></:col>
+      <:col :let={u} label="Provider">{u.provider}</:col>
+      <:col :let={u} label="Sign-ins">{u.sign_in_count}</:col>
+      <:col :let={u} label="Created">{format_dt(u.created_at)}</:col>
       <:col :let={u} label="">
         <div class="flex items-center gap-1">
           <.view_button navigate={~p"/admin/users/#{u.id}"} />

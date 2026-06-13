@@ -30,21 +30,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= row[:action] %>
+                  {row[:action]}
                 </span>
               </div>
             </td>
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= row[:amount] %>
+                  {row[:amount]}
                 </span>
               </div>
             </td>
             <td class="relative p-0">
               <div class="block py-4 pr-6">
                 <span>
-                  <%= convert_timestamp_to_human_readable(row[:time]) %>
+                  {convert_timestamp_to_human_readable(row[:time])}
                 </span>
               </div>
             </td>
@@ -68,7 +68,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CreditHistoryLive do
   end
 
   def convert_timestamp_to_human_readable(timestamp) do
-    Timex.to_datetime(timestamp, "Etc/UTC")
-    |> Timex.format!("{UNIX}")
+    timestamp
+    |> DateTime.from_naive!("Etc/UTC")
+    |> Calendar.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
 end

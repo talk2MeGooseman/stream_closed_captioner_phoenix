@@ -48,7 +48,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
   defp post_signed(base_conn, event_type, params) do
     body_json = Jason.encode!(params)
     signed = signed_webhook_conn(base_conn, event_type, body_json)
-    post(signed, Routes.webhooks_path(signed, :create), body_json)
+    post(signed, ~p"/webhooks", body_json)
   end
 
   # ---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
         |> put_req_header("twitch-eventsub-message-signature", bad_sig)
         |> put_req_header("twitch-eventsub-message-type", "webhook_callback_verification")
 
-      conn = post(conn, Routes.webhooks_path(conn, :create), body_json)
+      conn = post(conn, ~p"/webhooks", body_json)
       assert conn.status == 400
     end
 
@@ -82,7 +82,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
         |> put_req_header("content-type", "application/json")
 
       # No Twitch headers → plug halts with 400
-      conn = post(conn, Routes.webhooks_path(conn, :create), body_json)
+      conn = post(conn, ~p"/webhooks", body_json)
       assert conn.status == 400
     end
 
@@ -98,7 +98,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
         |> put_req_header("twitch-eventsub-message-signature", "sha256=anything")
         |> put_req_header("twitch-eventsub-message-type", "webhook_callback_verification")
 
-      conn = post(conn, Routes.webhooks_path(conn, :create), body_json)
+      conn = post(conn, ~p"/webhooks", body_json)
       assert conn.status == 400
     end
   end
@@ -286,6 +286,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.WebhooksControllerTest do
       conn = post_signed(conn, "notification", params)
 
       assert conn.status == 200
+
       refute_receive %Phoenix.Socket.Broadcast{topic: "captions:" <> _, event: "stream.offline"},
                      500
     end

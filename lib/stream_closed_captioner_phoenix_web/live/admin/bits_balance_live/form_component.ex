@@ -38,31 +38,31 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div class="p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">
-          <%= if @action == :new, do: "New Bits Balance", else: "Edit Bits Balance" %>
-        </h2>
-        <.form
-          :let={f}
-          for={@changeset}
-          phx-target={@myself}
-          phx-change="validate"
-          phx-submit="save"
-        >
-          <div class="space-y-4">
-            <.input field={f[:user_id]} type="number" label="User ID" />
-            <.input field={f[:balance]} type="number" label="Balance" />
-          </div>
-          <div class="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              phx-click={JS.patch(@patch)}
-              class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <.button type="submit">Save</.button>
-          </div>
-        </.form>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        {if @action == :new, do: "New Bits Balance", else: "Edit Bits Balance"}
+      </h2>
+      <.form
+        :let={f}
+        for={@changeset}
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <div class="space-y-4">
+          <.input field={f[:user_id]} type="number" label="User ID" />
+          <.input field={f[:balance]} type="number" label="Balance" />
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button
+            type="button"
+            phx-click={JS.patch(@patch)}
+            class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <.button type="submit">Save</.button>
+        </div>
+      </.form>
     </div>
     """
   end

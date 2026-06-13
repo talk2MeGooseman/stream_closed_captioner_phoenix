@@ -74,10 +74,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.Index do
       rows={@records}
       row_id={fn r -> "bits-balance-debit-#{r.id}" end}
     >
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="User"><.user_link user={r.user} /></:col>
-      <:col :let={r} label="Amount"><%= r.amount %></:col>
-      <:col :let={r} label="Created At"><%= r.created_at %></:col>
+      <:col :let={r} label="Amount">{r.amount}</:col>
+      <:col :let={r} label="Created At">{r.created_at}</:col>
       <:col :let={r} label="Actions">
         <div class="flex items-center gap-1">
           <.edit_button patch={~p"/admin/bits-balance-debits/#{r.id}/edit"} />
@@ -95,7 +95,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.admin_modal id="bits-balance-debit-form-modal" show={true} on_cancel={JS.patch(~p"/admin/bits-balance-debits")}>
+      <.admin_modal
+        id="bits-balance-debit-form-modal"
+        show={true}
+        on_cancel={JS.patch(~p"/admin/bits-balance-debits")}
+      >
         <.live_component
           module={StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.FormComponent}
           id={

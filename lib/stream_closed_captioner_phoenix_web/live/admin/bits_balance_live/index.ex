@@ -67,9 +67,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by username..." />
 
     <.admin_table id="bits-balances" rows={@records} row_id={fn r -> "bits-balance-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="User"><.user_link user={r.user} /></:col>
-      <:col :let={r} label="Balance"><%= r.balance %></:col>
+      <:col :let={r} label="Balance">{r.balance}</:col>
       <:col :let={r} label="Actions">
         <div class="flex items-center gap-1">
           <.edit_button patch={~p"/admin/bits-balances/#{r.id}/edit"} />
@@ -87,7 +87,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.Index do
     <.admin_pagination page={@page} total_pages={@total_pages} />
 
     <%= if @live_action in [:new, :edit] do %>
-      <.admin_modal id="bits-balance-form-modal" show={true} on_cancel={JS.patch(~p"/admin/bits-balances")}>
+      <.admin_modal
+        id="bits-balance-form-modal"
+        show={true}
+        on_cancel={JS.patch(~p"/admin/bits-balances")}
+      >
         <.live_component
           module={StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.FormComponent}
           id={if @record.id, do: "edit-bits-balance-#{@record.id}", else: "new-bits-balance"}

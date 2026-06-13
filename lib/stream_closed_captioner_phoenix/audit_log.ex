@@ -28,7 +28,10 @@ defmodule StreamClosedCaptionerPhoenix.AuditLog do
   end
 
   def format_reason(reason) when is_atom(reason), do: reason
-  def format_reason(%Ecto.Changeset{} = cs), do: Ecto.Changeset.traverse_errors(cs, fn {msg, _} -> msg end)
+
+  def format_reason(%Ecto.Changeset{} = cs),
+    do: Ecto.Changeset.traverse_errors(cs, fn {msg, _} -> msg end)
+
   def format_reason(reason) when is_binary(reason), do: reason
   def format_reason(reason), do: inspect(reason, limit: 5, printable_limit: 100)
 

@@ -127,5 +127,4 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauthTest do
       assert_audit_event("oauth.account_link_failed_already_linked")
     end
   end
-
 end

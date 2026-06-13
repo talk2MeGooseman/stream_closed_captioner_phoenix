@@ -77,7 +77,9 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminderTest do
                Oban.Testing.perform_job(
                  SendChatReminder,
                  %{broadcaster_user_id: "123", broadcaster_user_login: "talk2megooseman"},
-                 errors: [%{"attempt" => 1, "error" => "prior failure", "at" => DateTime.utc_now()}]
+                 errors: [
+                   %{"attempt" => 1, "error" => "prior failure", "at" => DateTime.utc_now()}
+                 ]
                )
     end
   end

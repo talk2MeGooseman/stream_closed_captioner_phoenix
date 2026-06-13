@@ -50,11 +50,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserTokenLive.Index do
     <.admin_search search={@search || ""} placeholder="Search by username or context..." />
 
     <.admin_table id="user-tokens-table" rows={@records} row_id={fn r -> "user-token-#{r.id}" end}>
-      <:col :let={r} label="ID"><%= r.id %></:col>
+      <:col :let={r} label="ID">{r.id}</:col>
       <:col :let={r} label="User"><.user_link user={r.user} /></:col>
-      <:col :let={r} label="Context"><%= r.context %></:col>
-      <:col :let={r} label="Sent To"><%= r.sent_to %></:col>
-      <:col :let={r} label="Inserted At"><%= r.inserted_at %></:col>
+      <:col :let={r} label="Context">{r.context}</:col>
+      <:col :let={r} label="Sent To">{r.sent_to}</:col>
+      <:col :let={r} label="Inserted At">{r.inserted_at}</:col>
       <:col :let={r} label="">
         <.danger_button
           phx-click="delete"

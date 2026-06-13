@@ -139,10 +139,9 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Transaction do
         amount: get_in(transaction_info, ["product", "cost", "amount"]),
         purchaser_uid: get_in(transaction_info, ["userId"]),
         sku: get_in(transaction_info, ["product", "sku"]),
-        time: Timex.now(),
+        time: NaiveDateTime.utc_now(),
         transaction_id: get_in(transaction_info, ["transactionId"])
       })
     end
   end
-
 end

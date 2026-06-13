@@ -19,7 +19,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Layouts do
       <div class="wrap nav__in">
         <div class="brand-wrap">
           <a class="brand" href={~p"/"}>
-            <img class="brand__mark" src={~p"/images/cc100x100.png"} alt="Stream Closed Captioner logo" />Stream&nbsp;CC
+            <img
+              class="brand__mark"
+              src={~p"/images/cc100x100.png"}
+              alt="Stream Closed Captioner logo"
+            />Stream&nbsp;CC
           </a>
           <span class="brand__by">
             by

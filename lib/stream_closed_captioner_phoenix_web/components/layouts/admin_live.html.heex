@@ -6,7 +6,9 @@
     phx-click="lv:clear-flash"
     phx-hook="InitToast"
     phx-value-key="info"
-  ><%= Phoenix.Flash.get(@flash, :info) %></p>
+  >
+    {Phoenix.Flash.get(@flash, :info)}
+  </p>
 
   <p
     id="admin-flash-error"
@@ -15,9 +17,11 @@
     phx-click="lv:clear-flash"
     phx-hook="InitToast"
     phx-value-key="error"
-  ><%= Phoenix.Flash.get(@flash, :error) %></p>
+  >
+    {Phoenix.Flash.get(@flash, :error)}
+  </p>
 
-  <%= @inner_content %>
+  {@inner_content}
 </main>
 
 <%= if assigns[:live_action] in [:new, :edit] do %>

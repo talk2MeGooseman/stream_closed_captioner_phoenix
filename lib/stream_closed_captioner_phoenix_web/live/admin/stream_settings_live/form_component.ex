@@ -38,45 +38,49 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.StreamSettingsLive.FormComponent
   def render(assigns) do
     ~H"""
     <div class="p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">
-          <%= if @action == :new, do: "New Stream Settings", else: "Edit Stream Settings" %>
-        </h2>
-        <.form
-          :let={f}
-          for={@changeset}
-          phx-target={@myself}
-          phx-change="validate"
-          phx-submit="save"
-        >
-          <div class="space-y-4">
-            <%= if @action == :new do %>
-              <.input field={f[:user_id]} type="number" label="User ID" />
-            <% end %>
-            <.input field={f[:language]} type="text" label="Language" />
-            <.input field={f[:caption_delay]} type="number" label="Caption Delay" />
-            <div class="grid grid-cols-2 gap-4">
-              <.input field={f[:cc_box_size]} type="checkbox" label="CC Box Size" />
-              <.input field={f[:filter_profanity]} type="checkbox" label="Filter Profanity" />
-              <.input field={f[:hide_text_on_load]} type="checkbox" label="Hide Text on Load" />
-              <.input field={f[:pirate_mode]} type="checkbox" label="Pirate Mode" />
-              <.input field={f[:showcase]} type="checkbox" label="Showcase" />
-              <.input field={f[:switch_settings_position]} type="checkbox" label="Switch Settings Position" />
-              <.input field={f[:text_uppercase]} type="checkbox" label="Text Uppercase" />
-              <.input field={f[:turn_on_reminder]} type="checkbox" label="Turn On Reminder" />
-              <.input field={f[:auto_off_captions]} type="checkbox" label="Auto Off Captions" />
-            </div>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        {if @action == :new, do: "New Stream Settings", else: "Edit Stream Settings"}
+      </h2>
+      <.form
+        :let={f}
+        for={@changeset}
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <div class="space-y-4">
+          <%= if @action == :new do %>
+            <.input field={f[:user_id]} type="number" label="User ID" />
+          <% end %>
+          <.input field={f[:language]} type="text" label="Language" />
+          <.input field={f[:caption_delay]} type="number" label="Caption Delay" />
+          <div class="grid grid-cols-2 gap-4">
+            <.input field={f[:cc_box_size]} type="checkbox" label="CC Box Size" />
+            <.input field={f[:filter_profanity]} type="checkbox" label="Filter Profanity" />
+            <.input field={f[:hide_text_on_load]} type="checkbox" label="Hide Text on Load" />
+            <.input field={f[:pirate_mode]} type="checkbox" label="Pirate Mode" />
+            <.input field={f[:showcase]} type="checkbox" label="Showcase" />
+            <.input
+              field={f[:switch_settings_position]}
+              type="checkbox"
+              label="Switch Settings Position"
+            />
+            <.input field={f[:text_uppercase]} type="checkbox" label="Text Uppercase" />
+            <.input field={f[:turn_on_reminder]} type="checkbox" label="Turn On Reminder" />
+            <.input field={f[:auto_off_captions]} type="checkbox" label="Auto Off Captions" />
           </div>
-          <div class="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              phx-click={JS.patch(@patch)}
-              class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <.button type="submit">Save</.button>
-          </div>
-        </.form>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button
+            type="button"
+            phx-click={JS.patch(@patch)}
+            class="px-4 py-2 text-sm border rounded hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <.button type="submit">Save</.button>
+        </div>
+      </.form>
     </div>
     """
   end

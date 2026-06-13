@@ -35,7 +35,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserRegistrationController do
       {:error, reason} ->
         conn
         |> put_flash(:error, reason)
-        |> redirect(to: Routes.user_settings_path(conn, :edit))
+        |> redirect(to: ~p"/users/settings")
     end
   end
 end

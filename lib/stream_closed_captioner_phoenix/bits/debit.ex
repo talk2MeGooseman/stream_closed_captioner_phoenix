@@ -82,7 +82,11 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
 
     case result do
       {:ok, %{debit: debit, update_balance: updated_balance}} ->
-        AuditLog.info("bits.debit_created", %{user_id: user.id, debit_id: debit.id, amount: debit.amount})
+        AuditLog.info("bits.debit_created", %{
+          user_id: user.id,
+          debit_id: debit.id,
+          amount: debit.amount
+        })
 
         StreamClosedCaptionerPhoenixWeb.Endpoint.broadcast(
           "captions:#{user.id}",
@@ -131,5 +135,4 @@ defmodule StreamClosedCaptionerPhoenix.Bits.Debit do
 
   defp update_bits_balance_transaction(_repo, %{bits_balance_check: balance, debit: debit}),
     do: Balance.update_bits_balance(balance, %{balance: balance.balance - debit.amount})
-
 end

@@ -5,7 +5,7 @@ defmodule StreamClosedCaptionerPhoenix.Jobs.SendChatReminder do
     unique: [
       period: 300,
       fields: [:args, :queue],
-      states: [:available, :scheduled, :executing]
+      states: :incomplete
     ]
 
   # %{broadcaster_user_id: "talk2megooseman", broadcaster_user_login: "talk2megooseman"} |> StreamClosedCaptionerPhoenix.Jobs.SendChatReminder.new(schedule_in: 10) |> Oban.insert()

@@ -117,8 +117,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   defp time_to_complete(nil), do: 0
 
   defp time_to_complete(sent_on) do
-    case Timex.parse(sent_on, "{ISO:Extended}") do
-      {:ok, parsed} -> DateTime.diff(Timex.now(), parsed, :millisecond)
+    case DateTime.from_iso8601(sent_on) do
+      {:ok, parsed, _offset} -> DateTime.diff(DateTime.utc_now(), parsed, :millisecond)
       {:error, _} -> 0
     end
   end

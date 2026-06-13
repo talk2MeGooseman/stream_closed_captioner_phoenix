@@ -31,7 +31,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.FormComponent do
     case result do
       {:ok, record} ->
         send(self(), {:saved, record})
-        {:noreply, socket |> put_flash(:info, "User saved successfully.") |> push_patch(to: socket.assigns.patch)}
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "User saved successfully.")
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = cs} ->
         {:noreply, assign(socket, :changeset, cs)}
@@ -43,7 +47,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.FormComponent do
     ~H"""
     <div class="p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-5">
-        <%= if @action == :new, do: "New User", else: "Edit User" %>
+        {if @action == :new, do: "New User", else: "Edit User"}
       </h2>
 
       <.form
