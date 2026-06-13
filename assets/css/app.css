@@ -1079,8 +1079,8 @@ html:has(.scc-home) { scroll-behavior: smooth; }
 .scc-home .conf-chip__pct { font-weight: 700; min-width: 3ch; text-align: right; color: var(--ok); }
 .scc-home .conf-chip[data-level="fair"] .conf-chip__fill { background: var(--warn); }
 .scc-home .conf-chip[data-level="fair"] .conf-chip__pct { color: var(--warn); }
-.scc-home .conf-chip[data-level="low"] .conf-chip__fill { background: oklch(0.7 0.19 25); }
-.scc-home .conf-chip[data-level="low"] .conf-chip__pct { color: oklch(0.7 0.19 25); }
+.scc-home .conf-chip[data-level="low"] .conf-chip__fill { background: var(--live); }
+.scc-home .conf-chip[data-level="low"] .conf-chip__pct { color: var(--live); }
 .scc-home .skel { height: 15px; border-radius: 7px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.07)); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .scc-home .skel { animation: none; } }
