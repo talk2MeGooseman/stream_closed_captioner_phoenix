@@ -49,7 +49,7 @@ defmodule Twitch.Extension do
           "Twitch Extension send_pubsub_message_for request failed: #{inspect(exception)}"
         )
 
-        {:error, exception}
+        {:error, %{reason: Map.get(exception, :reason, exception)}}
     end
   end
 end

@@ -16,7 +16,7 @@ defmodule Zoom.Captions do
         {:ok, %{status: status, body: response_body}}
 
       {:error, exception} ->
-        {:error, exception}
+        {:error, %{reason: Map.get(exception, :reason, exception)}}
     end
   end
 end
