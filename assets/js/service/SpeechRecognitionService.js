@@ -25,6 +25,20 @@ const parseSpeechResults = pipe(
   join('')
 );
 
+/**
+ * Average the engine-reported confidence (0-1) across the recognition
+ * results. Returns null when nothing usable was reported — some engines
+ * send 0 for every result, and interim results carry no confidence.
+ *
+ * @param {SpeechRecognitionResultList} speechArray
+ * @returns {?number}
+ */
+const parseSpeechConfidence = (speechArray) => {
+  const scores = map(path([0, 'confidence']), speechArray).filter((c) => c > 0);
+  if (isEmpty(scores)) return null;
+  return scores.reduce((sum, c) => sum + c, 0) / scores.length;
+};
+
 export default class SpeechRecognitionService {
   constructor() {
     this.onSpeechInterimCallback = null;
@@ -61,7 +75,7 @@ export default class SpeechRecognitionService {
     if (isFinalSpeechResult(event.results)) {
       let finalText = parseSpeechResults(event.results);
       this.throttledPublishInterim.cancel();
-      this.publishFinalText(finalText)
+      this.publishFinalText(finalText, parseSpeechConfidence(event.results))
     } else {
       let interimText = parseSpeechResults(event.results);
       this.throttledPublishInterim(interimText)
@@ -128,13 +142,14 @@ export default class SpeechRecognitionService {
     }
   }
 
-  publishFinalText(text) {
+  publishFinalText(text, confidence = null) {
     if (this.onSpeechFinalCallback) {
-      debug("Publish Final Text", { text })
+      debug("Publish Final Text", { text, confidence })
       this.onSpeechFinalCallback({
         session: this.sessionId,
         interim: '',
-        final: text
+        final: text,
+        confidence
       })
     }
   }

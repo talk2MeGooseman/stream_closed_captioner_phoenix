@@ -12,6 +12,7 @@ const debug = debugLogger("cc:speech-handler")
  *    interim: string,
  *    final: string,
  *    session: number,
+ *    confidence: ?number,
  * }} SpeechInterval
  */
 

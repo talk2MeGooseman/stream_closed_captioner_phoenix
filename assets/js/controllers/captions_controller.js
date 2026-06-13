@@ -26,6 +26,9 @@ export default class extends Controller {
     "finalOutput",
     "interimOutput",
     "translationOutput",
+    "confidence",
+    "confidenceFill",
+    "confidencePct",
     "start",
     "warning"
   ]
@@ -201,9 +204,13 @@ export default class extends Controller {
 
   receiveFinalMessage = (data) => {
     debug('final', data)
+    // Confidence is dashboard-only; keep it off the channel payload
+    const { confidence, ...speechData } = data
+    this.displayConfidence(confidence)
+
     if (this.zoomData.enabled) {
       const publishData = {
-        ...data,
+        ...speechData,
         zoom: {
           ...this.zoomData,
           seq: getZoomSequence(this.zoomData.url)
@@ -218,7 +225,7 @@ export default class extends Controller {
         })
     } else {
       const publishData = {
-        ...data,
+        ...speechData,
         sentOn: (new Date()).toISOString(),
         twitch: this.twitchData,
       }
@@ -227,6 +234,21 @@ export default class extends Controller {
         .push("publishFinal", publishData, 5000)
         .receive("ok", (response) => this.displayCaptions(response))
     }
+  }
+
+  // Per-utterance meter beside the preview tag. Only final results carry a
+  // usable score (interim confidence is 0 in Chrome), and some engines never
+  // report one — the chip stays hidden until the first real value arrives.
+  displayConfidence = (confidence) => {
+    if (!this.hasConfidenceTarget || confidence == null) return
+
+    const pct = Math.round(confidence * 100)
+    const level = confidence >= 0.8 ? "high" : confidence >= 0.5 ? "fair" : "low"
+
+    this.confidenceTarget.classList.remove("hidden")
+    this.confidenceTarget.dataset.level = level
+    this.confidenceFillTarget.style.width = `${pct}%`
+    this.confidencePctTarget.textContent = `${pct}%`
   }
 
   displayCaptions = (captions) => {
