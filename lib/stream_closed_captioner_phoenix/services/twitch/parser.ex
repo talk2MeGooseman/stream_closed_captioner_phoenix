@@ -6,9 +6,10 @@ defmodule Twitch.Parser do
   @type status_code :: integer
   @type headers :: map
   @type response ::
-          {:ok, struct}
-          | {:error, map, status_code}
-          | any
+          {:ok, term()}
+          | {:error, map()}
+          | {:error, map(), status_code()}
+          | term()
 
   @doc """
   Parses the response from API calls

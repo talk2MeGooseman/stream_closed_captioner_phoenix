@@ -238,7 +238,7 @@ defmodule Twitch.Helix do
 
       {:ok, %{status: status, body: response_body}} ->
         Logger.warning(
-          "Twitch Helix set_configuration_for returned HTTP #{status}: #{inspect(response_body)}"
+          "Twitch Helix set_configuration_for returned HTTP #{status}: #{inspect(String.slice(response_body, 0, 200))}"
         )
 
         {:error, {:http_status, status}}
