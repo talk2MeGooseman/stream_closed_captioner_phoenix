@@ -8,7 +8,7 @@ defmodule Notion.Parser do
   @type response ::
           {:ok, term()}
           | {:error, map()}
-          | {:error, map(), status_code()}
+          | {:error, term(), status_code()}
           | term()
 
   @doc """
