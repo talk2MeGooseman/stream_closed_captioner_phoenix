@@ -26,6 +26,9 @@ export default class extends Controller {
     "finalOutput",
     "interimOutput",
     "translationOutput",
+    "confidence",
+    "confidenceFill",
+    "confidencePct",
     "start",
     "warning"
   ]
@@ -201,9 +204,13 @@ export default class extends Controller {
 
   receiveFinalMessage = (data) => {
     debug('final', data)
+    // Confidence is dashboard-only; keep it off the channel payload and apply
+    // it on the "ok" reply so the chip lands together with the rendered caption.
+    const { confidence, ...speechData } = data
+
     if (this.zoomData.enabled) {
       const publishData = {
-        ...data,
+        ...speechData,
         zoom: {
           ...this.zoomData,
           seq: getZoomSequence(this.zoomData.url)
@@ -215,21 +222,39 @@ export default class extends Controller {
         .receive("ok", (response) => {
           const seq = getZoomSequence(this.zoomData.url) + 1
           setZoomSequence(this.zoomData.url, seq)
+          this.displayCaptions(response, confidence)
         })
     } else {
       const publishData = {
-        ...data,
+        ...speechData,
         sentOn: (new Date()).toISOString(),
         twitch: this.twitchData,
       }
 
       this.captionsChannel
         .push("publishFinal", publishData, 5000)
-        .receive("ok", (response) => this.displayCaptions(response))
+        .receive("ok", (response) => this.displayCaptions(response, confidence))
     }
   }
 
-  displayCaptions = (captions) => {
+  // Per-utterance meter beside the preview tag. Only final results carry a
+  // usable score (interim confidence is 0 in Chrome), and some engines never
+  // report one — the chip stays hidden until the first real value arrives.
+  displayConfidence = (confidence) => {
+    if (!this.hasConfidenceTarget || confidence == null) return
+
+    const pct = Math.round(confidence * 100)
+    const level = confidence >= 0.8 ? "high" : confidence >= 0.5 ? "fair" : "low"
+
+    this.confidenceTarget.classList.remove("hidden")
+    this.confidenceTarget.dataset.level = level
+    this.confidenceFillTarget.style.width = `${pct}%`
+    this.confidencePctTarget.textContent = `${pct}%`
+  }
+
+  // confidence is only passed for final results; interim calls leave it null
+  // so the chip keeps its last value rather than flickering between captions.
+  displayCaptions = (captions, confidence = null) => {
     this.dispatch("payload", { detail: { ...captions } })
 
     this.outputOutlineTarget.classList.add("hidden")
@@ -237,6 +262,8 @@ export default class extends Controller {
 
     this.interimOutputTarget.textContent = captions.interim
     this.finalOutputTarget.textContent = captions.final
+
+    this.displayConfidence(confidence)
 
     this.displayTranslations(captions)
   }

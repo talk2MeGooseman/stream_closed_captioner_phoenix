@@ -1072,9 +1072,18 @@ html:has(.scc-home) { scroll-behavior: smooth; }
 }
 .scc-home .capctl__stage .stagetag { position: absolute; top: 14px; left: 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.56); display: inline-flex; align-items: center; gap: 8px; }
 .scc-home .capctl__stage .stagetag .rec { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.28); }
+.scc-home .capctl__stage .conf-chip { position: absolute; top: 11px; right: 14px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.62); }
+.scc-home .capctl__stage .conf-chip.hidden { display: none; }
+.scc-home .conf-chip__bar { width: 64px; height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.scc-home .conf-chip__fill { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--ok); transition: width 0.25s ease; }
+.scc-home .conf-chip__pct { font-weight: 700; min-width: 3ch; text-align: right; color: var(--ok); }
+.scc-home .conf-chip[data-level="fair"] .conf-chip__fill { background: var(--warn); }
+.scc-home .conf-chip[data-level="fair"] .conf-chip__pct { color: var(--warn); }
+.scc-home .conf-chip[data-level="low"] .conf-chip__fill { background: var(--live); }
+.scc-home .conf-chip[data-level="low"] .conf-chip__pct { color: var(--live); }
 .scc-home .skel { height: 15px; border-radius: 7px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.07)); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { .scc-home .skel { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .scc-home .skel { animation: none; } .scc-home .conf-chip__fill { transition: none; } }
 .scc-home .stage-empty { display: flex; flex-direction: column; gap: 13px; }
 .scc-home .stage-empty.hidden { display: none; }
 .scc-home .stage-empty__note { margin-top: 6px; font-family: var(--mono); font-size: 11px; color: rgba(255, 255, 255, 0.66); letter-spacing: 0.04em; }

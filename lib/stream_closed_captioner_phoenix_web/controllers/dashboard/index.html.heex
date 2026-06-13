@@ -140,6 +140,22 @@
             >
               <div class="capctl__stage">
                 <span class="stagetag"><span class="rec"></span>Preview</span>
+                <span
+                  class="conf-chip hidden"
+                  data-captions-target="confidence"
+                  title="Speech recognition confidence of the last caption"
+                  aria-describedby="conf-chip-desc"
+                >
+                  <span class="sr-only" id="conf-chip-desc">
+                    How certain the speech recognition engine was about the last caption,
+                    from 0 to 100 percent.
+                  </span>
+                  Confidence
+                  <span class="conf-chip__bar">
+                    <span class="conf-chip__fill" data-captions-target="confidenceFill"></span>
+                  </span>
+                  <span class="conf-chip__pct" data-captions-target="confidencePct"></span>
+                </span>
                 <div class="stage-empty" data-captions-target="outputOutline">
                   <div class="skel" style="width: 82%"></div>
                   <div class="skel" style="width: 94%"></div>
