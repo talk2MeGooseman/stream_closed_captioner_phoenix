@@ -2,7 +2,7 @@
 # Pinned to .tool-versions (elixir 1.19.5-otp-27, erlang 27.3.4.9,
 # nodejs 22.21.1).
 #
-# nixpkgsArchive is the nixpkgs-unstable channel revision from 2026-06,
+# nixpkgsArchive is the nixpkgs-unstable channel revision from 2026-06-11,
 # where beam.packages.erlang_27.elixir_1_19 and nodejs_22 all resolve.
 #
 # We pin the exact BEAM pair via the scoped beam.packages attribute instead
@@ -18,7 +18,7 @@
 # compiles a NIF. Node comes from the same archive so the libstdc++ ABI
 # matches the toolchain's gcc.
 providers = ["elixir"]
-nixpkgsArchive = "8c91a71d13451abc40eb9dae8910f972f979852f"
+nixpkgsArchive = "8837df679f5e015f7ddd924e89b45a217fd34723"
 
 [phases.setup]
 nixPkgs = ["beam.packages.erlang_27.elixir_1_19", "gcc", "gnumake", "nodejs_22"]
