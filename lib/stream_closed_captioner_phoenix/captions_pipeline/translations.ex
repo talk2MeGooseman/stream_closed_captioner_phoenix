@@ -36,7 +36,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
       to_languages = Settings.get_formatted_translate_languages_by_user(user.id)
       bits_balance = Bits.get_bits_balance_for_user(user)
 
-      if Enum.empty?(to_languages) || bits_balance.balance < 500 do
+      if Enum.empty?(to_languages) || !sufficient_balance?(bits_balance) do
         payload
       else
         activate_translations_for(user, payload, text)
@@ -63,6 +63,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.Translations do
         payload
     end
   end
+
+  # A user who has never purchased bits has no BitsBalance row, so the lookup returns nil.
+  # Treat that as insufficient funds rather than dereferencing nil.
+  defp sufficient_balance?(nil), do: false
+  defp sufficient_balance?(%{balance: balance}), do: balance >= 500
 
   defp blank?(nil), do: true
   defp blank?(text) when is_binary(text), do: String.trim(text) == ""

@@ -39,6 +39,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline.TranslationsTest do
       assert result == payload
       assert result.translations == nil
     end
+
+    test "returns payload unchanged when user has languages but no bits_balance record" do
+      user =
+        insert(:user,
+          bits_balance: nil,
+          translate_languages: [build(:translate_language, language: "es")]
+        )
+
+      payload = %Twitch.Extension.CaptionsPayload{final: "Hello", interim: "", delay: 0}
+      result = Translations.maybe_translate(payload, :final, user)
+
+      assert result == payload
+      assert result.translations == nil
+    end
   end
 
   describe "maybe_translate/3 — activation fallback" do
