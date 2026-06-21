@@ -9,7 +9,7 @@ defmodule Notion.Base do
   def get(path_arg, query_params \\ %{}) do
     path_arg
     |> build_url(query_params)
-    |> HTTPoison.get(request_headers())
+    |> Req.get([headers: request_headers()] ++ Helpers.req_options())
     |> Parser.parse()
   end
 
@@ -18,7 +18,7 @@ defmodule Notion.Base do
 
     path_arg
     |> build_url()
-    |> HTTPoison.post(json_body, post_request_headers())
+    |> Req.post([body: json_body, headers: post_request_headers()] ++ Helpers.req_options())
     |> Parser.parse()
   end
 

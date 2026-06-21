@@ -62,24 +62,28 @@ defmodule Twitch do
     Jwt.sign_token_for(:pubsub, channel_id)
     |> ext_api_client().send_pubsub_message_for(channel_id, payload)
     |> case do
-      {:ok, %HTTPoison.Response{status_code: 204}} ->
+      {:ok, %{status: 204}} ->
         {:ok, payload}
 
-      {:ok, %HTTPoison.Response{status_code: 400, body: _body}} ->
+      {:ok, %{status: 400, body: _body}} ->
         Logger.debug("Request was rejected")
         {:error, "Request was rejected"}
 
-      {:ok, %HTTPoison.Response{status_code: 500, body: _body}} ->
+      {:ok, %{status: 500, body: _body}} ->
         Logger.debug("Twitch doing Twitch stuff")
         {:error, "500, Twitch throwing errors for some reason."}
 
-      {:ok, %HTTPoison.Response{status_code: 502, body: _body}} ->
+      {:ok, %{status: 502, body: _body}} ->
         Logger.debug("Twitch doing Twitch stuff")
         {:error, "502, cant reach Twitch atm."}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, %{reason: reason}} ->
         Logger.debug("Request was error")
         {:error, reason}
+
+      {:error, error} ->
+        Logger.debug("Request was error: #{inspect(error)}")
+        {:error, error}
     end
   end
 
@@ -90,9 +94,7 @@ defmodule Twitch do
   end
 
   @spec set_extension_broadcaster_configuration_for(binary, map) ::
-          {:ok,
-           HTTPoison.Response.t() | HTTPoison.AsyncResponse.t() | HTTPoison.MaybeRedirect.t()}
-          | {:error, HTTPoison.Error.t()}
+          {:ok, term()} | {:error, term()}
   def set_extension_broadcaster_configuration_for(channel_id, data) when is_map(data) do
     Jwt.sign_token_for(:standard, channel_id)
     |> helix_api_client().set_configuration_for(Extension.broadcaster_segment(), channel_id, data)

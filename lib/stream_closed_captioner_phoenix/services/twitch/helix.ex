@@ -9,9 +9,6 @@ defmodule Twitch.Helix do
 
   @behaviour Twitch.HelixProvider
 
-  # Connect and receive timeouts applied to every Twitch Helix API call.
-  @http_timeout [timeout: 5_000, recv_timeout: 10_000]
-
   @impl HelixProvider
   def get_streams(
         %{access_token: access_token} = credentials,
@@ -30,8 +27,8 @@ defmodule Twitch.Helix do
       end
 
     case encode_url_and_params("https://api.twitch.tv/helix/streams", params)
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -48,7 +45,7 @@ defmodule Twitch.Helix do
             []
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_streams returned HTTP #{status}: #{String.slice(body, 0, 200)}"
         )
@@ -68,8 +65,8 @@ defmodule Twitch.Helix do
     case encode_url_and_params("https://api.twitch.tv/helix/extensions/transactions", %{
            extension_id: client_id
          })
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             Enum.map(get_in(data, ["data"]) || [], &Transaction.new/1)
@@ -79,7 +76,7 @@ defmodule Twitch.Helix do
             []
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_transactions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -97,8 +94,8 @@ defmodule Twitch.Helix do
     headers = HttpHelpers.auth_request_headers(access_token)
 
     case encode_url_and_params("https://api.twitch.tv/helix/users/extensions")
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             Map.get(data, "data")
@@ -111,7 +108,7 @@ defmodule Twitch.Helix do
             nil
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_users_active_extensions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -148,9 +145,16 @@ defmodule Twitch.Helix do
         %{broadcaster_id: broadcaster_id}
       )
 
-    case HTTPoison.post(url, body, headers, @http_timeout) do
-      {:ok, %{body: raw_body}} ->
+    case Req.post(url, [body: body, headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         raw_body
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.warning(
+          "Twitch Helix send_extension_chat_message returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
+        )
+
+        {:error, {:http_status, status}}
 
       {:error, %{reason: reason}} ->
         Logger.warning("Twitch Helix chat message request failed: #{inspect(reason)}")
@@ -173,8 +177,8 @@ defmodule Twitch.Helix do
              extension_id: Twitch.extension_id()
            }
          )
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -191,7 +195,7 @@ defmodule Twitch.Helix do
             []
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_live_channels returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -221,9 +225,25 @@ defmodule Twitch.Helix do
         content: Jason.encode!(data)
       })
 
-    "https://api.twitch.tv/helix/extensions/configurations"
-    |> encode_url_and_params()
-    |> HTTPoison.put(body, headers, @http_timeout)
+    url =
+      "https://api.twitch.tv/helix/extensions/configurations"
+      |> encode_url_and_params()
+
+    case Req.put(url, [body: body, headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: response_body}} when status in 200..299 ->
+        {:ok, response_body}
+
+      {:ok, %{status: status, body: response_body}} ->
+        Logger.warning(
+          "Twitch Helix set_configuration_for returned HTTP #{status}: #{inspect(String.slice(response_body, 0, 200))}"
+        )
+
+        {:error, {:http_status, status}}
+
+      {:error, %{reason: reason}} ->
+        Logger.warning("Twitch Helix set_configuration_for request failed: #{inspect(reason)}")
+        {:error, {:http, reason}}
+    end
   end
 
   @impl HelixProvider
@@ -240,8 +260,8 @@ defmodule Twitch.Helix do
            extension_id: Twitch.extension_id(),
            segment: to_string(segment)
          })
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, decoded} ->
             {:ok, decoded}
@@ -254,7 +274,7 @@ defmodule Twitch.Helix do
             {:error, {:json_decode, reason}}
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_configuration_for returned HTTP #{status}: #{inspect(body)}"
         )
@@ -288,8 +308,8 @@ defmodule Twitch.Helix do
 
     url = encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions")
 
-    case HTTPoison.post(url, body, headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+    case Req.post(url, [body: body, headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, decoded} ->
             {:ok, decoded}
@@ -299,7 +319,7 @@ defmodule Twitch.Helix do
             {:error, {:json_decode, reason}}
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning("Twitch EventSub subscribe returned HTTP #{status}: #{inspect(body)}")
         {:error, {:http_status, status}}
 
@@ -332,8 +352,8 @@ defmodule Twitch.Helix do
       end
 
     case encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", params)
-         |> HTTPoison.get(headers, @http_timeout) do
-      {:ok, %{status_code: status, body: raw_body}} when status in 200..299 ->
+         |> Req.get([headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
             new_cursor = get_in(data, ["pagination", "cursor"])
@@ -353,7 +373,7 @@ defmodule Twitch.Helix do
             []
         end
 
-      {:ok, %{status_code: status, body: body}} ->
+      {:ok, %{status: status, body: body}} ->
         Logger.warning(
           "Twitch Helix get_eventsub_subscriptions returned HTTP #{status}: #{inspect(String.slice(body, 0, 200))}"
         )
@@ -377,8 +397,8 @@ defmodule Twitch.Helix do
     headers = HttpHelpers.auth_request_headers(access_token)
 
     case encode_url_and_params("https://api.twitch.tv/helix/eventsub/subscriptions", %{id: id})
-         |> HTTPoison.delete(headers, @http_timeout) do
-      {:ok, %{status_code: status_code}} ->
+         |> Req.delete([headers: headers] ++ req_options()) do
+      {:ok, %{status: status_code}} ->
         status_code
 
       {:error, %{reason: reason}} ->

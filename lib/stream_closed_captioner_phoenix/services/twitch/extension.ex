@@ -1,6 +1,8 @@
 defmodule Twitch.Extension do
   import Helpers
 
+  require Logger
+
   alias Twitch.ExtensionProvider
   alias Twitch.Extension.Credentials
   @behaviour ExtensionProvider
@@ -36,7 +38,18 @@ defmodule Twitch.Extension do
         targets: ["broadcast"]
       })
 
-    encode_url_and_params("https://api.twitch.tv/extensions/message/" <> channel_id)
-    |> HTTPoison.post(body, headers)
+    url = encode_url_and_params("https://api.twitch.tv/extensions/message/" <> channel_id)
+
+    case Req.post(url, [body: body, headers: headers] ++ req_options()) do
+      {:ok, %{status: status, body: response_body}} ->
+        {:ok, %{status: status, body: response_body}}
+
+      {:error, exception} ->
+        Logger.warning(
+          "Twitch Extension send_pubsub_message_for request failed: #{inspect(exception)}"
+        )
+
+        {:error, %{reason: Map.get(exception, :reason, exception)}}
+    end
   end
 end

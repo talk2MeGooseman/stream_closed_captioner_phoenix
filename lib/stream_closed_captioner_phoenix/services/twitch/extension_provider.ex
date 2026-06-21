@@ -6,6 +6,5 @@ defmodule Twitch.ExtensionProvider do
               String.t(),
               Twitch.Extension.CaptionsPayload.t()
             ) ::
-              {:error, HTTPoison.Error.t()}
-              | {:ok, HTTPoison.Response.t()}
+              {:ok, %{status: non_neg_integer(), body: binary()}} | {:error, term()}
 end

@@ -15,6 +15,11 @@ defmodule StreamClosedCaptionerPhoenix.Application do
       {Cluster.Supervisor, [topologies, [name: StreamClosedCaptionerPhoenix.ClusterSupervisor]]},
       # Start the Ecto repository
       StreamClosedCaptionerPhoenix.Repo,
+      # Supervised Finch pool used by Req across all external service adapters
+      # (5s TCP connect timeout, matching the previous hackney default).
+      {Finch,
+       name: StreamClosedCaptionerPhoenix.Finch,
+       pools: %{default: [conn_opts: [transport_opts: [timeout: 5_000]]]}},
       # Start the Telemetry supervisor
       StreamClosedCaptionerPhoenixWeb.Telemetry,
       # Start the PubSub system

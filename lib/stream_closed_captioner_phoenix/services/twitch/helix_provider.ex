@@ -12,7 +12,7 @@ defmodule Twitch.HelixProvider do
   @callback get_users_active_extensions(Credentials.t()) :: map() | nil
 
   @callback send_extension_chat_message(Twitch.Extension.Credentials.t(), String.t(), String.t()) ::
-              tuple()
+              binary() | {:error, term()}
 
   @callback get_live_channels(
               Credentials.t(),
@@ -24,7 +24,7 @@ defmodule Twitch.HelixProvider do
               atom(),
               String.t(),
               map()
-            ) :: any
+            ) :: {:ok, binary()} | {:error, term()}
 
   @callback get_configuration_for(
               Twitch.Extension.Credentials.t(),
