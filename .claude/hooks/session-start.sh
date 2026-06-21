@@ -22,28 +22,61 @@ export HEX_CACERTS_PATH=/etc/ssl/certs/ca-certificates.crt
 export HEX_MIRROR="${HEX_MIRROR_URL}"
 export HEX_BUILDS_URL="${HEX_BUILDS}"
 
-# ── Erlang ──────────────────────────────────────────────────────────────
-# erlang-dev provides the .hrl headers needed to compile Hex from source.
-if ! command -v erl &>/dev/null; then
-  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing \
-    erlang-base erlang-crypto erlang-dev erlang-eunit erlang-inets \
-    erlang-mnesia erlang-os-mon erlang-parsetools erlang-public-key \
-    erlang-runtime-tools erlang-ssl erlang-tools erlang-xmerl \
-    rebar3 unzip
+# ── System packages ──────────────────────────────────────────────────────
+# unzip extracts the Elixir archive; rebar3 builds rebar-based deps (e.g. jose).
+# apt's rebar3 depends on erlang-base (OTP 25), but the OTP 27 install below
+# shadows it via /usr/local/bin and rebar3 itself runs fine on OTP 27.
+if ! command -v rebar3 &>/dev/null || ! command -v unzip &>/dev/null; then
+  DEBIAN_FRONTEND=noninteractive apt-get update -qq || true
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing rebar3 unzip
 fi
 
-# ── Elixir 1.16 ─────────────────────────────────────────────────────────
-# Precompiled release for OTP 25 from GitHub (matches .tool-versions).
-if ! command -v mix &>/dev/null; then
+# ── Erlang/OTP 27 ─────────────────────────────────────────────────────────
+# The project targets OTP 27 (.tool-versions pins erlang 27.3.4.9). The `jose`
+# dep uses OTP 27's native `json` module and the `dynamic()` type, neither of
+# which exist on the OTP 25 that apt ships — so apt's Erlang cannot build the
+# project. Install the precompiled OTP 27 build for ubuntu-24.04 from
+# builds.hex.pm (curl's TLS is allowed by the egress proxy; Erlang's own TLS
+# is not). Symlinks into /usr/local/bin shadow any apt-provided erl. The
+# version-aware guard also upgrades a stale cached container left on OTP 25.
+OTP_VERSION="27.3.4.9"
+if ! erl -noshell -eval 'io:format("~s",[erlang:system_info(otp_release)]),halt().' 2>/dev/null | grep -q '^27$'; then
+  curl -fsSL \
+    "https://builds.hex.pm/builds/otp/amd64/ubuntu-24.04/OTP-${OTP_VERSION}.tar.gz" \
+    -o /tmp/otp.tar.gz
+  rm -rf /usr/local/lib/erlang "/tmp/OTP-${OTP_VERSION}"
+  mkdir -p /usr/local/lib/erlang
+  tar xzf /tmp/otp.tar.gz -C /tmp
+  cp -a "/tmp/OTP-${OTP_VERSION}/." /usr/local/lib/erlang/
+  rm -rf /tmp/otp.tar.gz "/tmp/OTP-${OTP_VERSION}"
+  ( cd /usr/local/lib/erlang && ./Install -minimal /usr/local/lib/erlang >/dev/null )
+  for bin in erl erlc escript epmd dialyzer typer ct_run run_erl to_erl; do
+    [ -e "/usr/local/lib/erlang/bin/${bin}" ] && \
+      ln -sf "/usr/local/lib/erlang/bin/${bin}" "/usr/local/bin/${bin}"
+  done
+  hash -r
+fi
+
+# ── Elixir 1.19.5 ──────────────────────────────────────────────────────────
+# Matches .tool-versions (elixir 1.19.5-otp-27) and satisfies mix.exs (~> 1.18).
+# Uses the precompiled otp-27 build from GitHub releases (curl's TLS is allowed
+# by the egress proxy). Installed after OTP 27 above, which the otp-27 build
+# requires at compile and runtime. The trailing space in the version guard
+# avoids matching 1.19.50+ and also upgrades a stale cached container left on an
+# older Elixir (e.g. an otp-25 1.18.x build) by a previous hook run.
+ELIXIR_VERSION="1.19.5"
+if ! elixir --version 2>/dev/null | grep -q "Elixir ${ELIXIR_VERSION} "; then
   curl -fsSL -L \
-    "https://github.com/elixir-lang/elixir/releases/download/v1.16.0/elixir-otp-25.zip" \
+    "https://github.com/elixir-lang/elixir/releases/download/v${ELIXIR_VERSION}/elixir-otp-27.zip" \
     -o /tmp/elixir.zip
+  rm -rf /usr/local/lib/elixir
   mkdir -p /usr/local/lib/elixir
   unzip -q -o /tmp/elixir.zip -d /usr/local/lib/elixir
   rm /tmp/elixir.zip
   for bin in elixir elixirc iex mix; do
     ln -sf "/usr/local/lib/elixir/bin/${bin}" "/usr/local/bin/${bin}"
   done
+  hash -r
 fi
 
 # ── Hex.pm mirror ─────────────────────────────────────────────────────────
@@ -62,12 +95,15 @@ fi
 
 # ── Hex ────────────────────────────────────────────────────────────────────
 # Install the Hex archive through the mirror (Erlang's direct download is
-# blocked). Pick the newest Hex build published for Elixir 1.16.0.
+# blocked). builds.hex.pm keys Hex archives by the Elixir minor series that
+# last needed a distinct build; the newest series it publishes is 1.18.0
+# (installs/1.19.0/ is a 404), and that 1.18.0 archive is forward-compatible
+# with the Elixir 1.19.5 installed above — so it's the right one to fetch.
 if ! mix archive.list 2>/dev/null | grep -q "hex-"; then
   HEX_VERSION="$(curl -fsSL "${HEX_BUILDS}/installs/hex-1.x.csv" \
-    | awk -F, '$3 == "1.16.0" { v = $1 } END { print v }')"
-  HEX_VERSION="${HEX_VERSION:-2.4.2}"
-  curl -fsSL "${HEX_BUILDS}/installs/1.16.0/hex-${HEX_VERSION}.ez" -o /tmp/hex.ez
+    | awk -F, '$3 == "1.18.0" { v = $1 } END { print v }')"
+  HEX_VERSION="${HEX_VERSION:-2.2.1}"
+  curl -fsSL "${HEX_BUILDS}/installs/1.18.0/hex-${HEX_VERSION}.ez" -o /tmp/hex.ez
   mix archive.install /tmp/hex.ez --force
   rm -f /tmp/hex.ez
 fi
