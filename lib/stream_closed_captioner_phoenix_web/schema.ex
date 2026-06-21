@@ -112,7 +112,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       #   {:ok, topic: ["absinthe-graphql/absinthe", "elixir-lang/elixir"]}
       # Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, %{ interim: "hello", final: "final" }, new_twitch_caption: "1")
       config(fn args, _ ->
-        {:ok, topic: args.channel_id}
+        if StreamClosedCaptionerPhoenixWeb.UserTracker.channel_connected?(args.channel_id) do
+          {:ok, topic: args.channel_id}
+        else
+          {:error, "channel is not active"}
+        end
       end)
     end
   end

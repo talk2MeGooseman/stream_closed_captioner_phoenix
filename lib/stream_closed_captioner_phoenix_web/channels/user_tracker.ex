@@ -66,6 +66,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
     |> channel_recently_published?()
   end
 
+  def channel_connected?(channel_id) do
+    get_by_key("active_channels", channel_id)
+    |> Enum.any?()
+  end
+
   defp reduced_user_list({uid, metadata}, acc) when is_binary(uid) do
     elapsed_time = current_timestamp() - get_last_publish(metadata)
 

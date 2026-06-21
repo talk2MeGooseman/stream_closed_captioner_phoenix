@@ -37,4 +37,24 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTrackerTest do
 
     assert UserTracker.channel_active?("123") == true
   end
+
+  test "channel_connected?/1 returns true when a UserTracker entry exists" do
+    test_pid = self()
+    on_exit(fn -> UserTracker.untrack(test_pid, "active_channels", "uid-connected") end)
+    UserTracker.track(self(), "active_channels", "uid-connected", %{last_publish: 0})
+    assert UserTracker.channel_connected?("uid-connected") == true
+  end
+
+  test "channel_connected?/1 returns false when no UserTracker entry exists" do
+    assert UserTracker.channel_connected?("uid-never-tracked") == false
+  end
+
+  test "channel_connected?/1 returns true even when last_publish is stale (>300s ago)" do
+    test_pid = self()
+    stale_time = System.system_time(:second) - 400
+    on_exit(fn -> UserTracker.untrack(test_pid, "active_channels", "uid-stale") end)
+    UserTracker.track(self(), "active_channels", "uid-stale", %{last_publish: stale_time})
+    assert UserTracker.channel_connected?("uid-stale") == true
+    assert UserTracker.channel_active?("uid-stale") == false
+  end
 end
