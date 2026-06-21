@@ -99,7 +99,7 @@ Schemas use `timestamps(inserted_at: :created_at)` — the column is `created_at
 
 ### HTTP calls to Azure
 
-Use `HTTPoison.post` (not `post!`) and pattern-match the result. The error path scrubs sensitive data before logging to prevent API key leakage in exception messages.
+Use the non-raising `Req.post` (it returns `{:ok, resp} | {:error, exception}`, never the `!` variant) and pattern-match the result. The error path logs only `inspect(reason)` from `{:error, %{reason: reason}}`; `Req`/`Mint` transport-error structs carry just `:reason` (no headers/body), so the `Ocp-Apim-Subscription-Key` request header cannot leak into logs. All external adapters use `Req` with shared options from `Helpers.req_options/1` — avoid `:httpoison`.
 
 ### Query modules
 

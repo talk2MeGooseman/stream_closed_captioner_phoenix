@@ -9,7 +9,7 @@ defmodule Notion.Base do
   def get(path_arg, query_params \\ %{}) do
     path_arg
     |> build_url(query_params)
-    |> Req.get(headers: request_headers(), decode_body: false, retry: false)
+    |> Req.get([headers: request_headers()] ++ Helpers.req_options())
     |> Parser.parse()
   end
 
@@ -18,12 +18,7 @@ defmodule Notion.Base do
 
     path_arg
     |> build_url()
-    |> Req.post(
-      body: json_body,
-      headers: post_request_headers(),
-      decode_body: false,
-      retry: false
-    )
+    |> Req.post([body: json_body, headers: post_request_headers()] ++ Helpers.req_options())
     |> Parser.parse()
   end
 

@@ -11,7 +11,7 @@ defmodule Zoom.Captions do
     separator = if String.contains?(url, "?"), do: "&", else: "?"
     full_url = url <> separator <> URI.encode_query(%{seq: seq, lang: lang})
 
-    case Req.post(full_url, body: text, headers: headers, decode_body: false, retry: false) do
+    case Req.post(full_url, [body: text, headers: headers] ++ Helpers.req_options()) do
       {:ok, %{status: status, body: response_body}} ->
         {:ok, %{status: status, body: response_body}}
 

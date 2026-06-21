@@ -1,4 +1,4 @@
 defmodule Zoom.CaptionsProvider do
   @callback send_captions_to(String.t(), String.t(), Zoom.Params.t()) ::
-              {:ok, map()} | {:error, term()}
+              {:ok, %{status: non_neg_integer(), body: binary()}} | {:error, term()}
 end

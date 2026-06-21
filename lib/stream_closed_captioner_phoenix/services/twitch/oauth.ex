@@ -10,16 +10,6 @@ defmodule Twitch.Oauth do
 
   @behaviour Twitch.OauthProvider
 
-  # Shared Req options for every Twitch identity endpoint call. `retry: false`
-  # preserves the previous HTTPoison no-retry behaviour; `decode_body: false` keeps
-  # response bodies as raw strings for the existing Jason.decode/1 handling.
-  @req_options [
-    retry: false,
-    decode_body: false,
-    receive_timeout: 10_000,
-    connect_options: [timeout: 5_000]
-  ]
-
   # Base URL for Twitch's identity service. Overridable in tests (e.g. to a
   # Bypass server) via `config :stream_closed_captioner_phoenix, :twitch_id_endpoint`.
   defp id_endpoint,
@@ -48,7 +38,7 @@ defmodule Twitch.Oauth do
 
     url = encode_url_and_params("#{id_endpoint()}/oauth2/token", params)
 
-    case Req.post(url, [body: "", headers: headers] ++ @req_options) do
+    case Req.post(url, [body: "", headers: headers] ++ req_options()) do
       {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
@@ -160,7 +150,7 @@ defmodule Twitch.Oauth do
 
     url = encode_url_and_params("#{id_endpoint()}/oauth2/token", params)
 
-    case Req.post(url, [body: "", headers: headers] ++ @req_options) do
+    case Req.post(url, [body: "", headers: headers] ++ req_options()) do
       {:ok, %{status: status, body: raw_body}} when status in 200..299 ->
         case Jason.decode(raw_body) do
           {:ok, data} ->
@@ -198,7 +188,7 @@ defmodule Twitch.Oauth do
     ]
 
     encode_url_and_params("#{id_endpoint()}/oauth2/validate")
-    |> Req.get([headers: headers] ++ @req_options)
+    |> Req.get([headers: headers] ++ req_options())
     |> Parser.parse()
   end
 

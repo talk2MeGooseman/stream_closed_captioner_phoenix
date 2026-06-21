@@ -115,7 +115,9 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:phoenix, "~> 1.8"},
       {:plug_cowboy, "~> 2.8"},
       {:poison, "~> 6.0"},
-      # HTTP client — preferred over :httpoison for new/migrated service adapters
+      # HTTP client for all external service adapters (per AGENTS.md; replaces
+      # direct HTTPoison usage — :httpoison/:hackney remain only as transitive
+      # deps of neuron/bamboo/libcluster_ec2).
       {:req, "~> 0.5"},
       # postgrex (upgraded in Phase 3f — unblocked by ecto_sql/flop upgrades)
       {:postgrex, "~> 0.19"},

@@ -54,7 +54,10 @@ defmodule Gemini.Cognitive do
     body = Jason.encode!(build_request_body(from_language, to_languages, text))
     url = "#{endpoint()}/#{@model}:generateContent"
 
-    case Req.post(url, body: body, headers: headers, decode_body: false, retry: false) do
+    case Req.post(
+           url,
+           [body: body, headers: headers] ++ Helpers.req_options(receive_timeout: 2_500)
+         ) do
       {:ok, %{body: raw_body}} ->
         parse_response_body(raw_body)
 

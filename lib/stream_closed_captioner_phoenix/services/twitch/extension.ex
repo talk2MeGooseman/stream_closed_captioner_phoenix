@@ -40,7 +40,7 @@ defmodule Twitch.Extension do
 
     url = encode_url_and_params("https://api.twitch.tv/extensions/message/" <> channel_id)
 
-    case Req.post(url, body: body, headers: headers, decode_body: false, retry: false) do
+    case Req.post(url, [body: body, headers: headers] ++ req_options()) do
       {:ok, %{status: status, body: response_body}} ->
         {:ok, %{status: status, body: response_body}}
 

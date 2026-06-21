@@ -82,7 +82,7 @@ defmodule Twitch do
         {:error, reason}
 
       {:error, error} ->
-        Logger.debug("Request was error")
+        Logger.debug("Request was error: #{inspect(error)}")
         {:error, error}
     end
   end

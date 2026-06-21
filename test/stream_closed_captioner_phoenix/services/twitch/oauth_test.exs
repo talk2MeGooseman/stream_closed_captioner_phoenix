@@ -36,6 +36,19 @@ defmodule Twitch.OauthTest do
     user
   end
 
+  describe "transport errors" do
+    # Regression guard: the non-bang `Req.post`/`Req.get` return
+    # `{:ok, _} | {:error, exception}` — they do NOT raise on transport failures,
+    # so the `{:error, %{reason: reason}}` arms in Twitch.Oauth are reachable and
+    # an unreachable endpoint yields a tagged error rather than crashing.
+    test "refresh_users_access_token/1 returns a tagged error tuple (does not raise) when unreachable",
+         %{bypass: bypass} do
+      Bypass.down(bypass)
+
+      assert {:error, {:http, _reason}} = Oauth.refresh_users_access_token("some-refresh-token")
+    end
+  end
+
   describe "get_users_access_token/1 when the stored token is still valid" do
     test "returns credentials with the existing token without refreshing", %{bypass: bypass} do
       user = user_with_tokens("valid_token", "refresh_token")
