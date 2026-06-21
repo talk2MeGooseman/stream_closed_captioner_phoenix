@@ -42,7 +42,7 @@ This shared component configures a complete Elixir/Phoenix development and testi
 ## What This Provides
 
 - **PostgreSQL 15**: Running database service with health checks
-- **Elixir 1.19**: Configured with Erlang/OTP 27
+- **Elixir 1.19.5**: Configured with Erlang/OTP 27.3.4.9
 - **Network Access**: Allowed access to Hex.pm and GitHub for package management
 
 ## Usage in Workflows
@@ -66,7 +66,7 @@ mix coveralls
 
 The component automatically handles:
 
-1. **Setting up Erlang/OTP 27 and Elixir 1.19**
+1. **Setting up Erlang/OTP 27.3.4.9 and Elixir 1.19.5**
 
 ## Database Configuration
 

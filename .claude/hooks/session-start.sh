@@ -54,32 +54,49 @@ fi
 # which exist on the OTP 25 that apt ships — so apt's Erlang cannot build the
 # project. Install the precompiled OTP build for amd64/ubuntu-24.04 from
 # builds.hex.pm (curl's TLS is allowed by the egress proxy; Erlang's own TLS
-# is not). Symlinks into /usr/local/bin shadow any apt-provided erl.
+# is not). Integrity is delegated to TLS alone — there is no SHA256/GPG check,
+# an accepted tradeoff for this ephemeral dev environment. Symlinks into
+# /usr/local/bin shadow any apt-provided erl.
 #
-# Guard on the exact pinned patch version read from the release file — NOT
+# Guard on the exact pinned patch version from the release file — NOT
 # erlang:system_info/1, whose otp_release is major-only ("27") and whose
-# `version` is the ERTS version ("15.x"), so neither can confirm "27.3.4.9".
-# This skips reinstall on a warm container and upgrades a stale one left on a
-# different OTP (patch level included) by a previous hook run.
-INSTALLED_OTP="$(cat /usr/local/lib/erlang/releases/*/OTP_VERSION 2>/dev/null | head -n1 | tr -d '[:space:]' || true)"
+# `version` is the ERTS version ("15.x"); neither can confirm "27.3.4.9". This
+# build writes only releases/<rel>/OTP_VERSION (no canonical top-level file),
+# so require exactly one match: a 0- or multi-match state (e.g. a corrupt tree)
+# forces a reinstall rather than a false match on whichever the glob lists first.
+otp_version_files=(/usr/local/lib/erlang/releases/*/OTP_VERSION)
+if [ "${#otp_version_files[@]}" -eq 1 ] && [ -f "${otp_version_files[0]}" ]; then
+  INSTALLED_OTP="$(tr -d '[:space:]' < "${otp_version_files[0]}")"
+else
+  INSTALLED_OTP=""
+fi
 if [ "${INSTALLED_OTP}" != "${OTP_VERSION}" ]; then
-  # The download URL is arch/distro-specific; fail fast on an unexpected host
-  # rather than installing a wrong-arch tree that ./Install would silently break
-  # (and which would then re-download on every session, never matching).
+  # The download URL bakes in both CPU arch and Ubuntu version; fail fast on an
+  # unexpected host rather than installing a mismatched tree that ./Install
+  # would silently break (and which would then re-download on every session).
   ARCH="$(uname -m)"
-  if [ "${ARCH}" != "x86_64" ]; then
-    echo "ERROR: this hook downloads the amd64/ubuntu-24.04 OTP build, but the host arch is '${ARCH}'." \
-         "Update the OTP download URL in this hook." >&2
+  DISTRO_VERSION="$( . /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}" )"
+  if [ "${ARCH}" != "x86_64" ] || [ "${DISTRO_VERSION}" != "24.04" ]; then
+    echo "ERROR: this hook downloads the amd64/ubuntu-24.04 OTP build, but the host is" \
+         "'${ARCH}/${DISTRO_VERSION:-unknown}'. Update the OTP download URL in this hook." >&2
     exit 1
   fi
   curl -fsSL \
     "https://builds.hex.pm/builds/otp/amd64/ubuntu-24.04/OTP-${OTP_VERSION}.tar.gz" \
-    -o /tmp/otp.tar.gz
-  rm -rf /usr/local/lib/erlang "/tmp/OTP-${OTP_VERSION}"
-  mkdir -p /usr/local/lib/erlang
+    -o /tmp/otp.tar.gz \
+    || { echo "ERROR: failed to download OTP ${OTP_VERSION} tarball" >&2; exit 1; }
+  # Extract BEFORE touching the live install: a truncated/corrupt download
+  # fails here, while /usr/local/lib/erlang is still intact, so a transient
+  # network hiccup can't leave the session with no OTP. Only after a clean
+  # extraction do we wipe and replace, then run ./Install in place (the path
+  # is baked into bin/erl, so it must be the final location).
+  rm -rf "/tmp/OTP-${OTP_VERSION}"
   tar xzf /tmp/otp.tar.gz -C /tmp
+  rm -f /tmp/otp.tar.gz
+  rm -rf /usr/local/lib/erlang
+  mkdir -p /usr/local/lib/erlang
   cp -a "/tmp/OTP-${OTP_VERSION}/." /usr/local/lib/erlang/
-  rm -rf /tmp/otp.tar.gz "/tmp/OTP-${OTP_VERSION}"
+  rm -rf "/tmp/OTP-${OTP_VERSION}"
   ( cd /usr/local/lib/erlang && ./Install -minimal /usr/local/lib/erlang >/dev/null ) \
     || { echo "ERROR: OTP './Install -minimal' failed (incomplete extraction?)" >&2; exit 1; }
   for bin in erl erlc escript epmd dialyzer typer ct_run run_erl to_erl; do
@@ -95,16 +112,24 @@ fi
 # (~> 1.18). Uses the precompiled otp-${OTP_MAJOR} build from GitHub releases
 # (curl's TLS is allowed by the egress proxy). Installed after OTP above, which
 # the otp build requires at compile and runtime. The guard matches the exact
-# version followed by a non-digit so a "1.19.5" pin never matches "1.19.50",
-# and it upgrades a stale container left on a different Elixir by a prior run.
-if ! elixir --version 2>/dev/null | grep -qE "Elixir ${ELIXIR_VERSION}[^0-9]"; then
-  curl -fsSL -L \
+# version followed by a non-digit or end-of-line, so a "1.19.5" pin never
+# matches "1.19.50"; it also upgrades a stale container left on a different
+# Elixir by a prior run.
+if ! elixir --version 2>/dev/null | grep -qE "Elixir ${ELIXIR_VERSION}([^0-9]|$)"; then
+  curl -fsSL \
     "https://github.com/elixir-lang/elixir/releases/download/v${ELIXIR_VERSION}/elixir-otp-${OTP_MAJOR}.zip" \
-    -o /tmp/elixir.zip
+    -o /tmp/elixir.zip \
+    || { echo "ERROR: failed to download Elixir ${ELIXIR_VERSION} zip" >&2; exit 1; }
+  # Extract BEFORE wiping the live install (same rationale as OTP above): a
+  # partial/corrupt zip fails here, leaving /usr/local/lib/elixir intact.
+  rm -rf /tmp/elixir-extract
+  mkdir -p /tmp/elixir-extract
+  unzip -q -o /tmp/elixir.zip -d /tmp/elixir-extract
+  rm -f /tmp/elixir.zip
   rm -rf /usr/local/lib/elixir
   mkdir -p /usr/local/lib/elixir
-  unzip -q -o /tmp/elixir.zip -d /usr/local/lib/elixir
-  rm /tmp/elixir.zip
+  cp -a /tmp/elixir-extract/. /usr/local/lib/elixir/
+  rm -rf /tmp/elixir-extract
   for bin in elixir elixirc iex mix; do
     ln -sf "/usr/local/lib/elixir/bin/${bin}" "/usr/local/bin/${bin}"
   done
