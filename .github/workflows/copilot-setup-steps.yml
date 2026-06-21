@@ -39,8 +39,8 @@ jobs:
       - name: Set up Erlang and Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: "26"
-          elixir-version: "1.16"
+          otp-version: "27.3.4.9"
+          elixir-version: "1.19.5"
 
       - name: Cache Elixir dependencies
         uses: actions/cache@v3

@@ -22,28 +22,118 @@ export HEX_CACERTS_PATH=/etc/ssl/certs/ca-certificates.crt
 export HEX_MIRROR="${HEX_MIRROR_URL}"
 export HEX_BUILDS_URL="${HEX_BUILDS}"
 
-# ── Erlang ──────────────────────────────────────────────────────────────
-# erlang-dev provides the .hrl headers needed to compile Hex from source.
-if ! command -v erl &>/dev/null; then
-  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing \
-    erlang-base erlang-crypto erlang-dev erlang-eunit erlang-inets \
-    erlang-mnesia erlang-os-mon erlang-parsetools erlang-public-key \
-    erlang-runtime-tools erlang-ssl erlang-tools erlang-xmerl \
-    rebar3 unzip
+# ── Toolchain versions ─────────────────────────────────────────────────────
+# .tool-versions is the single source of truth (what asdf and CI read). Derive
+# the pins from it so this hook can't drift when it's bumped — otherwise the
+# guards below would silently accept the wrong toolchain. The elixir line is
+# "1.19.5-otp-27"; gsub strips the "-otp-NN" suffix asdf appends. OTP_MAJOR
+# drives both the OTP major comparison and the Elixir "otp-NN" build variant.
+OTP_VERSION="$(awk '/^erlang /{print $2}' .tool-versions)"
+ELIXIR_VERSION="$(awk '/^elixir /{gsub(/-otp-[0-9]+/, "", $2); print $2}' .tool-versions)"
+OTP_MAJOR="${OTP_VERSION%%.*}"
+if [ -z "${OTP_VERSION}" ] || [ -z "${ELIXIR_VERSION}" ]; then
+  echo "ERROR: could not read erlang/elixir versions from .tool-versions" >&2
+  exit 1
 fi
 
-# ── Elixir 1.16 ─────────────────────────────────────────────────────────
-# Precompiled release for OTP 25 from GitHub (matches .tool-versions).
-if ! command -v mix &>/dev/null; then
-  curl -fsSL -L \
-    "https://github.com/elixir-lang/elixir/releases/download/v1.16.0/elixir-otp-25.zip" \
-    -o /tmp/elixir.zip
+# ── System packages ──────────────────────────────────────────────────────
+# unzip extracts the Elixir archive; rebar3 builds rebar-based deps (e.g. jose).
+# apt's rebar3 depends on erlang-base (OTP 25), but the OTP install below
+# shadows it via /usr/local/bin and rebar3 itself runs fine on OTP 27.
+# A failed `apt-get update` is non-fatal (the package may already be cached),
+# but surface it so a later "package not found" isn't misattributed.
+if ! command -v rebar3 &>/dev/null || ! command -v unzip &>/dev/null; then
+  DEBIAN_FRONTEND=noninteractive apt-get update -qq \
+    || echo "WARN: 'apt-get update' failed; continuing with cached package lists" >&2
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing rebar3 unzip
+fi
+
+# ── Erlang/OTP ─────────────────────────────────────────────────────────────
+# The project targets OTP 27 (.tool-versions pins erlang 27.3.4.9). The `jose`
+# dep uses OTP 27's native `json` module and the `dynamic()` type, neither of
+# which exist on the OTP 25 that apt ships — so apt's Erlang cannot build the
+# project. Install the precompiled OTP build for amd64/ubuntu-24.04 from
+# builds.hex.pm (curl's TLS is allowed by the egress proxy; Erlang's own TLS
+# is not). Integrity is delegated to TLS alone — there is no SHA256/GPG check,
+# an accepted tradeoff for this ephemeral dev environment. Symlinks into
+# /usr/local/bin shadow any apt-provided erl.
+#
+# Guard on the exact pinned patch version from the release file — NOT
+# erlang:system_info/1, whose otp_release is major-only ("27") and whose
+# `version` is the ERTS version ("15.x"); neither can confirm "27.3.4.9". This
+# build writes only releases/<rel>/OTP_VERSION (no canonical top-level file),
+# so require exactly one match: a 0- or multi-match state (e.g. a corrupt tree)
+# forces a reinstall rather than a false match on whichever the glob lists first.
+otp_version_files=(/usr/local/lib/erlang/releases/*/OTP_VERSION)
+if [ "${#otp_version_files[@]}" -eq 1 ] && [ -f "${otp_version_files[0]}" ]; then
+  INSTALLED_OTP="$(tr -d '[:space:]' < "${otp_version_files[0]}")"
+else
+  INSTALLED_OTP=""
+fi
+if [ "${INSTALLED_OTP}" != "${OTP_VERSION}" ]; then
+  # The download URL bakes in both CPU arch and Ubuntu version; fail fast on an
+  # unexpected host rather than installing a mismatched tree that ./Install
+  # would silently break (and which would then re-download on every session).
+  ARCH="$(uname -m)"
+  DISTRO_VERSION="$( . /etc/os-release 2>/dev/null && echo "${VERSION_ID:-}" )"
+  if [ "${ARCH}" != "x86_64" ] || [ "${DISTRO_VERSION}" != "24.04" ]; then
+    echo "ERROR: this hook downloads the amd64/ubuntu-24.04 OTP build, but the host is" \
+         "'${ARCH}/${DISTRO_VERSION:-unknown}'. Update the OTP download URL in this hook." >&2
+    exit 1
+  fi
+  curl -fsSL \
+    "https://builds.hex.pm/builds/otp/amd64/ubuntu-24.04/OTP-${OTP_VERSION}.tar.gz" \
+    -o /tmp/otp.tar.gz \
+    || { echo "ERROR: failed to download OTP ${OTP_VERSION} tarball" >&2; exit 1; }
+  # Extract BEFORE touching the live install: a truncated/corrupt download
+  # fails here, while /usr/local/lib/erlang is still intact, so a transient
+  # network hiccup can't leave the session with no OTP. Only after a clean
+  # extraction do we wipe and replace, then run ./Install in place (the path
+  # is baked into bin/erl, so it must be the final location).
+  rm -rf "/tmp/OTP-${OTP_VERSION}"
+  tar xzf /tmp/otp.tar.gz -C /tmp
+  rm -f /tmp/otp.tar.gz
+  rm -rf /usr/local/lib/erlang
+  mkdir -p /usr/local/lib/erlang
+  cp -a "/tmp/OTP-${OTP_VERSION}/." /usr/local/lib/erlang/
+  rm -rf "/tmp/OTP-${OTP_VERSION}"
+  ( cd /usr/local/lib/erlang && ./Install -minimal /usr/local/lib/erlang >/dev/null ) \
+    || { echo "ERROR: OTP './Install -minimal' failed (incomplete extraction?)" >&2; exit 1; }
+  for bin in erl erlc escript epmd dialyzer typer ct_run run_erl to_erl; do
+    if [ -e "/usr/local/lib/erlang/bin/${bin}" ]; then
+      ln -sf "/usr/local/lib/erlang/bin/${bin}" "/usr/local/bin/${bin}"
+    fi
+  done
+  hash -r
+fi
+
+# ── Elixir ─────────────────────────────────────────────────────────────────
+# Pinned by .tool-versions (elixir 1.19.5-otp-27) and satisfies mix.exs
+# (~> 1.18). Uses the precompiled otp-${OTP_MAJOR} build from GitHub releases
+# (curl's TLS is allowed by the egress proxy). Installed after OTP above, which
+# the otp build requires at compile and runtime. The guard matches the exact
+# version followed by a non-digit or end-of-line, so a "1.19.5" pin never
+# matches "1.19.50"; it also upgrades a stale container left on a different
+# Elixir by a prior run.
+if ! elixir --version 2>/dev/null | grep -qE "Elixir ${ELIXIR_VERSION}([^0-9]|$)"; then
+  curl -fsSL \
+    "https://github.com/elixir-lang/elixir/releases/download/v${ELIXIR_VERSION}/elixir-otp-${OTP_MAJOR}.zip" \
+    -o /tmp/elixir.zip \
+    || { echo "ERROR: failed to download Elixir ${ELIXIR_VERSION} zip" >&2; exit 1; }
+  # Extract BEFORE wiping the live install (same rationale as OTP above): a
+  # partial/corrupt zip fails here, leaving /usr/local/lib/elixir intact.
+  rm -rf /tmp/elixir-extract
+  mkdir -p /tmp/elixir-extract
+  unzip -q -o /tmp/elixir.zip -d /tmp/elixir-extract
+  rm -f /tmp/elixir.zip
+  rm -rf /usr/local/lib/elixir
   mkdir -p /usr/local/lib/elixir
-  unzip -q -o /tmp/elixir.zip -d /usr/local/lib/elixir
-  rm /tmp/elixir.zip
+  cp -a /tmp/elixir-extract/. /usr/local/lib/elixir/
+  rm -rf /tmp/elixir-extract
   for bin in elixir elixirc iex mix; do
     ln -sf "/usr/local/lib/elixir/bin/${bin}" "/usr/local/bin/${bin}"
   done
+  hash -r
 fi
 
 # ── Hex.pm mirror ─────────────────────────────────────────────────────────
@@ -62,18 +152,30 @@ fi
 
 # ── Hex ────────────────────────────────────────────────────────────────────
 # Install the Hex archive through the mirror (Erlang's direct download is
-# blocked). Pick the newest Hex build published for Elixir 1.16.0.
+# blocked). builds.hex.pm keys Hex archives by the Elixir minor series that
+# last needed a distinct build; the newest series it publishes is 1.18.0
+# (installs/1.19.0/ is a 404), and that 1.18.0 archive is forward-compatible
+# with the Elixir 1.19.x installed above — so it's the right one to fetch.
+# 2.2.1 is the newest Hex present at installs/1.18.0/ (verified by installing
+# it), used as the fallback when the CSV lookup yields nothing.
+# TODO: revisit the pinned 1.18.0 series if builds.hex.pm ever publishes a
+# 1.19.0/ (or newer) keyed Hex archive.
 if ! mix archive.list 2>/dev/null | grep -q "hex-"; then
   HEX_VERSION="$(curl -fsSL "${HEX_BUILDS}/installs/hex-1.x.csv" \
-    | awk -F, '$3 == "1.16.0" { v = $1 } END { print v }')"
-  HEX_VERSION="${HEX_VERSION:-2.4.2}"
-  curl -fsSL "${HEX_BUILDS}/installs/1.16.0/hex-${HEX_VERSION}.ez" -o /tmp/hex.ez
+    | awk -F, '$3 == "1.18.0" { v = $1 } END { print v }')"
+  HEX_VERSION="${HEX_VERSION:-2.2.1}"
+  curl -fsSL "${HEX_BUILDS}/installs/1.18.0/hex-${HEX_VERSION}.ez" -o /tmp/hex.ez
   mix archive.install /tmp/hex.ez --force
   rm -f /tmp/hex.ez
 fi
 
 # ── rebar3 ───────────────────────────────────────────────────────────────
-# Use the system rebar3 (apt) rather than downloading from builds.hex.pm.
+# Register the system rebar3 (apt) with mix rather than downloading from
+# builds.hex.pm. Left unconditional with --force on purpose: mix stores rebar
+# per elixir+otp build under ~/.mix/elixir/<build>/, so a version-agnostic
+# guard would wrongly skip re-registration right after an Elixir/OTP upgrade
+# (the stale-container case the rest of this hook defends against). The
+# re-register is cheap and always correct.
 mix local.rebar --force rebar3 /usr/bin/rebar3
 
 # ── Elixir dependencies ──────────────────────────────────────────────────
