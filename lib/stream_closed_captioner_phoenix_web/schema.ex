@@ -111,11 +111,21 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       # If needed, you can also provide a list of topics:
       #   {:ok, topic: ["absinthe-graphql/absinthe", "elixir-lang/elixir"]}
       # Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, %{ interim: "hello", final: "final" }, new_twitch_caption: "1")
-      config(fn args, _ ->
+      # Gate is one-shot: evaluated once at subscribe time. If the streamer's
+      # CaptionsChannel hasn't joined yet, the client receives an error and must
+      # retry. The Twitch extension handles this via WebSocket reconnect logic.
+      #
+      # Uses channel_connected? (any tracker entry) not channel_active? (recent
+      # publish): a paused streamer's dashboard is still open, so subscriptions
+      # should be accepted and receive events when captioning resumes.
+      #
+      # _context unused — extension subscriptions are open to all viewers;
+      # auth is enforced at transport level by UserSocket.connect/3.
+      config(fn args, _context ->
         if StreamClosedCaptionerPhoenixWeb.UserTracker.channel_connected?(args.channel_id) do
           {:ok, topic: args.channel_id}
         else
-          {:error, "channel is not active"}
+          {:error, "channel is not connected"}
         end
       end)
     end

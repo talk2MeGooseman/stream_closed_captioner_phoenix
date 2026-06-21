@@ -66,6 +66,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTracker do
     |> channel_recently_published?()
   end
 
+  @doc """
+  Returns true if any UserTracker entry exists for the channel, regardless of
+  last_publish age — i.e. the streamer's dashboard is open.
+
+  Distinct from `channel_active?/1`, which additionally requires a publish
+  within the last #{@active_time_out}s. Use `channel_connected?` to gate
+  subscription setup; use `channel_active?` for recency/showcase checks.
+  """
   def channel_connected?(channel_id) do
     get_by_key("active_channels", channel_id)
     |> Enum.any?()

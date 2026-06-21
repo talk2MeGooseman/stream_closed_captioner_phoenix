@@ -41,8 +41,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserTrackerTest do
   test "channel_connected?/1 returns true when a UserTracker entry exists" do
     test_pid = self()
     on_exit(fn -> UserTracker.untrack(test_pid, "active_channels", "uid-connected") end)
-    UserTracker.track(self(), "active_channels", "uid-connected", %{last_publish: 0})
+    # Empty metadata matches what CaptionsChannel.after_join actually tracks on join
+    UserTracker.track(self(), "active_channels", "uid-connected", %{})
     assert UserTracker.channel_connected?("uid-connected") == true
+    refute UserTracker.channel_active?("uid-connected")
   end
 
   test "channel_connected?/1 returns false when no UserTracker entry exists" do
