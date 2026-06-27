@@ -83,6 +83,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.HomeLive do
         navigate={~p"/admin/user-tokens"}
         icon="tokens"
       />
+      <.admin_card
+        title="Local Extension Testing"
+        description="Drive the extension front end locally against live captions"
+        navigate={~p"/admin/local-extension-testing"}
+        icon="settings"
+      />
     </div>
     """
   end

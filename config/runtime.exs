@@ -59,6 +59,15 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret 32
       """
 
+  # Admin-only local extension testing: optionally let a local extension dev
+  # build (e.g. http://localhost:8080) open the captions websocket against this
+  # deploy. Off by default — set LOCAL_EXT_TESTING_ORIGINS to a comma-separated
+  # list of origins to enable. See the admin "Local Extension Testing" page.
+  local_ext_testing_origins =
+    System.get_env("LOCAL_EXT_TESTING_ORIGINS", "")
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
+
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
     server: true,
     http: [
@@ -70,10 +79,11 @@ if config_env() == :prod do
     # derives its allowlist from HOST. The Twitch extension iframe is a true
     # cross-origin embed (its origin is Twitch's CDN, not HOST) and stays
     # hardcoded.
-    check_origin: [
-      "//#{System.get_env("HOST")}",
-      "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
-    ],
+    check_origin:
+      [
+        "//#{System.get_env("HOST")}",
+        "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
+      ] ++ local_ext_testing_origins,
     secret_key_base: secret_key_base,
     live_view: [signing_salt: live_signing_salt]
 
