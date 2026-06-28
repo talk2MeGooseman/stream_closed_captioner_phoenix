@@ -66,7 +66,10 @@ if config_env() == :prod do
   local_ext_testing_origins =
     System.get_env("LOCAL_EXT_TESTING_ORIGINS", "")
     |> String.split(",", trim: true)
-    |> Enum.map(&String.trim/1)
+    # Trim whitespace and a trailing slash so a pasted "http://localhost:8080/"
+    # still matches the browser Origin header ("http://localhost:8080").
+    |> Enum.map(fn origin -> origin |> String.trim() |> String.trim_trailing("/") end)
+    |> Enum.reject(&(&1 == ""))
 
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
     server: true,

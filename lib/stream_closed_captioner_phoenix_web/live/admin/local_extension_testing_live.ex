@@ -217,8 +217,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
 
   # Builds the local extension URL. Token + channel ride in the fragment so they
   # are never sent to the server (the extension reads them client-side).
+  # Values are URI-encoded so a channel id with reserved characters can't
+  # produce a malformed URL the extension can't parse.
   defp dev_link(base, token, channel, anchor) do
-    "#{normalize_base(base)}/?anchor=#{anchor}#scc_dev_token=#{token}&scc_dev_channel=#{channel}"
+    query = URI.encode_query([{"anchor", anchor}])
+    fragment = URI.encode_query([{"scc_dev_token", token}, {"scc_dev_channel", channel}])
+
+    "#{normalize_base(base)}/?#{query}##{fragment}"
   end
 
   # Only http(s) bases are allowed in the generated hrefs; anything else

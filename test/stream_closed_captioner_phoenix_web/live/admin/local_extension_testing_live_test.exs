@@ -60,6 +60,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
       assert html =~ "scc_dev_channel=12345"
       assert html =~ "anchor=mobile"
       assert Regex.match?(@token_in_link, html)
+
+      # The token isn't just JWT-shaped — it actually verifies against our signer.
+      [_, token] = Regex.run(~r/scc_dev_token=([A-Za-z0-9_.\-]+)/, html)
+      assert {:ok, _claims} = Twitch.Jwt.verify_and_validate(token)
     end
 
     test "falls back to the default base for non-http(s) input", %{conn: conn} do
