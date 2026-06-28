@@ -73,7 +73,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
         </p>
       </div>
 
-      <form id="local-dev-form" phx-change="update_form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form
+        id="local-dev-form"
+        phx-change="update_form"
+        phx-submit="update_form"
+        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
         <div>
           <label for="local_base" class="block text-sm font-medium text-gray-700">
             Local extension URL
@@ -216,7 +221,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
     "#{normalize_base(base)}/?anchor=#{anchor}#scc_dev_token=#{token}&scc_dev_channel=#{channel}"
   end
 
+  # Only http(s) bases are allowed in the generated hrefs; anything else
+  # (empty, "javascript:...", etc.) falls back to the default so the links
+  # can't become an unsafe or broken navigation target.
   defp normalize_base(base) do
-    base |> String.trim() |> String.trim_trailing("/")
+    normalized = base |> String.trim() |> String.trim_trailing("/")
+
+    if String.starts_with?(normalized, ["http://", "https://"]) do
+      normalized
+    else
+      @default_local_base
+    end
   end
 end

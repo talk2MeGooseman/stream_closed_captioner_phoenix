@@ -1,5 +1,8 @@
 defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
-  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
+  # Not async: this module logs in by updating a fixture user to the shared,
+  # unique admin uid, which would contend with other async admin tests doing
+  # the same update.
+  use StreamClosedCaptionerPhoenixWeb.ConnCase, async: false
 
   import Phoenix.LiveViewTest
   import StreamClosedCaptionerPhoenix.AccountsFixtures
@@ -57,6 +60,22 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
       assert html =~ "scc_dev_channel=12345"
       assert html =~ "anchor=mobile"
       assert Regex.match?(@token_in_link, html)
+    end
+
+    test "falls back to the default base for non-http(s) input", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
+
+      html =
+        view
+        |> form("#local-dev-form", %{
+          "local_base" => "javascript:alert(1)",
+          "manual_channel" => "12345"
+        })
+        |> render_change()
+
+      # The unsafe scheme is never used as a link target; links use the default.
+      refute html =~ "javascript:alert(1)/?anchor="
+      assert html =~ "http://localhost:8080/?anchor=video_overlay#scc_dev_token="
     end
 
     test "regenerate token re-renders without crashing", %{conn: conn} do
