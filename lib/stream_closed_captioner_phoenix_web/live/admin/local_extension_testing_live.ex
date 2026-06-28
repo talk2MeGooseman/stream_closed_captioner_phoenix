@@ -26,13 +26,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    # mount/3 runs twice (disconnected HTTP render, then connected). Defer the
+    # Tracker scan + OAuth lookups to the connected mount so the initial render
+    # stays cheap and the work isn't done twice.
+    active_channels = if connected?(socket), do: load_active_channels(), else: []
+
     {:ok,
      socket
      |> assign(:page_title, "Local Extension Testing")
      |> assign(:local_base, @default_local_base)
      |> assign(:manual_channel, "")
      |> assign(:socket_token, mint_socket_token())
-     |> assign(:active_channels, load_active_channels())}
+     |> assign(:active_channels, active_channels)}
   end
 
   @impl true
@@ -226,16 +231,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
     "#{normalize_base(base)}/?#{query}##{fragment}"
   end
 
-  # Only http(s) bases are allowed in the generated hrefs; anything else
-  # (empty, "javascript:...", etc.) falls back to the default so the links
-  # can't become an unsafe or broken navigation target.
+  # Reconstructs a clean http(s) origin from the entered base so the generated
+  # hrefs can't become unsafe or broken. Anything without an http(s) scheme and
+  # host (empty, "javascript:...", protocol-relative) falls back to the default,
+  # and any userinfo/path/query/fragment the operator pasted is dropped.
   defp normalize_base(base) do
-    normalized = base |> String.trim() |> String.trim_trailing("/")
+    case base |> to_string() |> String.trim() |> URI.parse() do
+      %URI{scheme: scheme, host: host} = uri
+      when scheme in ["http", "https"] and is_binary(host) and host != "" ->
+        port = if uri.port in [nil, 80, 443], do: "", else: ":#{uri.port}"
+        "#{scheme}://#{host}#{port}"
 
-    if String.starts_with?(normalized, ["http://", "https://"]) do
-      normalized
-    else
-      @default_local_base
+      _ ->
+        @default_local_base
     end
   end
 end

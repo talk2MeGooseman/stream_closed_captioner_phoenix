@@ -82,6 +82,23 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
       assert html =~ "http://localhost:8080/?anchor=video_overlay#scc_dev_token="
     end
 
+    test "reconstructs a clean origin, dropping userinfo/path/fragment", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
+
+      html =
+        view
+        |> form("#local-dev-form", %{
+          "local_base" => "http://user@localhost:9000/some/path#frag",
+          "manual_channel" => "999"
+        })
+        |> render_change()
+
+      # Link uses the clean scheme://host:port; userinfo/path/fragment are gone.
+      assert html =~ "http://localhost:9000/?anchor=video_overlay#scc_dev_token="
+      refute html =~ "user@localhost:9000/?anchor="
+      refute html =~ "9000/some/path#frag/?anchor="
+    end
+
     test "regenerate token re-renders without crashing", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
