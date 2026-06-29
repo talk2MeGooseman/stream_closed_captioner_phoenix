@@ -60,7 +60,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:cachex, "~> 4.1"},
       {:cors_plug, "~> 3.0"},
       {:excoveralls, "~> 0.18", only: :test},
-      {:circular_buffer, "~> 0.3"},
+      {:circular_buffer, "~> 1.0"},
       {:floki, ">= 0.30.0"},
       {:flop, "~> 0.26"},
       {:flop_phoenix, "~> 0.26"},
