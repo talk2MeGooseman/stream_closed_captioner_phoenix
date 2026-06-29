@@ -207,6 +207,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       live("/eventsub-subscriptions/:id/edit", EventsubSubscriptionLive.Index, :edit)
 
       live("/user-tokens", UserTokenLive.Index, :index)
+
+      live("/local-extension-testing", LocalExtensionTestingLive, :index)
     end
   end
 
