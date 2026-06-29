@@ -78,40 +78,28 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
         </p>
       </div>
 
-      <form
+      <.form
+        for={%{}}
         id="local-dev-form"
         phx-change="update_form"
         phx-submit="update_form"
         class="grid grid-cols-1 sm:grid-cols-2 gap-4"
       >
         <div>
-          <label for="local_base" class="block text-sm font-medium text-gray-700">
-            Local extension URL
-          </label>
-          <input
-            type="text"
-            name="local_base"
-            id="local_base"
-            value={@local_base}
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm font-mono"
-          />
+          <.input type="text" name="local_base" value={@local_base} label="Local extension URL" />
           <p class="mt-1 text-xs text-gray-500">Where your <code>yarn start</code> dev server is served.</p>
         </div>
         <div>
-          <label for="manual_channel" class="block text-sm font-medium text-gray-700">
-            Manual channel id (optional)
-          </label>
-          <input
+          <.input
             type="text"
             name="manual_channel"
-            id="manual_channel"
             value={@manual_channel}
+            label="Manual channel id (optional)"
             placeholder="Twitch channel/user id"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-sm font-mono"
           />
           <p class="mt-1 text-xs text-gray-500">Target a specific channel even if it isn't listed below.</p>
         </div>
-      </form>
+      </.form>
 
       <div :if={@manual_channel != ""} class="rounded-md border border-gray-200 p-4">
         <p class="text-sm font-medium text-gray-900">Manual channel: {@manual_channel}</p>
