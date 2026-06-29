@@ -102,7 +102,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:new_relic_agent, "~> 1.40"},
       {:oban, "~> 2.18"},
       {:new_relic_oban, "~> 0.0.1"},
-      {:observer_cli, "~> 1.8"},
+      {:observer_cli, "~> 1.8", only: [:dev]},
       {:phoenix_ecto, "~> 4.7"},
       # phoenix_html (upgraded to 4.x in Phase 3f — issue #257)
       {:phoenix_html, "~> 4.0"},

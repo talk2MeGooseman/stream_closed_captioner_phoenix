@@ -135,7 +135,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   defp safe_pipeline_to(destination, user, payload) do
-    StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(destination, user, payload)
+    pipeline_impl().pipeline_to(destination, user, payload)
   rescue
     e ->
       Logger.error(
@@ -143,5 +143,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
       )
 
       {:error, :exception}
+  end
+
+  defp pipeline_impl do
+    Application.get_env(
+      :stream_closed_captioner_phoenix,
+      :captions_pipeline_impl,
+      StreamClosedCaptionerPhoenix.CaptionsPipeline
+    )
   end
 end

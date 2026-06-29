@@ -275,4 +275,40 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
 
     assert_reply ref, :error, "Issue sending captions."
   end
+
+  describe "safe_pipeline_to exception rescue" do
+    setup :set_mox_global
+    setup :verify_on_exit!
+
+    setup do
+      Application.put_env(
+        :stream_closed_captioner_phoenix,
+        :captions_pipeline_impl,
+        __MODULE__.RaisingPipeline
+      )
+
+      on_exit(fn ->
+        Application.delete_env(:stream_closed_captioner_phoenix, :captions_pipeline_impl)
+      end)
+
+      :ok
+    end
+
+    defmodule RaisingPipeline do
+      def pipeline_to(_destination, _user, _payload),
+        do: raise(RuntimeError, "injected pipeline failure")
+    end
+
+    test "replies :error and keeps the channel alive when the pipeline raises", %{socket: socket} do
+      ref =
+        push(socket, "publishFinal", %{
+          "interim" => "hello",
+          "final" => "world",
+          "session" => "abc"
+        })
+
+      assert_reply ref, :error, "Issue sending captions."
+      assert Process.alive?(socket.channel_pid)
+    end
+  end
 end
