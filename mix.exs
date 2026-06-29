@@ -95,7 +95,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:mox, "~> 1.0", only: :test},
       {:mix_test_interactive, "~> 5.1", only: :dev, runtime: false},
       # Cache
-      {:nebulex, "~> 2.5"},
+      {:nebulex, "~> 3.0"},
       {:decorator, "~> 1.4"},
       # Graphql Client
       {:neuron, "~> 5.0"},
