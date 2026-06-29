@@ -443,5 +443,78 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
       assert {:error, "Stream settings not found"} = result
     end
+
+    test "returns error for :twitch when user has no stream settings" do
+      user = insert(:user, stream_settings: nil)
+
+      import Ecto.Query
+
+      StreamClosedCaptionerPhoenix.Repo.delete_all(
+        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
+          where: ss.user_id == ^user.id
+        )
+      )
+
+      result =
+        CaptionsPipeline.pipeline_to(:twitch, user, %{
+          "interim" => "Hello",
+          "final" => "World",
+          "session" => "abc123"
+        })
+
+      assert {:error, "Stream settings not found"} = result
+    end
+
+    test "returns error for :zoom when user has no stream settings" do
+      user = insert(:user, stream_settings: nil)
+
+      import Ecto.Query
+
+      StreamClosedCaptionerPhoenix.Repo.delete_all(
+        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
+          where: ss.user_id == ^user.id
+        )
+      )
+
+      result =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "",
+          "final" => "Hello",
+          "session" => "abc",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "https://us02web.zoom.us/closedcaption",
+            "seq" => 1
+          }
+        })
+
+      assert {:error, "Stream settings not found"} = result
+    end
   end
+
+  describe "pipeline_to(:zoom) pirate mode" do
+    test "applies pirate mode to :final but not :interim (documented asymmetry)" do
+      user = insert(:user, stream_settings: build(:stream_settings, pirate_mode: true))
+
+      expect(Zoom.MockCaptions, :send_captions_to, fn _url, _text, _params ->
+        {:ok, %HTTPoison.Response{status_code: 200}}
+      end)
+
+      {:ok, payload} =
+        CaptionsPipeline.pipeline_to(:zoom, user, %{
+          "interim" => "Hello",
+          "final" => "Friend",
+          "session" => "abc123",
+          "zoom" => %{
+            "enabled" => true,
+            "url" => "https://us02web.zoom.us/closedcaption?id=1",
+            "seq" => 1
+          }
+        })
+
+      assert payload.final == "Matey"
+      assert payload.interim == "Hello"
+    end
+  end
+
 end
