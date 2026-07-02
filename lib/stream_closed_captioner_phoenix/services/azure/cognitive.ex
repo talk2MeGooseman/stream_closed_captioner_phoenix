@@ -9,22 +9,24 @@ defmodule Azure.Cognitive do
   alias Ecto.UUID
   @behaviour Azure.CognitiveProvider
 
+  @endpoint "https://api.cognitive.microsofttranslator.com/translate"
+
   @impl Azure.CognitiveProvider
 
   @trace :translate
   def translate(from_language \\ "en", to_languages, text)
       when is_list(to_languages) and is_binary(text) do
-    language_tuple_list =
-      Enum.flat_map(to_languages, fn lang ->
-        [code | _] = String.split(from_language, "-")
+    [from_code | _] = String.split(from_language, "-")
+    language_tuple_list = to_languages |> Enum.reject(&(&1 == from_code)) |> Enum.map(&{:to, &1})
 
-        if lang != code do
-          [{:to, lang}]
-        else
-          []
-        end
-      end)
+    if language_tuple_list == [] do
+      {:ok, Translations.new(%{translations: []})}
+    else
+      do_translate(from_language, to_languages, language_tuple_list, text)
+    end
+  end
 
+  defp do_translate(from_language, to_languages, language_tuple_list, text) do
     params = [
       {"api-version", "3.0"},
       {:profanityAction, "Marked"},
@@ -47,9 +49,7 @@ defmodule Azure.Cognitive do
 
     NewRelic.add_attributes(translate: %{from: from_language, to: to_languages, text: text})
 
-    url =
-      "https://api.cognitive.microsofttranslator.com/translate"
-      |> encode_url_and_params(params)
+    url = endpoint() |> encode_url_and_params(params)
 
     case HTTPoison.post(url, body, headers) do
       {:ok, %{body: raw_body}} ->
@@ -71,4 +71,8 @@ defmodule Azure.Cognitive do
         {:error, {:http, reason}}
     end
   end
+
+  @doc false
+  def endpoint,
+    do: Application.get_env(:stream_closed_captioner_phoenix, :azure_endpoint, @endpoint)
 end
