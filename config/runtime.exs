@@ -70,6 +70,27 @@ if config_env() == :prod do
     # still matches the browser Origin header ("http://localhost:8080").
     |> Enum.map(fn origin -> origin |> String.trim() |> String.trim_trailing("/") end)
     |> Enum.reject(&(&1 == ""))
+    # Fail fast at boot on entries check_origin can't match (e.g. a scheme-less
+    # "localhost:8080") — Phoenix rejects invalid origin patterns at websocket
+    # upgrade time, which would break origin checks for EVERY socket on the
+    # deploy, not just local testing.
+    |> Enum.map(fn origin ->
+      case URI.parse(origin) do
+        %URI{scheme: scheme, host: host}
+        when scheme in ["http", "https"] and is_binary(host) and host != "" ->
+          origin
+
+        _ ->
+          raise """
+          LOCAL_EXT_TESTING_ORIGINS entries must be full http(s) origins,
+          e.g. http://localhost:8080 — got: #{inspect(origin)}
+          """
+      end
+    end)
+
+  # Also exposed to the GraphQL CORS allowlist (StreamClosedCaptionerPhoenixWeb.CORS)
+  # so allowlisted local origins can make HTTP queries, not just open the websocket.
+  config :stream_closed_captioner_phoenix, :local_ext_testing_origins, local_ext_testing_origins
 
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
     server: true,

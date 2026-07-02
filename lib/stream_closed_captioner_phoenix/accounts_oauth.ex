@@ -35,6 +35,22 @@ defmodule StreamClosedCaptionerPhoenix.AccountsOauth do
   end
 
   @doc """
+  Gets all users for a provider whose uid is in `uids`, in a single query.
+
+  ## Examples
+
+      iex> users_for_provider("twitch", ["123", "456"])
+      [%User{}]
+
+  """
+  def users_for_provider(provider, uids) when is_list(uids) do
+    User
+    |> where([u], u.uid in ^uids)
+    |> where(provider: ^provider)
+    |> Repo.all()
+  end
+
+  @doc """
   Persists a freshly-refreshed Twitch OAuth token pair on the user.
 
   Used by `Twitch.Oauth` when a stored access token has expired and was renewed

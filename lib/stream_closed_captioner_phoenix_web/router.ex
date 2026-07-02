@@ -53,16 +53,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
     # Gets user and validates token
     plug(StreamClosedCaptionerPhoenixWeb.Context)
 
-    plug(CORSPlug,
-      origin: [
-        "http://localhost:4000",
-        "https://localhost:4000",
-        "https://localhost:8080",
-        "http://localhost:8080",
-        "https://h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv",
-        "https://talk2megooseman-stream-closed-captioner-phoenix-x66w-4000.githubpreview.dev"
-      ]
-    )
+    # Resolved at request time so LOCAL_EXT_TESTING_ORIGINS (runtime config)
+    # extends the allowlist — see StreamClosedCaptionerPhoenixWeb.CORS.
+    plug(CORSPlug, origin: &StreamClosedCaptionerPhoenixWeb.CORS.allowed_origins/0)
   end
 
   if Mix.env() == :dev do

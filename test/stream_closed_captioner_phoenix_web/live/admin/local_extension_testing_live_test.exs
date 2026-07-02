@@ -8,16 +8,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
   import StreamClosedCaptionerPhoenix.AccountsFixtures
 
   alias StreamClosedCaptionerPhoenix.Admin
+  alias StreamClosedCaptionerPhoenixWeb.Endpoint
 
   @admin_uid "120750024"
 
-  # A JWT in the link fragment: scoped to `scc_dev_token=` so it can't be
-  # satisfied by the unrelated `data-phx-session` token elsewhere in the page.
-  @token_in_link ~r{scc_dev_token=[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+}
-
   defp log_in_admin(%{conn: conn}) do
     {:ok, admin} = Admin.update_user(user_fixture(), %{uid: @admin_uid})
-    %{conn: log_in_user(conn, admin), admin: admin}
+    %{conn: log_in_user(conn, admin)}
   end
 
   describe "access control" do
@@ -33,17 +30,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
     setup :log_in_admin
 
     test "renders the helper with the token field and empty state", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/admin/local-extension-testing")
+      {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
-      assert html =~ "Local Extension Testing"
-      assert html =~ "http://localhost:8080"
-      assert html =~ "LOCAL_EXT_TESTING_ORIGINS"
-      assert html =~ "No channels are currently captioning"
-      assert html =~ "Socket token"
-      assert html =~ ~s(id="socket_token")
+      assert has_element?(view, "h1", "Local Extension Testing")
+      assert has_element?(view, "code", "LOCAL_EXT_TESTING_ORIGINS")
+      assert has_element?(view, "p", "No channels are currently captioning")
+      assert has_element?(view, ~s(#local-dev-form input[name="local_base"]))
+      assert has_element?(view, ~s(#local-dev-form input[name="manual_channel"]))
+      assert has_element?(view, "textarea#socket_token[readonly]")
     end
 
-    test "builds dev links for a manually entered channel", %{conn: conn} do
+    test "builds per-channel dev links for a manually entered channel", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
       html =
@@ -54,58 +51,84 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLiveTest do
         })
         |> render_change()
 
-      # Base is normalized (trailing slash trimmed) and the link carries a real
-      # minted JWT plus the (trimmed) channel id in the fragment.
-      assert html =~ "http://localhost:9000/?anchor=video_overlay#scc_dev_token="
-      assert html =~ "scc_dev_channel=12345"
-      assert html =~ "anchor=mobile"
-      assert Regex.match?(@token_in_link, html)
+      # Base is normalized (trailing slash trimmed) and the overlay link carries
+      # the platform param Twitch itself sends, so the extension's
+      # isVideoOverlay() check holds when testing overlay behavior.
+      assert has_element?(
+               view,
+               ~s(a[href^="http://localhost:9000/?anchor=video_overlay&platform=web"][href*="scc_dev_token="])
+             )
 
-      # The token isn't just JWT-shaped — it actually verifies against our signer.
+      assert has_element?(
+               view,
+               ~s(a[href^="http://localhost:9000/?anchor=mobile&platform=mobile"][href*="scc_dev_token="])
+             )
+
+      # The fragment carries the (trimmed) channel id and this deploy's origin,
+      # so the local build knows which backend to talk to.
+      assert has_element?(view, ~s(a[href*="scc_dev_channel=12345"]))
+
+      backend = URI.encode_www_form(Endpoint.url())
+      assert has_element?(view, ~s(a[href*="scc_dev_backend=#{backend}"]))
+
+      # The link token verifies against our signer and is minted for the link's
+      # channel, so channel-scoped GraphQL resolvers (which read the token's
+      # channel_id claim) return the channel under test, not the admin's.
       [_, token] = Regex.run(~r/scc_dev_token=([A-Za-z0-9_.\-]+)/, html)
-      assert {:ok, _claims} = Twitch.Jwt.verify_and_validate(token)
+      assert {:ok, claims} = Twitch.Jwt.verify_and_validate(token)
+      assert claims["channel_id"] == "12345"
+    end
+
+    test "prefixes scheme-less bases instead of silently using the default", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
+
+      view
+      |> form("#local-dev-form", %{
+        "local_base" => "localhost:9000",
+        "manual_channel" => "42"
+      })
+      |> render_change()
+
+      assert has_element?(view, ~s(a[href^="http://localhost:9000/?anchor="]))
     end
 
     test "falls back to the default base for non-http(s) input", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
-      html =
-        view
-        |> form("#local-dev-form", %{
-          "local_base" => "javascript:alert(1)",
-          "manual_channel" => "12345"
-        })
-        |> render_change()
+      view
+      |> form("#local-dev-form", %{
+        "local_base" => "javascript:alert(1)",
+        "manual_channel" => "12345"
+      })
+      |> render_change()
 
       # The unsafe scheme is never used as a link target; links use the default.
-      refute html =~ "javascript:alert(1)/?anchor="
-      assert html =~ "http://localhost:8080/?anchor=video_overlay#scc_dev_token="
+      refute has_element?(view, ~s(a[href^="javascript:"]))
+      assert has_element?(view, ~s(a[href^="http://localhost:8080/?anchor=video_overlay"]))
     end
 
     test "reconstructs a clean origin, dropping userinfo/path/fragment", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
-      html =
-        view
-        |> form("#local-dev-form", %{
-          "local_base" => "http://user@localhost:9000/some/path#frag",
-          "manual_channel" => "999"
-        })
-        |> render_change()
+      view
+      |> form("#local-dev-form", %{
+        "local_base" => "http://user@localhost:9000/some/path#frag",
+        "manual_channel" => "999"
+      })
+      |> render_change()
 
-      # Link uses the clean scheme://host:port; userinfo/path/fragment are gone.
-      assert html =~ "http://localhost:9000/?anchor=video_overlay#scc_dev_token="
-      refute html =~ "user@localhost:9000/?anchor="
-      refute html =~ "9000/some/path#frag/?anchor="
+      # Links use the clean scheme://host:port; userinfo/path/fragment are gone.
+      assert has_element?(view, ~s(a[href^="http://localhost:9000/?anchor="]))
+      refute has_element?(view, ~s(a[href*="user@"]))
+      refute has_element?(view, ~s(a[href*="/some/path"]))
     end
 
     test "regenerate token re-renders without crashing", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/admin/local-extension-testing")
 
-      html = view |> element("button", "Regenerate token") |> render_click()
+      view |> element("button", "Regenerate token") |> render_click()
 
-      assert html =~ "Socket token"
-      assert html =~ ~s(id="socket_token")
+      assert has_element?(view, "textarea#socket_token")
     end
   end
 end
