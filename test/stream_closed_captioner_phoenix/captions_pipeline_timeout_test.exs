@@ -1,11 +1,14 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
-  use StreamClosedCaptionerPhoenix.DataCase, async: true
+  # async: false required because set_mox_global is needed to allow the Task spawned
+  # inside do_pipeline_twitch to call Azure.MockCognitive from a different process.
+  use StreamClosedCaptionerPhoenix.DataCase, async: false
 
   import Mox
   import StreamClosedCaptionerPhoenix.Factory
 
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline
 
+  setup :set_mox_global
   setup :verify_on_exit!
 
   describe "pipeline_to(:twitch) translation timeout" do
