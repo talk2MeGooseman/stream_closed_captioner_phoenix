@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranslateLanguageLive.FormCompon
       <.form
         :let={f}
         for={@changeset}
+        id="translate-language-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

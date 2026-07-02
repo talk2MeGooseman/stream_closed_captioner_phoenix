@@ -45,6 +45,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.EventsubSubscriptionLive.FormCom
       <.form
         :let={f}
         for={@changeset}
+        id="eventsub-subscription-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

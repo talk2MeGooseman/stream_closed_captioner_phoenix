@@ -53,6 +53,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.UserLive.FormComponent do
       <.form
         :let={f}
         for={@changeset}
+        id="user-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
