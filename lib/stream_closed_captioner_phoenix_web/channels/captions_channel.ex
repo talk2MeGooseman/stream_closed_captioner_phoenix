@@ -135,21 +135,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
   end
 
   defp safe_pipeline_to(destination, user, payload) do
-    pipeline_impl().pipeline_to(destination, user, payload)
+    safe_call(fn -> StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(destination, user, payload) end, user.id)
+  end
+
+  def safe_call(fun, user_id) do
+    fun.()
   rescue
     e ->
       Logger.error(
-        "Pipeline raised exception for user #{user.id}: #{Exception.format(:error, e, __STACKTRACE__)}"
+        "Pipeline raised exception for user #{user_id}: #{Exception.format(:error, e, __STACKTRACE__)}"
       )
 
       {:error, :exception}
-  end
-
-  defp pipeline_impl do
-    Application.get_env(
-      :stream_closed_captioner_phoenix,
-      :captions_pipeline_impl,
-      StreamClosedCaptionerPhoenix.CaptionsPipeline
-    )
   end
 end

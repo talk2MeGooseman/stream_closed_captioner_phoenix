@@ -1,8 +1,5 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
-  # async: false because Application.put_env below mutates global VM config;
-  # running concurrently with async tests that pass through Task.yield would
-  # cause them to inherit the 100ms window and spuriously report :timeout.
-  use StreamClosedCaptionerPhoenix.DataCase, async: false
+  use StreamClosedCaptionerPhoenix.DataCase, async: true
 
   import Mox
   import StreamClosedCaptionerPhoenix.Factory
@@ -10,21 +7,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline
 
   setup :verify_on_exit!
-
-  setup do
-    previous = Application.get_env(:stream_closed_captioner_phoenix, :translation_timeout)
-    Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, 100)
-
-    on_exit(fn ->
-      if previous do
-        Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, previous)
-      else
-        Application.delete_env(:stream_closed_captioner_phoenix, :translation_timeout)
-      end
-    end)
-
-    :ok
-  end
 
   describe "pipeline_to(:twitch) translation timeout" do
     test "returns payload with translation_error: :timeout when translation exceeds the timeout" do
@@ -46,7 +28,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
           "interim" => "",
           "final" => "Hello",
           "session" => "abc"
-        })
+        }, 100)
 
       assert {:ok, %Twitch.Extension.CaptionsPayload{translation_error: :timeout}} = result
     end

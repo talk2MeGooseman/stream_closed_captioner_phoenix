@@ -11,10 +11,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @type message_map :: %{optional(String.t()) => term()}
 
+  @translation_timeout 3_000
+
   @spec pipeline_to(
           :twitch | :zoom | :default,
           StreamClosedCaptionerPhoenix.Accounts.User.t(),
           message_map()
+        ) ::
+          {:error, term()}
+          | {:ok, CaptionsPayload.t()}
+  @spec pipeline_to(
+          :twitch,
+          StreamClosedCaptionerPhoenix.Accounts.User.t(),
+          message_map(),
+          pos_integer()
         ) ::
           {:error, term()}
           | {:ok, CaptionsPayload.t()}
@@ -34,18 +44,20 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
 
   @trace :pipeline_to
   def pipeline_to(:twitch, %User{} = user, message) do
+    do_pipeline_twitch(user, message, @translation_timeout)
+  end
+
+  def pipeline_to(:twitch, %User{} = user, message, timeout) when is_integer(timeout) and timeout > 0 do
+    do_pipeline_twitch(user, message, timeout)
+  end
+
+  defp do_pipeline_twitch(%User{} = user, message, timeout) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(user.id) do
       censored =
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings)
 
       task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
-
-      timeout =
-        case Application.get_env(:stream_closed_captioner_phoenix, :translation_timeout, 3_000) do
-          t when is_integer(t) and t > 0 -> t
-          _ -> 3_000
-        end
 
       translated =
         case Task.yield(task, timeout) || Task.shutdown(task) do

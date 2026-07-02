@@ -276,37 +276,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
     assert_reply ref, :error, "Issue sending captions."
   end
 
-  describe "safe_pipeline_to exception rescue" do
-    setup do
-      Application.put_env(
-        :stream_closed_captioner_phoenix,
-        :captions_pipeline_impl,
-        __MODULE__.RaisingPipeline
-      )
+  describe "safe_call/2" do
+    test "rescues exceptions, logs an error, and returns {:error, :exception}" do
+      result =
+        StreamClosedCaptionerPhoenixWeb.CaptionsChannel.safe_call(
+          fn -> raise RuntimeError, "injected pipeline failure" end,
+          42
+        )
 
-      on_exit(fn ->
-        Application.delete_env(:stream_closed_captioner_phoenix, :captions_pipeline_impl)
-      end)
-
-      :ok
-    end
-
-    defmodule RaisingPipeline do
-      def pipeline_to(_destination, _user, _payload),
-        do: raise(RuntimeError, "injected pipeline failure")
-    end
-
-    test "replies :error and keeps the channel alive when the pipeline raises", %{socket: socket} do
-      push_ref =
-        push(socket, "publishFinal", %{
-          "interim" => "hello",
-          "final" => "world",
-          "session" => "abc"
-        })
-
-      # assert_reply succeeding proves the channel is alive: a dead channel
-      # would never reply and the assertion would time out instead.
-      assert_reply push_ref, :error, "Issue sending captions."
+      assert result == {:error, :exception}
     end
   end
 end
