@@ -65,5 +65,3 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: "client_id",
   client_secret: "client_secret",
   redirect_uri: "http://localhost:4000/auth/twitch/callback"
-
-config :stream_closed_captioner_phoenix, translation_timeout: 2000

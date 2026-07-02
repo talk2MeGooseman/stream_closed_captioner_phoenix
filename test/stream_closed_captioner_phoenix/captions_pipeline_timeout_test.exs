@@ -1,6 +1,7 @@
 defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
-  # async: false so the translation task's DB queries do not compete with other
-  # test modules for connections, making the short local timeout reliable.
+  # async: false because Application.put_env below mutates global VM config;
+  # running concurrently with async tests that pass through Task.yield would
+  # cause them to inherit the 100ms window and spuriously report :timeout.
   use StreamClosedCaptionerPhoenix.DataCase, async: false
 
   import Mox
@@ -15,7 +16,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
     Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, 100)
 
     on_exit(fn ->
-      Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, previous)
+      if previous do
+        Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, previous)
+      else
+        Application.delete_env(:stream_closed_captioner_phoenix, :translation_timeout)
+      end
     end)
 
     :ok

@@ -426,14 +426,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "returns error when user has no stream settings" do
       user = insert(:user, stream_settings: nil)
 
-      import Ecto.Query
-
-      StreamClosedCaptionerPhoenix.Repo.delete_all(
-        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
-          where: ss.user_id == ^user.id
-        )
-      )
-
       result =
         CaptionsPipeline.pipeline_to(:default, user, %{
           "interim" => "Hello",
@@ -447,14 +439,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
     test "returns error for :twitch when user has no stream settings" do
       user = insert(:user, stream_settings: nil)
 
-      import Ecto.Query
-
-      StreamClosedCaptionerPhoenix.Repo.delete_all(
-        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
-          where: ss.user_id == ^user.id
-        )
-      )
-
       result =
         CaptionsPipeline.pipeline_to(:twitch, user, %{
           "interim" => "Hello",
@@ -467,14 +451,6 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
 
     test "returns error for :zoom when user has no stream settings" do
       user = insert(:user, stream_settings: nil)
-
-      import Ecto.Query
-
-      StreamClosedCaptionerPhoenix.Repo.delete_all(
-        from(ss in StreamClosedCaptionerPhoenix.Settings.StreamSettings,
-          where: ss.user_id == ^user.id
-        )
-      )
 
       result =
         CaptionsPipeline.pipeline_to(:zoom, user, %{
@@ -516,5 +492,4 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTest do
       assert payload.interim == "Hello"
     end
   end
-
 end
