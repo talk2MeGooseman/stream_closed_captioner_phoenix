@@ -40,7 +40,12 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         |> apply_censoring(stream_settings)
 
       task = Task.async(fn -> Translations.maybe_translate(censored, :final, user) end)
-      timeout = Application.get_env(:stream_closed_captioner_phoenix, :translation_timeout, 3_000)
+
+      timeout =
+        case Application.get_env(:stream_closed_captioner_phoenix, :translation_timeout, 3_000) do
+          t when is_integer(t) and t > 0 -> t
+          _ -> 3_000
+        end
 
       translated =
         case Task.yield(task, timeout) || Task.shutdown(task) do

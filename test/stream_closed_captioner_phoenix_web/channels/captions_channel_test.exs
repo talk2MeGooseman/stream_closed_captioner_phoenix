@@ -300,15 +300,18 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
     end
 
     test "replies :error and keeps the channel alive when the pipeline raises", %{socket: socket} do
-      ref =
+      monitor_ref = Process.monitor(socket.channel_pid)
+
+      push_ref =
         push(socket, "publishFinal", %{
           "interim" => "hello",
           "final" => "world",
           "session" => "abc"
         })
 
-      assert_reply ref, :error, "Issue sending captions."
-      assert Process.alive?(socket.channel_pid)
+      assert_reply push_ref, :error, "Issue sending captions."
+      refute_receive {:DOWN, ^monitor_ref, :process, _, _}, 200
+      Process.demonitor(monitor_ref, [:flush])
     end
   end
 end

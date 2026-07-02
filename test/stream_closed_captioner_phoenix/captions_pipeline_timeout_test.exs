@@ -11,10 +11,11 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineTimeoutTest do
   setup :verify_on_exit!
 
   setup do
+    previous = Application.get_env(:stream_closed_captioner_phoenix, :translation_timeout)
     Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, 100)
 
     on_exit(fn ->
-      Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, 2000)
+      Application.put_env(:stream_closed_captioner_phoenix, :translation_timeout, previous)
     end)
 
     :ok
