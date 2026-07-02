@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.MessageLive.FormComponent do
       <.form
         :let={f}
         for={@changeset}
+        id="message-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

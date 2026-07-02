@@ -53,6 +53,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.AnnouncementLive.FormComponent d
       <.form
         :let={f}
         for={@changeset}
+        id="announcement-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

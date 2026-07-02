@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.TranscriptLive.FormComponent do
       <.form
         :let={f}
         for={@changeset}
+        id="transcript-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsTransactionLive.FormComponen
       <.form
         :let={f}
         for={@changeset}
+        id="bits-transaction-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

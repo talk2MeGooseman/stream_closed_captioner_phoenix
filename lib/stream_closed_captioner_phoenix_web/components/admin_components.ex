@@ -30,7 +30,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.AdminComponents do
 
   def admin_search(assigns) do
     ~H"""
-    <form phx-submit="search" phx-change="search" class="mb-4">
+    <form id="admin-search-form" phx-submit="search" phx-change="search" class="mb-4">
       <div class="relative max-w-sm">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg

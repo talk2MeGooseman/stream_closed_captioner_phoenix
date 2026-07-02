@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceDebitLive.FormCompone
       <.form
         :let={f}
         for={@changeset}
+        id="bits-balance-debit-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

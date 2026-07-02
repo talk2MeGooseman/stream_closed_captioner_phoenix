@@ -55,7 +55,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Components.Tables do
     assigns = assign(assigns, form: Phoenix.Component.to_form(meta), meta: nil)
 
     ~H"""
-    <.form for={@form} phx-change="update-filter" class={@class}>
+    <.form for={@form} id="filter-form" phx-change="update-filter" class={@class}>
       <Flop.Phoenix.filter_fields :let={i} form={@form} fields={@fields}>
         <.input
           placeholder={"Filter by #{i.label}"}

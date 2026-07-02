@@ -44,6 +44,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.BitsBalanceLive.FormComponent do
       <.form
         :let={f}
         for={@changeset}
+        id="bits-balance-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
