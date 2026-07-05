@@ -59,6 +59,39 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret 32
       """
 
+  # Admin-only local extension testing: optionally let a local extension dev
+  # build (e.g. http://localhost:8080) open the captions websocket against this
+  # deploy. Off by default — set LOCAL_EXT_TESTING_ORIGINS to a comma-separated
+  # list of origins to enable. See the admin "Local Extension Testing" page.
+  local_ext_testing_origins =
+    System.get_env("LOCAL_EXT_TESTING_ORIGINS", "")
+    |> String.split(",", trim: true)
+    # Trim whitespace and a trailing slash so a pasted "http://localhost:8080/"
+    # still matches the browser Origin header ("http://localhost:8080").
+    |> Enum.map(fn origin -> origin |> String.trim() |> String.trim_trailing("/") end)
+    |> Enum.reject(&(&1 == ""))
+    # Fail fast at boot on entries check_origin can't match (e.g. a scheme-less
+    # "localhost:8080") — Phoenix rejects invalid origin patterns at websocket
+    # upgrade time, which would break origin checks for EVERY socket on the
+    # deploy, not just local testing.
+    |> Enum.map(fn origin ->
+      case URI.parse(origin) do
+        %URI{scheme: scheme, host: host}
+        when scheme in ["http", "https"] and is_binary(host) and host != "" ->
+          origin
+
+        _ ->
+          raise """
+          LOCAL_EXT_TESTING_ORIGINS entries must be full http(s) origins,
+          e.g. http://localhost:8080 — got: #{inspect(origin)}
+          """
+      end
+    end)
+
+  # Also exposed to the GraphQL CORS allowlist (StreamClosedCaptionerPhoenixWeb.CORS)
+  # so allowlisted local origins can make HTTP queries, not just open the websocket.
+  config :stream_closed_captioner_phoenix, :local_ext_testing_origins, local_ext_testing_origins
+
   config :stream_closed_captioner_phoenix, StreamClosedCaptionerPhoenixWeb.Endpoint,
     server: true,
     http: [
@@ -70,10 +103,11 @@ if config_env() == :prod do
     # derives its allowlist from HOST. The Twitch extension iframe is a true
     # cross-origin embed (its origin is Twitch's CDN, not HOST) and stays
     # hardcoded.
-    check_origin: [
-      "//#{System.get_env("HOST")}",
-      "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
-    ],
+    check_origin:
+      [
+        "//#{System.get_env("HOST")}",
+        "//h1ekceo16erc49snp0sine3k9ccbh9.ext-twitch.tv"
+      ] ++ local_ext_testing_origins,
     secret_key_base: secret_key_base,
     live_view: [signing_salt: live_signing_salt]
 
