@@ -126,7 +126,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       {:telemetry_poller, "~> 1.3"},
       {:ueberauth_twitch, "~> 0.2.0"},
       {:ueberauth, "~> 0.10"},
-      {:websockex, "~> 0.4.3"},
+      {:websockex, "~> 0.5.1"},
       # UI Build stuff
       {:esbuild, "~> 0.9", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
