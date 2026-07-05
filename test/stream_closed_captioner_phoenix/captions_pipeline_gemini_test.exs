@@ -7,6 +7,9 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipelineGeminiTest do
 
   alias StreamClosedCaptionerPhoenix.CaptionsPipeline
 
+  # Task.async in do_pipeline_twitch runs in a separate process; set_mox_global is
+  # required so that process can call Gemini.MockCognitive in private Mox mode.
+  setup :set_mox_global
   setup :verify_on_exit!
 
   setup do
