@@ -16,6 +16,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
     field(:text_uppercase, :boolean, default: false)
     field(:turn_on_reminder, :boolean, default: false)
     field(:auto_off_captions, :boolean, default: false)
+    field(:costream_enabled, :boolean, default: true)
     field(:caption_source_token, :string)
     belongs_to(:user, StreamClosedCaptionerPhoenix.Accounts.User)
 
@@ -30,6 +31,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :blocklist,
       :caption_delay,
       :cc_box_size,
+      :costream_enabled,
       :filter_profanity,
       :hide_text_on_load,
       :language,
@@ -88,6 +90,7 @@ defmodule StreamClosedCaptionerPhoenix.Settings.StreamSettings do
       :blocklist,
       :caption_delay,
       :cc_box_size,
+      :costream_enabled,
       :filter_profanity,
       :hide_text_on_load,
       :language,

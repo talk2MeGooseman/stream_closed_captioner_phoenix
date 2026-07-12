@@ -74,6 +74,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field(:translations, :json)
   end
 
+  @desc "A co-streamer guest's captions"
+  object :costream_caption do
+    field(:guest_id, :id)
+    field(:name, :string)
+    field(:interim, :string)
+    field(:final, :string)
+  end
+
   query do
     # Add queries here. Example
     import_fields(:accounts_queries)
@@ -111,6 +119,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       # If needed, you can also provide a list of topics:
       #   {:ok, topic: ["absinthe-graphql/absinthe", "elixir-lang/elixir"]}
       # Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, %{ interim: "hello", final: "final" }, new_twitch_caption: "1")
+      config(fn args, _ ->
+        {:ok, topic: args.channel_id}
+      end)
+    end
+
+    # Guest (co-streamer) captions ride a separate subscription so extension
+    # bundles released before this feature — whose hardcoded query selects
+    # only new_twitch_caption — never receive unattributed guest text.
+    field :new_costream_caption, :costream_caption do
+      arg(:channel_id, non_null(:id))
+
       config(fn args, _ ->
         {:ok, topic: args.channel_id}
       end)

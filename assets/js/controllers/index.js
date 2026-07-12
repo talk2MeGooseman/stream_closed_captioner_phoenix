@@ -1,4 +1,5 @@
 export { default as CaptionsController } from './captions_controller';
+export { default as CostreamController } from './costream_controller';
 export { default as DarkmodeController } from './darkmode_controller'
 export { default as DropdownController } from './dropdown_controller';
 export { default as ObsController } from './obs_controller';

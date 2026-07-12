@@ -1,0 +1,96 @@
+<div
+  class="max-w-3xl mx-auto px-4 py-8"
+  data-controller="costream"
+  data-costream-token-value={@token}
+  data-costream-host-id-value={@host.id}
+  data-costream-language-value={@default_language}
+>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold dark:text-white">
+      You're captioning as {@guest.name}
+    </h1>
+    <p class="text-gray-600 dark:text-gray-300">
+      Your speech is transcribed in your browser and shown alongside {@host.username}'s captions on their stream.
+    </p>
+  </div>
+
+  <div
+    data-costream-target="warning"
+    class="hidden mb-4 rounded-md bg-yellow-100 border border-yellow-300 px-4 py-3 text-yellow-900"
+  >
+    Speech to text is only supported in Google Chrome, Microsoft Edge, and Safari.
+    Please open this link in one of those browsers.
+  </div>
+
+  <div
+    data-costream-target="kicked"
+    class="hidden mb-4 rounded-md bg-red-100 border border-red-300 px-4 py-3 text-red-900"
+  >
+    The streamer removed you from this co-stream. This link no longer works.
+  </div>
+
+  <div class="mb-4 flex flex-wrap items-center gap-2 text-sm">
+    <span
+      data-costream-target="connectionBadge"
+      class="rounded-full px-3 py-1 bg-gray-200 text-gray-700"
+    >
+      Connecting…
+    </span>
+    <span
+      data-costream-target="hostBadge"
+      class="rounded-full px-3 py-1 bg-gray-200 text-gray-700"
+    >
+      Checking if {@host.username} is live…
+    </span>
+    <span
+      data-costream-target="mutedBadge"
+      class="hidden rounded-full px-3 py-1 bg-red-200 text-red-800"
+    >
+      Muted by the streamer
+    </span>
+  </div>
+
+  <div class="mb-6 flex flex-wrap items-end gap-4">
+    <label class="block">
+      <span class="block text-sm font-medium mb-1 dark:text-gray-200">Your spoken language</span>
+      <select
+        data-costream-target="language"
+        data-action="change->costream#languageChanged"
+        class="rounded border-gray-300 dark:bg-gray-800 dark:text-white"
+      >
+        <%= for {language, regions} <- Enum.sort(@spoken_languages) do %>
+          <optgroup label={language}>
+            <option
+              :for={{region, code} <- regions}
+              value={code}
+              selected={code == @default_language}
+            >
+              {language} ({region})
+            </option>
+          </optgroup>
+        <% end %>
+      </select>
+    </label>
+
+    <button
+      type="button"
+      data-costream-target="start"
+      data-action="click->costream#toggleCaptions"
+      disabled
+      class="btn-primary rounded bg-purple-700 px-6 py-2 font-semibold text-white hover:bg-purple-800 disabled:opacity-50"
+    >
+      Start Captions
+    </button>
+  </div>
+
+  <div class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 min-h-[10rem]">
+    <h2 class="text-sm uppercase tracking-wide text-gray-500 mb-2">Your captions</h2>
+    <p data-costream-target="finalOutput" class="dark:text-white"></p>
+    <p data-costream-target="interimOutput" class="text-gray-500 italic"></p>
+  </div>
+
+  <p class="mt-4 text-sm text-gray-500">
+    Captions only reach viewers while the streamer is actively captioning.
+    Your words are filtered with the streamer's content settings.
+  </p>
+</div>
