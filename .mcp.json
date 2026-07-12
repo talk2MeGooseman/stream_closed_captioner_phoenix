@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "memory": {
+      "type": "http",
+      "url": "${WINDMILL_MCP_URL}",
+      "headers": {
+        "Authorization": "Bearer ${WINDMILL_MCP_TOKEN}"
+      }
+    }
+  }
+}
