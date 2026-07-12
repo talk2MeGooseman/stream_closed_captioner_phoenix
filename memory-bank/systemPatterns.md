@@ -103,6 +103,29 @@ Browser Mic → Speech Recognition → CaptionsChannel
         LiveView Updates                          Viewer Overlay
 ```
 
+### Co-Streamer Guest Caption Flow (parallel, slimmer path)
+```
+Guest Browser Mic → Web Speech API → CostreamChannel (costream:HOST_ID)
+                                            ↓
+                     gates: muted? → rate limit (Hammer, per guest)
+                            → host active? (UserTracker)
+                            → :costream_captions flag + costream_enabled switch
+                                            ↓
+                          pipeline_to(:costream, host, message)
+                          (HOST's censoring only — no pirate, no translate)
+                                            ↓
+        ┌───────────────────────────┬──────────────────────────────┐
+        ↓                           ↓                              ↓
+  Absinthe Subscription      caption_source:HOST PubSub    costream_monitor:HOST
+  (new_costream_caption —    (OBS overlay, finals only,    (host LiveView:
+  separate so old extension  name-prefixed)                live text, mute/kick)
+  bundles never see guests)
+```
+Mute/kick: host LiveView → `Endpoint.broadcast/3` control events
+(`guest_muted`/`guest_kicked`) → intercepted in guest channel processes
+(cluster-safe). Guest auth: per-guest `Phoenix.Token` link + live DB state
+(revoked/muted re-checked on connect and join). See ADR-0001.
+
 ### Authentication Flow
 ```
 User → Ueberauth (Twitch OAuth) → Guardian (JWT) →
