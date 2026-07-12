@@ -146,8 +146,9 @@
   </div>
 </div>
 
-<div
+<button
   :if={msg = Phoenix.Flash.get(@flash, :error)}
+  type="button"
   id="costream-toast-error"
   class="toast toast--error"
   data-key="error"
@@ -155,6 +156,7 @@
   phx-click="clear_flash"
   phx-value-key="error"
   role="alert"
+  aria-label="Dismiss error message"
 >
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
     <path
@@ -164,4 +166,4 @@
     />
   </svg>
   {msg}
-</div>
+</button>
