@@ -38,11 +38,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   @trace :pipeline_to
   def pipeline_to(:costream, %User{} = host, message) do
     with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(host.id) do
-      payload =
-        CaptionsPayload.new(message)
-        |> apply_censoring(stream_settings)
-
-      {:ok, payload}
+      {:ok, censor_only(message, stream_settings)}
     else
       {:error, _} -> {:error, "Stream settings not found"}
     end
@@ -113,6 +109,17 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
     else
       {:error, _} -> {:error, "Stream settings not found"}
     end
+  end
+
+  @doc """
+  Censoring-only pass over a caption message, for callers that already hold
+  the stream settings (the guest publish hot path checks the costream kill
+  switch and censors from a single settings fetch).
+  """
+  @spec censor_only(message_map(), StreamSettings.t()) :: CaptionsPayload.t()
+  def censor_only(message, %StreamSettings{} = stream_settings) do
+    CaptionsPayload.new(message)
+    |> apply_censoring(stream_settings)
   end
 
   defp apply_censoring(payload, %StreamSettings{} = stream_settings) do

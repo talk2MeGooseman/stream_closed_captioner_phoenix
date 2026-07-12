@@ -69,8 +69,13 @@ defmodule StreamClosedCaptionerPhoenix.Costream do
   Creates a guest link for a host, capped at #{@max_active_guests} active
   guests so extension layout and fan-out stay bounded.
   """
-  def create_guest(%User{} = host, attrs) do
-    if length(list_active_guests(host)) >= @max_active_guests do
+  def create_guest(%User{id: user_id} = host, attrs) do
+    active_count =
+      Guest
+      |> where([g], g.user_id == ^user_id and is_nil(g.revoked_at))
+      |> Repo.aggregate(:count)
+
+    if active_count >= @max_active_guests do
       {:error, :guest_limit_reached}
     else
       %Guest{user_id: host.id}

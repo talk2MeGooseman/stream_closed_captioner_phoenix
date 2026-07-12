@@ -93,7 +93,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
       >
         <div>
           <.input field={@form[:local_base]} type="text" label="Local extension URL" />
-          <p class="mt-1 text-xs text-gray-500">Where your <code>yarn start</code> dev server is served.</p>
+          <p class="mt-1 text-xs text-gray-500">
+            Where your <code>yarn start</code> dev server is served.
+          </p>
         </div>
         <div>
           <.input
@@ -102,7 +104,9 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
             label="Manual channel id (optional)"
             placeholder="Twitch channel/user id"
           />
-          <p class="mt-1 text-xs text-gray-500">Target a specific channel even if it isn't listed below.</p>
+          <p class="mt-1 text-xs text-gray-500">
+            Target a specific channel even if it isn't listed below.
+          </p>
         </div>
       </.form>
 
@@ -127,7 +131,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.Admin.LocalExtensionTestingLive do
           No channels are currently captioning. Click "Refresh" once a broadcaster is live.
         </p>
 
-        <ul :if={@active_channels != []} role="list" class="divide-y divide-gray-200 border border-gray-200 rounded-md">
+        <ul
+          :if={@active_channels != []}
+          role="list"
+          class="divide-y divide-gray-200 border border-gray-200 rounded-md"
+        >
           <li
             :for={channel <- @active_channels}
             id={"channel-#{channel.uid}"}

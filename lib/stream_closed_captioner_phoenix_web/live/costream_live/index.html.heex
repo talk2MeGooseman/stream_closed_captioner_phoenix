@@ -139,3 +139,23 @@
     </ul>
   </div>
 </div>
+
+<div
+  :if={msg = Phoenix.Flash.get(@flash, :error)}
+  id="costream-toast-error"
+  class="toast toast--error"
+  data-key="error"
+  phx-hook="Toast"
+  phx-click="clear_flash"
+  phx-value-key="error"
+  role="alert"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+    <path
+      d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+  {msg}
+</div>
