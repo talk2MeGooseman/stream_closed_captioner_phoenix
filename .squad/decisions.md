@@ -4,6 +4,31 @@ Active decisions shape proj. New → `.squad/decisions/inbox/`. Scribe merge.
 
 ---
 
+## 2026-07-12 — Co-Streamer Guest Captions: Separate Subscription + Slim Pipeline
+
+**By:** Erik Guzman (Owner) | **Status:** Active
+
+Guest (co-streamer) captions = parallel path, never through existing one.
+Full ADR: `docs/adr/0001-costream-guest-captions.md`.
+
+- Guest text NEVER rides `new_twitch_caption` — old extension bundles hardcode
+  that selection set, would render guests unattributed. Separate
+  `new_costream_caption` subscription only.
+- Guest pipeline = host censoring only. No pirate, no translate — per-guest
+  cost ~zero, cap 4 concurrent guests.
+- Auth = per-guest signed link (`Costream.guest_token/1`) + live DB state
+  (revoked/muted). Token carries guest id only; revoke/mute instant, no token
+  rotation. No guest accounts.
+- Publish gates: host actively captioning (`UserTracker`) +
+  `:costream_captions` flag + `costream_enabled` kill switch + per-guest
+  Hammer rate limit (15/sec).
+- Mute/kick = `Endpoint.broadcast/3` control events intercepted in
+  `CostreamChannel` (cluster-safe).
+- OBS overlay: guest finals only, name-prefixed. Interim dropped (single
+  interim line can't interleave speakers).
+
+---
+
 ## 2026-04-21 — Pragmatic Programmer Methodologies as Team Standard
 
 **By:** Erik Guzman (Owner) | **Status:** Active
