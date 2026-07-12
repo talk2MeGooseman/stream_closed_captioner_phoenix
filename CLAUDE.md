@@ -41,6 +41,8 @@ Supervised children (`application.ex`): libcluster, Repo, Telemetry, PubSub, End
 The **caption pipeline** is the product:
 client transcribes → `CaptionsChannel` (Phoenix Channel `captions:USER_ID`) → `CaptionsPipeline` (censor → pirate → translate) → fan-out to Twitch (via Absinthe subscription `new_twitch_caption`), Zoom live captions API, or `transcript:1` PubSub topic. See copilot-instructions for full detail.
 
+**Co-streamer guest captions** ride a parallel, slimmer path: per-guest shareable link (`Costream` context) → `/costream/:token` guest page → `CostreamChannel` (`costream:HOST_ID`, rate limited, gated on host activity + `:costream_captions` flag + `costream_enabled` kill switch) → host-settings censoring only (no pirate/translate) → separate `new_costream_caption` subscription + OBS overlay + host monitor LiveView (`/users/costream`). The separate subscription is deliberate: old extension bundles hardcode the `new_twitch_caption` selection set and must never receive unattributed guest text.
+
 ## Project-specific quirks to know
 
 - **Migration table is renamed.** `config/dev.exs` sets `migration_source: "ecto_schema_migrations"` — the app was migrated from a Rails origin that owns `schema_migrations`. Don't change this; new migrations should keep using `mix ecto.gen.migration ...`.

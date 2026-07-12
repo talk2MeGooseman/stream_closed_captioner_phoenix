@@ -122,6 +122,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
       live("/captions/:token", CaptionSourceLive.Show, :show)
     end
 
+    get("/costream/:token", CostreamGuestController, :show)
+
     get("/privacy", PrivacyController, :index)
     get("/terms", TermsController, :index)
     get("/showcase", ShowcaseController, :index)
@@ -239,6 +241,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.Router do
         root_layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc_root},
         layout: {StreamClosedCaptionerPhoenixWeb.Layouts, :scc} do
         live("/caption-settings", CaptionSettingsLive.Index, :show)
+        live("/costream", CostreamLive.Index, :index)
       end
 
       live("/credit-history", CreditHistoryLive)

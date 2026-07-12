@@ -12,7 +12,7 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
   @type message_map :: %{optional(String.t()) => term()}
 
   @spec pipeline_to(
-          :twitch | :zoom | :default,
+          :twitch | :zoom | :default | :costream,
           StreamClosedCaptionerPhoenix.Accounts.User.t(),
           message_map()
         ) ::
@@ -25,6 +25,22 @@ defmodule StreamClosedCaptionerPhoenix.CaptionsPipeline do
         CaptionsPayload.new(message)
         |> apply_censoring(stream_settings)
         |> apply_pirate_mode(stream_settings)
+
+      {:ok, payload}
+    else
+      {:error, _} -> {:error, "Stream settings not found"}
+    end
+  end
+
+  # Guest (co-streamer) text: the HOST owns what appears on their stream, so
+  # the host's censoring settings apply. No pirate mode and no translations —
+  # the guest path must stay cheap enough to fan out per concurrent speaker.
+  @trace :pipeline_to
+  def pipeline_to(:costream, %User{} = host, message) do
+    with {:ok, stream_settings} <- Settings.get_stream_settings_by_user_id(host.id) do
+      payload =
+        CaptionsPayload.new(message)
+        |> apply_censoring(stream_settings)
 
       {:ok, payload}
     else

@@ -92,6 +92,14 @@ defmodule StreamClosedCaptionerPhoenix.Factory do
     }
   end
 
+  def costream_guest_factory do
+    %StreamClosedCaptionerPhoenix.Costream.Guest{
+      name: sequence(:guest_name, &"Guest #{&1}"),
+      muted: false,
+      user: build(:bare_user)
+    }
+  end
+
   def translate_language_factory do
     %StreamClosedCaptionerPhoenix.Settings.TranslateLanguage{
       language: "en"

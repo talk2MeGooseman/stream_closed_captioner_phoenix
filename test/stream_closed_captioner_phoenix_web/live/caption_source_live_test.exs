@@ -477,6 +477,76 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLiveTest do
     end
   end
 
+  describe "co-streamer guest captions" do
+    setup :create_caption_source
+
+    defp broadcast_costream(stream_settings, caption) do
+      Phoenix.PubSub.broadcast(
+        StreamClosedCaptionerPhoenix.PubSub,
+        "caption_source:#{stream_settings.user_id}",
+        {:costream_caption_payload, caption}
+      )
+    end
+
+    test "renders guest finals name-prefixed alongside host text", %{
+      conn: conn,
+      token: token,
+      stream_settings: stream_settings
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      broadcast_caption(stream_settings, %CaptionsPayload{interim: "", final: "host line"})
+
+      broadcast_costream(stream_settings, %{
+        guest_id: 1,
+        name: "Alice",
+        interim: "",
+        final: "guest line"
+      })
+
+      html = render(view)
+      assert html =~ "host line"
+      assert html =~ "Alice: guest line"
+    end
+
+    test "guest interim frames are ignored on the overlay", %{
+      conn: conn,
+      token: token,
+      stream_settings: stream_settings
+    } do
+      {:ok, view, _html} = live(conn, "/captions/#{token}")
+
+      broadcast_costream(stream_settings, %{
+        guest_id: 1,
+        name: "Alice",
+        interim: "still talking",
+        final: ""
+      })
+
+      refute render(view) =~ "still talking"
+    end
+
+    test "guest finals honor the caption delay", %{conn: conn} do
+      stream_settings =
+        insert(:stream_settings, user: build(:bare_user), caption_delay: 60)
+        |> Settings.get_or_generate_caption_source_token!()
+
+      {:ok, view, _html} = live(conn, "/captions/#{stream_settings.caption_source_token}")
+
+      broadcast_costream(stream_settings, %{
+        guest_id: 1,
+        name: "Alice",
+        interim: "",
+        final: "delayed guest text"
+      })
+
+      refute render(view) =~ "delayed guest text"
+
+      send(view.pid, {:apply_costream_caption, "Alice: delayed guest text"})
+      assert render(view) =~ "Alice: delayed guest text"
+    end
+  end
+
   describe "caption delay" do
     test "defers rendering when caption_delay is set", %{conn: conn} do
       # 60s delay: long enough that the deferred timer cannot fire during the
