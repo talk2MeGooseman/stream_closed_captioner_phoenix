@@ -84,6 +84,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamLive.Index do
     end
   end
 
+  def handle_event("clear_flash", %{"key" => key}, socket) do
+    {:noreply, clear_flash(socket, key)}
+  end
+
   def handle_event("toggle_kill_switch", _params, socket) do
     stream_settings = socket.assigns.current_user.stream_settings
     enabled = !socket.assigns.costream_enabled

@@ -70,7 +70,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
       not UserTracker.channel_active?(host.uid) ->
         {:reply, {:error, %{reason: "host_offline"}}, socket}
 
-      not Costream.publishing_enabled?(host) ->
+      not Costream.feature_enabled?(host) ->
         {:reply, {:error, %{reason: "disabled"}}, socket}
 
       true ->
@@ -155,8 +155,23 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
     end
   end
 
+  # One settings fetch per publish serves both the kill-switch check and the
+  # censoring pass — this is the hot path (up to 15/sec × 4 guests).
   defp publish_captions(guest, host, payload, socket) do
-    case safe_pipeline(host, payload) do
+    case StreamClosedCaptionerPhoenix.Settings.get_stream_settings_by_user_id(host.id) do
+      {:ok, %{costream_enabled: false}} ->
+        {:reply, {:error, %{reason: "disabled"}}, socket}
+
+      {:ok, stream_settings} ->
+        censor_and_fan_out(guest, host, stream_settings, payload, socket)
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "pipeline_failed"}}, socket}
+    end
+  end
+
+  defp censor_and_fan_out(guest, host, stream_settings, payload, socket) do
+    case safe_censor(host, stream_settings, payload) do
       {:ok, censored} ->
         caption = %{
           guest_id: guest.id,
@@ -188,8 +203,8 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
     end
   end
 
-  defp safe_pipeline(host, payload) do
-    StreamClosedCaptionerPhoenix.CaptionsPipeline.pipeline_to(:costream, host, payload)
+  defp safe_censor(host, stream_settings, payload) do
+    {:ok, StreamClosedCaptionerPhoenix.CaptionsPipeline.censor_only(payload, stream_settings)}
   rescue
     e ->
       Logger.error(

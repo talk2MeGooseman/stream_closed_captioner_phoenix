@@ -47,10 +47,12 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamLiveTest do
     |> form("form[phx-submit=create_guest]", %{"name" => "Extra"})
     |> render_submit()
 
-    # The layout doesn't render LiveView flashes, so assert on the effect:
-    # no fifth guest was created or rendered.
     assert length(Costream.list_active_guests(user)) == Costream.max_active_guests()
-    refute render(view) =~ "Extra"
+
+    rendered = render(view)
+    refute rendered =~ "Extra"
+    # The template renders the :error flash itself (the scc layout doesn't).
+    assert rendered =~ "at most #{Costream.max_active_guests()} active guests"
   end
 
   test "mutes and unmutes a guest", %{conn: conn, user: user} do
