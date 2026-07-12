@@ -22,7 +22,7 @@ defmodule StreamClosedCaptionerPhoenix.Costream.Guest do
   def changeset(guest, attrs) do
     guest
     |> cast(attrs, [:name])
-    |> update_change(:name, &String.trim/1)
+    |> update_change(:name, &if(is_binary(&1), do: String.trim(&1), else: &1))
     |> validate_required([:name])
     |> validate_length(:name, min: 1, max: 50)
     |> foreign_key_constraint(:user_id)
