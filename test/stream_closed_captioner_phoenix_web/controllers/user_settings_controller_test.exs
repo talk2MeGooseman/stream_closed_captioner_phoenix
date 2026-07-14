@@ -47,14 +47,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
     test "does not update password on invalid data", %{conn: conn} do
       old_password_conn =
-        put(conn, ~p"/users/settings", %{
-          "action" => "update_password",
-          "current_password" => "invalid",
-          "user" => %{
-            "password" => "has 6",
-            "password_confirmation" => "does not match"
-          }
-        })
+        capture_audit_events(fn ->
+          put(conn, ~p"/users/settings", %{
+            "action" => "update_password",
+            "current_password" => "invalid",
+            "user" => %{
+              "password" => "has 6",
+              "password_confirmation" => "does not match"
+            }
+          })
+        end)
 
       response = html_response(old_password_conn, 200)
       assert response =~ "Settings</h1>"
@@ -63,6 +65,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
       assert response =~ "is not valid"
 
       assert get_session(old_password_conn, :user_token) == get_session(conn, :user_token)
+      assert_audit_event("user_settings.password_change_failed")
     end
   end
 
@@ -90,29 +93,35 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSettingsControllerTest do
 
     test "updates the user email", %{conn: conn, user: user} do
       conn =
-        put(conn, ~p"/users/settings", %{
-          "action" => "update_email",
-          "current_password" => valid_user_password(),
-          "user" => %{"email" => unique_user_email()}
-        })
+        capture_audit_events(fn ->
+          put(conn, ~p"/users/settings", %{
+            "action" => "update_email",
+            "current_password" => valid_user_password(),
+            "user" => %{"email" => unique_user_email()}
+          })
+        end)
 
       assert redirected_to(conn) == ~p"/users/settings"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "A link to confirm your email"
       assert Accounts.get_user_by_email(user.email)
+      assert_audit_event("user_settings.email_update_requested")
     end
 
     test "does not update email on invalid data", %{conn: conn} do
       conn =
-        put(conn, ~p"/users/settings", %{
-          "action" => "update_email",
-          "current_password" => "invalid",
-          "user" => %{"email" => "with spaces"}
-        })
+        capture_audit_events(fn ->
+          put(conn, ~p"/users/settings", %{
+            "action" => "update_email",
+            "current_password" => "invalid",
+            "user" => %{"email" => "with spaces"}
+          })
+        end)
 
       response = html_response(conn, 200)
       assert response =~ "Settings</h1>"
       assert response =~ "must have the @ sign and no spaces"
       assert response =~ "is not valid"
+      assert_audit_event("user_settings.email_update_request_failed")
     end
   end
 
