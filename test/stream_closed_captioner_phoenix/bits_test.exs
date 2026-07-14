@@ -46,6 +46,7 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
       assert {:ok, _} = result
       assert_audit_event("bits.translation_activated")
+      assert_audit_event("bits.debit_created")
     end
 
     test "activate_translations_for/1 return :ok if user has minimum balance" do
@@ -118,7 +119,14 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
 
     test "create_bits_balance_debit/1 with invalid data returns error changeset" do
       user = insert(:user)
-      assert {:error, %Ecto.Changeset{}} = Bits.create_bits_balance_debit(user, @invalid_attrs)
+
+      result =
+        capture_audit_events(fn ->
+          Bits.create_bits_balance_debit(user, @invalid_attrs)
+        end)
+
+      assert {:error, %Ecto.Changeset{}} = result
+      assert_audit_event("bits.debit_create_failed")
     end
 
     test "get_user_active_debit/1 return a record a debit has occurred in the past 24 hours" do
@@ -504,8 +512,13 @@ defmodule StreamClosedCaptionerPhoenix.BitsTest do
         }
       }
 
-      assert {:error, :retrieve_balance, :no_bits_balance, _} =
-               Bits.process_bits_transaction(user.uid, data)
+      result =
+        capture_audit_events(fn ->
+          Bits.process_bits_transaction(user.uid, data)
+        end)
+
+      assert {:error, :retrieve_balance, :no_bits_balance, _} = result
+      assert_audit_event("bits.credit_apply_failed")
     end
   end
 
