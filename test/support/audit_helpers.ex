@@ -39,4 +39,11 @@ defmodule StreamClosedCaptionerPhoenix.AuditHelpers do
   def assert_audit_event(event_name) do
     assert_receive {:audit_event, _measurements, %{event: ^event_name}}
   end
+
+  @doc """
+  Refutes that an audit event with the given `event_name` was received.
+  """
+  def refute_audit_event(event_name) do
+    refute_receive {:audit_event, _measurements, %{event: ^event_name}}
+  end
 end
