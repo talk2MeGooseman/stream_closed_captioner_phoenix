@@ -303,9 +303,12 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "validates current password", %{user: user} do
       {:error, changeset} =
-        Accounts.update_user_password(user, "invalid", %{password: valid_user_password()})
+        capture_audit_events(fn ->
+          Accounts.update_user_password(user, "invalid", %{password: valid_user_password()})
+        end)
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
+      assert_audit_event("accounts.password_change_failed")
     end
 
     test "updates the password", %{user: user} do
@@ -440,8 +443,10 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "sends token through notification", %{user: user} do
       token =
-        extract_user_token(fn url ->
-          Accounts.deliver_user_reset_password_instructions(user, url)
+        capture_audit_events(fn ->
+          extract_user_token(fn url ->
+            Accounts.deliver_user_reset_password_instructions(user, url)
+          end)
         end)
 
       {:ok, token} = Base.url_decode64(token, padding: false)
@@ -449,6 +454,7 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       assert user_token.user_id == user.id
       assert user_token.sent_to == user.email
       assert user_token.context == "reset_password"
+      assert_audit_event("accounts.password_reset_instructions_sent")
     end
   end
 
@@ -489,15 +495,19 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
 
     test "validates password", %{user: user} do
       {:error, changeset} =
-        Accounts.reset_user_password(user, %{
-          password: "not 6",
-          password_confirmation: "another"
-        })
+        capture_audit_events(fn ->
+          Accounts.reset_user_password(user, %{
+            password: "not 6",
+            password_confirmation: "another"
+          })
+        end)
 
       assert %{
                password: ["should be at least 6 character(s)"],
                password_confirmation: ["does not match password"]
              } = errors_on(changeset)
+
+      assert_audit_event("accounts.password_reset_failed")
     end
 
     test "validates maximum values for password for security", %{user: user} do
@@ -521,6 +531,19 @@ defmodule StreamClosedCaptionerPhoenix.AccountsTest do
       _ = Accounts.generate_user_session_token(user)
       {:ok, _} = Accounts.reset_user_password(user, %{password: "new valid password"})
       refute Repo.get_by(UserToken, user_id: user.id)
+    end
+  end
+
+  describe "remove_user_provider/1" do
+    test "emits audit event and clears provider fields on success" do
+      user = insert(:user, provider: "twitch", uid: "12345")
+
+      capture_audit_events(fn ->
+        assert {:ok, updated} = Accounts.remove_user_provider(user)
+        assert is_nil(updated.provider)
+      end)
+
+      assert_audit_event("accounts.oauth_unlinked")
     end
   end
 
