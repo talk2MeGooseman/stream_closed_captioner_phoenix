@@ -72,7 +72,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # For live dashboard
       {:ecto_psql_extras, "~> 0.8"},
       {:ecto_sql, "~> 3.12"},
-      {:ex_machina, "~> 2.7.0"},
+      {:ex_machina, "~> 2.8.1"},
       # Generate struct from maps
       {:exconstructor, "~> 1.3"},
       # Profanity censoring
