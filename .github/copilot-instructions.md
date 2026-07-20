@@ -32,6 +32,10 @@ Coverage: `mix coveralls.html`
    - `:zoom` → sends to Zoom live captions API
    - `:default` → broadcasts on `transcript:1` topic
 
+### Co-streamer guest captions
+
+Hosts invite guests via per-guest shareable links (`Costream` context, `costream_guests` table). The link token (`Phoenix.Token`, no expiry) only carries the guest id; revocation/mute/name live on the DB record. Guests open `/costream/:token` (no account), transcribe in-browser (Web Speech API), and publish over `CostreamChannel` (`costream:HOST_USER_ID`). Guest text gets the **host's censoring only** — no pirate mode, no translations — then fans out to the `new_costream_caption` GraphQL subscription (separate from `new_twitch_caption` so pre-costream extension bundles never see guest text), the OBS overlay topic (finals only, name-prefixed), and the host's monitor topic (`costream_monitor:HOST_ID`, consumed by the `/users/costream` LiveView for live text + mute/kick). Publishing is rate limited per guest (Hammer), gated on the host being active in `UserTracker`, the `:costream_captions` feature flag, and the `stream_settings.costream_enabled` kill switch. Mute/kick reach guest channel processes via `Endpoint.broadcast/3` control events (`guest_muted`/`guest_kicked`), intercepted in the channel.
+
 ### Translation / Billing
 
 Translation uses Azure Cognitive Services. Two paths exist in `CaptionsPipeline.Translations.maybe_translate/3`:

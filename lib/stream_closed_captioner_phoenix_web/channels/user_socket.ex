@@ -8,6 +8,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
   # channel "room:*", StreamClosedCaptionerPhoenixWeb.RoomChannel
 
   channel("captions:*", StreamClosedCaptionerPhoenixWeb.CaptionsChannel)
+  channel("costream:*", StreamClosedCaptionerPhoenixWeb.CostreamChannel)
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -26,6 +27,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.UserSocket do
       {:ok, user_id} ->
         current_user = Accounts.get_user!(user_id)
         {:ok, assign(socket, :current_user, current_user)}
+
+      {:error, _} ->
+        :error
+    end
+  end
+
+  # Co-streamer guest socket: authenticated purely by the signed guest link
+  # token (no user account). Grants access to the host's costream channel
+  # only — CaptionsChannel requires :current_user, which is never assigned
+  # here.
+  def connect(%{"costreamToken" => token}, socket, _connect_info) do
+    case StreamClosedCaptionerPhoenix.Costream.verify_guest_token(token) do
+      {:ok, guest} ->
+        {:ok, assign(socket, :costream_guest, guest)}
 
       {:error, _} ->
         :error

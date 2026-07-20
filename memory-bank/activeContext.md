@@ -1,9 +1,23 @@
 # Active Context
 
 ## Current Focus
-Setting up comprehensive development documentation and instruction files for the Stream Closed Captioner Phoenix project.
+Co-streamer guest captions shipped on branch `claude/costreamer-captions-stcu3m`
+(2026-07-12), pending rollout: run migration → enable `:costream_captions`
+flag → release updated extension version.
 
 ## Recent Changes
+- **Co-streamer guest captions** (2026-07-12): `Costream` context +
+  `costream_guests` table (per-guest signed links, host-assigned names,
+  revoke/mute state on the row); `CostreamChannel` (`costream:HOST_ID`,
+  per-guest Hammer rate limit, gated on host-active + flag + kill switch);
+  slim `pipeline_to(:costream, ...)` (host censoring only, no
+  pirate/translate); separate `new_costream_caption` GraphQL subscription
+  (old extension bundles untouched by design); public guest page at
+  `/costream/:token` (Web Speech API); host monitor LiveView at
+  `/users/costream` (live text, mute/kick via intercepted broadcasts);
+  OBS overlay renders guest finals name-prefixed. ADR:
+  `docs/adr/0001-costream-guest-captions.md`. User guide draft:
+  `docs/costream-captions-user-guide.md`.
 - Created Elixir/Phoenix instruction file with comprehensive coding guidelines
 - Establishing memory bank structure for project knowledge
 - Documenting system architecture and patterns

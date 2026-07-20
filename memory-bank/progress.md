@@ -21,6 +21,12 @@
 - **Transcript Storage**: Caption history saved to database
 - **OBS Integration**: WebSocket communication with OBS Studio
 - **Zoom Integration**: Caption support for Zoom meetings
+- **Co-Streamer Guest Captions**: Per-guest shareable links, guest browser
+  captioning (Web Speech), host censoring only (no translate/pirate),
+  separate `new_costream_caption` subscription, host mute/kick dashboard,
+  OBS overlay support — built and tested, gated behind the
+  `:costream_captions` feature flag + `costream_enabled` kill switch
+  (see `docs/adr/0001-costream-guest-captions.md`)
 
 ### Infrastructure ✅
 - **Database**: PostgreSQL with Ecto migrations
