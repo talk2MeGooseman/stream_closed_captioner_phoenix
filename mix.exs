@@ -107,7 +107,7 @@ defmodule StreamClosedCaptionerPhoenix.MixProject do
       # phoenix_html (upgraded to 4.x in Phase 3f — issue #257)
       {:phoenix_html, "~> 4.0"},
       {:phoenix_html_helpers, "~> 1.0"},
-      {:phoenix_live_dashboard, "~> 0.8.5"},
+      {:phoenix_live_dashboard, "~> 0.9.0"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
       # phoenix_live_view (upgraded to 1.x in Phase 3g — issue #259)
       {:phoenix_live_view, "~> 1.1"},
