@@ -49,9 +49,11 @@ defmodule StreamClosedCaptionerPhoenixWeb.GraphQL.ChannelInfoCostreamTest do
   test "ignores the host's live kill switch", %{user: user} do
     FunWithFlags.enable(Costream.feature_flag(), for_actor: user)
 
-    StreamClosedCaptionerPhoenix.Settings.update_stream_settings(user.stream_settings, %{
-      costream_enabled: false
-    })
+    # Write the row directly: update_stream_settings/2 also syncs to Twitch
+    # (an unstubbed Mox call), which this test doesn't care about.
+    StreamClosedCaptionerPhoenix.Repo.update!(
+      Ecto.Changeset.change(user.stream_settings, costream_enabled: false)
+    )
 
     assert run_query(user).data["channelInfo"]["costreamEnabled"] == true
   end
