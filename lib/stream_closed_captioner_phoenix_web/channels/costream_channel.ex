@@ -31,6 +31,10 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
   @rate_limit_scale_ms 1_000
   @rate_limit_max_hits 15
 
+  # Guest text is untrusted and reaches every viewer, so each field is capped.
+  # Speech recognizers emit a sentence or two per final; 500 chars is ample.
+  @max_text_length 500
+
   # How often guests are told whether the host is actively captioning.
   @host_status_interval_ms 30_000
 
@@ -171,7 +175,7 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
   end
 
   defp censor_and_fan_out(guest, host, stream_settings, payload, socket) do
-    case safe_censor(host, stream_settings, payload) do
+    case safe_censor(host, stream_settings, sanitize(payload)) do
       {:ok, censored} ->
         caption = %{
           guest_id: guest.id,
@@ -213,6 +217,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannel do
 
       {:error, :exception}
   end
+
+  # Keep only the text fields, coerce non-strings to "", and cap the length.
+  defp sanitize(payload) when is_map(payload) do
+    %{"interim" => clean_text(payload["interim"]), "final" => clean_text(payload["final"])}
+  end
+
+  defp sanitize(_payload), do: %{"interim" => "", "final" => ""}
+
+  defp clean_text(text) when is_binary(text), do: String.slice(text, 0, @max_text_length)
+  defp clean_text(_text), do: ""
 
   defp rate_limited?(guest) do
     case RateLimit.hit(

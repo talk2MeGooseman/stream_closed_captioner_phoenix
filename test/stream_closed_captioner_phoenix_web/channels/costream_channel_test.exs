@@ -118,6 +118,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamChannelTest do
       assert_receive {:costream_caption, %{name: "Alice", final: ^final}}
     end
 
+    test "caps guest text length and ignores non-string fields", %{host: host, guest: guest} do
+      mark_host_active(host)
+      {:ok, _, socket} = join_as_guest(guest)
+
+      long = String.duplicate("a", 2_000)
+      ref = push(socket, "publish", %{"interim" => 123, "final" => long, "extra" => "x"})
+
+      assert_reply ref, :ok, %{interim: "", final: final}
+      assert String.length(final) == 500
+    end
+
     test "muted guests cannot publish", %{host: host, guest: guest} do
       {:ok, _} = Costream.set_guest_muted(guest, true)
       mark_host_active(host)
