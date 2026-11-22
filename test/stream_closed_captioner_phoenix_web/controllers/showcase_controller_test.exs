@@ -1,6 +1,19 @@
 defmodule StreamClosedCaptionerPhoenixWeb.ShowcaseControllerTest do
   use StreamClosedCaptionerPhoenixWeb.ConnCase, async: true
 
+  import Mox
+
+  setup :verify_on_exit!
+
+  # The showcase reads channel ids from the global UserTracker, which other
+  # async tests (e.g. channel joins) can populate. When it is non-empty the
+  # controller calls Twitch.get_live_streams/1, which needs an OAuth token, so
+  # stub the mock to keep these tests independent of test order.
+  setup do
+    stub(Twitch.MockOauth, :get_client_access_token, fn -> {:error, :not_configured} end)
+    :ok
+  end
+
   describe "GET /showcase" do
     test "renders the live-streams showcase in the new design", %{conn: conn} do
       conn = get(conn, ~p"/showcase")
