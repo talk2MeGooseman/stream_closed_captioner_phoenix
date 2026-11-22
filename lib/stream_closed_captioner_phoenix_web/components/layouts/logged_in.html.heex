@@ -155,6 +155,10 @@
             <span>Caption Settings</span>
           </.link>
           <.link
+            :if={
+              assigns[:current_user] &&
+                StreamClosedCaptionerPhoenix.Costream.feature_enabled?(@current_user)
+            }
             navigate={~p"/users/costream"}
             class="flex items-center px-4 py-3 transition cursor-pointer group hover:bg-gray-800 hover:text-gray-200"
           >

@@ -24,6 +24,20 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamLiveTest do
     assert html =~ "aren&#39;t enabled for your account yet"
   end
 
+  test "ignores management events when the feature flag is off", %{conn: conn, user: user} do
+    FunWithFlags.disable(Costream.feature_flag(), for_actor: user)
+    FunWithFlags.disable(Costream.feature_flag())
+
+    {:ok, view, _html} = live(conn, ~p"/users/costream")
+    render_click(view, "create_guest", %{"name" => "Sneaky"})
+    render_click(view, "toggle_kill_switch", %{})
+
+    assert Costream.list_active_guests(user) == []
+
+    assert {:ok, %{costream_enabled: true}} =
+             StreamClosedCaptionerPhoenix.Settings.get_stream_settings_by_user_id(user.id)
+  end
+
   test "creates a guest link", %{conn: conn, user: user} do
     {:ok, view, _html} = live(conn, ~p"/users/costream")
 

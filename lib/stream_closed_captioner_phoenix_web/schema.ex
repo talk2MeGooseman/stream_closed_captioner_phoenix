@@ -48,6 +48,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :translations, :translations do
       resolve(&Resolvers.Settings.get_translations_info/3)
     end
+
+    @desc """
+    Whether the channel is in the co-streamer captions rollout
+    (`:costream_captions` feature flag). Extensions only open the
+    `new_costream_caption` subscription when this is true, so channels outside
+    the rollout cost nothing extra per viewer. Deliberately ignores the host's
+    live kill switch so flipping it mid-stream doesn't need viewers to reload.
+    """
+    field :costream_enabled, :boolean do
+      resolve(fn user, _args, _resolution ->
+        {:ok, StreamClosedCaptionerPhoenix.Costream.feature_enabled?(user)}
+      end)
+    end
   end
 
   @desc "Users bits balance"

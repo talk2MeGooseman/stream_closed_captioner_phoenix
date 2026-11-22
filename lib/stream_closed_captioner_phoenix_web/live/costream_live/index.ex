@@ -45,7 +45,15 @@ defmodule StreamClosedCaptionerPhoenixWeb.CostreamLive.Index do
      |> assign(:new_guest_name, "")}
   end
 
+  # Server-side flag gate: the template hides the controls when the flag is
+  # off, but LiveView events can still be pushed by hand, so every management
+  # event is refused for hosts outside the rollout.
   @impl true
+  def handle_event(event, _params, %{assigns: %{feature_enabled: false}} = socket)
+      when event != "clear_flash" do
+    {:noreply, socket}
+  end
+
   def handle_event("create_guest", %{"name" => name}, socket) do
     case Costream.create_guest(socket.assigns.current_user, %{name: name}) do
       {:ok, _guest} ->
