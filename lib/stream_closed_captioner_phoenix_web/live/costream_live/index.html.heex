@@ -1,0 +1,169 @@
+<header class="page-head">
+  <div class="wrap page-head__in">
+    <div>
+      <span class="eyebrow">Account · Co-stream</span>
+      <h1 class="h1">Co-stream Captions</h1>
+      <p>
+        Invite guests with a personal link. Their speech is captioned in their
+        browser and shown to viewers alongside yours.
+      </p>
+    </div>
+    <button
+      :if={@feature_enabled}
+      type="button"
+      phx-click="toggle_kill_switch"
+      class={["btn", (@costream_enabled && "btn--primary") || "btn-warning"]}
+    >
+      {if @costream_enabled, do: "Guest captions ON", else: "Guest captions OFF"}
+    </button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section :if={!@feature_enabled} class="card">
+    <div class="card__body">
+      <p>Co-stream captions aren't enabled for your account yet.</p>
+    </div>
+  </section>
+
+  <div :if={@feature_enabled} class="cards">
+    <section :if={!@costream_enabled} class="card">
+      <div class="card__body">
+        <p>
+          Guest captions are switched off — nothing guests say reaches your
+          viewers until you turn them back on.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>Invite a guest</h2>
+        <p>
+          You choose the name viewers see. Send each link privately — anyone
+          holding it can caption on your stream while you're live.
+        </p>
+      </div>
+      <div class="card__body">
+        <form phx-submit="create_guest" class="field">
+          <label for="guest-name-input">Guest name</label>
+          <div class="addrow">
+            <input
+              id="guest-name-input"
+              type="text"
+              name="name"
+              value={@new_guest_name}
+              maxlength="50"
+              required
+              placeholder="e.g. Alice"
+            />
+            <button type="submit" class="btn btn--primary">Create invite link</button>
+          </div>
+        </form>
+        <p class="card__desc" style="margin-top: 10px;">
+          {length(@guests)}/{StreamClosedCaptionerPhoenix.Costream.max_active_guests()} guests
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>Your guests</h2>
+        <p>Watch their captions live, mute anyone instantly, or revoke a link for good.</p>
+      </div>
+      <div class="card__body">
+        <p :if={@guests == []} class="chips__empty">
+          No guests yet — create an invite link and send it to your co-streamer.
+        </p>
+
+        <ul :if={@guests != []} class="cards" style="list-style: none; padding: 0; margin: 0;">
+          <li :for={guest <- @guests} id={"guest-#{guest.id}"} class="card">
+            <div class="card__body">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                <strong>{guest.name}</strong>
+                <span class={[
+                  "badge",
+                  guest_connected?(@connected_ids, guest) && "badge-live"
+                ]}>
+                  {if guest_connected?(@connected_ids, guest), do: "Connected", else: "Offline"}
+                </span>
+                <span :if={guest.muted} class="badge">Muted</span>
+
+                <div style="margin-left: auto; display: flex; gap: 8px;">
+                  <button
+                    type="button"
+                    phx-click="toggle_mute"
+                    phx-value-id={guest.id}
+                    class="btn btn--ghost btn--sm"
+                  >
+                    {if guest.muted, do: "Unmute", else: "Mute"}
+                  </button>
+                  <button
+                    type="button"
+                    phx-click="revoke"
+                    phx-value-id={guest.id}
+                    data-confirm={"Remove #{guest.name}? Their link stops working immediately."}
+                    class="btn btn-warning btn--sm"
+                  >
+                    Kick &amp; revoke
+                  </button>
+                </div>
+              </div>
+
+              <div class="addrow" style="margin-top: 12px;">
+                <input
+                  id={"guest-link-#{guest.id}"}
+                  type="text"
+                  readonly
+                  value={guest_url(guest)}
+                  onclick="this.select()"
+                  aria-label={"Invite link for #{guest.name}"}
+                />
+                <button
+                  id={"guest-link-copy-#{guest.id}"}
+                  type="button"
+                  phx-hook="CopyToClipboard"
+                  data-copy-target={"guest-link-#{guest.id}"}
+                  class="btn btn--ghost"
+                >
+                  Copy
+                </button>
+              </div>
+
+              <div
+                :if={live_caption = @live_text[guest.id]}
+                class="chips"
+                style="margin-top: 12px; display: block;"
+              >
+                <p style="margin: 0;">{live_caption.final}</p>
+                <p style="margin: 0; opacity: 0.6; font-style: italic;">{live_caption.interim}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</div>
+
+<button
+  :if={msg = Phoenix.Flash.get(@flash, :error)}
+  type="button"
+  id="costream-toast-error"
+  class="toast toast--error"
+  data-key="error"
+  phx-hook="Toast"
+  phx-click="clear_flash"
+  phx-value-key="error"
+  role="alert"
+  aria-label="Dismiss error message"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+    <path
+      d="M12 8v5M12 16h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+  {msg}
+</button>

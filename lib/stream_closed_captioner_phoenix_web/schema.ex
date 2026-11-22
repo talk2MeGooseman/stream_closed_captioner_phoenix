@@ -48,6 +48,19 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field :translations, :translations do
       resolve(&Resolvers.Settings.get_translations_info/3)
     end
+
+    @desc """
+    Whether the channel is in the co-streamer captions rollout
+    (`:costream_captions` feature flag). Extensions only open the
+    `new_costream_caption` subscription when this is true, so channels outside
+    the rollout cost nothing extra per viewer. Deliberately ignores the host's
+    live kill switch so flipping it mid-stream doesn't need viewers to reload.
+    """
+    field :costream_enabled, :boolean do
+      resolve(fn user, _args, _resolution ->
+        {:ok, StreamClosedCaptionerPhoenix.Costream.feature_enabled?(user)}
+      end)
+    end
   end
 
   @desc "Users bits balance"
@@ -72,6 +85,14 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
     field(:interim, :string)
     field(:final, :string)
     field(:translations, :json)
+  end
+
+  @desc "A co-streamer guest's captions"
+  object :costream_caption do
+    field(:guest_id, :id)
+    field(:name, :string)
+    field(:interim, :string)
+    field(:final, :string)
   end
 
   query do
@@ -111,6 +132,17 @@ defmodule StreamClosedCaptionerPhoenixWeb.Schema do
       # If needed, you can also provide a list of topics:
       #   {:ok, topic: ["absinthe-graphql/absinthe", "elixir-lang/elixir"]}
       # Absinthe.Subscription.publish(StreamClosedCaptionerPhoenixWeb.Endpoint, %{ interim: "hello", final: "final" }, new_twitch_caption: "1")
+      config(fn args, _ ->
+        {:ok, topic: args.channel_id}
+      end)
+    end
+
+    # Guest (co-streamer) captions ride a separate subscription so extension
+    # bundles released before this feature — whose hardcoded query selects
+    # only new_twitch_caption — never receive unattributed guest text.
+    field :new_costream_caption, :costream_caption do
+      arg(:channel_id, non_null(:id))
+
       config(fn args, _ ->
         {:ok, topic: args.channel_id}
       end)

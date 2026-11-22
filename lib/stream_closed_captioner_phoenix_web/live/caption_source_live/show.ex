@@ -323,6 +323,32 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionSourceLive.Show do
     {:noreply, apply_caption(socket, payload)}
   end
 
+  # Co-streamer guest captions: only finals, name-prefixed. Guest interim
+  # frames are dropped here — the overlay has a single interim line and
+  # interleaving several concurrent speakers into it would just flicker.
+  def handle_info({:costream_caption_payload, %{final: final, name: name}}, socket)
+      when is_binary(final) and final != "" do
+    delay = socket.assigns.stream_settings.caption_delay || 0
+    entry = "#{name}: #{final}"
+
+    if delay > 0 do
+      Process.send_after(self(), {:apply_costream_caption, entry}, delay * 1000)
+      {:noreply, socket}
+    else
+      {:noreply, apply_costream_caption(socket, entry)}
+    end
+  end
+
+  def handle_info({:costream_caption_payload, _payload}, socket), do: {:noreply, socket}
+
+  def handle_info({:apply_costream_caption, entry}, socket) do
+    {:noreply, apply_costream_caption(socket, entry)}
+  end
+
+  defp apply_costream_caption(socket, entry) do
+    assign(socket, :final_text, append_final(socket.assigns.final_text, entry))
+  end
+
   defp apply_caption(socket, payload) do
     final = Map.get(payload, :final) || ""
     interim = Map.get(payload, :interim) || ""

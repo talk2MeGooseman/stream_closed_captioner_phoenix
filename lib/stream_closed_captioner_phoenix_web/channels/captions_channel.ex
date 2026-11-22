@@ -109,9 +109,13 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannel do
 
   defp track_user(nil), do: nil
 
-  # Add authorization logic here as required.
+  # Only a user-token socket may join; costream guest sockets (which carry
+  # :costream_guest instead of :current_user) are rejected here.
   defp authorized?(socket, user_id) do
-    user_id == to_string(socket.assigns.current_user.id)
+    case socket.assigns[:current_user] do
+      %{id: id} -> user_id == to_string(id)
+      _ -> false
+    end
   end
 
   defp time_to_complete(nil), do: 0
