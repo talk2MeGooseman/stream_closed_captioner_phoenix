@@ -275,4 +275,16 @@ defmodule StreamClosedCaptionerPhoenixWeb.CaptionsChannelTest do
 
     assert_reply ref, :error, "Issue sending captions."
   end
+
+  describe "safe_call/2" do
+    test "rescues exceptions, logs an error, and returns {:error, :exception}" do
+      result =
+        StreamClosedCaptionerPhoenixWeb.CaptionsChannel.safe_call(
+          fn -> raise RuntimeError, "injected pipeline failure" end,
+          42
+        )
+
+      assert result == {:error, :exception}
+    end
+  end
 end
